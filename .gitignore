@@ -1,3 +1,5 @@
 .env
 __pycache__/
 *.pyc
+firebase-key.json
+matches.db

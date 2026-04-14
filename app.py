@@ -1,6 +1,9 @@
 import os
 import time
 import requests
+import firebase_admin
+from firebase_admin import credentials, firestore
+import json
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -16,11 +19,125 @@ CORS(app)
 cache = {}
 CACHE_TTL = 300  # 5 minutes caching
 
+# Initialize Firebase Admin
+try:
+    cred = credentials.Certificate(os.path.join(os.path.dirname(__file__), "firebase-key.json"))
+    firebase_admin.initialize_app(cred)
+    db = firestore.client()
+    print("[SUCCESS] Firebase initialized successfully!")
+except Exception as e:
+    print(f"[ERROR] Failed to initialize Firebase: {e}")
+    db = None
+
 @app.route("/")
 def index():
     return send_from_directory(app.static_folder, "index.html")
 
 import urllib.parse
+
+@app.route("/api/db/save", methods=["POST"])
+def db_save():
+    payload = request.json
+    if not payload or 'matches' not in payload:
+        return jsonify({"success": False, "error": "Invalid payload"}), 400
+    
+    matches_list = payload['matches']
+    player_name = payload.get('player_name', '')
+    player_tag = payload.get('player_tag', '')
+    mode = payload.get('mode', 'competitive')
+    
+    saved = 0
+    if db is None:
+        return jsonify({"success": False, "error": "Database not initialized"}), 500
+        
+    batch = db.batch()
+    batch_count = 0
+    
+    for m in matches_list:
+        mid = None
+        if "metadata" in m:
+            mid = m["metadata"].get("matchid") or m["metadata"].get("match_id")
+        if not mid:
+            continue
+            
+        store_key = f"{player_name}#{player_tag}|{mode}|{mid}"
+        game_start = m.get("metadata", {}).get("game_start", int(time.time()))
+        
+        doc_ref = db.collection('matches').document(store_key)
+        batch.set(doc_ref, {
+            'store_key': store_key,
+            'date': game_start,
+            'data': json.dumps(m)
+        }, merge=True)
+        
+        saved += 1
+        batch_count += 1
+        if batch_count >= 400: # Firestore batch limit
+            try:
+                batch.commit()
+            except Exception as e:
+                print(f"Firestore batch error: {e}")
+            batch = db.batch()
+            batch_count = 0
+            
+    if batch_count > 0:
+        try:
+            batch.commit()
+        except Exception as e:
+            print(f"Firestore batch error: {e}")
+            
+    return jsonify({"success": True, "saved": saved})
+
+@app.route("/api/db/matches", methods=["GET"])
+def db_get_matches():
+    player_name = request.args.get('name', '')
+    player_tag = request.args.get('tag', '')
+    mode = request.args.get('mode', 'competitive')
+    
+    if db is None:
+        return jsonify({"success": False, "error": "Database not initialized"}), 500
+        
+    prefix = f"{player_name}#{player_tag}|{mode}|"
+    
+    try:
+        # Prefix search in Firestore
+        docs = db.collection('matches') \
+                 .where('store_key', '>=', prefix) \
+                 .where('store_key', '<', prefix + '\uf8ff') \
+                 .order_by('store_key') \
+                 .get()
+                 
+        parsed = []
+        for doc in docs:
+            d = doc.to_dict()
+            try:
+                parsed.append((d.get('date', 0), json.loads(d['data'])))
+            except:
+                pass
+                
+        parsed.sort(key=lambda x: x[0], reverse=True)
+        matches = [x[1] for x in parsed]
+                
+        return jsonify({"success": True, "matches": matches})
+    except Exception as e:
+        print(f"Firestore get error: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/api/db/clear", methods=["POST"])
+def db_clear():
+    if db is None:
+        return jsonify({"success": False, "error": "Database not initialized"}), 500
+        
+    try:
+        docs = db.collection('matches').limit(500).get()
+        batch = db.batch()
+        for doc in docs:
+            batch.delete(doc.reference)
+        batch.commit()
+        return jsonify({"success": True})
+    except Exception as e:
+        print(f"Firestore clear error: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
 
 @app.route("/api/<path:subpath>", methods=["GET", "POST"])
 def proxy_api(subpath):
