@@ -2641,15 +2641,16 @@ function getRankImgUrl(rankName){
 function getRankFromRR(v){for(let i=RANKS.length-1;i>=0;i--){if(v>=RANKS[i].rr)return RANKS[i];}return RANKS[0];}
 function getRankColor(n){const t=n.split(' ')[0];return RANK_COLORS[t]||'#fff';}
 // ── Live asset cache — fetches from valorant-api.com at startup ──
-const _assetCache = { agents: {}, maps: {}, ready: false };
+const _assetCache = { agents: {}, maps: {}, weapons: {}, ready: false };
 
 async function initAssetCache() {
   try {
-    const [agentRes, mapRes] = await Promise.all([
+    const [agentRes, mapRes, wpnRes] = await Promise.all([
       fetch('https://valorant-api.com/v1/agents?isPlayableCharacter=true'),
-      fetch('https://valorant-api.com/v1/maps')
+      fetch('https://valorant-api.com/v1/maps'),
+      fetch('https://valorant-api.com/v1/weapons')
     ]);
-    const [agentData, mapData] = await Promise.all([agentRes.json(), mapRes.json()]);
+    const [agentData, mapData, weaponData] = await Promise.all([agentRes.json(), mapRes.json(), wpnRes.json()]);
 
     // Agents: name → { uuid, role, iconUrl, portraitUrl }
     (agentData.data || []).forEach(a => {
@@ -2676,6 +2677,12 @@ async function initAssetCache() {
         minimap:   m.displayIcon
       };
       _assetCache.maps[m.displayName.toLowerCase()] = _assetCache.maps[m.displayName];
+    });
+
+    // Weapons: uuid -> { displayName, displayIcon }
+    (weaponData.data || []).forEach(w => {
+      _assetCache.weapons[w.uuid.toLowerCase()] = { name: w.displayName, iconUrl: w.displayIcon };
+      _assetCache.weapons[w.displayName.toLowerCase()] = { name: w.displayName, iconUrl: w.displayIcon };
     });
 
     _assetCache.ready = true;
@@ -6380,13 +6387,9 @@ function renderTopWeapons(matches) {
       if(!myPs)return;
       const kills=myPs.kill_events||myPs.kills||[];
       kills.forEach(k=>{
-        const raw=k.finishing_damage?.damage_item||k.damage_weapon_id||'';
-        let wpn=raw.replace(/^[^/]*\//,'').replace(/TX_Hud_/i,'').replace(/_/g,' ').trim();
-        // Try to match to known weapon names
-        const knownMatch=Object.keys(WEAPON_IMGS).find(w=>
-          raw.toLowerCase().includes(w.toLowerCase())||wpn.toLowerCase()===w.toLowerCase()
-        );
-        if(knownMatch) wpn=knownMatch;
+        const raw=k.damage_weapon_name||k.finishing_damage?.damage_item||k.damage_weapon_id||'';
+        const cachedWpn = _assetCache.weapons[raw.toLowerCase()];
+        let wpn = cachedWpn ? cachedWpn.name : raw.replace(/^[^/]*\//,'').replace(/TX_Hud_/i,'').replace(/_/g,' ').trim();
         if(!wpn||wpn.length<2) return;
         if(!weaponData[wpn]) weaponData[wpn]={kills:0,hs:0,shots:0};
         weaponData[wpn].kills++;
@@ -6408,7 +6411,8 @@ function renderTopWeapons(matches) {
 
   wrap.innerHTML = `<div class="weapons-grid">${entries.map(([wpn,v])=>{
     const hsPct=v.kills?Math.round(v.hs/v.kills*100):0;
-    const imgUrl=WEAPON_IMGS[wpn]||null;
+    const cachedWpn = _assetCache.weapons[wpn.toLowerCase()];
+    const imgUrl = cachedWpn ? cachedWpn.iconUrl : (WEAPON_IMGS[wpn] || null);
     const type=WEAPON_TYPES[wpn]||'Weapon';
     const hsPctCol=hsPct>=30?'var(--win)':hsPct>=20?'var(--accent)':'var(--loss)';
     return `<div class="weapon-card">
