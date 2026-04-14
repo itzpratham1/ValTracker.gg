@@ -3598,7 +3598,12 @@ function buildFullDetail(match,idx){
 
     // Count headshots from kill finishing_damage
     myKills.forEach(k=>{
-      if(k.finishing_damage?.is_headshot||k.headshot) totalHS++;
+      let isHS = typeof k.headshot === 'boolean' ? k.headshot : k.finishing_damage?.is_headshot;
+      if (!isHS) {
+        const dE = (myPs?.damage_events || []).find(de => de.receiver_puuid === (k.victim_puuid || k.victim));
+        if (dE && dE.headshots > 0) isHS = true;
+      }
+      if(isHS) totalHS++;
       else totalBS++; // approximate — body+leg split not in kill events
       // Weapon
       const wpn=k.finishing_damage?.damage_item||k.damage_weapon_id||'Unknown';
@@ -3757,8 +3762,16 @@ function buildFullDetail(match,idx){
       kills.forEach(k=>{
         const weapon=k.finishing_damage?.damage_item||k.damage_weapon_id||'Unknown';
         const wpnClean=weapon.replace(/TX_Hud_/i,'').replace(/_/g,' ').trim()||weapon;
-        const isHS=k.finishing_damage?.is_headshot||k.headshot||false;
+        let isHS=typeof k.headshot === 'boolean' ? k.headshot : k.finishing_damage?.is_headshot;
         const victimId=k.victim_puuid||k.victim||'';
+        if (!isHS) {
+          const myPsInfo = findMyPs(parsedRounds[ri]?._ps);
+          if (myPsInfo?.damage_events) {
+            const dE = myPsInfo.damage_events.find(de => de.receiver_puuid === victimId);
+            if (dE && dE.headshots > 0) isHS = true;
+          }
+        }
+        isHS = isHS || false;
         const victim=allPlayers.find(p=>p.puuid===victimId);
         const victimName=victim?.name||'Enemy';
         const victimIcon=getAgentIconUrl(victim?.character||'');
@@ -6393,7 +6406,12 @@ function renderTopWeapons(matches) {
         if(!wpn||wpn.length<2) return;
         if(!weaponData[wpn]) weaponData[wpn]={kills:0,hs:0,shots:0};
         weaponData[wpn].kills++;
-        if(k.finishing_damage?.is_headshot||k.headshot) weaponData[wpn].hs++;
+        let isHS = typeof k.headshot === 'boolean' ? k.headshot : k.finishing_damage?.is_headshot;
+        if (!isHS && myPs.damage_events) {
+          const dE = myPs.damage_events.find(de => de.receiver_puuid === (k.victim_puuid || k.victim));
+          if (dE && dE.headshots > 0) isHS = true;
+        }
+        if (isHS) weaponData[wpn].hs++;
       });
     });
   });
