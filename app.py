@@ -4,6 +4,8 @@ import requests
 import firebase_admin
 from firebase_admin import credentials, firestore
 import json
+import zlib
+import base64
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -63,16 +65,19 @@ def db_save():
         store_key = f"{player_name}#{player_tag}|{mode}|{mid}"
         game_start = m.get("metadata", {}).get("game_start", int(time.time()))
         
+        compressed_data = base64.b64encode(zlib.compress(json.dumps(m).encode('utf-8'))).decode('utf-8')
+        
         doc_ref = db.collection('matches').document(store_key)
         batch.set(doc_ref, {
             'store_key': store_key,
             'date': game_start,
-            'data': json.dumps(m)
+            'data': compressed_data,
+            'compressed': True
         }, merge=True)
         
         saved += 1
         batch_count += 1
-        if batch_count >= 400: # Firestore batch limit
+        if batch_count >= 100: # Firestore batch limit (reduced to be very safe under memory limits)
             try:
                 batch.commit()
             except Exception as e:
@@ -111,8 +116,12 @@ def db_get_matches():
         for doc in docs:
             d = doc.to_dict()
             try:
-                parsed.append((d.get('date', 0), json.loads(d['data'])))
-            except:
+                raw_data = d.get('data', '')
+                if d.get('compressed'):
+                    raw_data = zlib.decompress(base64.b64decode(raw_data)).decode('utf-8')
+                parsed.append((d.get('date', 0), json.loads(raw_data)))
+            except Exception as e:
+                print(f"Error parsing doc {doc.id}: {e}")
                 pass
                 
         parsed.sort(key=lambda x: x[0], reverse=True)
