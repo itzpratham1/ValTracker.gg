@@ -3622,10 +3622,19 @@ function buildFullDetail(match,idx){
       }
       if(isHS) totalHS++;
       else totalBS++; // approximate — body+leg split not in kill events
-      // Weapon
-      const wpn=k.finishing_damage?.damage_item||k.damage_weapon_id||'Unknown';
-      const wpnClean=wpn.replace(/TX_Hud_/i,'').replace(/_/g,' ').trim()||'Unknown';
-      weaponKills[wpnClean]=(weaponKills[wpnClean]||0)+1;
+      // Weapon — resolve name from v3 fields
+      let wpnName = k.damage_weapon_name || '';
+      if(!wpnName || wpnName.length<2) {
+        const wpnId = k.finishing_damage?.damage_item||k.damage_weapon_id||'';
+        const cached = _assetCache.weapons[wpnId.toLowerCase()];
+        if(cached) wpnName = cached.name;
+        else {
+          wpnName = wpnId.replace(/^[^/]*\//,'').replace(/TX_Hud_/i,'').replace(/_/g,' ').trim();
+          if(/^[0-9a-f]{8}-/.test(wpnName)) wpnName = 'Ability';
+        }
+      }
+      if(!wpnName) wpnName = 'Unknown';
+      weaponKills[wpnName]=(weaponKills[wpnName]||0)+1;
       // Duel matrix
       const victimId=k.victim_puuid||k.victim||'';
       if(duelMatrix[victimId]) duelMatrix[victimId].kills++;
@@ -3752,21 +3761,33 @@ function buildFullDetail(match,idx){
   if(!killedRounds.length){
     html+='<div class="no-detail">No kill data for this match</div>';
   } else {
-    html+='<div style="display:flex;flex-direction:column;gap:6px;">';
+    // Helper: resolve weapon name from v3 kill event
+    const resolveWeapon=(k)=>{
+      // 1. v3 has damage_weapon_name (e.g. "Ghost")
+      if(k.damage_weapon_name && k.damage_weapon_name.length>1) return {name:k.damage_weapon_name, icon:k.damage_weapon_assets?.killfeed_icon||null};
+      // 2. Try asset cache lookup by UUID
+      const wpnId = k.damage_weapon_id||k.finishing_damage?.damage_item||'';
+      const cached = _assetCache.weapons[wpnId.toLowerCase()];
+      if(cached) return {name:cached.name, icon:cached.iconUrl||null};
+      // 3. Clean raw string
+      const cleaned = wpnId.replace(/^[^/]*\//,'').replace(/TX_Hud_/i,'').replace(/_/g,' ').trim();
+      // If it still looks like a UUID, show "Unknown"
+      if(/^[0-9a-f]{8}-/.test(cleaned)) return {name:'Ability', icon:null};
+      return {name:cleaned||'Unknown', icon:null};
+    };
+
+    html+='<div style="display:flex;flex-wrap:wrap;gap:6px;">';
     killedRounds.forEach(([ri,{kills,won}])=>{
       const rndNum=parseInt(ri)+1;
-      const badge=kills.length>=5?'⭐ ACE':kills.length>=4?'💎 4K':kills.length>=3?'🔥 3K':'';
-      html+=`<div style="background:var(--surface2);border-radius:var(--radius-sm);overflow:hidden;">
-        <div style="display:flex;align-items:center;gap:8px;padding:5px 12px;background:${won?'rgba(62,207,142,0.08)':'rgba(255,87,87,0.06)'};border-bottom:1px solid var(--border);">
-          <span style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;color:${won?'var(--win)':'var(--loss)'};">RND ${rndNum}</span>
-          <span style="font-family:'DM Mono',monospace;font-size:9px;color:${won?'var(--win)':'var(--loss)'};letter-spacing:1px;">${won?'WIN':'LOSS'}</span>
-          ${badge?`<span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--accent);letter-spacing:1px;">${badge}</span>`:''}
-          <span style="margin-left:auto;font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);">${kills.length}K</span>
-        </div>
-        <div style="padding:5px 8px;display:flex;flex-direction:column;gap:3px;">`;
+      const badge=kills.length>=5?' · ACE':kills.length>=4?' · 4K':kills.length>=3?' · 3K':'';
+      html+=`<div style="background:var(--surface2);border:1px solid ${won?'rgba(62,207,142,0.12)':'rgba(255,87,87,0.08)'};border-radius:var(--radius-sm);overflow:hidden;flex:1;min-width:220px;max-width:100%;">
+        <div style="display:flex;align-items:center;gap:6px;padding:6px 10px;border-bottom:1px solid var(--border);">
+          <span style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:12px;color:${won?'var(--win)':'var(--loss)'};">R${rndNum}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:8px;color:${won?'var(--win)':'var(--loss)'};letter-spacing:1px;opacity:0.7;">${won?'W':'L'}${badge}</span>
+          <span style="margin-left:auto;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;color:var(--text);">${kills.length}K</span>
+        </div>`;
       kills.forEach(k=>{
-        const weapon=k.finishing_damage?.damage_item||k.damage_weapon_id||'Unknown';
-        const wpnClean=weapon.replace(/TX_Hud_/i,'').replace(/_/g,' ').trim()||weapon;
+        const wpn=resolveWeapon(k);
         let isHS=typeof k.headshot === 'boolean' ? k.headshot : k.finishing_damage?.is_headshot;
         const victimId=k.victim_puuid||k.victim||'';
         if (!isHS) {
@@ -3779,16 +3800,18 @@ function buildFullDetail(match,idx){
         isHS = isHS || false;
         const victim=allPlayers.find(p=>p.puuid===victimId);
         const victimName=victim?.name||'Enemy';
-        const victimIcon=getAgentIconUrl(victim?.character||'');
-        html+=`<div style="display:flex;align-items:center;gap:6px;padding:2px 4px;">
-          ${victimIcon?`<img src="${victimIcon}" style="width:18px;height:18px;object-fit:contain;flex-shrink:0;" onerror="this.style.display='none'">`:
-            `<div style="width:18px;height:18px;background:var(--surface3);border-radius:3px;flex-shrink:0;"></div>`}
-          <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${victimName}</span>
-          <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);background:var(--surface3);padding:2px 5px;border-radius:3px;flex-shrink:0;">${wpnClean}</span>
-          ${isHS?`<span style="font-family:'DM Mono',monospace;font-size:9px;font-weight:700;color:var(--accent);background:var(--accentdim);padding:2px 4px;border-radius:3px;letter-spacing:1px;">HS</span>`:''}
+        const victimAgent=victim?.character||'';
+        const victimIcon=getAgentIconUrl(victimAgent);
+        html+=`<div style="display:flex;align-items:center;gap:6px;padding:4px 10px;border-bottom:1px solid rgba(255,255,255,0.02);">
+          ${victimIcon?`<img src="${victimIcon}" style="width:16px;height:16px;object-fit:contain;flex-shrink:0;border-radius:2px;" onerror="this.style.display='none'">`
+            :`<div style="width:16px;height:16px;background:var(--surface3);border-radius:2px;flex-shrink:0;"></div>`}
+          <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${victimName}</span>
+          ${wpn.icon?`<img src="${wpn.icon}" style="height:10px;width:auto;object-fit:contain;filter:brightness(0.8);flex-shrink:0;" onerror="this.outerHTML='<span style=\\'font-family:DM Mono,monospace;font-size:8px;color:var(--muted2)\\'>${wpn.name}</span>'">`
+            :`<span style="font-family:'DM Mono',monospace;font-size:8px;color:var(--muted2);flex-shrink:0;">${wpn.name}</span>`}
+          ${isHS?`<span style="font-family:'DM Mono',monospace;font-size:7px;font-weight:700;color:var(--accent);background:var(--accentdim);padding:1px 4px;border-radius:2px;letter-spacing:1px;flex-shrink:0;">HS</span>`:''}
         </div>`;
       });
-      html+='</div></div>';
+      html+='</div>';
     });
     html+='</div>';
   }
@@ -6408,6 +6431,7 @@ function renderTopWeapons(matches) {
         const raw=k.damage_weapon_name||k.finishing_damage?.damage_item||k.damage_weapon_id||'';
         const cachedWpn = _assetCache.weapons[raw.toLowerCase()];
         let wpn = cachedWpn ? cachedWpn.name : raw.replace(/^[^/]*\//,'').replace(/TX_Hud_/i,'').replace(/_/g,' ').trim();
+        if(/^[0-9a-f]{8}-/.test(wpn)) wpn = 'Ability'; // filter raw UUIDs
         if(!wpn||wpn.length<2) return;
         if(!weaponData[wpn]) weaponData[wpn]={kills:0,hs:0,shots:0};
         weaponData[wpn].kills++;
