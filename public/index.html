@@ -2917,8 +2917,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       if (e.key === 'Enter') landingFetch();
     });
   });
-  // Mode selector
-  document.getElementById('mode-select')?.addEventListener('change', () => { updateHeroName(); applyModeUI(); });
+  // Mode selector — auto-fetch on change
+  document.getElementById('mode-select')?.addEventListener('change', () => { updateHeroName(); applyModeUI(); fetchAll(); });
   // Init hero
   updateHeroName();
   applyModeUI();
