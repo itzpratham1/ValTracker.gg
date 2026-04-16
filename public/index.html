@@ -3419,12 +3419,26 @@ function buildScoreboard(match,myTeamId,isRanked=true){
 function buildRounds(match,myTeamId){
   const rounds=match.rounds||[];
   if(!rounds.length)return'<div class="no-detail" style="color:var(--muted);font-size:11px;">Round timeline loads after expanding full match details ↓</div>';
+  // Resolve my puuid + teammate puuids for clutch detection
+  const allP=match.players?.all_players||[];
+  const meR=allP.find(p=>p.name?.toLowerCase()===PLAYER_NAME.toLowerCase()&&p.tag?.toLowerCase()===PLAYER_TAG.toLowerCase());
+  const myPuuidR=meR?.puuid||'';
+  const teammatePuuids=allP.filter(p=>(p.team||'').toLowerCase()===myTeamId&&p.puuid!==myPuuidR).map(p=>p.puuid);
   let html='<div class="rounds-wrap">';
   rounds.forEach((r,i)=>{
     const myTeamWon=(r.winning_team||'').toLowerCase()===myTeamId;
-    // v2 data has players_alive; v3 doesn't — detect clutch from kill count instead
-    const myAliveV2 = r[myTeamId]?.players_alive??r.teams?.[myTeamId]?.players_alive??null;
-    const isClutch = myTeamWon && (myAliveV2===1);
+    // Detect clutch: count teammate deaths from all kill_events in this round
+    let isClutch=false;
+    if(myTeamWon && (r.player_stats||[]).length>0){
+      let tmDeaths=0;
+      (r.player_stats||[]).forEach(ps=>{
+        (ps.kill_events||[]).forEach(k=>{
+          if(teammatePuuids.includes(k.victim_puuid)) tmDeaths++;
+        });
+      });
+      // All 4 teammates died = I was last alive and we still won
+      if(tmDeaths>=teammatePuuids.length && teammatePuuids.length>0) isClutch=true;
+    }
     html+=`<div class="round-dot ${myTeamWon?'won':'lost'}${isClutch?' clutch':''}" title="Round ${i+1}${isClutch?' · Clutch':''}">${i+1}</div>`;
   });
   html+=`</div><div class="round-legend">
@@ -3439,40 +3453,43 @@ function buildClutches(match,myTeamId){
   const rounds=match.rounds||[];
   const clutches=[];
   const aces=[];
-  // Resolve my puuid once
+  // Resolve my puuid + teammate puuids
   const allP = match.players?.all_players||[];
   const meC = allP.find(p=>p.name?.toLowerCase()===PLAYER_NAME.toLowerCase()&&p.tag?.toLowerCase()===PLAYER_TAG.toLowerCase());
   const myPuuidC = meC?.puuid||meC?.subject||meC?.id;
+  const teammatePuuids = allP.filter(p=>(p.team||'').toLowerCase()===myTeamId&&p.puuid!==myPuuidC).map(p=>p.puuid);
 
   rounds.forEach((r,i)=>{
     const myWon=(r.winning_team||'').toLowerCase()===myTeamId;
     const playerStats = r.player_stats||[];
 
     if(playerStats.length > 0){
-      // Try all known player ID fields
       const myPs = myPuuidC ? playerStats.find(p=>
         (p.player_puuid||p.subject||p.puuid||p.player_id)===myPuuidC
       ) : null;
-      const myKills = myPs?.kills?.length||0;
+      // kills is a number in v3, not an array
+      const myKillEvents = myPs?.kill_events||[];
+      const myKills = typeof myPs?.kills === 'number' ? myPs.kills : myKillEvents.length;
 
-      // Clutch via players_alive
-      const myAlive = r[myTeamId]?.players_alive??r.teams?.[myTeamId]?.players_alive??null;
-      if(myWon && myAlive===1) clutches.push({round:i+1, kills:myKills, vsCount:'1vX'});
+      // Count teammate deaths from ALL kill_events in this round
+      let tmDeaths=0;
+      playerStats.forEach(ps=>{
+        (ps.kill_events||[]).forEach(k=>{
+          if(teammatePuuids.includes(k.victim_puuid)) tmDeaths++;
+        });
+      });
+      // Clutch: all teammates died AND we still won the round
+      const isClutch = myWon && tmDeaths>=teammatePuuids.length && teammatePuuids.length>0;
+      const enemiesAlive = tmDeaths; // rough proxy for 1vX
+      if(isClutch) clutches.push({round:i+1, kills:myKills, vsCount:`1v${Math.min(enemiesAlive,5)}`});
       // Ace: 5 kills
       if(myKills>=5) aces.push({round:i+1});
-      // Fallback clutch: won round + I got 2+ kills + no players_alive data
-      if(myWon && myAlive===null && myKills>=2) clutches.push({round:i+1, kills:myKills, vsCount:'1v?'});
     }
   });
 
-  const hasV2Data = rounds.some(r=>(r.player_stats||[]).length>0);
+  const hasRoundData = rounds.some(r=>(r.player_stats||[]).length>0);
 
-  if(!hasV2Data){
-    // v3 data only — no round-level player data available
-    // Try to show clutch count from match-level stats if available
-    const allP = match.players?.all_players||[];
-    const me = allP.find(p=>p.name?.toLowerCase()===PLAYER_NAME.toLowerCase()&&p.tag?.toLowerCase()===PLAYER_TAG.toLowerCase());
-    // Some v3 responses include ability_casts or other hints — best we can do is show message
+  if(!hasRoundData){
     return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;">
       <div style="font-size:18px">ℹ️</div>
       <div>
@@ -3624,31 +3641,19 @@ function buildFullDetail(match,idx){
       });
     });
 
-    // ── Clutch: tracker.gg style ──
-    // Count how many of my teammates died before the round ended
-    // If at some point I was last alive and we won = clutch
-    // Proxy: deaths of teammates in this round
+    // ── Clutch detection ──
+    // Count teammate deaths from ALL kill_events in this round
     let teammateDeaths=0;
-    myTeammates.forEach(tm=>{
-      const tmPs=findPs(r._ps,tm.puuid);
-      // If tmPs has 0 kills and high deaths proxy not available,
-      // use surviving_players field if present
-    });
-    const teamAlive=r[myTeamId]?.players_alive??r[myTeamId]?.alive_players??null;
-    const isClutchByAlive=roundWon&&teamAlive===1;
-    // Fallback: I was sole killer on team AND won AND had 2+ kills
-    let onlyMeKilledForTeam=true;
+    const tmPuuids=myTeammates.map(t=>t.puuid);
     r._ps.forEach(pStats=>{
-      const pId=pStats.player_puuid||pStats.subject||pStats.puuid;
-      if(pId===myPuuid) return;
-      const pData=allPlayers.find(p=>p.puuid===pId);
-      if(pData&&(pData.team||'').toLowerCase()===myTeamId){
-        const pK=pStats.kill_events||pStats.kills||[];
-        if(pK.length>0) onlyMeKilledForTeam=false;
-      }
+      const pKills=pStats.kill_events||[];
+      pKills.forEach(k=>{
+        const victimId=k.victim_puuid||k.victim||'';
+        if(tmPuuids.includes(victimId)) teammateDeaths++;
+      });
     });
-    const isClutchBySolo=roundWon&&killCount>=2&&onlyMeKilledForTeam;
-    const isClutch=isClutchByAlive||isClutchBySolo;
+    // Clutch: all teammates died AND we won the round
+    const isClutch=roundWon&&teammateDeaths>=tmPuuids.length&&tmPuuids.length>0;
 
     if(isClutch) clutches.push({round:ri+1,kills:killCount});
     if(killCount>=5) aces.push(ri+1);
