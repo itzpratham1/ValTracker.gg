@@ -2337,17 +2337,13 @@ body::before {
       <option value="eu">EU — Europe</option>
       <option value="kr">KR — Korea</option>
     </select>
-    <select class="region-select" id="mode-select" style="min-width:110px">
+    <select class="region-select" id="mode-select" style="min-width:120px">
       <option value="competitive">Competitive</option>
       <option value="unrated">Unrated</option>
       <option value="deathmatch">Deathmatch</option>
       <option value="teamdeathmatch">Team DM</option>
       <option value="swiftplay">Swiftplay</option>
       <option value="spikerush">Spike Rush</option>
-    </select>
-    <select class="region-select" id="act-select" style="min-width:110px">
-      <option value="lifetime">Lifetime</option>
-      <!-- Filled by JS -->
     </select>
     <span class="status-pill" id="status-txt">Enter name & fetch</span>
     <div class="live-chip" id="live-badge"><div class="live-dot"></div>LIVE</div>
@@ -3147,59 +3143,6 @@ async function handleClear(){
   if(rrChart){rrChart.destroy();rrChart=null;}
 }
 
-// ── VALORANT ACTS DATA ──
-let VALORANT_ACTS = [];
-let _allSeasonData = null; // MMR by_season from API
-
-async function initializeActs() {
-  const select = document.getElementById('act-select');
-  if (!select || VALORANT_ACTS.length > 0) return;
-
-  try {
-    const res = await fetch('https://api.henrikdev.xyz/valorant/v1/content');
-    if (!res.ok) throw new Error();
-    const data = await res.json();
-    if (data.acts) {
-      const acts = data.acts.filter(a => a.type === 'act').reverse();
-      VALORANT_ACTS = acts.map(a => ({
-        id: a.id,
-        name: a.name,
-        start: new Date(a.localizedNames?.en_US ? a.id : a.id), // We'll use IDs or lookup table if needed
-        // The API actually returns IDs like 'e1a1'. 
-        // For filtering, dates are better.
-      }));
-      
-      // Fallback/Manual mapping for current Episodes if API doesn't give dates
-      // Episode 8 Act 1 start: 2024-01-10
-      // Act IDs in MMR are usually like "e11a6"
-      
-      select.innerHTML = '<option value="lifetime">Lifetime</option>';
-      acts.forEach(a => {
-        const opt = document.createElement('option');
-        opt.value = a.id;
-        opt.textContent = a.name;
-        if (a.isActive) {
-          opt.textContent += ' (Current)';
-          // select.value = a.id; // Optional: default to current
-        }
-        select.appendChild(opt);
-      });
-    }
-  } catch(e) {
-    console.warn('Failed to fetch acts, using fallback');
-    select.innerHTML = `
-      <option value="lifetime">Lifetime</option>
-      <option value="e8a3">Episode 8 Act 3</option>
-      <option value="e8a2">Episode 8 Act 2</option>
-      <option value="e8a1">Episode 8 Act 1</option>
-    `;
-  }
-}
-
-document.getElementById('act-select').addEventListener('change', () => {
-  if (_lastAllMatches.length > 0) processMatches(_lastAllMatches);
-});
-
 async function fetchAll(){
   // Read player from inputs
   const inputName = document.getElementById('player-name-input')?.value.trim();
@@ -3225,7 +3168,7 @@ async function fetchAll(){
     setStatus('Loading data...','');
     const isRanked = mode === 'competitive';
     const[mmrRes,matchRes,accountRes,mmrHistRes,liveRes]=await Promise.all([
-      fetch(`/api/v3/mmr/${region}/pc/${enc}/${PLAYER_TAG}`),
+      isRanked ? fetch(`/api/v3/mmr/${region}/pc/${enc}/${PLAYER_TAG}`) : Promise.resolve(null),
       fetch(`/api/v3/matches/${region}/${enc}/${PLAYER_TAG}?mode=${mode}&size=25`),
       fetch(`/api/v1/account/${enc}/${PLAYER_TAG}`),
       fetch(`/api/v1/stored-mmr-history/${region}/${enc}/${PLAYER_TAG}`),
@@ -3257,15 +3200,20 @@ async function fetchAll(){
       }
     }
 
-    if(mmrData?.data){
+    if(isRanked && mmrData?.data){
       const d=mmrData.data;
-      _allSeasonData = d.by_season || null;
       const rankName=(d.current?.tier?.name||'—');
-      const rr=d.current?.rr??0;
+      const rankImgUrl=getRankImgUrl(d.current?.tier?.name||'');
       const tierId=d.current?.tier?.id??0;
+      const rr=d.current?.rr??0;
       const rankIndex=Math.max(0,tierId-3);
       window._currentRankRR=(rankIndex*100)+rr;
-      updateRankUI(rankName, rr, d.peak?.tier?.name);
+      document.getElementById('rank-display').textContent=rankName.toUpperCase();
+      document.getElementById('rank-rr-txt').textContent=`${rr} RR · Peak: ${d.peak?.tier?.name||'—'}`;
+      const peakImg=getRankImgUrl(d.peak?.tier?.name||'');
+      document.getElementById('rank-icon').innerHTML=rankImgUrl?`<img src="${rankImgUrl}" style="width:64px;height:64px;object-fit:contain;" onerror="this.style.display='none'">`:
+        `<div style="width:64px;height:64px;background:var(--surface2);border-radius:8px;"></div>`;
+      document.getElementById('peak-icon').innerHTML=peakImg?`<img src="${peakImg}" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-right:4px;" onerror="this.style.display='none'">`:'' ;
     }
 
     window._mmrHistory={};
@@ -3300,21 +3248,6 @@ async function fetchAll(){
     showToast('Fetch failed');
   }
   btn.disabled=false;btn.textContent='↻ Fetch Stats';
-  initializeActs(); // Populate acts after first fetch or on load
-}
-
-function updateRankUI(rankName, rr, peakName) {
-  document.getElementById('rank-display').textContent=rankName.toUpperCase();
-  document.getElementById('rank-rr-txt').textContent=`${rr} RR ${peakName ? '· Peak: '+peakName : ''}`;
-  const rankImgUrl=getRankImgUrl(rankName);
-  const peakImg=peakName ? getRankImgUrl(peakName) : '';
-  document.getElementById('rank-icon').innerHTML=rankImgUrl?`<img src="${rankImgUrl}" style="width:64px;height:64px;object-fit:contain;" onerror="this.style.display='none'">`:
-    `<div style="width:64px;height:64px;background:var(--surface2);border-radius:8px;"></div>`;
-  if (peakName) {
-    document.getElementById('peak-icon').innerHTML=peakImg?`<img src="${peakImg}" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-right:4px;" onerror="this.style.display='none'">`:'' ;
-  } else {
-    document.getElementById('peak-icon').innerHTML = '';
-  }
 }
 
 function findMe(match){
@@ -3324,45 +3257,10 @@ function findMe(match){
 
 let _lastAgentMap = {}, _lastMapData = {}, _lastAllMatches = [];
 function processMatches(matches){
-  const selectedAct = document.getElementById('act-select')?.value || 'lifetime';
   let tK=0,tD=0,tA=0,tS=0,tHS=0,tShots=0,wins=0,losses=0,counted=0;
   const agentMap={},mapData={},rrHistory=[],recentMatches=[];
 
-  // Filter by Act if not lifetime
-  let filtered = matches;
-  if (selectedAct !== 'lifetime') {
-    filtered = matches.filter(m => {
-      const season = m.metadata?.season_id || m.metadata?.season?.id || '';
-      return season === selectedAct;
-    });
-  }
-
-  // Handle "No Data" state
-  if (filtered.length === 0 && selectedAct !== 'lifetime') {
-    document.querySelector('.stat-cards-grid').style.opacity = '0.3';
-    document.getElementById('wr-detail').textContent = 'No local data stored for this Act';
-    document.getElementById('wr-detail').style.color = 'var(--loss)';
-    // Reset basic counters to zero
-    ['v-kd','v-kills','v-deaths','v-assists','v-acs','v-hs','v-wr','v-wins','v-losses'].forEach(id => {
-      document.getElementById(id).textContent = '—';
-    });
-    return;
-  } else {
-    document.querySelector('.stat-cards-grid').style.opacity = '1';
-    document.getElementById('wr-detail').style.color = '';
-  }
-
-  // Update Rank UI if act changed and we have season data
-  if (_allSeasonData && selectedAct !== 'lifetime') {
-    const s = _allSeasonData[selectedAct];
-    if (s && !s.error) {
-      updateRankUI(s.final_rank_patched || 'Unrated', s.final_rr || 0, null);
-    } else {
-      updateRankUI('Unrated', 0, null);
-    }
-  }
-
-  filtered.forEach(match=>{
+  matches.forEach(match=>{
     const me=findMe(match);
     if(!me)return;
     counted++;
