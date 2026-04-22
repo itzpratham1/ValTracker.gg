@@ -2334,7 +2334,6 @@ body::before {
     <div class="topbar-divider"></div>
     <div class="player-tag" id="player-tag-display" style="display:none"></div>
     <button class="copy-riot-btn" id="copy-riot-btn" onclick="copyRiotId()" title="Copy Riot ID">⎘</button>
-    <button class="copy-riot-btn" id="share-profile-btn" onclick="shareProfile()" title="Share Profile URL" style="margin-left:4px; background:rgba(77,159,255,0.1); color:var(--blue); border:1px solid rgba(77,159,255,0.3);">🔗 Share</button>
   </div>
   <div class="topbar-right">
     <select class="region-select" id="region-select">
@@ -2351,17 +2350,21 @@ body::before {
       <option value="swiftplay">Swiftplay</option>
       <option value="spikerush">Spike Rush</option>
     </select>
-    <button class="clear-btn" onclick="fetchLeaderboard()" title="View Leaderboard" style="border:1px solid rgba(245,166,35,0.3); color:#f5a623; background:rgba(245,166,35,0.1);">🏆 Top 500</button>
-    <button class="clear-btn" onclick="toggleHeadToHead()" title="Head-to-Head Mode" style="border:1px solid rgba(179,102,255,0.3); color:#b366ff; background:rgba(179,102,255,0.1);">⚔️ Vs</button>
-    <span class="status-pill" id="status-txt">Enter name & fetch</span>
     <div class="live-chip" id="live-badge"><div class="live-dot"></div>LIVE</div>
-    <button class="fetch-btn" id="live-match-btn" onclick="fetchLiveMatch()" style="background: rgba(62,207,142,0.15); color: var(--win); border: 1px solid rgba(62,207,142,0.3); display: none;">🔴 Live Intel</button>
-    <button class="fetch-btn" id="session-btn" onclick="toggleSession()" style="background: rgba(77,159,255,0.15); color: var(--blue); border: 1px solid rgba(77,159,255,0.3);">▶ Start Session</button>
-    <button class="fetch-btn" id="session-summary-btn" onclick="showSessionSummary()" style="background: rgba(232,255,71,0.15); color: var(--accent); border: 1px solid var(--accentborder); display: none;">📊 Session Summary</button>
     <button class="fetch-btn" id="fetch-btn" onclick="fetchAll()">↻ Fetch Stats</button>
-    <button class="export-btn" id="export-btn" onclick="exportStatsCard()" title="Export stats card">📤 Export</button>
-    <button class="clear-btn" id="clear-btn" onclick="handleClear()" title="Clear all stored matches">🗑</button>
   </div>
+</div>
+
+<!-- ACTION BAR -->
+<div class="action-bar" style="display:flex; align-items:center; gap:8px; padding:8px 24px; background:var(--surface2); border-bottom:1px solid var(--border); overflow-x:auto; white-space:nowrap; scrollbar-width:none;">
+  <button class="copy-riot-btn" id="share-profile-btn" onclick="shareProfile()" title="Share Profile URL" style="background:rgba(77,159,255,0.1); color:var(--blue); border:1px solid rgba(77,159,255,0.3);">🔗 Share</button>
+  <button class="clear-btn" onclick="fetchLeaderboard()" title="View Leaderboard" style="border:1px solid rgba(245,166,35,0.3); color:#f5a623; background:rgba(245,166,35,0.1);">🏆 Top 500</button>
+  <button class="clear-btn" onclick="toggleHeadToHead()" title="Head-to-Head Mode" style="border:1px solid rgba(179,102,255,0.3); color:#b366ff; background:rgba(179,102,255,0.1);">⚔️ Vs</button>
+  <button class="fetch-btn" id="live-match-btn" onclick="fetchLiveMatch()" style="background: rgba(62,207,142,0.15); color: var(--win); border: 1px solid rgba(62,207,142,0.3);">🔴 Live Intel</button>
+  <button class="fetch-btn" id="session-btn" onclick="toggleSession()" style="background: rgba(77,159,255,0.15); color: var(--blue); border: 1px solid rgba(77,159,255,0.3);">▶ Start Session</button>
+  <button class="fetch-btn" id="session-summary-btn" onclick="showSessionSummary()" style="background: rgba(232,255,71,0.15); color: var(--accent); border: 1px solid var(--accentborder); display: none;">📊 Session Summary</button>
+  <button class="export-btn" id="export-btn" onclick="exportStatsCard()" title="Export stats card">📤 Export</button>
+  <button class="clear-btn" id="clear-btn" onclick="handleClear()" title="Clear all stored matches">🗑</button>
 </div>
 
 <!-- HERO -->
@@ -2864,7 +2867,7 @@ async function retryMapImg(imgEl, mapName) {
   }
 }
 
-function setStatus(msg,type=''){const el=document.getElementById('status-txt');el.textContent=msg;el.className='status-pill'+(type?' '+type:'');}
+function setStatus(msg,type=''){ if(type==='error') { showToast(msg); } else { console.log('[STATUS]', msg); } }
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 
 // ── Copy Riot ID ──
@@ -7215,7 +7218,7 @@ async function fetchLeaderboard() {
     html += '</tbody></table>';
     content.innerHTML = html;
   } catch(e) {
-    content.innerHTML = `<div style="text-align:center; color:var(--loss); padding:40px; font-family:'Barlow Condensed', sans-serif; font-size:20px;">Unable to load leaderboard.</div>`;
+    content.innerHTML = `<div style="text-align:center; color:var(--loss); padding:40px; font-family:'Barlow Condensed', sans-serif; font-size:20px;">Unable to load leaderboard: ${e.message}</div>`;
   }
 }
 
@@ -7394,6 +7397,11 @@ body::after {
 
 /* ── STRICT MOBILE & TABLET OVERRIDES ── */
 @media(max-width: 800px) {
+
+  /* ACTION BAR MOBILE */
+  .action-bar { padding: 8px 12px; }
+  .action-bar::-webkit-scrollbar { display: none; }
+
   html, body { overflow-x: hidden; width: 100%; max-width: 100vw; margin: 0; padding: 0; position: relative; }
   
   /* Fix the background ambient orbs to scale better on mobile */
