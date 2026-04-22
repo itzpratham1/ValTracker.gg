@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -7407,9 +7407,23 @@ body::after {
 /* ── STRICT MOBILE & TABLET OVERRIDES ── */
 @media(max-width: 800px) {
 
-  /* ACTION BAR MOBILE */
-  .action-bar { padding: 8px 12px; }
+  /* ACTION BAR MOBILE - horizontal scroll, never wrap */
+  .action-bar {
+    padding: 6px 10px !important;
+    gap: 6px !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    justify-content: flex-start !important;
+  }
   .action-bar::-webkit-scrollbar { display: none; }
+  .action-bar > * {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    font-size: 11px !important;
+    padding: 6px 9px !important;
+  }
 
   html, body { overflow-x: hidden; width: 100%; max-width: 100vw; margin: 0; padding: 0; position: relative; }
   
@@ -7424,7 +7438,9 @@ body::after {
   .player-input { flex: 1; max-width: none !important; font-size: 14px; width: 100%; }
   .player-input-tag { width: 80px; flex: none; max-width: none !important; font-size: 14px; }
   .topbar-right { flex-wrap: wrap; justify-content: space-between; gap: 6px; width: 100%; }
-  .region-select, .fetch-btn, .export-btn, .clear-btn { flex: 1; min-width: 0; padding: 12px 6px; font-size: 12px; text-align: center; justify-content: center; white-space: nowrap; }
+  /* Only topbar-right buttons should flex-grow, NOT action bar buttons */
+  .topbar-right .region-select,
+  .topbar-right .fetch-btn { flex: 1; min-width: 0; padding: 10px 6px; font-size: 12px; text-align: center; justify-content: center; white-space: nowrap; }
   #mode-select { min-width: 0 !important; }
   
   /* Prevent Header Text Overflow */
@@ -7448,24 +7464,7 @@ body::after {
   .scoreboard-wrap { display: block; overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch; }
   .scoreboard { min-width: 500px; }
 
-  /* Action bar mobile fixes */
-  .action-bar {
-    padding: 6px 10px !important;
-    gap: 5px !important;
-  }
-  .action-bar .fetch-btn,
-  .action-bar .clear-btn,
-  .action-bar .export-btn,
-  .action-bar .copy-riot-btn {
-    font-size: 11px !important;
-    padding: 6px 8px !important;
-    min-width: 0 !important;
-    white-space: nowrap;
-    flex-shrink: 0 !important;
-  }
-  .action-bar {
-    justify-content: flex-start !important;
-  }
+  /* (action bar already handled above) */
 
   /* Hide dividers and copy btn on mobile to save space */
   .topbar-divider { display: none; }
