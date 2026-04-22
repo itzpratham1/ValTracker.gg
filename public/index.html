@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -7101,13 +7101,16 @@ function renderAdvancedAnalytics(matches) {
         <div style="font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:28px; color:#f5a623;">${comebacks}</div>
         <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); margin-top:4px;">Won after down 3+ at half</div>
       </div>
-      ${bestDuo ? `
       <div class="card" style="padding:16px;">
         <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:1px; margin-bottom:4px;">TOP DUO SYNERGY</div>
+        ${bestDuo ? `
         <div style="font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:20px; color:var(--accent); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${bestDuo.name}">${bestDuo.name}</div>
         <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); margin-top:4px;">${((bestDuo.wins/bestDuo.matches)*100).toFixed(0)}% WR (${bestDuo.matches} matches)</div>
+        ` : `
+        <div style="font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:20px; color:var(--muted);">SOLO RIDER</div>
+        <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); margin-top:4px;">No frequent duo in recent matches</div>
+        `}
       </div>
-      ` : ''}
     </div>
   `;
 }
@@ -7183,7 +7186,7 @@ async function fetchLeaderboard() {
     if (!res.ok) throw new Error('Failed to fetch leaderboard');
     const data = await res.json();
     
-    if (!data || !data.length) throw new Error('Leaderboard empty');
+    if (!data || !data.data || !data.data.length) throw new Error('Leaderboard empty');
     
     let html = `<table class="scoreboard" style="width:100%;">
       <thead>
@@ -7196,7 +7199,7 @@ async function fetchLeaderboard() {
       </thead>
       <tbody>`;
       
-    data.slice(0, 500).forEach(p => {
+    data.data.slice(0, 500).forEach(p => {
       let isAnon = p.IsAnonymized || !p.gameName;
       let nameStr = isAnon ? '<span style="color:var(--muted)">Secret Agent</span>' : `${p.gameName} <span style="color:var(--muted)">#${p.tagLine}</span>`;
       html += `
