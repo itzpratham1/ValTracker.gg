@@ -2297,9 +2297,6 @@ body::before {
           <option value="swiftplay">Swiftplay</option>
           <option value="spikerush">Spike Rush</option>
     </select>
-    <button class="clear-btn" onclick="fetchLeaderboard()" title="View Leaderboard" style="border:1px solid rgba(245,166,35,0.3); color:#f5a623; background:rgba(245,166,35,0.1);">🏆 Top 500</button>
-    <button class="clear-btn" onclick="toggleHeadToHead()" title="Head-to-Head Mode" style="border:1px solid rgba(179,102,255,0.3); color:#b366ff; background:rgba(179,102,255,0.1);">⚔️ Vs</button>
-    <span class="status-pill" id="status-txt">Enter name & fetch</span>
         </select>
       </div>
     </div>
@@ -2327,9 +2324,9 @@ body::before {
     <div class="logo">ValTracker<span style="color:var(--accent)">.gg</span></div>
     <div class="topbar-divider"></div>
     <div class="player-search-wrap">
-      <input class="player-input" id="player-name-input" type="text" placeholder="Name" value="ItzPrathamエース" autocomplete="off" spellcheck="false">
+      <input class="player-input" id="player-name-input" type="text" placeholder="Name" value="" autocomplete="off" spellcheck="false">
       <span class="player-input-hash">#</span>
-      <input class="player-input player-input-tag" id="player-tag-input" type="text" placeholder="TAG" value="GEWin" maxlength="8" autocomplete="off" spellcheck="false">
+      <input class="player-input player-input-tag" id="player-tag-input" type="text" placeholder="TAG" value="" maxlength="8" autocomplete="off" spellcheck="false">
     </div>
     <div class="topbar-divider"></div>
     <div class="player-tag" id="player-tag-display" style="display:none"></div>
@@ -2350,13 +2347,13 @@ body::before {
       <option value="swiftplay">Swiftplay</option>
       <option value="spikerush">Spike Rush</option>
     </select>
-    <div class="live-chip" id="live-badge"><div class="live-dot"></div>LIVE</div>
     <button class="fetch-btn" id="fetch-btn" onclick="fetchAll()">↻ Fetch Stats</button>
   </div>
 </div>
 
 <!-- ACTION BAR -->
 <div class="action-bar" style="display:flex; align-items:center; gap:8px; padding:8px 24px; background:var(--surface2); border-bottom:1px solid var(--border); overflow-x:auto; white-space:nowrap; scrollbar-width:none;">
+  <div class="live-chip" id="live-badge"><div class="live-dot"></div>LIVE</div>
   <button class="copy-riot-btn" id="share-profile-btn" onclick="shareProfile()" title="Share Profile URL" style="background:rgba(77,159,255,0.1); color:var(--blue); border:1px solid rgba(77,159,255,0.3);">🔗 Share</button>
   <button class="clear-btn" onclick="fetchLeaderboard()" title="View Leaderboard" style="border:1px solid rgba(245,166,35,0.3); color:#f5a623; background:rgba(245,166,35,0.1);">🏆 Top 500</button>
   <button class="clear-btn" onclick="toggleHeadToHead()" title="Head-to-Head Mode" style="border:1px solid rgba(179,102,255,0.3); color:#b366ff; background:rgba(179,102,255,0.1);">⚔️ Vs</button>
@@ -2637,8 +2634,8 @@ body::before {
 
 <script>
 // API_KEY has been securely moved to the backend
-let PLAYER_NAME = 'ItzPrathamエース';
-let PLAYER_TAG  = 'GEWin';
+let PLAYER_NAME = '';
+let PLAYER_TAG  = '';
 
 const AGENT_ROLES = {
   jett:'duelist',reyna:'duelist',phoenix:'duelist',neon:'duelist',iso:'duelist',yoru:'duelist',waylay:'duelist',raze:'duelist',
@@ -2912,7 +2909,7 @@ function renderTrendChart(matches) {
 
   const kdVals  = data.map(m => m.deaths > 0 ? +(m.kills / m.deaths).toFixed(2) : m.kills);
   const acsVals = data.map(m => +(m.acs / 100).toFixed(2)); // scale to ~same axis as KD
-  const hsVals  = data.map(m => +((m.hs / Math.max(1, m.kills)) * 100).toFixed(1)); // HS% 0-100 → / 10 for scale
+  const hsVals  = data.map(m => +((m.hs / Math.max(1, m.shots)) * 100).toFixed(1)); // HS% from shots
   const hsScaled = hsVals.map(v => +(v / 10).toFixed(2)); // scale HS% /10 so all 3 fit on same axis
 
   if (placeholder) placeholder.style.display = 'none';
@@ -2951,7 +2948,7 @@ function renderTrendChart(matches) {
           fill: false,
         },
         {
-          label: 'HS% ÷10',
+          label: 'HS%',
           data: hsScaled,
           borderColor: '#ff5757',
           backgroundColor: 'rgba(255,87,87,0.06)',
@@ -3101,10 +3098,19 @@ window.addEventListener('DOMContentLoaded', async () => {
   initAssetCache();
   try {
     const count = await getMatchCount();
-    if (count > 0) {
+    const savedProfile = loadMyProfile();
+    if (count > 0 && savedProfile) {
+      PLAYER_NAME = savedProfile.name;
+      PLAYER_TAG = savedProfile.tag;
+      document.getElementById('player-name-input').value = savedProfile.name;
+      document.getElementById('player-tag-input').value = savedProfile.tag;
+      if (savedProfile.region) document.getElementById('region-select').value = savedProfile.region;
+      if (savedProfile.mode) document.getElementById('mode-select').value = savedProfile.mode;
       setStatus(`${count} matches stored — hit Fetch to update`, 'ok');
       const stored = await loadAllMatches();
       processMatches(stored);
+    } else if (count > 0) {
+      setStatus(`${count} matches cached — fetch to view`, 'ok');
     }
   } catch(e) { console.warn('DB load:', e); }
 
@@ -3319,7 +3325,7 @@ function processMatches(matches){
     const myR=myTeam?.rounds_won??'?';
     const oppR=oppTeam?.rounds_won??'?';
     rrHistory.push({won,kills:k,matchId:match.metadata?.matchid||match.metadata?.match_id});
-    const gameStart=match.metadata?.game_start||match.metadata?.gameStart||null;recentMatches.push({won,agentName,map:mapName,kills:k,deaths:d,assists:a,score:sc,rounds:`${myR}-${oppR}`,hs,shots,myTeamId,matchId:match.metadata?.matchid||match.metadata?.match_id,gameStart,rawMatch:match});
+    const gameStart=match.metadata?.game_start||match.metadata?.gameStart||null;const totalRoundsPlayed=(typeof myR==='number'&&typeof oppR==='number')?(myR+oppR):(match.rounds?.length||1);const matchACS=Math.round(sc/Math.max(1,totalRoundsPlayed));recentMatches.push({won,agentName,map:mapName,kills:k,deaths:d,assists:a,score:sc,acs:matchACS,rounds:`${myR}-${oppR}`,hs,shots,myTeamId,matchId:match.metadata?.matchid||match.metadata?.match_id,gameStart,rawMatch:match});
   });
 
   const n=counted||1;
@@ -7225,12 +7231,11 @@ async function fetchLeaderboard() {
 function toggleHeadToHead() {
   const modal = document.getElementById('h2h-modal');
   document.getElementById('h2h-content').innerHTML = '';
+  document.getElementById('h2h-p1-name').value = '';
+  document.getElementById('h2h-p1-tag').value = '';
+  document.getElementById('h2h-p2-name').value = '';
+  document.getElementById('h2h-p2-tag').value = '';
   modal.style.display = 'flex';
-  
-  const curName = document.getElementById('player-name-input').value;
-  const curTag = document.getElementById('player-tag-input').value;
-  if(curName) document.getElementById('h2h-p1-name').value = curName;
-  if(curTag) document.getElementById('h2h-p1-tag').value = curTag.replace(/^#/, '');
 }
 
 async function fetchH2H() {
@@ -7438,6 +7443,36 @@ body::after {
   /* Force horizontal scrolling on the scoreboard data */
   .scoreboard-wrap { display: block; overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch; }
   .scoreboard { min-width: 500px; }
+
+  /* Action bar mobile fixes */
+  .action-bar {
+    padding: 6px 10px !important;
+    gap: 5px !important;
+  }
+  .action-bar .fetch-btn,
+  .action-bar .clear-btn,
+  .action-bar .export-btn,
+  .action-bar .copy-riot-btn {
+    font-size: 11px !important;
+    padding: 6px 8px !important;
+    min-width: 0 !important;
+    white-space: nowrap;
+  }
+
+  /* Hide dividers and copy btn on mobile to save space */
+  .topbar-divider { display: none; }
+  .copy-riot-btn#copy-riot-btn { display: none; }
+  
+  /* Live chip mobile */
+  .live-chip { font-size: 9px !important; padding: 3px 8px !important; }
+  
+  /* H2H modal mobile */
+  #h2h-modal .card { max-width: 95vw !important; }
+  #h2h-modal [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+  
+  /* Leaderboard modal mobile */
+  #leaderboard-modal .card { max-width: 95vw !important; height: 85vh !important; }
+  #leaderboard-modal .scoreboard { min-width: 400px; font-size: 12px; }
 }
 </style>
 <div class="glass-orb-2"></div>
