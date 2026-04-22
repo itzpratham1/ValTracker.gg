@@ -2249,6 +2249,7 @@ body::before {
 }
 
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -2347,6 +2348,9 @@ body::before {
     </select>
     <span class="status-pill" id="status-txt">Enter name & fetch</span>
     <div class="live-chip" id="live-badge"><div class="live-dot"></div>LIVE</div>
+    <button class="fetch-btn" id="live-match-btn" onclick="fetchLiveMatch()" style="background: rgba(62,207,142,0.15); color: var(--win); border: 1px solid rgba(62,207,142,0.3); display: none;">🔴 Live Intel</button>
+    <button class="fetch-btn" id="session-btn" onclick="toggleSession()" style="background: rgba(77,159,255,0.15); color: var(--blue); border: 1px solid rgba(77,159,255,0.3);">▶ Start Session</button>
+    <button class="fetch-btn" id="session-summary-btn" onclick="showSessionSummary()" style="background: rgba(232,255,71,0.15); color: var(--accent); border: 1px solid var(--accentborder); display: none;">📊 Session Summary</button>
     <button class="fetch-btn" id="fetch-btn" onclick="fetchAll()">↻ Fetch Stats</button>
     <button class="export-btn" id="export-btn" onclick="exportStatsCard()" title="Export stats card">📤 Export</button>
     <button class="clear-btn" id="clear-btn" onclick="handleClear()" title="Clear all stored matches">🗑</button>
@@ -2383,6 +2387,9 @@ body::before {
           <span id="rank-rr-txt">Current Rank</span>
         </div>
         <div class="hero-level" id="hero-level-badge" style="display:none"></div>
+        <div class="hero-rank-prediction" id="rank-prediction" style="display:none; margin-top:8px; font-family:'DM Mono',monospace; font-size:10px; color:var(--accent); letter-spacing:0.5px; border-top:1px solid var(--border); padding-top:6px;">
+          <!-- Rank prediction text -->
+        </div>
       </div>
     </div>
     <!-- Streak Block -->
@@ -2440,7 +2447,7 @@ body::before {
   </div>
 
   <!-- ── SECTION 02b: PERFORMANCE TREND ── -->
-  <div class="section-label"><span class="sl-text">Performance Trend</span><span class="sl-line"></span><span class="sl-num">02b</span></div>
+  <div class="section-label"><span class="sl-text">Performance Trend</span><span class="sl-line"></span><span class="sl-num">03</span></div>
   <div class="card span-12" id="perf-trend-card" style="min-height:200px;">
     <div class="card-accent-line"></div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
@@ -2458,19 +2465,19 @@ body::before {
   </div>
 
   <!-- ── SECTION 03: AGENTS ── -->
-  <div class="section-label"><span class="sl-text">Agent Roster</span><span class="sl-line"></span><span class="sl-num">03</span></div>
+  <div class="section-label"><span class="sl-text">Agent Roster</span><span class="sl-line"></span><span class="sl-num">04</span></div>
   <div id="agents-wrap" style="display:contents;"><div class="card placeholder-card span-12"><div class="placeholder-txt">Fetch stats to see agents</div></div></div>
 
   <!-- ── SECTION 04: MAPS ── -->
-  <div class="section-label"><span class="sl-text">Map Performance</span><span class="sl-line"></span><span class="sl-num">04</span></div>
+  <div class="section-label"><span class="sl-text">Map Performance</span><span class="sl-line"></span><span class="sl-num">05</span></div>
   <div id="maps-wrap" style="display:contents;"><div class="card placeholder-card span-12"><div class="placeholder-txt">Fetch stats to see maps</div></div></div>
 
   <!-- ── SECTION 05: IMPACT ── -->
-  <div class="section-label"><span class="sl-text">Clutch &amp; Impact</span><span class="sl-line"></span><span class="sl-num">05</span></div>
+  <div class="section-label"><span class="sl-text">Clutch &amp; Impact</span><span class="sl-line"></span><span class="sl-num">06</span></div>
   <div id="clutch-wrap" style="display:contents;"><div class="card placeholder-card span-12"><div class="placeholder-txt">Fetch stats to see impact</div></div></div>
 
   <!-- ── SECTION 06: ACCURACY + ROLES ── -->
-  <div class="section-label"><span class="sl-text">Accuracy &amp; Roles</span><span class="sl-line"></span><span class="sl-num">06</span></div>
+  <div class="section-label"><span class="sl-text">Accuracy &amp; Roles</span><span class="sl-line"></span><span class="sl-num">07</span></div>
 
   <!-- Accuracy Card -->
   <div class="card acc-card" id="accuracy-card">
@@ -2491,7 +2498,7 @@ body::before {
   </div>
 
   <!-- ── SECTION 07: TOP WEAPONS ── -->
-  <div class="section-label"><span class="sl-text">Top Weapons</span><span class="sl-line"></span><span class="sl-num">07</span></div>
+  <div class="section-label"><span class="sl-text">Top Weapons</span><span class="sl-line"></span><span class="sl-num">08</span></div>
   <div class="card weapons-card" id="weapons-card">
     <div class="card-accent-line"></div>
     <div class="card-label">Weapon Performance — Based on stored match data</div>
@@ -2502,7 +2509,7 @@ body::before {
 
   <!-- ── SECTION 08: RECENT MATCHES (renumbered) ── -->
   <!-- ── SECTION 06: RECENT MATCHES ── -->
-  <div class="section-label"><span class="sl-text">Recent Matches</span><span class="sl-line"></span><span class="sl-num">06</span></div>
+  <div class="section-label"><span class="sl-text">Recent Matches</span><span class="sl-line"></span><span class="sl-num">09</span></div>
 
   <!-- SESSION BANNER -->
   <div class="session-banner" id="session-banner"></div>
@@ -2520,7 +2527,7 @@ body::before {
   <div id="matches-list" style="display:contents;"><div class="card placeholder-card span-12"><div class="placeholder-txt">Fetch stats to see match history</div></div></div>
 
   <!-- ── SECTION 07: AI ANALYSIS ── -->
-  <div class="section-label"><span class="sl-text">AI Performance Analysis</span><span class="sl-line"></span><span class="sl-num">07</span></div>
+  <div class="section-label"><span class="sl-text">AI Performance Analysis</span><span class="sl-line"></span><span class="sl-num">10</span></div>
   <div class="ai-section" id="ai-section">
     <div class="ai-card">
       <div class="ai-card-header">
@@ -2559,7 +2566,7 @@ body::before {
   </div>
 
   <!-- ── SECTION 08: DEEP ANALYSIS ── -->
-  <div class="section-label"><span class="sl-text">Deep Game Analysis</span><span class="sl-line"></span><span class="sl-num">08</span></div>
+  <div class="section-label"><span class="sl-text">Deep Game Analysis</span><span class="sl-line"></span><span class="sl-num">11</span></div>
 
   <div class="deep-wrap">
     <!-- Trigger -->
@@ -2584,7 +2591,7 @@ body::before {
   </div>
 
   <!-- ── SECTION 09: PERFORMANCE LAB ── -->
-  <div class="section-label"><span class="sl-text">Performance Lab</span><span class="sl-line"></span><span class="sl-num">09</span></div>
+  <div class="section-label"><span class="sl-text">Performance Lab</span><span class="sl-line"></span><span class="sl-num">12</span></div>
   <div class="plab-wrap">
     <div class="plab-trigger">
       <div class="plab-trigger-info">
@@ -6720,7 +6727,243 @@ function renderTopWeapons(matches) {
     </div>`;
   }).join('')}</div>`;
 }
+/* ── CORE FEATURES LOGIC ── */
 
+// 1. Rank Prediction
+function updateRankPrediction(matches, currentRR) {
+  const el = document.getElementById('rank-prediction');
+  if (!el || !matches || matches.length === 0 || currentRR === undefined || currentRR === null) {
+    if (el) el.style.display = 'none';
+    return;
+  }
+  
+  let rrGains = 0, rrLosses = 0;
+  let gainCount = 0, lossCount = 0;
+  
+  matches.slice(0, 10).forEach(m => {
+    const rr = window._mmrHistory && window._mmrHistory[m.metadata?.matchid];
+    if (rr > 0) { rrGains += rr; gainCount++; }
+    else if (rr < 0) { rrLosses += Math.abs(rr); lossCount++; }
+  });
+  
+  const avgGain = gainCount > 0 ? rrGains / gainCount : 18;
+  const avgLoss = lossCount > 0 ? rrLosses / lossCount : 15;
+  
+  const recentWins = matches.slice(0,10).filter(m => {
+    const me = findMe(m);
+    if (!me) return false;
+    const myTeamId = (me.team||'').toLowerCase();
+    const myTeam = m.teams && m.teams[myTeamId];
+    return myTeam && (myTeam.has_won === true || myTeam.rounds_won > (m.teams[myTeamId==='red'?'blue':'red']?.rounds_won||0));
+  }).length;
+  
+  const wr = matches.length >= 10 ? (recentWins / 10) : 0.5;
+  const netGainPerMatch = (wr * avgGain) - ((1 - wr) * avgLoss);
+  
+  if (netGainPerMatch > 0) {
+    const rrNeeded = 100 - (currentRR % 100);
+    const matchesNeeded = Math.ceil(rrNeeded / netGainPerMatch);
+    el.innerHTML = `At your current pace, you'll hit the <b>Next Rank</b> in ~${matchesNeeded} games.`;
+    el.style.display = 'block';
+  } else {
+    el.innerHTML = `Trend is negative. Focus on improvement to rank up!`;
+    el.style.display = 'block';
+  }
+}
+
+// Hook into the fetch pipeline for Rank Prediction
+const originalProcessMatches = processMatches;
+processMatches = function(matches) {
+  originalProcessMatches(matches);
+  if (window._currentMode === 'competitive') {
+    updateRankPrediction(matches, window._currentRankRR);
+  } else {
+    const el = document.getElementById('rank-prediction');
+    if (el) el.style.display = 'none';
+  }
+  
+  // Track matches for active session
+  if (sessionActive && matches.length > 0) {
+    const newMatches = matches.filter(m => m.metadata?.game_start * 1000 > sessionStartTime.getTime());
+    sessionMatches = newMatches;
+  }
+};
+
+// 2. Session Tracker
+let sessionActive = false;
+let sessionStartTime = null;
+let sessionStartRR = null;
+let sessionMatches = [];
+
+function toggleSession() {
+  const btn = document.getElementById('session-btn');
+  const sumBtn = document.getElementById('session-summary-btn');
+  if (!sessionActive) {
+    sessionActive = true;
+    sessionStartTime = new Date();
+    sessionStartRR = window._currentRankRR || 0;
+    sessionMatches = [];
+    btn.innerHTML = '⏹ End Session';
+    btn.style.background = 'rgba(255,87,87,0.15)';
+    btn.style.color = 'var(--loss)';
+    btn.style.borderColor = 'rgba(255,87,87,0.3)';
+    sumBtn.style.display = 'none';
+    showToast('Session Started');
+  } else {
+    sessionActive = false;
+    btn.innerHTML = '▶ Start Session';
+    btn.style.background = 'rgba(77,159,255,0.15)';
+    btn.style.color = 'var(--blue)';
+    btn.style.borderColor = 'rgba(77,159,255,0.3)';
+    sumBtn.style.display = 'inline-block';
+    showToast('Session Ended');
+    showSessionSummary();
+  }
+}
+
+function showSessionSummary() {
+  const modal = document.getElementById('session-modal');
+  const content = document.getElementById('session-content');
+  
+  const matchesToUse = sessionMatches.length > 0 ? sessionMatches : _lastAllMatches.slice(0, 5);
+  
+  if (!matchesToUse || matchesToUse.length === 0) {
+    content.innerHTML = `<div style="text-align:center; color:var(--muted); padding:20px;">No matches found.</div>`;
+    modal.style.display = 'flex';
+    return;
+  }
+  
+  let wins = 0, losses = 0;
+  let totalKills = 0, totalDeaths = 0;
+  let agents = {};
+  
+  matchesToUse.forEach(m => {
+    const me = findMe(m);
+    if(!me) return;
+    const myTeamId = (me.team||'').toLowerCase();
+    const myTeam = m.teams && m.teams[myTeamId];
+    let won = false;
+    if (myTeam?.has_won === true) { won = true; } 
+    else if (myTeam?.rounds_won != null) {
+      const oppId = myTeamId === 'red' ? 'blue' : 'red';
+      won = myTeam.rounds_won > (m.teams[oppId]?.rounds_won||0);
+    }
+    if (won) wins++; else losses++;
+    
+    totalKills += me.stats?.kills || 0;
+    totalDeaths += me.stats?.deaths || 0;
+    
+    const ag = me.character || 'Unknown';
+    agents[ag] = (agents[ag] || 0) + 1;
+  });
+  
+  const bestAgent = Object.keys(agents).sort((a,b) => agents[b] - agents[a])[0] || 'N/A';
+  const kd = totalDeaths > 0 ? (totalKills/totalDeaths).toFixed(2) : totalKills;
+  const currentRR = window._currentRankRR || 0;
+  const rrChange = sessionStartRR !== null ? (currentRR - sessionStartRR) : 'N/A';
+  
+  content.innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:center; background:var(--surface2); padding:16px; border-radius:var(--radius-sm);">
+      <div>
+        <div style="font-family:'DM Mono', monospace; font-size:11px; color:var(--muted); letter-spacing:1px;">RECORD</div>
+        <div style="font-family:'Barlow Condensed', sans-serif; font-weight:800; font-size:28px;">
+          <span style="color:var(--win)">${wins}W</span> - <span style="color:var(--loss)">${losses}L</span>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-family:'DM Mono', monospace; font-size:11px; color:var(--muted); letter-spacing:1px;">RR CHANGE</div>
+        <div style="font-family:'Barlow Condensed', sans-serif; font-weight:800; font-size:28px; color:${rrChange > 0 ? 'var(--win)' : (rrChange < 0 ? 'var(--loss)' : 'var(--text)')}">
+          ${rrChange > 0 ? '+'+rrChange : rrChange}
+        </div>
+      </div>
+    </div>
+    
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+      <div style="background:var(--surface2); padding:12px; border-radius:var(--radius-sm); text-align:center;">
+        <div style="font-family:'DM Mono', monospace; font-size:10px; color:var(--muted);">BEST AGENT</div>
+        <div style="font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:20px; color:var(--accent);">${bestAgent}</div>
+      </div>
+      <div style="background:var(--surface2); padding:12px; border-radius:var(--radius-sm); text-align:center;">
+        <div style="font-family:'DM Mono', monospace; font-size:10px; color:var(--muted);">OVERALL K/D</div>
+        <div style="font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:20px;">${kd}</div>
+      </div>
+    </div>
+  `;
+  modal.style.display = 'flex';
+}
+
+async function exportSessionCard() {
+  if (typeof html2canvas === 'undefined') {
+    showToast('Export library not loaded.');
+    return;
+  }
+  const el = document.getElementById('session-card-export');
+  const canvas = await html2canvas(el, { backgroundColor: '#0a0a0c', scale: 2 });
+  const a = document.createElement('a');
+  a.href = canvas.toDataURL('image/png');
+  a.download = `valtracker_session_${new Date().getTime()}.png`;
+  a.click();
+}
+
+// 3. Live Match Overlay
+async function fetchLiveMatch() {
+  const modal = document.getElementById('live-modal');
+  const content = document.getElementById('live-content');
+  
+  const region=document.getElementById('region-select').value;
+  const enc=encodeURIComponent(PLAYER_NAME);
+  
+  content.innerHTML = '<div class="detail-loading" style="text-align:center;">SCANNING LIVE MATCH...</div>';
+  modal.style.display = 'flex';
+  
+  try {
+    const res = await fetch(\`/api/v1/live-match/\${region}/\${enc}/\${PLAYER_TAG}\`);
+    if(!res.ok) throw new Error('Not in a match');
+    const data = await res.json();
+    
+    if(!data.data) throw new Error('No live data');
+    
+    const players = data.data.players || [];
+    if(players.length === 0) throw new Error('Empty match data');
+    
+    const red = players.filter(p => p.team === 'Red' || p.team === 'red');
+    const blue = players.filter(p => p.team === 'Blue' || p.team === 'blue');
+    
+    content.innerHTML = \`
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+        <div>
+          <div style="font-family:'DM Mono', monospace; font-size:12px; color:var(--loss); margin-bottom:10px;">DEFENDERS (RED)</div>
+          \${red.map(p => \`
+            <div style="background:var(--surface2); padding:10px; margin-bottom:8px; border-radius:var(--radius-sm); border:1px solid rgba(255,87,87,0.15);">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:16px;">\${p.name}</div>
+                <div style="font-family:'DM Mono', monospace; font-size:10px; color:var(--muted);">Lvl \${p.account_level}</div>
+              </div>
+              <div style="font-family:'DM Mono', monospace; font-size:11px; color:var(--muted2); margin-top:4px;">\${p.character} · \${p.currenttierpatched}</div>
+              \${p.account_level < 30 && p.currenttier > 15 ? \`<div style="margin-top:6px; font-family:'DM Mono',monospace; font-size:9px; color:var(--accent); background:var(--accentdim); display:inline-block; padding:2px 6px; border-radius:4px;">⚠️ SUSPECTED SMURF</div>\` : ''}
+            </div>
+          \`).join('')}
+        </div>
+        <div>
+          <div style="font-family:'DM Mono', monospace; font-size:12px; color:var(--blue); margin-bottom:10px;">ATTACKERS (BLUE)</div>
+          \${blue.map(p => \`
+            <div style="background:var(--surface2); padding:10px; margin-bottom:8px; border-radius:var(--radius-sm); border:1px solid rgba(77,159,255,0.15);">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:16px;">\${p.name}</div>
+                <div style="font-family:'DM Mono', monospace; font-size:10px; color:var(--muted);">Lvl \${p.account_level}</div>
+              </div>
+              <div style="font-family:'DM Mono', monospace; font-size:11px; color:var(--muted2); margin-top:4px;">\${p.character} · \${p.currenttierpatched}</div>
+              \${p.account_level < 30 && p.currenttier > 15 ? \`<div style="margin-top:6px; font-family:'DM Mono',monospace; font-size:9px; color:var(--accent); background:var(--accentdim); display:inline-block; padding:2px 6px; border-radius:4px;">⚠️ SUSPECTED SMURF</div>\` : ''}
+            </div>
+          \`).join('')}
+        </div>
+      </div>
+    \`;
+    
+  } catch(e) {
+    content.innerHTML = \`<div style="text-align:center; color:var(--loss); padding:40px; font-family:'Barlow Condensed', sans-serif; font-size:20px;">Player is not currently in a live match.</div>\`;
+  }
+}
 </script>
 <style>
 /* ── GLASSMORPHISM OVERRIDES & VALORANT CRIMSON THEME ── */
@@ -6826,6 +7069,37 @@ body::after {
 }
 </style>
 <div class="glass-orb-2"></div>
+<!-- SESSION SUMMARY MODAL -->
+<div id="session-modal" style="display:none; position:fixed; inset:0; background:rgba(10,10,12,0.85); backdrop-filter:blur(10px); z-index:9999; align-items:center; justify-content:center;">
+  <div id="session-card-export" class="card" style="width:400px; max-width:90vw; border:1px solid var(--accentborder); background:var(--surface);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;" data-html2canvas-ignore>
+      <div style="font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:24px; color:var(--accent); text-transform:uppercase;">Session Summary</div>
+      <button onclick="document.getElementById('session-modal').style.display='none'" style="background:none; border:none; color:var(--muted); font-size:20px; cursor:pointer;">×</button>
+    </div>
+    <div id="session-content" style="display:flex; flex-direction:column; gap:16px;">
+      <!-- Populated by JS -->
+    </div>
+    <div style="margin-top:24px; text-align:center;" data-html2canvas-ignore>
+      <button class="fetch-btn" onclick="exportSessionCard()" style="width:100%; background:var(--accent); color:#0d0d0f;">📥 Save as Image</button>
+    </div>
+  </div>
+</div>
+
+<!-- LIVE MATCH MODAL -->
+<div id="live-modal" style="display:none; position:fixed; inset:0; background:rgba(10,10,12,0.85); backdrop-filter:blur(10px); z-index:9999; align-items:center; justify-content:center;">
+  <div class="card" style="width:800px; max-width:95vw; max-height:90vh; overflow-y:auto; border:1px solid rgba(62,207,142,0.3); background:var(--surface);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <div style="font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:24px; color:var(--win); text-transform:uppercase; display:flex; align-items:center; gap:8px;">
+        <div class="live-dot" style="position:static;"></div> Live Match Intel
+      </div>
+      <button onclick="document.getElementById('live-modal').style.display='none'" style="background:none; border:none; color:var(--muted); font-size:20px; cursor:pointer;">×</button>
+    </div>
+    <div id="live-content">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</div>
+
 <button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
 </body>
 </html>

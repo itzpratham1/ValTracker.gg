@@ -3,4 +3,3 @@ requests==2.32.5
 python-dotenv==1.2.2
 Flask-Cors==6.0.2
 gunicorn==21.2.0
-firebase-admin>=6.0.0
