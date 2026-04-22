@@ -6765,29 +6765,33 @@ function updateRankPrediction(matches, currentRR) {
   const avgGain = gainCount > 0 ? rrGains / gainCount : 18;
   const avgLoss = lossCount > 0 ? rrLosses / lossCount : 15;
   
-  const recentWins = matches.slice(0,10).filter(m => {
-    const me = findMe(m);
-    if (!me) return false;
-    const myTeamId = (me.team||'').toLowerCase();
-    const myTeam = m.teams && m.teams[myTeamId];
-    return myTeam && (myTeam.has_won === true || myTeam.rounds_won > (m.teams[myTeamId==='red'?'blue':'red']?.rounds_won||0));
-  }).length;
-  
-  const wr = matches.length >= 10 ? (recentWins / 10) : 0.5;
-  const netGainPerMatch = (wr * avgGain) - ((1 - wr) * avgLoss);
-  
-  if (netGainPerMatch > 0) {
-    const rrNeeded = 100 - (currentRR % 100);
-    const matchesNeeded = Math.ceil(rrNeeded / netGainPerMatch);
-    el.innerHTML = `At your current pace, you'll hit the <b>Next Rank</b> in ~${matchesNeeded} games.`;
-    el.style.display = 'block';
-  } else {
-    el.innerHTML = `Trend is negative. Focus on improvement to rank up!`;
-    el.style.display = 'block';
+  const totalWins = matches.filter(m => {
+      const me = findMe(m);
+      if (!me) return false;
+      const myTeamId = (me.team||'').toLowerCase();
+      const myTeam = m.teams && m.teams[myTeamId];
+      return myTeam && (myTeam.has_won === true || myTeam.rounds_won > (m.teams[myTeamId==='red'?'blue':'red']?.rounds_won||0));
+    }).length;
+    
+    // Smooth out win rate using all available matches (up to 25) to prevent extreme volatility
+    const wr = matches.length > 5 ? (totalWins / matches.length) : 0.5;
+    const netGainPerMatch = (wr * avgGain) - ((1 - wr) * avgLoss);
+    
+    if (netGainPerMatch > 2.5) {
+      const rrNeeded = 100 - (currentRR % 100);
+      const matchesNeeded = Math.ceil(rrNeeded / netGainPerMatch);
+      el.innerHTML = `At your current pace, you'll hit the <b>Next Rank</b> in ~${matchesNeeded} games.`;
+      el.style.display = 'block';
+    } else if (netGainPerMatch > 0) {
+      el.innerHTML = `You are climbing very slowly. Improve your win rate to rank up faster!`;
+      el.style.display = 'block';
+    } else {
+      el.innerHTML = `Trend is negative. Focus on improvement to rank up!`;
+      el.style.display = 'block';
+    }
   }
-}
-
-// Hook into the fetch pipeline for Rank Prediction
+  
+  // Hook into the fetch pipeline for Rank Prediction
 const originalProcessMatches = processMatches;
 processMatches = function(matches) {
   originalProcessMatches(matches);
