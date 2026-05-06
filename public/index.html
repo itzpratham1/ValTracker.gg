@@ -3087,18 +3087,13 @@ async function clearPlayerMatches() {
   const db = await openDB();
   return new Promise((resolve, reject) => {
     const prefix = `${PLAYER_NAME}#${PLAYER_TAG}|${window._currentMode||'competitive'}|`;
+    // Use a key range: everything from prefix to prefix + \uffff (last unicode char)
+    // This efficiently deletes all records whose matchId starts with the prefix
+    const range = IDBKeyRange.bound(prefix, prefix + '\uffff', false, false);
     const tx = db.transaction(STORE_NAME, 'readwrite');
     const store = tx.objectStore(STORE_NAME);
-    const req = store.openCursor();
-    req.onsuccess = (e) => {
-      const cursor = e.target.result;
-      if (cursor) {
-        if (cursor.value.matchId && cursor.value.matchId.startsWith(prefix)) {
-          cursor.delete();
-        }
-        cursor.continue();
-      }
-    };
+    const req = store.delete(range);
+    req.onerror = () => reject(req.error);
     tx.oncomplete = () => resolve();
     tx.onerror = () => reject(tx.error);
   });
