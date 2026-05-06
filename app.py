@@ -14,7 +14,7 @@ CORS(app)
 # In-memory cache to prevent rate-limits and load data instantly
 # Format: URL -> { "data": response_json, "timestamp": time_fetched }
 cache = {}
-CACHE_TTL = 300  # 5 minutes caching
+CACHE_TTL = 60  # 1 minute caching — keeps data fresh between fetches
 
 @app.route("/")
 def index():

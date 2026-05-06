@@ -3082,6 +3082,28 @@ async function clearAllMatches() {
   });
 }
 
+// Clears only matches for the current player+mode — preserves other players' data
+async function clearPlayerMatches() {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const prefix = `${PLAYER_NAME}#${PLAYER_TAG}|${window._currentMode||'competitive'}|`;
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    const req = store.openCursor();
+    req.onsuccess = (e) => {
+      const cursor = e.target.result;
+      if (cursor) {
+        if (cursor.value.matchId && cursor.value.matchId.startsWith(prefix)) {
+          cursor.delete();
+        }
+        cursor.continue();
+      }
+    };
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
 async function getMatchCount() {
   const db = await openDB();
   return new Promise(resolve => {
@@ -3251,7 +3273,9 @@ async function fetchAll(){
     }
 
     if(matchData?.data?.length){
-      // Save new matches to IndexedDB (deduped by matchId)
+      // Clear stale data for this player+mode — ensures new act data replaces old act data
+      await clearPlayerMatches();
+      // Save fresh matches from API
       await saveMatches(matchData.data);
       // Load full history from DB and process all of it
       const allMatches = await loadAllMatches();
