@@ -86,6 +86,121 @@ def proxy_api(subpath):
     except Exception as e:
         return jsonify({"status": 500, "errors": [{"message": str(e)}]}), 500
 
+# --- ESPORTS ROUTES ---
+
+def get_henrik_schedule():
+    cache_key = "henrik_schedule"
+    if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < 120:
+        return cache[cache_key]["data"]
+        
+    try:
+        url = "https://api.henrikdev.xyz/valorant/v1/esports/schedule"
+        headers = {"Authorization": API_KEY}
+        r = requests.get(url, headers=headers, timeout=10)
+        if r.status_code == 200:
+            data = r.json().get("data", [])
+            cache[cache_key] = {"data": data, "timestamp": time.time()}
+            return data
+    except Exception as e:
+        print("[ERROR] Henrik schedule fetch failed:", e)
+    return []
+
+@app.route("/api/esports/live")
+def esports_live():
+    data = get_henrik_schedule()
+    live = [m for m in data if m.get("state") == "inProgress"]
+    return jsonify({"data": live})
+
+@app.route("/api/esports/results")
+def esports_results():
+    data = get_henrik_schedule()
+    results = [m for m in data if m.get("state") == "completed"]
+    return jsonify({"data": results})
+
+@app.route("/api/esports/upcoming")
+def esports_upcoming():
+    data = get_henrik_schedule()
+    upcoming = [m for m in data if m.get("state") == "unstarted"]
+    return jsonify({"data": upcoming})
+
+@app.route("/api/esports/news")
+def esports_news():
+    cache_key = "vlr_news"
+    if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < 600:
+        return jsonify({"data": cache[cache_key]["data"]})
+        
+    try:
+        from bs4 import BeautifulSoup
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+        r = requests.get('https://www.vlr.gg/news', headers=headers, timeout=10)
+        soup = BeautifulSoup(r.text, 'html.parser')
+        news_items = []
+        for item in soup.find_all('a', class_='wf-module-item')[:15]:
+            title_el = item.find('div', style=lambda v: v and 'font-weight: 700' in v)
+            date_author_el = item.find('div', class_='ge-text-light')
+            
+            if title_el:
+                date_str = "Recent"
+                author_str = "VLR.gg"
+                if date_author_el:
+                    parts = date_author_el.text.strip().split('•')
+                    if len(parts) >= 2:
+                        date_str = parts[0].strip()
+                        author_str = parts[1].strip()
+                
+                news_items.append({
+                    "title": title_el.text.strip(),
+                    "description": "",
+                    "date": date_str,
+                    "author": author_str,
+                    "url_path": item.get('href', '')
+                })
+        cache[cache_key] = {"data": news_items, "timestamp": time.time()}
+        return jsonify({"data": news_items})
+    except Exception as e:
+        print("[ERROR] VLR News scraping failed:", e)
+        return jsonify({"error": str(e), "data": []}), 500
+
+@app.route("/api/esports/standings/<region>")
+def esports_standings(region):
+    # region can be na, eu, ap, la, kr, cn, or all
+    cache_key = f"vlr_standings_{region}"
+    if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < 3600:
+        return jsonify({"data": cache[cache_key]["data"]})
+        
+    try:
+        from bs4 import BeautifulSoup
+        headers = {'User-Agent': 'Mozilla/5.0'}
+        url_region = region
+        if region == "all": url_region = "north-america"
+        elif region == "na": url_region = "north-america"
+        elif region == "eu": url_region = "europe"
+        elif region == "ap": url_region = "asia-pacific"
+        elif region == "la": url_region = "latin-america"
+        
+        r = requests.get(f'https://www.vlr.gg/rankings/{url_region}', headers=headers, timeout=10)
+        soup = BeautifulSoup(r.text, 'html.parser')
+        
+        standings = []
+        rows = soup.find_all('tr')
+        rank = 1
+        for row in rows[1:51]: # skip header, take top 50
+            tds = row.find_all('td')
+            if len(tds) >= 2:
+                team_name = tds[0].text.replace('\t', '').replace('\n', ' ').strip().split('  ')[0].strip()
+                standings.append({
+                    "rank": rank,
+                    "team": team_name,
+                    "wins": 0, "losses": 0, "streak": "-", "country": region.upper()
+                })
+                rank += 1
+                
+        cache[cache_key] = {"data": standings, "timestamp": time.time()}
+        return jsonify({"data": standings})
+    except Exception as e:
+        print(f"[ERROR] VLR Standings scraping failed:", e)
+        return jsonify({"error": str(e), "data": []}), 500
+
 if __name__ == "__main__":
     if not API_KEY:
         print("\n[WARNING] API Key missing in .env file! Requests to HenrikDev might fail.\n")

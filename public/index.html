@@ -2248,7 +2248,59 @@ body::before {
   .acc-body-row { flex-direction:column; align-items:flex-start; }
 }
 
+/* ── ESPORTS VIEW ── */
+.topbar-tabs { display:flex; align-items:center; gap:4px; background:var(--surface2); padding:4px; border-radius:var(--radius-sm); border:1px solid var(--border); }
+.topbar-tab { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); padding:6px 12px; border-radius:4px; cursor:pointer; text-transform:uppercase; letter-spacing:1px; transition:all 0.2s; }
+.topbar-tab.active { background:var(--surface); color:var(--accent); border:1px solid var(--border); }
+
+.esports-subnav { display:flex; gap:8px; padding:12px 28px; background:var(--surface); border-bottom:1px solid var(--border); overflow-x:auto; white-space:nowrap; scrollbar-width:none; position:sticky; top:65px; z-index:90; }
+.esports-pill { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:14px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); padding:8px 16px; border-radius:20px; background:var(--surface2); border:1px solid transparent; cursor:pointer; transition:all 0.2s; }
+.esports-pill:hover { color:var(--text); background:var(--surface3); }
+.esports-pill.active { background:rgba(232,255,71,0.1); color:var(--accent); border-color:var(--accentborder); }
+
+.esports-content { padding: 24px 28px 60px; max-width:1200px; margin:0 auto; }
+.esports-section { display:none; animation:cardIn 0.3s ease both; }
+.esports-section.active { display:block; }
+
+.esp-match-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px; display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:20px; position:relative; margin-bottom:12px; transition:border-color 0.2s; }
+.esp-match-card:hover { border-color:var(--border2); }
+.esp-team { display:flex; align-items:center; gap:12px; flex:1; }
+.esp-team.t-right { justify-content:flex-end; text-align:right; flex-direction:row-reverse; }
+.esp-tlogo { width:40px; height:40px; object-fit:contain; }
+.esp-tname { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:20px; text-transform:uppercase; }
+.esp-tscore { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:28px; color:var(--muted); }
+.esp-tscore.winner { color:var(--win); }
+
+.esp-match-info { text-align:center; display:flex; flex-direction:column; align-items:center; gap:4px; }
+.esp-tourney { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
+.esp-status { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:13px; padding:2px 8px; border-radius:4px; letter-spacing:1px; background:var(--surface2); }
+.esp-status.live { background:rgba(255,87,87,0.1); color:var(--loss); border:1px solid rgba(255,87,87,0.3); animation:pulse 1.5s infinite; }
+.esp-meta { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted2); }
+
+.esp-standings-wrap { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow-x:auto; }
+.esp-standings-table { width:100%; border-collapse:collapse; min-width:600px; }
+.esp-standings-table th { font-family:'DM Mono',monospace; font-size:11px; letter-spacing:1px; color:var(--muted); text-align:left; padding:12px 16px; border-bottom:1px solid var(--border); background:rgba(255,255,255,0.02); }
+.esp-standings-table td { padding:14px 16px; border-bottom:1px solid rgba(255,255,255,0.03); font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:600; }
+.esp-standings-table tr:hover td { background:rgba(255,255,255,0.015); }
+.esp-standings-team { display:flex; align-items:center; gap:12px; }
+
+.esp-news-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:16px; }
+.esp-news-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px; display:flex; flex-direction:column; gap:12px; transition:all 0.2s; text-decoration:none; color:inherit; }
+.esp-news-card:hover { border-color:var(--accentborder); transform:translateY(-2px); }
+.esp-news-title { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:20px; line-height:1.1; }
+.esp-news-desc { font-family:'Barlow',sans-serif; font-size:13px; color:var(--muted); line-height:1.4; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+.esp-news-meta { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted2); display:flex; justify-content:space-between; margin-top:auto; }
+.esp-news-tag { background:var(--surface2); padding:2px 6px; border-radius:3px; color:var(--accent); }
+
+@media(max-width:600px){
+  .esp-match-card { grid-template-columns:1fr; text-align:center; gap:12px; }
+  .esp-team { flex-direction:column; gap:6px; }
+  .esp-team.t-right { flex-direction:column; }
+  .esports-content { padding: 16px 14px 40px; }
+}
+
 </style>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
@@ -2322,7 +2374,13 @@ body::before {
 <div class="topbar">
   <div class="topbar-left">
     <div class="logo">ValTracker<span style="color:var(--accent)">.gg</span></div>
-    <div class="topbar-divider"></div>
+    
+    <div class="topbar-tabs">
+      <div class="topbar-tab active" id="tab-tracker" onclick="toggleMainView('tracker')">Tracker</div>
+      <div class="topbar-tab" id="tab-esports" onclick="toggleMainView('esports')">Esports</div>
+    </div>
+    
+    <div class="topbar-divider" id="tracker-divider-1"></div>
     <div class="player-search-wrap">
       <input class="player-input" id="player-name-input" type="text" placeholder="Name" value="" autocomplete="off" spellcheck="false">
       <span class="player-input-hash">#</span>
@@ -2350,6 +2408,8 @@ body::before {
     <button class="fetch-btn" id="fetch-btn" onclick="fetchAll()">↻ Fetch Stats</button>
   </div>
 </div>
+
+<div id="tracker-view">
 
 <!-- ACTION BAR -->
 <div class="action-bar" style="display:flex; align-items:center; gap:8px; padding:8px 24px; background:var(--surface2); border-bottom:1px solid var(--border); overflow-x:auto; white-space:nowrap; scrollbar-width:none;">
@@ -2612,9 +2672,98 @@ body::before {
       <span class="plab-loading-txt" id="plab-loading-txt">CRUNCHING DATA...</span>
     </div>
     <div class="plab-results" id="plab-results"></div>
-  </div>
+  </div> <!-- END PLAB WRAP -->
+</div> <!-- END MAIN GRID -->
+</div> <!-- END TRACKER VIEW -->
 
-</div>
+<!-- ESPORTS VIEW -->
+<div id="esports-view" style="display:none;">
+  <div class="esports-subnav">
+    <div class="esports-pill active" onclick="switchEsportsTab('live')">Live</div>
+    <div class="esports-pill" onclick="switchEsportsTab('upcoming')">Upcoming</div>
+    <div class="esports-pill" onclick="switchEsportsTab('results')">Results</div>
+    <div class="esports-pill" onclick="switchEsportsTab('standings')">Rankings</div>
+    <div class="esports-pill" onclick="switchEsportsTab('news')">News</div>
+    <div style="flex-grow:1"></div>
+    <div class="tier-toggle-wrapper">
+      <span style="font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); text-transform:uppercase;">Tier 2/3</span>
+      <label class="switch">
+        <input type="checkbox" id="tier-toggle" checked onchange="toggleTiers()">
+        <span class="slider round"></span>
+      </label>
+    </div>
+  </div>
+  
+  <div class="esports-content">
+    
+    <!-- LIVE SECTION -->
+    <div id="esp-sec-live" class="esports-section active">
+      <div class="section-label visible" style="margin-bottom:16px;">
+        <span class="sl-text">Live Matches</span>
+        <div class="sl-line"></div>
+      </div>
+      <div id="esp-live-container"></div>
+    </div>
+    
+    <!-- UPCOMING SECTION -->
+    <div id="esp-sec-upcoming" class="esports-section">
+      <div class="section-label visible" style="margin-bottom:16px;">
+        <span class="sl-text">Upcoming Matches</span>
+        <div class="sl-line"></div>
+      </div>
+      <div id="esp-upcoming-container"></div>
+    </div>
+    
+    <!-- RESULTS SECTION -->
+    <div id="esp-sec-results" class="esports-section">
+      <div class="section-label visible" style="margin-bottom:16px;">
+        <span class="sl-text">Recent Results</span>
+        <div class="sl-line"></div>
+      </div>
+      <div id="esp-results-container"></div>
+    </div>
+    
+    <!-- STANDINGS SECTION -->
+    <div id="esp-sec-standings" class="esports-section">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <div class="section-label visible" style="flex:1;">
+          <span class="sl-text">Regional Standings</span>
+          <div class="sl-line"></div>
+        </div>
+        <select class="region-select" id="esp-standings-region" onchange="fetchEsportsStandings()">
+          <option value="ap">Pacific</option>
+          <option value="na">Americas</option>
+          <option value="eu">EMEA</option>
+          <option value="mn">China</option>
+          <option value="all">All Regions</option>
+        </select>
+      </div>
+      <div class="esp-standings-wrap">
+        <table class="esp-standings-table">
+          <thead>
+            <tr>
+              <th style="width:50px">Rank</th>
+              <th>Team</th>
+              <th>W - L</th>
+              <th>Streak</th>
+            </tr>
+          </thead>
+          <tbody id="esp-standings-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- NEWS SECTION -->
+    <div id="esp-sec-news" class="esports-section">
+      <div class="section-label visible" style="margin-bottom:16px;">
+        <span class="sl-text">Latest News</span>
+        <div class="sl-line"></div>
+      </div>
+      <div id="esp-news-container" class="esp-news-grid"></div>
+    </div>
+
+  </div>
+</div> <!-- END ESPORTS VIEW -->
 
 <div class="stat-modal-overlay" id="stat-modal-overlay" onclick="if(event.target===this)closeStatModal()">
   <div class="stat-modal">
@@ -7359,6 +7508,230 @@ async function fetchH2H() {
   }
 }
 
+// --- ESPORTS LOGIC ---
+
+let esportsLiveInterval = null;
+let esportsCountdownInterval = null;
+
+function toggleMainView(view) {
+  document.querySelectorAll('.topbar-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + view).classList.add('active');
+  
+  if (view === 'tracker') {
+    document.getElementById('tracker-view').style.display = 'block';
+    document.getElementById('esports-view').style.display = 'none';
+    document.querySelector('.player-search-wrap').style.display = 'flex';
+    document.getElementById('fetch-btn').style.display = 'inline-block';
+    if(esportsLiveInterval) clearInterval(esportsLiveInterval);
+    if(esportsCountdownInterval) clearInterval(esportsCountdownInterval);
+  } else {
+    document.getElementById('tracker-view').style.display = 'none';
+    document.getElementById('esports-view').style.display = 'block';
+    document.querySelector('.player-search-wrap').style.display = 'none';
+    document.getElementById('fetch-btn').style.display = 'none';
+    
+    const activeTab = document.querySelector('.esports-pill.active').textContent.toLowerCase();
+    switchEsportsTab(activeTab);
+  }
+}
+
+function switchEsportsTab(tab) {
+  document.querySelectorAll('.esports-pill').forEach(p => p.classList.remove('active'));
+  document.querySelector(`.esports-pill[onclick="switchEsportsTab('${tab}')"]`).classList.add('active');
+  
+  document.querySelectorAll('.esports-section').forEach(s => s.classList.remove('active'));
+  document.getElementById(`esp-sec-${tab}`).classList.add('active');
+  
+  if(esportsLiveInterval) clearInterval(esportsLiveInterval);
+  if(esportsCountdownInterval) clearInterval(esportsCountdownInterval);
+  
+  if (tab === 'live') { fetchEsportsLive(); esportsLiveInterval = setInterval(fetchEsportsLive, 60000); }
+  else if (tab === 'upcoming') { fetchEsportsUpcoming(); }
+  else if (tab === 'results') { fetchEsportsResults(); }
+  else if (tab === 'standings') { fetchEsportsStandings(); }
+  else if (tab === 'news') { fetchEsportsNews(); }
+}
+
+function toggleTiers() {
+  const showTier2 = document.getElementById('tier-toggle').checked;
+  const t2Cards = document.querySelectorAll('.tier-t2');
+  t2Cards.forEach(card => {
+    card.style.display = showTier2 ? 'grid' : 'none';
+  });
+}
+
+function getEspHTML(m, type) {
+  const teams = m.match?.teams || [];
+  const t1 = teams[0]?.name || 'TBD';
+  const t2 = teams[1]?.name || 'TBD';
+  const s1 = teams[0]?.game_wins || '0';
+  const s2 = teams[1]?.game_wins || '0';
+  const w1 = teams[0]?.has_won ? 'winner' : '';
+  const w2 = teams[1]?.has_won ? 'winner' : '';
+  
+  const event = m.league?.name || 'VCT';
+  const isTier2 = event.toLowerCase().includes('challengers') || event.toLowerCase().includes('game changers') || event.toLowerCase().includes('ascension') || event.toLowerCase().includes('vcl');
+  const tierClass = isTier2 ? 'tier-t2' : 'tier-t1';
+  const tierBadge = isTier2 ? '<span class="tier-badge t2">Tier 2</span>' : '<span class="tier-badge t1">VCT Tier 1</span>';
+  
+  let meta = '';
+  if (m.date) {
+    const d = new Date(m.date);
+    meta = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+  }
+  
+  let statusHtml = '';
+  if (m.state === 'inProgress') statusHtml = `<div class="esp-status live">LIVE</div>`;
+  else if (m.state === 'completed') statusHtml = `<div class="esp-status">FINAL</div>`;
+  else statusHtml = `<div class="esp-status">UPCOMING</div>`;
+
+  return `
+    <div class="esp-match-card ${tierClass}">
+      <div class="esp-team">
+        <div class="esp-tname">${t1}</div>
+        <div class="esp-tscore ${w1}">${type==='upcoming'?'':s1}</div>
+      </div>
+      <div class="esp-match-info">
+        <div class="esp-tourney">${tierBadge} ${event}</div>
+        ${statusHtml}
+        <div class="esp-meta">${meta}</div>
+      </div>
+      <div class="esp-team t-right">
+        <div class="esp-tscore ${w2}">${type==='upcoming'?'':s2}</div>
+        <div class="esp-tname">${t2}</div>
+      </div>
+    </div>
+  `;
+}
+
+async function fetchEsportsLive() {
+  const container = document.getElementById('esp-live-container');
+  if(!container.innerHTML) container.innerHTML = '<div class="placeholder-txt">Loading Live Matches...</div>';
+  try {
+    const res = await fetch('/api/esports/live');
+    const data = await res.json();
+    const matches = data.data || [];
+    if (!matches || matches.length === 0) {
+      container.innerHTML = '<div class="placeholder-txt">No live matches right now.</div>';
+      return;
+    }
+    container.innerHTML = matches.map(m => getEspHTML(m, 'live')).join('');
+    toggleTiers();
+  } catch (err) {
+    container.innerHTML = `
+      <div class="placeholder-txt" style="color:var(--loss)">
+        Live score service is currently unreachable.
+        <button class="fetch-btn" onclick="fetchEsportsLive()" style="margin-top:12px; font-size:11px;">Retry</button>
+      </div>`;
+  }
+}
+
+async function fetchEsportsResults() {
+  const container = document.getElementById('esp-results-container');
+  container.innerHTML = '<div class="placeholder-txt">Loading Recent Results...</div>';
+  try {
+    const res = await fetch('/api/esports/results');
+    const data = await res.json();
+    const matches = data.data || [];
+    if (!matches || matches.length === 0) {
+      container.innerHTML = '<div class="placeholder-txt">No recent results found.</div>';
+      return;
+    }
+    container.innerHTML = matches.slice(0,30).map(m => getEspHTML(m, 'results')).join('');
+    toggleTiers();
+  } catch (err) {
+    container.innerHTML = `
+      <div class="placeholder-txt" style="color:var(--loss)">
+        The external VLR service is taking too long to respond. 
+        <br><span style="font-size:12px; color:var(--muted); margin-top:8px; display:block;">(Common during high-traffic VCT events)</span>
+        <button class="fetch-btn" onclick="fetchEsportsResults()" style="margin-top:16px; background:rgba(255,255,255,0.05); color:var(--text); border-color:var(--border);">Retry Connection</button>
+      </div>
+    `;
+  }
+}
+
+async function fetchEsportsUpcoming() {
+  const container = document.getElementById('esp-upcoming-container');
+  container.innerHTML = '<div class="placeholder-txt">Loading Upcoming Matches...</div>';
+  try {
+    const res = await fetch('/api/esports/upcoming');
+    const data = await res.json();
+    const matches = data.data || [];
+    if (!matches || matches.length === 0) {
+      container.innerHTML = '<div class="placeholder-txt">No upcoming matches scheduled.</div>';
+      return;
+    }
+    container.innerHTML = matches.slice(0,30).map(m => getEspHTML(m, 'upcoming')).join('');
+    toggleTiers();
+  } catch (err) {
+    container.innerHTML = `
+      <div class="placeholder-txt" style="color:var(--loss)">
+        Upcoming matches service is timed out.
+        <button class="fetch-btn" onclick="fetchEsportsUpcoming()" style="margin-top:12px; font-size:11px;">Retry</button>
+      </div>`;
+  }
+}
+
+async function fetchEsportsStandings() {
+  const container = document.getElementById('esp-standings-tbody');
+  const region = document.getElementById('esp-standings-region').value;
+  container.innerHTML = '<tr><td colspan="4" class="placeholder-txt" style="border:none">Loading Rankings...</td></tr>';
+  try {
+    const res = await fetch('/api/esports/standings/' + region);
+    const data = await res.json();
+    let rows = data.data || [];
+
+    if (!rows || rows.length === 0) {
+      container.innerHTML = '<tr><td colspan="4" class="placeholder-txt" style="border:none">No standings found for this region.</td></tr>';
+      return;
+    }
+    let html = '';
+    rows.forEach((r, i) => {
+      html += `
+        <tr>
+          <td style="color:var(--muted)">#${r.rank || i+1}</td>
+          <td><div class="esp-standings-team"><div style="font-size:11px;color:var(--muted);width:20px;text-align:center">${r.country||''}</div><span style="font-weight:700;color:#fff">${r.team || 'Unknown'}</span></div></td>
+          <td>${r.wins||0}W - ${r.losses||0}L</td>
+          <td style="color:var(--muted)">${r.streak||'-'}</td>
+        </tr>
+      `;
+    });
+    container.innerHTML = html;
+  } catch (err) {
+    container.innerHTML = '<tr><td colspan="4" class="placeholder-txt" style="color:var(--loss);border:none">Rankings service timed out. <button class="fetch-btn" onclick="fetchEsportsStandings()" style="margin-top:8px; font-size:10px;">Retry</button></td></tr>';
+  }
+}
+
+async function fetchEsportsNews() {
+  const container = document.getElementById('esp-news-container');
+  container.innerHTML = '<div class="placeholder-txt" style="grid-column:1/-1">Loading Latest News...</div>';
+  try {
+    const res = await fetch('/api/esports/news');
+    const data = await res.json();
+    const news = data.data || [];
+    if (!news || news.length === 0) {
+      container.innerHTML = '<div class="placeholder-txt" style="grid-column:1/-1">No news found.</div>';
+      return;
+    }
+    let html = '';
+    news.forEach(n => {
+      html += `
+        <a href="${n.url_path ? 'https://vlr.gg'+n.url_path : '#'}" target="_blank" class="esp-news-card">
+          <div class="esp-news-title">${n.title || 'Esports Update'}</div>
+          <div class="esp-news-desc">${n.description || n.desc || ''}</div>
+          <div class="esp-news-meta">
+            <span>${n.author || 'VLR.gg'} • ${n.date || 'Recent'}</span>
+            <span class="esp-news-tag">News</span>
+          </div>
+        </a>
+      `;
+    });
+    container.innerHTML = html;
+  } catch (err) {
+    container.innerHTML = '<div class="placeholder-txt" style="color:var(--loss);grid-column:1/-1">News service timed out. <button class="fetch-btn" onclick="fetchEsportsNews()" style="margin-top:12px; font-size:11px;">Retry News</button></div>';
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => { setTimeout(checkUrlParams, 200); });
 </script>
 <style>
@@ -7501,6 +7874,18 @@ body::after {
   #leaderboard-modal .card { max-width: 95vw !important; height: 85vh !important; }
   #leaderboard-modal .scoreboard { min-width: 400px; font-size: 12px; }
 }
+/* ── TIER TOGGLE SWITCH & BADGES ── */
+.tier-toggle-wrapper { display:flex; align-items:center; gap:8px; }
+.switch { position:relative; display:inline-block; width:34px; height:20px; }
+.switch input { opacity:0; width:0; height:0; }
+.slider { position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:var(--surface3); transition:.4s; border-radius:34px; }
+.slider:before { position:absolute; content:""; height:14px; width:14px; left:3px; bottom:3px; background-color:var(--muted); transition:.4s; border-radius:50%; }
+input:checked + .slider { background-color:var(--accent); }
+input:checked + .slider:before { transform:translateX(14px); background-color:#fff; }
+
+.tier-badge { display:inline-block; padding:2px 6px; border-radius:4px; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-right:6px; vertical-align:middle; }
+.tier-badge.t1 { background:rgba(232,255,71,0.15); color:#e8ff47; border:1px solid rgba(232,255,71,0.3); }
+.tier-badge.t2 { background:rgba(255,255,255,0.1); color:var(--muted); border:1px solid var(--border); }
 </style>
 <div class="glass-orb-2"></div>
 <!-- SESSION SUMMARY MODAL -->
