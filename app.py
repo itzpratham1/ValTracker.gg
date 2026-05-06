@@ -1,7 +1,7 @@
 import os
 import time
 import requests
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, make_response
 from flask_cors import CORS
 from dotenv import load_dotenv
 
@@ -18,7 +18,18 @@ CACHE_TTL = 60  # 1 minute caching — keeps data fresh between fetches
 
 @app.route("/")
 def index():
-    return send_from_directory(app.static_folder, "index.html")
+    resp = make_response(send_from_directory(app.static_folder, "index.html"))
+    # Never cache the HTML — ensures browser always loads latest JS
+    resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    resp.headers["Pragma"] = "no-cache"
+    resp.headers["Expires"] = "0"
+    return resp
+
+@app.route("/api/clear-cache", methods=["POST"])
+def clear_server_cache():
+    """Wipes the server-side in-memory cache so next fetch is always live."""
+    cache.clear()
+    return jsonify({"status": "ok", "message": "Server cache cleared"})
 
 import urllib.parse
 
@@ -43,8 +54,9 @@ def proxy_api(subpath):
         "Content-Type": "application/json"
     }
     
-    # Forward query parameters
+    # Forward query parameters — strip internal _nocache param so HenrikDev doesn't see it
     params = request.args.to_dict()
+    params.pop('_nocache', None)
     
     try:
         print(f"[{request.method}] Fetching from {target_url}")
