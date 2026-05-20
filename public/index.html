@@ -4357,6 +4357,9 @@ function dismissLanding() {
   if (!el) return;
   el.classList.add('hidden');
   setTimeout(() => { el.style.display = 'none'; }, 360);
+  // Show the tracker view
+  const tv = document.getElementById('tracker-view');
+  if (tv) tv.style.display = 'block';
 }
 
 // Enter key on landing inputs
