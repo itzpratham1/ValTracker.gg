@@ -2680,6 +2680,7 @@ input:checked + .slider:before {
   .tracker-nav {
     position: sticky !important;
     top: 0 !important;
+    z-index: 999 !important;
     flex-direction: column !important;
     align-items: stretch !important;
     gap: 10px !important;
