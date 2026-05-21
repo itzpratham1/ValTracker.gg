@@ -157,17 +157,46 @@
     <a class="tracker-nav-item" onclick="smoothScrollTo('sec-matches', event)"><span class="nav-icon">🎮</span> Matches</a>
   </div>
   <div class="tracker-nav-right">
-    <div class="live-chip" id="live-badge"><div class="live-dot"></div>LIVE</div>
-    <button class="nav-btn primary" id="share-profile-btn" onclick="shareProfile()" title="Share Profile URL">🔗 Share</button>
-    <button class="nav-btn" onclick="fetchLeaderboard()" title="View Leaderboard">🏆 Top 500</button>
-    <button class="nav-btn" onclick="toggleHeadToHead()" title="Head-to-Head Mode">⚔️ Vs</button>
-    <button class="nav-btn accent" id="live-match-btn" onclick="fetchLiveMatch()">🔴 Live Intel</button>
-    <button class="nav-btn action" id="session-btn" onclick="toggleSession()">▶ Start Session</button>
-    <button class="nav-btn success" id="session-summary-btn" onclick="showSessionSummary()" style="display: none;">📊 Summary</button>
-    <button class="nav-btn" id="export-btn" onclick="exportStatsCard()" title="Export stats card">📤 Export</button>
-    <button class="nav-btn danger" id="clear-btn" onclick="handleClear()" title="Clear all stored matches">🗑</button>
+    <!-- Live Intel button with embedded badge -->
+    <button class="nav-btn accent" id="live-match-btn" onclick="fetchLiveMatch()">
+      <span class="live-chip-mini" id="live-badge" style="display: none;"><span class="live-dot"></span></span>
+      <span>🔴 Live Intel</span>
+    </button>
+    
+    <!-- Session Actions -->
+    <div class="session-group">
+      <button class="nav-btn action" id="session-btn" onclick="toggleSession()">▶ Start Session</button>
+      <button class="nav-btn success" id="session-summary-btn" onclick="showSessionSummary()" style="display: none;">📊 Summary</button>
+    </div>
+    
+    <!-- Tools Dropdown -->
+    <div class="nav-dropdown" id="nav-tools-dropdown">
+      <button class="nav-btn dropdown-trigger" onclick="toggleToolsDropdown(event)" title="More Tools">
+        <span>⚡ Utilities</span>
+        <span class="dropdown-arrow">▼</span>
+      </button>
+      <div class="dropdown-menu" id="tools-dropdown-menu">
+        <button class="dropdown-item" id="share-profile-btn" onclick="shareProfile()">
+          <span class="dropdown-item-icon">🔗</span> Share Profile
+        </button>
+        <button class="dropdown-item" onclick="fetchLeaderboard()">
+          <span class="dropdown-item-icon">🏆</span> Top 500
+        </button>
+        <button class="dropdown-item" onclick="toggleHeadToHead()">
+          <span class="dropdown-item-icon">⚔️</span> Compare (Vs)
+        </button>
+        <button class="dropdown-item" id="export-btn" onclick="exportStatsCard()">
+          <span class="dropdown-item-icon">📤</span> Export Stats Card
+        </button>
+        <div class="dropdown-divider"></div>
+        <button class="dropdown-item danger" id="clear-btn" onclick="handleClear()" title="Clear all stored matches">
+          <span class="dropdown-item-icon">🗑️</span> Clear Stored Matches
+        </button>
+      </div>
+    </div>
   </div>
 </div>
+
 
 
 <!-- HERO -->
@@ -6169,6 +6198,31 @@ async function fetchEsportsNews() {
     container.innerHTML = '<div class="placeholder-txt" style="color:var(--loss);grid-column:1/-1">News service timed out. <button class="fetch-btn" onclick="fetchEsportsNews()" style="margin-top:12px; font-size:11px;">Retry News</button></div>';
   }
 }
+
+// Dropdown Menu Toggle for Secondary Navbar Tools
+function toggleToolsDropdown(event) {
+  if (event) event.stopPropagation();
+  const dropdown = document.getElementById('nav-tools-dropdown');
+  if (dropdown) {
+    dropdown.classList.toggle('active');
+  }
+}
+
+function closeToolsDropdown() {
+  const dropdown = document.getElementById('nav-tools-dropdown');
+  if (dropdown && dropdown.classList.contains('active')) {
+    dropdown.classList.remove('active');
+  }
+}
+
+// Global click handler to auto-close dropdown on outside clicks or when clicking an item
+document.addEventListener('click', (event) => {
+  const trigger = document.querySelector('.dropdown-trigger');
+  if (trigger && !trigger.contains(event.target)) {
+    closeToolsDropdown();
+  }
+});
+
 
 // HUD Ease of Access smooth scrolling
 function smoothScrollTo(elementId, event) {
