@@ -4780,7 +4780,90 @@ function toggleSession() {
 }
 
 function showSessionSummary() {
-  const modal = document.getElementById('ses// 3. Live Match Overlay
+  const modal = document.getElementById('session-modal');
+  const content = document.getElementById('session-content');
+  
+  const matchesToUse = sessionMatches.length > 0 ? sessionMatches : _lastAllMatches.slice(0, 5);
+  
+  if (!matchesToUse || matchesToUse.length === 0) {
+    content.innerHTML = `<div style="text-align:center; color:var(--muted); padding:20px;">No matches found.</div>`;
+    modal.style.display = 'flex';
+    return;
+  }
+  
+  let wins = 0, losses = 0;
+  let totalKills = 0, totalDeaths = 0;
+  let agents = {};
+  
+  matchesToUse.forEach(m => {
+    const me = findMe(m);
+    if(!me) return;
+    const myTeamId = (me.team||'').toLowerCase();
+    const myTeam = m.teams && m.teams[myTeamId];
+    let won = false;
+    if (myTeam?.has_won === true) { won = true; } 
+    else if (myTeam?.rounds_won != null) {
+      const oppId = myTeamId === 'red' ? 'blue' : 'red';
+      won = myTeam.rounds_won > (m.teams[oppId]?.rounds_won||0);
+    }
+    if (won) wins++; else losses++;
+    
+    totalKills += me.stats?.kills || 0;
+    totalDeaths += me.stats?.deaths || 0;
+    
+    const ag = me.character || 'Unknown';
+    agents[ag] = (agents[ag] || 0) + 1;
+  });
+  
+  const bestAgent = Object.keys(agents).sort((a,b) => agents[b] - agents[a])[0] || 'N/A';
+  const kd = totalDeaths > 0 ? (totalKills/totalDeaths).toFixed(2) : totalKills;
+  const currentRR = window._currentRankRR || 0;
+  const rrChange = sessionStartRR !== null ? (currentRR - sessionStartRR) : 'N/A';
+  
+  content.innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:center; background:var(--surface2); padding:16px; border-radius:var(--radius-sm);">
+      <div>
+        <div style="font-family:'DM Mono', monospace; font-size:11px; color:var(--muted); letter-spacing:1px;">RECORD</div>
+        <div style="font-family:'Barlow Condensed', sans-serif; font-weight:800; font-size:28px;">
+          <span style="color:var(--win)">${wins}W</span> - <span style="color:var(--loss)">${losses}L</span>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-family:'DM Mono', monospace; font-size:11px; color:var(--muted); letter-spacing:1px;">RR CHANGE</div>
+        <div style="font-family:'Barlow Condensed', sans-serif; font-weight:800; font-size:28px; color:${rrChange > 0 ? 'var(--win)' : (rrChange < 0 ? 'var(--loss)' : 'var(--text)')}">
+          ${rrChange > 0 ? '+'+rrChange : rrChange}
+        </div>
+      </div>
+    </div>
+    
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+      <div style="background:var(--surface2); padding:12px; border-radius:var(--radius-sm); text-align:center;">
+        <div style="font-family:'DM Mono', monospace; font-size:10px; color:var(--muted);">BEST AGENT</div>
+        <div style="font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:20px; color:var(--accent);">${bestAgent}</div>
+      </div>
+      <div style="background:var(--surface2); padding:12px; border-radius:var(--radius-sm); text-align:center;">
+        <div style="font-family:'DM Mono', monospace; font-size:10px; color:var(--muted);">OVERALL K/D</div>
+        <div style="font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:20px;">${kd}</div>
+      </div>
+    </div>
+  `;
+  modal.style.display = 'flex';
+}
+
+async function exportSessionCard() {
+  if (typeof html2canvas === 'undefined') {
+    showToast('Export library not loaded.');
+    return;
+  }
+  const el = document.getElementById('session-card-export');
+  const canvas = await html2canvas(el, { backgroundColor: '#0a0a0c', scale: 2 });
+  const a = document.createElement('a');
+  a.href = canvas.toDataURL('image/png');
+  a.download = \`valtracker_session_\${new Date().getTime()}.png\`;
+  a.click();
+}
+
+// 3. Live Match Overlay
 function toTitleCase(str) {
   if (!str) return '';
   return str.trim().toLowerCase().split(/\s+/).map(word => {
