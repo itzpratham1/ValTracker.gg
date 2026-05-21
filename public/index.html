@@ -201,7 +201,7 @@
 <div class="hero">
   <div id="player-card-bg"></div>
   <div class="hero-left">
-    <div class="hero-eyebrow" id="hero-eyebrow">Competitive Tracker · Henrik API</div>
+    <div class="hero-eyebrow" id="hero-eyebrow">Competitive Tracker</div>
     <div class="hero-title" id="hero-title">—</div>
     <div class="hero-sub" id="hero-sub"><span id="player-level"></span></div>
   </div>
@@ -374,8 +374,8 @@
         <div class="ai-header-left">
           <div class="ai-icon">🤖</div>
           <div>
-            <div class="ai-title">Coach Claude</div>
-            <div class="ai-subtitle">Powered by Claude AI · Analyses your stored match data</div>
+            <div class="ai-title">ValBot</div>
+            <div class="ai-subtitle">Powered by ValTracker AI · Analyses your stored match data</div>
           </div>
         </div>
         <button class="ai-analyse-btn" id="ai-btn" onclick="runAnalysis()">
@@ -2330,7 +2330,7 @@ function renderMatches(matches){
           <div class="panel-tab-content" id="tabcontent-${idx}-ai">
             <div class="match-ai-wrap" style="margin-top:0;">
               <div class="match-ai-header">
-                <div class="match-ai-title">🤖 Match AI Analysis</div>
+                <div class="match-ai-title">🤖 ValBot Match Analysis</div>
                 <button class="match-ai-btn" id="mai-btn-${idx}" onclick="runMatchAnalysis(${idx}, event)">⚡ Analyse This Match</button>
               </div>
               <div class="match-ai-loading" id="mai-loading-${idx}">
@@ -4320,7 +4320,7 @@ function updateHeroName() {
   const subEl = document.getElementById('hero-sub');
   if (subEl) subEl.innerHTML = `#${tag} · <span id="player-level"></span>`;
   const eyebrowEl = document.getElementById('hero-eyebrow');
-  if (eyebrowEl) eyebrowEl.textContent = `${modeLabel} Tracker · Henrik API`;
+  if (eyebrowEl) eyebrowEl.textContent = `${modeLabel} Tracker`;
   const bannerNameEl = document.getElementById('banner-name');
   if (bannerNameEl) bannerNameEl.textContent = name;
   const bannerTagEl = document.getElementById('banner-tag');

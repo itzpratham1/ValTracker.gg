@@ -1271,7 +1271,7 @@ body::before {
 }
 .live-player-rank { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
 
-/* ── AI COACH CLAUDE PANEL ── */
+/* ── VALBOT AI COACH PANEL ── */
 .ai-section { grid-column: span 12; opacity: 1; }
 .ai-card {
   background: var(--surface);
