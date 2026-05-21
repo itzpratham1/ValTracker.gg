@@ -293,6 +293,11 @@ body::before {
 .nav-btn.success { background: rgba(232,255,71,0.15); color: var(--accent); border-color: var(--accentborder); }
 .nav-btn.danger { background: rgba(244,63,94,0.1); color: var(--loss); border-color: rgba(244,63,94,0.3); }
 
+/* Temporarily hide Live Match Intel button as requested */
+#live-match-btn {
+  display: none !important;
+}
+
 /* Live Chip Mini overrides inside Live Intel Button */
 #live-badge.live-chip-mini {
   display: none; /* dynamically shown as flex by JS */
