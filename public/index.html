@@ -5444,6 +5444,13 @@ function renderDemoLiveMatch() {
       </div>
     </div>
   `;
+    } // closes if (data.status === 'recent')
+  } catch(e) {
+    const content = document.getElementById('match-intel-content');
+    if (content) {
+      content.innerHTML = `<div style="text-align:center; color:var(--loss); padding:40px; font-family:'Barlow Condensed', sans-serif; font-size:20px;">Player is not currently in a live match.</div>`;
+    }
+  }
 }
 
 
