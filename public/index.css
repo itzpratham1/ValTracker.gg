@@ -216,16 +216,17 @@ body::before {
   justify-content: space-between;
   padding: 10px 24px;
   gap: 16px;
-  overflow-x: auto;
-  scrollbar-width: none;
+  overflow: visible;
 }
-.tracker-nav::-webkit-scrollbar { display: none; }
 
 .tracker-nav-left {
   display: flex;
   align-items: center;
   gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
+.tracker-nav-left::-webkit-scrollbar { display: none; }
 .tracker-nav-right {
   display: flex;
   align-items: center;
