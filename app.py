@@ -5,6 +5,7 @@ import base64
 import urllib3
 import urllib.parse
 import concurrent.futures
+from functools import wraps
 from flask import Flask, request, jsonify, send_from_directory, make_response
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -15,7 +16,59 @@ load_dotenv()
 API_KEY = os.getenv("HENRIKDEV_API_KEY", "")
 
 app = Flask(__name__, static_folder="public", static_url_path="")
-CORS(app)
+
+# Allow dynamic CORS origins from environment variable or standard defaults
+allowed_origins = os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
+allowed_origins = [o.strip() for o in allowed_origins if o.strip()]
+if not allowed_origins:
+    allowed_origins = [
+        "https://valtracker-gg.onrender.com",
+        "https://valtracker.gg",
+        "http://localhost:5000",
+        "http://127.0.0.1:5000"
+    ]
+CORS(app, origins=allowed_origins)
+
+# Simple custom zero-dependency in-memory rate limiter
+rate_limit_records = {}
+
+def rate_limit(requests_per_minute=30):
+    def decorator(f):
+        @wraps(f)
+        def wrapped(*args, **kwargs):
+            ip = request.headers.get("X-Forwarded-For", request.remote_addr or "127.0.0.1")
+            if "," in ip:
+                ip = ip.split(",")[0].strip()
+            
+            now = time.time()
+            if ip not in rate_limit_records:
+                rate_limit_records[ip] = []
+            
+            # Filter timestamps to keep only requests in the last 60 seconds
+            rate_limit_records[ip] = [t for t in rate_limit_records[ip] if now - t < 60]
+            
+            if len(rate_limit_records[ip]) >= requests_per_minute:
+                print(f"[RATE LIMIT] Blocked IP {ip} - exceeded {requests_per_minute}/min")
+                return jsonify({
+                    "status": 429,
+                    "error": "Too Many Requests",
+                    "message": f"Rate limit exceeded. Maximum {requests_per_minute} requests per minute."
+                }), 429
+                
+            rate_limit_records[ip].append(now)
+            return f(*args, **kwargs)
+        return wrapped
+    return decorator
+
+# Allowed endpoints for the HenrikDev API proxy
+ALLOWED_PROXY_PREFIXES = [
+    "v3/mmr/",
+    "v3/matches/",
+    "v1/account/",
+    "v1/stored-mmr-history/",
+    "v2/match/",
+    "v1/leaderboard/"
+]
 
 # In-memory cache to prevent rate-limits and load data instantly
 # Format: URL -> { "data": response_json, "timestamp": time_fetched }
@@ -252,6 +305,7 @@ def clear_server_cache():
     return jsonify({"status": "ok", "message": "Server cache cleared"})
 
 @app.route("/api/v1/live-match/<region>/<name>/<tag>", methods=["GET"])
+@rate_limit(requests_per_minute=10)
 def live_match(region, name, tag):
     # 1. Try local active match scan via lockfile
     localappdata = os.getenv("LOCALAPPDATA")
@@ -385,7 +439,19 @@ def live_match(region, name, tag):
     })
 
 @app.route("/api/<path:subpath>", methods=["GET", "POST"])
+@rate_limit(requests_per_minute=20)
 def proxy_api(subpath):
+    # Security check: Allowlist proxy paths to prevent open proxy exploitation
+    allowed = False
+    for prefix in ALLOWED_PROXY_PREFIXES:
+        if subpath.startswith(prefix):
+            allowed = True
+            break
+            
+    if not allowed:
+        print(f"[SECURITY] Blocked proxy request to unauthorized subpath: {subpath}")
+        return jsonify({"status": 403, "errors": [{"message": "Forbidden: Path not allowed by API proxy"}]}), 403
+
     # Proxy requests to henrikdev API
     encoded_subpath = urllib.parse.quote(subpath, safe='/')
     target_url = f"https://api.henrikdev.xyz/valorant/{encoded_subpath}"
@@ -433,7 +499,8 @@ def proxy_api(subpath):
             
         return jsonify(data), response.status_code
     except Exception as e:
-        return jsonify({"status": 500, "errors": [{"message": str(e)}]}), 500
+        print(f"[ERROR] Proxy API failure: {e}")
+        return jsonify({"status": 500, "errors": [{"message": "Internal server error"}]}), 500
 
 # --- ESPORTS ROUTES ---
 def get_henrik_schedule():
@@ -454,24 +521,28 @@ def get_henrik_schedule():
     return []
 
 @app.route("/api/esports/live")
+@rate_limit(requests_per_minute=30)
 def esports_live():
     data = get_henrik_schedule()
     live = [m for m in data if m.get("state") == "inProgress"]
     return jsonify({"data": live})
 
 @app.route("/api/esports/results")
+@rate_limit(requests_per_minute=30)
 def esports_results():
     data = get_henrik_schedule()
     results = [m for m in data if m.get("state") == "completed"]
     return jsonify({"data": results})
 
 @app.route("/api/esports/upcoming")
+@rate_limit(requests_per_minute=30)
 def esports_upcoming():
     data = get_henrik_schedule()
     upcoming = [m for m in data if m.get("state") == "unstarted"]
     return jsonify({"data": upcoming})
 
 @app.route("/api/esports/news")
+@rate_limit(requests_per_minute=30)
 def esports_news():
     cache_key = "vlr_news"
     if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < 600:
@@ -507,9 +578,10 @@ def esports_news():
         return jsonify({"data": news_items})
     except Exception as e:
         print("[ERROR] VLR News scraping failed:", e)
-        return jsonify({"error": str(e), "data": []}), 500
+        return jsonify({"error": "Internal server error", "data": []}), 500
 
 @app.route("/api/esports/standings/<region>")
+@rate_limit(requests_per_minute=30)
 def esports_standings(region):
     # region can be na, eu, ap, la, kr, cn, or all
     cache_key = f"vlr_standings_{region}"
@@ -547,12 +619,13 @@ def esports_standings(region):
         return jsonify({"data": standings})
     except Exception as e:
         print(f"[ERROR] VLR Standings scraping failed:", e)
-        return jsonify({"error": str(e), "data": []}), 500
+        return jsonify({"error": "Internal server error", "data": []}), 500
 
 if __name__ == "__main__":
     if not API_KEY:
         print("\n[WARNING] API Key missing in .env file! Requests to HenrikDev might fail.\n")
-    print("\n[SUCCESS] Backend Server starting on http://127.0.0.1:5000")
-    print("-> Open your browser to http://127.0.0.1:5000 to view your app\n")
-    app.run(port=5000, debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    print(f"\n[SUCCESS] Backend Server starting on http://0.0.0.0:{port}")
+    print(f"-> Open your browser to http://127.0.0.1:{port} to view your app\n")
+    app.run(host="0.0.0.0", port=port, debug=False)
 
