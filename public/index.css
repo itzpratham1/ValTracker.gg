@@ -1798,14 +1798,16 @@ body::before {
 
 /* ── STICKY HUD OR OVERLAYS ── */
 .toast {
-  position: fixed; bottom: 24px; right: 24px;
+  position: fixed; bottom: 30px; right: 24px;
   font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 1.5px;
-  padding: 10px 18px; border-radius: var(--radius-sm);
-  background: var(--accent); color: #0d0d0f;
-  transform: translateY(60px); opacity: 0;
+  padding: 10px 20px; border-radius: 30px;
+  background: rgba(15, 15, 18, 0.85); color: var(--accent);
+  border: 1px solid rgba(232, 255, 71, 0.2);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  transform: translateY(100px); opacity: 0;
   transition: all 0.35s cubic-bezier(.16, 1, 0.3, 1);
-  z-index: 1000; pointer-events: none;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  z-index: 9999; pointer-events: none;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.05);
 }
 .toast.show { transform: translateY(0); opacity: 1; }
 
@@ -2662,6 +2664,66 @@ input:checked + .slider:before {
   .esp-team { flex-direction:column; gap:6px; }
   .esp-team.t-right { flex-direction:column; }
   .esports-content { padding: 16px 14px 40px; }
+
+  /* Mobile adjustments for unified tracker navigation */
+  .tracker-nav {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    padding: 10px 14px !important;
+    top: 50px !important;
+  }
+  .tracker-nav-left {
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
+  .tracker-nav-item {
+    flex-shrink: 0 !important;
+  }
+  .tracker-nav-right {
+    width: 100% !important;
+    display: flex !important;
+    gap: 8px !important;
+    justify-content: space-between !important;
+  }
+  .tracker-nav-right > button,
+  .tracker-nav-right > .session-group,
+  .tracker-nav-right > .nav-dropdown {
+    flex: 1 !important;
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+  .tracker-nav-right .nav-btn {
+    width: 100% !important;
+    padding: 8px 4px !important;
+    font-size: 11px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    justify-content: center !important;
+  }
+  .session-group {
+    width: 100% !important;
+    display: flex !important;
+  }
+  .nav-dropdown {
+    width: 100% !important;
+    position: relative !important;
+  }
+  .dropdown-trigger {
+    width: 100% !important;
+  }
+  
+  /* Mobile centering & sizing for Toast notifications */
+  .toast {
+    left: 20px !important;
+    right: 20px !important;
+    bottom: 30px !important;
+    text-align: center !important;
+    justify-content: center !important;
+    display: flex !important;
+    align-items: center !important;
+  }
 }
 
 /* ── PREMIUM MATCH DETAIL TABS & BREAKDOWN ── */
