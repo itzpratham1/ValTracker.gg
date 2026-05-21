@@ -1458,6 +1458,77 @@ body::before {
   color: var(--muted2); padding: 0 2px 0 0; user-select: none;
 }
 
+/* ── PLAYER ACTIVE PILL ── */
+.player-active-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, rgba(232, 255, 71, 0.1) 0%, rgba(20, 20, 25, 0.6) 100%);
+  border: 1px solid rgba(232, 255, 71, 0.25);
+  border-radius: 40px;
+  padding: 4px 12px 4px 6px;
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+.player-active-pill:hover {
+  border-color: rgba(232, 255, 71, 0.45);
+  box-shadow: 0 4px 20px rgba(232, 255, 71, 0.15);
+  transform: translateY(-1px);
+}
+.active-pill-avatar-wrap {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--surface2);
+  border: 1.5px solid var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.active-pill-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.1);
+}
+.active-pill-avatar-fallback {
+  font-size: 12px;
+  color: var(--muted);
+}
+.active-pill-name {
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.active-pill-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+.active-pill-btn:hover {
+  color: var(--accent);
+  background: rgba(255, 255, 255, 0.08);
+}
+.active-pill-btn.edit-btn:hover {
+  color: #5cf2f2;
+  background: rgba(92, 242, 242, 0.08);
+}
+
 /* ── COPY RIOT ID BUTTON ── */
 .copy-riot-btn {
   display: inline-flex; align-items: center; gap: 5px;
@@ -1738,6 +1809,268 @@ body::before {
 .war-bar-wrap { flex: 1; height: 3px; background: var(--surface3); border-radius: 2px; overflow: hidden; }
 .war-bar-fill { height: 100%; border-radius: 2px; transition: width 1s ease; }
 .war-pct { font-family: 'DM Mono', monospace; font-size: 8px; min-width: 24px; text-align: right; }
+
+/* ── WEAPON SHOWCASE GRID (PREMIUM SPLIT LAYOUT) ── */
+.weapons-showcase-container {
+  display: grid;
+  grid-template-columns: 1.1fr 1.9fr;
+  gap: 16px;
+  margin-top: 14px;
+}
+
+/* Left Showcase: Top Weapon */
+.top-weapon-showcase {
+  background: linear-gradient(135deg, rgba(232, 255, 71, 0.08) 0%, rgba(15, 15, 20, 0.85) 100%);
+  border: 1px solid rgba(232, 255, 71, 0.25);
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  min-height: 280px;
+}
+.top-weapon-showcase:hover {
+  transform: translateY(-2px);
+  border-color: rgba(232, 255, 71, 0.45);
+  box-shadow: 0 12px 36px rgba(232, 255, 71, 0.08);
+}
+.top-weapon-showcase::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(232, 255, 71, 0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+.top-weapon-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: var(--accent);
+  color: #000;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 10px;
+  letter-spacing: 1px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  box-shadow: 0 4px 10px rgba(232, 255, 71, 0.25);
+  z-index: 2;
+}
+.top-weapon-img-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 0;
+  z-index: 1;
+}
+.top-weapon-img {
+  max-width: 90%;
+  max-height: 85px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.5)) brightness(0.95);
+  transition: transform 0.3s ease;
+}
+.top-weapon-showcase:hover .top-weapon-img {
+  transform: scale(1.04) rotate(-1deg);
+}
+.top-weapon-details {
+  z-index: 1;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 14px;
+}
+.top-weapon-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 26px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--text);
+  line-height: 1.1;
+}
+.top-weapon-type {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--accent);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+.top-weapon-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+.top-weapon-stat {
+  display: flex;
+  flex-direction: column;
+}
+.top-weapon-val {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 28px;
+  color: var(--text);
+}
+.top-weapon-lbl {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+
+/* Right Stack: Secondary Arsenal List */
+.secondary-weapon-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.secondary-weapon-row {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 18px;
+  display: grid;
+  grid-template-columns: 80px 1.2fr 1fr 1.5fr;
+  align-items: center;
+  gap: 16px;
+  transition: var(--transition);
+}
+.secondary-weapon-row:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: var(--surface3);
+  transform: translateX(2px);
+}
+.sec-weapon-img-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sec-weapon-img {
+  max-width: 70px;
+  max-height: 26px;
+  object-fit: contain;
+  filter: brightness(0.85);
+}
+.sec-weapon-meta {
+  min-width: 0;
+}
+.sec-weapon-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 16px;
+  text-transform: uppercase;
+  color: var(--text);
+}
+.sec-weapon-type {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--muted2);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+.sec-weapon-stats-wrap {
+  display: flex;
+  gap: 20px;
+}
+.sec-weapon-stat {
+  display: flex;
+  flex-direction: column;
+}
+.sec-weapon-val {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+}
+.sec-weapon-lbl {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  color: var(--muted2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.sec-weapon-acc-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.sec-weapon-acc-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sec-war-lbl {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  color: var(--muted2);
+  width: 22px;
+}
+.sec-war-bar-wrap {
+  flex: 1;
+  height: 4px;
+  background: var(--surface3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.sec-war-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+}
+.sec-war-pct {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  min-width: 26px;
+  text-align: right;
+}
+
+/* Premium Footnote Disclaimer */
+.weapon-disclaimer {
+  font-family: 'DM Mono', monospace;
+  font-size: 9.5px;
+  color: var(--muted2);
+  margin-top: 14px;
+  line-height: 1.4;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+.weapon-disclaimer span.asterisk {
+  color: var(--accent);
+  font-weight: bold;
+}
+
+/* Responsive adjustments */
+@media(max-width: 960px) {
+  .weapons-showcase-container {
+    grid-template-columns: 1fr;
+  }
+}
+@media(max-width: 600px) {
+  .secondary-weapon-row {
+    grid-template-columns: 60px 1fr 1fr;
+    gap: 10px;
+    padding: 10px 12px;
+  }
+  .secondary-weapon-row .sec-weapon-acc-bars {
+    display: none;
+  }
+}
 
 /* ── ESPORTS CONTROLS & NEWS ── */
 .topbar-tabs { display: flex; align-items: center; gap: 4px; background: var(--surface2); padding: 4px; border-radius: var(--radius-sm); border: 1px solid var(--border); }

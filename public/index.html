@@ -94,7 +94,27 @@
       <span class="player-input-hash">#</span>
       <input class="player-input player-input-tag" id="player-tag-input" type="text" placeholder="TAG" value="" maxlength="8" autocomplete="off" spellcheck="false">
     </div>
-    <div class="topbar-divider"></div>
+    
+    <div class="player-active-pill" id="player-active-pill" style="display: none;">
+      <div class="active-pill-avatar-wrap" id="active-pill-avatar-wrap">
+        <div class="active-pill-avatar-fallback">👤</div>
+      </div>
+      <div class="active-pill-name" id="active-pill-name"></div>
+      <button class="active-pill-btn" onclick="copyRiotId()" title="Copy ID">
+        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+      </button>
+      <button class="active-pill-btn edit-btn" onclick="toggleSearchMode(true)" title="Edit Search">
+        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+          <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+        </svg>
+      </button>
+    </div>
+    
+    <div class="topbar-divider" id="tracker-divider-2"></div>
     <div class="player-tag" id="player-tag-display" style="display:none"></div>
     <button class="copy-riot-btn" id="copy-riot-btn" onclick="copyRiotId()" title="Copy Riot ID">
       <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right: 2px;">
@@ -1264,6 +1284,14 @@ function processMatches(matches){
   renderRRGraph(rrHistory,window._currentRankRR,window._mmrHistory||{});
   _lastAgentMap = agentMap; _lastMapData = mapData; _lastAllMatches = matches;
   window._recentMatchStats = recentMatches.slice().reverse(); // oldest→newest for graph
+  
+  if (matches && matches.length > 0) {
+    const me = findMe(matches[0]);
+    if (me) {
+      updateActivePillAgent(me.character || me.agent?.name || '');
+    }
+  }
+  
   renderAgents(agentMap, matches);
   renderMaps(mapData);
   renderAccuracyAndRoles(matches);
@@ -4400,10 +4428,57 @@ function dismissLanding() {
   }
   const tv = document.getElementById('tracker-view');
   if (tv) tv.style.display = 'block';
-  const psw = document.querySelector('.player-search-wrap');
-  if (psw) psw.style.display = 'flex';
+  
+  // Hide search inputs and show premium player active pill
+  toggleSearchMode(false);
+  
   const fb = document.getElementById('fetch-btn');
   if (fb) fb.style.display = 'inline-block';
+}
+
+function toggleSearchMode(showSearch) {
+  const psw = document.querySelector('.player-search-wrap');
+  const div2 = document.getElementById('tracker-divider-2');
+  const copyBtn = document.getElementById('copy-riot-btn');
+  const activePill = document.getElementById('player-active-pill');
+  
+  if (showSearch) {
+    if (psw) psw.style.display = 'flex';
+    if (div2) div2.style.display = 'block';
+    if (copyBtn) copyBtn.style.display = 'inline-flex';
+    if (activePill) activePill.style.display = 'none';
+  } else {
+    if (PLAYER_NAME) {
+      if (psw) psw.style.display = 'none';
+      if (div2) div2.style.display = 'none';
+      if (copyBtn) copyBtn.style.display = 'none';
+      if (activePill) activePill.style.display = 'flex';
+      updateActivePill();
+    } else {
+      if (psw) psw.style.display = 'flex';
+      if (div2) div2.style.display = 'block';
+      if (copyBtn) copyBtn.style.display = 'inline-flex';
+      if (activePill) activePill.style.display = 'none';
+    }
+  }
+}
+
+function updateActivePill() {
+  const nameEl = document.getElementById('active-pill-name');
+  if (nameEl) {
+    nameEl.textContent = `${PLAYER_NAME}#${PLAYER_TAG}`;
+  }
+}
+
+function updateActivePillAgent(agentName) {
+  const avatarWrap = document.getElementById('active-pill-avatar-wrap');
+  if (!avatarWrap) return;
+  const cached = _assetCache.agents[(agentName || '').toLowerCase()];
+  if (cached && cached.iconUrl) {
+    avatarWrap.innerHTML = `<img class="active-pill-avatar-img" src="${cached.iconUrl}" alt="${agentName}">`;
+  } else {
+    avatarWrap.innerHTML = `<div class="active-pill-avatar-fallback">👤</div>`;
+  }
 }
 
 // Enter key on landing inputs
@@ -4644,42 +4719,109 @@ function renderTopWeapons(matches) {
     return;
   }
 
-  wrap.innerHTML = `<div class="weapons-grid">${entries.map(([wpn,v])=>{
-    const hsPct=v.kills?Math.round(v.hs/v.kills*100):0;
+  const topWeapon = entries[0];
+  const secondaryWeapons = entries.slice(1, 5); // limit to 4 secondary weapons
+
+  let showcaseHtml = `<div class="weapons-showcase-container">`;
+
+  // Render Top Weapon Showcase (Left Side)
+  if (topWeapon) {
+    const [wpn, v] = topWeapon;
+    const hsPct = v.kills ? Math.round(v.hs / v.kills * 100) : 0;
     const cachedWpn = _assetCache.weapons[wpn.toLowerCase()];
     const imgUrl = cachedWpn ? cachedWpn.iconUrl : (WEAPON_IMGS[wpn] || null);
-    const type=WEAPON_TYPES[wpn]||'Weapon';
-    const hsPctCol=hsPct>=30?'var(--win)':hsPct>=20?'var(--accent)':'var(--loss)';
-    return `<div class="weapon-card">
-      <div class="weapon-img-wrap">
-        ${imgUrl
-          ?`<img class="weapon-img" src="${imgUrl}" alt="${wpn}" onerror="this.parentElement.innerHTML='<div class=weapon-img-fallback>${wpn}</div>'">`
-          :`<div class="weapon-img-fallback">${wpn}</div>`}
-      </div>
-      <div class="weapon-info">
-        <div class="weapon-name">${wpn}</div>
-        <div class="weapon-type">${type}</div>
-        <div class="weapon-stats">
-          <div class="weapon-stat"><div class="wsv">${v.kills}</div><div class="wsl">Kills</div></div>
-          <div class="weapon-stat"><div class="wsv" style="color:${hsPctCol}">${hsPct}%</div><div class="wsl">HS%</div></div>
+    const type = WEAPON_TYPES[wpn] || 'Weapon';
+    const hsPctCol = hsPct >= 30 ? 'var(--win)' : hsPct >= 20 ? 'var(--accent)' : 'var(--loss)';
+
+    showcaseHtml += `
+      <div class="top-weapon-showcase">
+        <div class="top-weapon-badge">🔥 Top Arsenal</div>
+        <div class="top-weapon-img-wrap">
+          ${imgUrl
+            ? `<img class="top-weapon-img" src="${imgUrl}" alt="${wpn}" onerror="this.parentElement.innerHTML='<div class=weapon-img-fallback>${wpn}</div>'">`
+            : `<div class="weapon-img-fallback">${wpn}</div>`}
+        </div>
+        <div class="top-weapon-details">
+          <div class="top-weapon-name">${wpn}</div>
+          <div class="top-weapon-type">${type}</div>
+          <div class="top-weapon-stats-grid">
+            <div class="top-weapon-stat">
+              <span class="top-weapon-val">${v.kills}</span>
+              <span class="top-weapon-lbl">Kills</span>
+            </div>
+            <div class="top-weapon-stat">
+              <span class="top-weapon-val" style="color:${hsPctCol}">${hsPct}%</span>
+              <span class="top-weapon-lbl">HS Kill %</span>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="weapon-acc-col">
-        <div class="weapon-acc-row">
-          <div class="war-dot" style="background:var(--win)"></div>
-          <span class="war-lbl">HS</span>
-          <div class="war-bar-wrap"><div class="war-bar-fill" style="width:${hsPct}%;background:var(--win);"></div></div>
-          <span class="war-pct" style="color:var(--win)">${hsPct}%</span>
+    `;
+  }
+
+  // Render Secondary Weapon Stack (Right Side)
+  showcaseHtml += `<div class="secondary-weapon-stack">`;
+  secondaryWeapons.forEach(([wpn, v]) => {
+    const hsPct = v.kills ? Math.round(v.hs / v.kills * 100) : 0;
+    const cachedWpn = _assetCache.weapons[wpn.toLowerCase()];
+    const imgUrl = cachedWpn ? cachedWpn.iconUrl : (WEAPON_IMGS[wpn] || null);
+    const type = WEAPON_TYPES[wpn] || 'Weapon';
+    const hsPctCol = hsPct >= 30 ? 'var(--win)' : hsPct >= 20 ? 'var(--accent)' : 'var(--loss)';
+
+    showcaseHtml += `
+      <div class="secondary-weapon-row">
+        <div class="sec-weapon-img-wrap">
+          ${imgUrl
+            ? `<img class="sec-weapon-img" src="${imgUrl}" alt="${wpn}" onerror="this.parentElement.innerHTML='<div class=weapon-img-fallback>${wpn}</div>'">`
+            : `<div class="weapon-img-fallback">${wpn}</div>`}
         </div>
-        <div class="weapon-acc-row">
-          <div class="war-dot" style="background:var(--muted2)"></div>
-          <span class="war-lbl">BD</span>
-          <div class="war-bar-wrap"><div class="war-bar-fill" style="width:${100-hsPct}%;background:var(--muted2);"></div></div>
-          <span class="war-pct" style="color:var(--muted2)">${100-hsPct}%</span>
+        <div class="sec-weapon-meta">
+          <div class="sec-weapon-name">${wpn}</div>
+          <div class="sec-weapon-type">${type}</div>
+        </div>
+        <div class="sec-weapon-stats-wrap">
+          <div class="sec-weapon-stat">
+            <span class="sec-weapon-val">${v.kills}</span>
+            <span class="sec-weapon-lbl">Kills</span>
+          </div>
+          <div class="sec-weapon-stat">
+            <span class="sec-weapon-val" style="color:${hsPctCol}">${hsPct}%</span>
+            <span class="sec-weapon-lbl">HS Kill %</span>
+          </div>
+        </div>
+        <div class="sec-weapon-acc-bars">
+          <div class="sec-weapon-acc-row">
+            <span class="sec-war-lbl">HS</span>
+            <div class="sec-war-bar-wrap">
+              <div class="sec-war-bar-fill" style="width:${hsPct}%;background:var(--win);"></div>
+            </div>
+            <span class="sec-war-pct" style="color:var(--win)">${hsPct}%</span>
+          </div>
+          <div class="sec-weapon-acc-row">
+            <span class="sec-war-lbl">BD/LG</span>
+            <div class="sec-war-bar-wrap">
+              <div class="sec-war-bar-fill" style="width:${100 - hsPct}%;background:var(--muted2);"></div>
+            </div>
+            <span class="sec-war-pct" style="color:var(--muted2)">${100 - hsPct}%</span>
+          </div>
         </div>
       </div>
-    </div>`;
-  }).join('')}</div>`;
+    `;
+  });
+  showcaseHtml += `</div></div>`;
+
+  // Add the Riot Games API disclaimer footnote
+  showcaseHtml += `
+    <div class="weapon-disclaimer">
+      <span class="asterisk">*</span>
+      <div>
+        Riot Games' match API only exposes weapon data in individual final kill events. 
+        <strong>HS Kill %</strong> represents the percentage of your kills that were finished with a headshot, which typically ranges from 40-70% depending on weapon type, and is distinct from overall bullet hit accuracy.
+      </div>
+    </div>
+  `;
+
+  wrap.innerHTML = showcaseHtml;
 }
 /* ── CORE FEATURES LOGIC ── */
 
