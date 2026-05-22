@@ -4666,6 +4666,57 @@ function renderAccuracyAndRoles(matches) {
   }
 }
 
+// ─── Weapon Trend Tracking (localStorage-based, zero backend dependency) ────
+function _saveWeaponSnapshot(weaponData) {
+  if (!PLAYER_NAME || !PLAYER_TAG) return;
+  const key = `vt_wpn_hist_${PLAYER_NAME.toLowerCase()}_${PLAYER_TAG.toLowerCase()}`;
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem(key)) || []; } catch(e) { history = []; }
+  const snapshot = { ts: Date.now(), weapons: {} };
+  Object.entries(weaponData).forEach(([wpn, v]) => {
+    if (v.kills >= 1) snapshot.weapons[wpn] = { kills: v.kills, hs: v.hs, hsPct: v.kills ? Math.round(v.hs / v.kills * 100) : 0 };
+  });
+  // Deduplicate: overwrite if last snapshot was within 10 minutes (same session re-fetch)
+  const tenMinAgo = Date.now() - 10 * 60 * 1000;
+  if (history.length > 0 && history[history.length - 1].ts > tenMinAgo) {
+    history[history.length - 1] = snapshot;
+  } else {
+    history.push(snapshot);
+  }
+  if (history.length > 15) history = history.slice(-15);
+  try { localStorage.setItem(key, JSON.stringify(history)); } catch(e) {}
+}
+
+function _getWeaponTrend(wpn, currentHsPct) {
+  if (!PLAYER_NAME || !PLAYER_TAG) return { trend: 'new', delta: 0, sparkPoints: [currentHsPct] };
+  const key = `vt_wpn_hist_${PLAYER_NAME.toLowerCase()}_${PLAYER_TAG.toLowerCase()}`;
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem(key)) || []; } catch(e) {}
+  const withData = history.filter(s => s.weapons && s.weapons[wpn] !== undefined);
+  const sparkPoints = withData.map(s => s.weapons[wpn].hsPct);
+  if (withData.length < 2) return { trend: 'new', delta: 0, sparkPoints };
+  const prev = withData[withData.length - 2].weapons[wpn].hsPct;
+  const delta = currentHsPct - prev;
+  const trend = delta >= 3 ? 'up' : delta <= -3 ? 'down' : 'flat';
+  return { trend, delta, sparkPoints };
+}
+
+function _buildSparklineSVG(points, w, h) {
+  if (!points || points.length < 2) return '';
+  const min = Math.min(...points), max = Math.max(...points), range = (max - min) || 1;
+  const px = 4, py = 4, iw = w - px * 2, ih = h - py * 2;
+  const pts = points.map((v, i) => {
+    const x = px + (i / (points.length - 1)) * iw;
+    const y = py + ih - ((v - min) / range) * ih;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+  const lp = pts[pts.length - 1].split(',');
+  const lx = parseFloat(lp[0]), ly = parseFloat(lp[1]);
+  const rising = points[points.length - 1] >= points[points.length - 2];
+  const col = rising ? '#3ecf8e' : '#ff4d6d';
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible"><polyline points="${pts.join(' ')}" fill="none" stroke="${col}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/><circle cx="${lx}" cy="${ly}" r="2.5" fill="${col}"/></svg>`;
+}
+
 function renderTopWeapons(matches) {
   // Aggregate weapon stats from match-level data (headshots per match)
   // We use agent names as proxy for weapon preference since we don't have
@@ -4746,12 +4797,15 @@ function renderTopWeapons(matches) {
     return;
   }
 
+  // ── Save snapshot AFTER computing weaponData so history is always up-to-date ──
+  _saveWeaponSnapshot(weaponData);
+
   const topWeapon = entries[0];
   const secondaryWeapons = entries.slice(1, 5); // limit to 4 secondary weapons
 
   let showcaseHtml = `<div class="weapons-showcase-container">`;
 
-  // Render Top Weapon Showcase (Left Side)
+  // ── TOP WEAPON with Sparkline Trend ──
   if (topWeapon) {
     const [wpn, v] = topWeapon;
     const hsPct = v.kills ? Math.round(v.hs / v.kills * 100) : 0;
@@ -4759,10 +4813,40 @@ function renderTopWeapons(matches) {
     const imgUrl = cachedWpn ? cachedWpn.iconUrl : (WEAPON_IMGS[wpn] || null);
     const type = WEAPON_TYPES[wpn] || 'Weapon';
     const hsPctCol = hsPct >= 30 ? 'var(--win)' : hsPct >= 20 ? 'var(--accent)' : 'var(--loss)';
+    const trendInfo = _getWeaponTrend(wpn, hsPct);
+    const sparkSVG = _buildSparklineSVG(trendInfo.sparkPoints, 120, 32);
+    const sessionCount = trendInfo.sparkPoints.length;
+
+    let deltaPill = '';
+    if (trendInfo.trend === 'up') {
+      deltaPill = `<span class="wpn-trend-pill wpn-trend-pill-up">&#9650; +${trendInfo.delta}%</span>`;
+    } else if (trendInfo.trend === 'down') {
+      deltaPill = `<span class="wpn-trend-pill wpn-trend-pill-down">&#9660; ${trendInfo.delta}%</span>`;
+    } else if (trendInfo.trend === 'flat') {
+      deltaPill = `<span class="wpn-trend-pill wpn-trend-pill-flat">&#8212; &#177;0%</span>`;
+    }
+
+    const sparklineBlock = sparkSVG
+      ? `<div class="wpn-sparkline-section">
+           <div class="wpn-sparkline-header">
+             <span class="wpn-sparkline-label">HS% TREND</span>
+             <span class="wpn-sparkline-sessions">${sessionCount} session${sessionCount !== 1 ? 's' : ''} tracked</span>
+           </div>
+           <div class="wpn-sparkline-wrap">${sparkSVG}</div>
+           <div class="wpn-sparkline-axis">
+             <span>${Math.min(...trendInfo.sparkPoints)}%</span>
+             <span class="wpn-sparkline-axis-mid">across ${sessionCount} fetches</span>
+             <span>${Math.max(...trendInfo.sparkPoints)}%</span>
+           </div>
+         </div>`
+      : `<div class="wpn-sparkline-section wpn-first-session">
+           <span class="wpn-sparkline-label">&#128202; TRACKING STARTED</span>
+           <span class="wpn-sparkline-sessions">Trend data builds across your next sessions</span>
+         </div>`;
 
     showcaseHtml += `
       <div class="top-weapon-showcase">
-        <div class="top-weapon-badge">🔥 Top Arsenal</div>
+        <div class="top-weapon-badge">&#128293; Top Arsenal</div>
         <div class="top-weapon-img-wrap">
           ${imgUrl
             ? `<img class="top-weapon-img" src="${imgUrl}" alt="${wpn}" onerror="this.parentElement.innerHTML='<div class=weapon-img-fallback>${wpn}</div>'">`
@@ -4777,10 +4861,11 @@ function renderTopWeapons(matches) {
               <span class="top-weapon-lbl">Kills</span>
             </div>
             <div class="top-weapon-stat">
-              <span class="top-weapon-val" style="color:${hsPctCol}">${hsPct}%</span>
+              <span class="top-weapon-val" style="color:${hsPctCol}">${hsPct}%&thinsp;${deltaPill}</span>
               <span class="top-weapon-lbl">HS Kill %</span>
             </div>
           </div>
+          ${sparklineBlock}
         </div>
       </div>
     `;
@@ -4794,6 +4879,18 @@ function renderTopWeapons(matches) {
     const imgUrl = cachedWpn ? cachedWpn.iconUrl : (WEAPON_IMGS[wpn] || null);
     const type = WEAPON_TYPES[wpn] || 'Weapon';
     const hsPctCol = hsPct >= 30 ? 'var(--win)' : hsPct >= 20 ? 'var(--accent)' : 'var(--loss)';
+    const trendInfo = _getWeaponTrend(wpn, hsPct);
+
+    let trendArrow = '';
+    if (trendInfo.trend === 'up') {
+      trendArrow = `<span class="sec-wpn-trend sec-wpn-trend-up" title="HS% up +${trendInfo.delta}% vs last session">&#9650; +${trendInfo.delta}%</span>`;
+    } else if (trendInfo.trend === 'down') {
+      trendArrow = `<span class="sec-wpn-trend sec-wpn-trend-down" title="HS% down ${trendInfo.delta}% vs last session">&#9660; ${trendInfo.delta}%</span>`;
+    } else if (trendInfo.trend === 'flat') {
+      trendArrow = `<span class="sec-wpn-trend sec-wpn-trend-flat" title="HS% stable vs last session">&#8212;&thinsp;0%</span>`;
+    } else {
+      trendArrow = `<span class="sec-wpn-trend sec-wpn-trend-new" title="First session — tracking started">NEW</span>`;
+    }
 
     showcaseHtml += `
       <div class="secondary-weapon-row">
@@ -4832,6 +4929,7 @@ function renderTopWeapons(matches) {
             <span class="sec-war-pct" style="color:var(--muted2)">${100 - hsPct}%</span>
           </div>
         </div>
+        <div class="sec-wpn-trend-col">${trendArrow}</div>
       </div>
     `;
   });
@@ -4844,6 +4942,7 @@ function renderTopWeapons(matches) {
       <div>
         Riot Games' match API only exposes weapon data in individual final kill events. 
         <strong>HS Kill %</strong> represents the percentage of your kills that were finished with a headshot, which typically ranges from 40-70% depending on weapon type, and is distinct from overall bullet hit accuracy.
+        <strong>Trend arrows</strong> compare your current HS% with your previous tracked session &#8212; stored locally in your browser and never sent to any server.
       </div>
     </div>
   `;
