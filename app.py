@@ -5,6 +5,7 @@ import base64
 import urllib3
 import urllib.parse
 import concurrent.futures
+from datetime import datetime
 from functools import wraps
 from flask import Flask, request, jsonify, send_from_directory, make_response
 from flask_cors import CORS
@@ -12,8 +13,228 @@ from dotenv import load_dotenv
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+import builtins
+
+def safe_print(*args, **kwargs):
+    try:
+        builtins.print(*args, **kwargs)
+    except (UnicodeEncodeError, AttributeError, TypeError):
+        try:
+            safe_args = [
+                str(arg).encode('ascii', errors='replace').decode('ascii')
+                for arg in args
+            ]
+            builtins.print(*safe_args, **kwargs)
+        except:
+            pass
+
+print = safe_print
+
 load_dotenv()
 API_KEY = os.getenv("HENRIKDEV_API_KEY", "")
+SUPABASE_URL = os.getenv("SUPABASE_URL", "")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
+
+# ── SUPABASE PostgREST HELPER FUNCTIONS ──
+
+def supabase_request(method, table, data=None, params=None, headers=None):
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        return None
+    
+    url = f"{SUPABASE_URL.rstrip('/')}/rest/v1/{table}"
+    default_headers = {
+        "apikey": SUPABASE_KEY,
+        "Authorization": f"Bearer {SUPABASE_KEY}",
+        "Content-Type": "application/json"
+    }
+    if headers:
+        default_headers.update(headers)
+        
+    try:
+        if method.upper() == "GET":
+            r = requests.get(url, headers=default_headers, params=params, timeout=4)
+        elif method.upper() == "POST":
+            r = requests.post(url, headers=default_headers, json=data, timeout=4)
+        elif method.upper() == "PATCH":
+            r = requests.patch(url, headers=default_headers, json=data, params=params, timeout=4)
+        elif method.upper() == "DELETE":
+            r = requests.delete(url, headers=default_headers, params=params, timeout=4)
+        else:
+            return None
+        return r
+    except Exception as e:
+        print(f"[SUPABASE ERROR] {method} {table} failed: {e}")
+        return None
+
+def extract_player_params(subpath):
+    parts = [urllib.parse.unquote(p) for p in subpath.split("/")]
+    
+    # v1/account/<name>/<tag>
+    if len(parts) >= 4 and parts[0] == "v1" and parts[1] == "account":
+        return parts[2], parts[3]
+        
+    # v3/mmr/<region>/pc/<name>/<tag>
+    if len(parts) >= 6 and parts[0] == "v3" and parts[1] == "mmr":
+        return parts[4], parts[5]
+        
+    # v3/matches/<region>/<name>/<tag>
+    if len(parts) >= 5 and parts[0] == "v3" and parts[1] == "matches":
+        return parts[3], parts[4]
+        
+    # v1/stored-mmr-history/<region>/<name>/<tag>
+    if len(parts) >= 5 and parts[0] == "v1" and parts[1] == "stored-mmr-history":
+        return parts[3], parts[4]
+        
+    return None, None
+
+def get_cached_player(name, tag):
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        return None
+        
+    params = {
+        "name": f"ieq.{name}",
+        "tag": f"ieq.{tag}"
+    }
+    r = supabase_request("GET", "players_cache", params=params)
+    if r and r.status_code == 200:
+        players = r.json()
+        if players and len(players) > 0:
+            return players[0]
+    return None
+
+def is_player_fresh(cached_player, ttl_seconds=900): # 15 minutes
+    if not cached_player:
+        return False
+    last_updated_str = cached_player.get("last_updated")
+    if not last_updated_str:
+        return False
+    try:
+        clean_str = last_updated_str.split(".")[0].rstrip("Z")
+        if "+" in clean_str:
+            clean_str = clean_str.split("+")[0]
+        
+        dt = datetime.strptime(clean_str, "%Y-%m-%dT%H:%M:%S")
+        import calendar
+        timestamp = calendar.timegm(dt.utctimetuple())
+        return (time.time() - timestamp) < ttl_seconds
+    except Exception as e:
+        print(f"[CACHE TIMESTAMP ERROR] {e}")
+        return False
+
+def upsert_player(puuid, name, tag, region, level=None, card_id=None, current_tier=None, current_tier_patched=None, peak_tier_patched=None, rr=None, peak_tier=None, peak_rr=None, elo=None, cache_key=None, cache_val=None):
+    if not SUPABASE_URL or not SUPABASE_KEY or not puuid:
+        return
+        
+    # Check if player already exists to preserve other elements of stats_cache
+    existing = None
+    params = {"puuid": f"eq.{puuid}"}
+    r = supabase_request("GET", "players_cache", params=params)
+    if r and r.status_code == 200:
+        players = r.json()
+        if players and len(players) > 0:
+            existing = players[0]
+            
+    stats_cache = (existing.get("stats_cache") or {}) if existing else {}
+    if cache_key and cache_val:
+        stats_cache[cache_key] = cache_val
+        
+    payload = {
+        "puuid": puuid,
+        "name": name,
+        "tag": tag,
+        "region": region,
+        "level": level if level is not None else (existing.get("level") if existing else None),
+        "card_id": card_id if card_id is not None else (existing.get("card_id") if existing else None),
+        "current_tier": current_tier if current_tier is not None else (existing.get("current_tier") if existing else 0),
+        "current_tier_patched": current_tier_patched if current_tier_patched is not None else (existing.get("current_tier_patched") if existing else "Unranked"),
+        "peak_tier_patched": peak_tier_patched if peak_tier_patched is not None else (existing.get("peak_tier_patched") if existing else "Unranked"),
+        "rr": rr if rr is not None else (existing.get("rr") if existing else 0),
+        "peak_tier": peak_tier if peak_tier is not None else (existing.get("peak_tier") if existing else 0),
+        "peak_rr": peak_rr if peak_rr is not None else (existing.get("peak_rr") if existing else 0),
+        "elo": elo if elo is not None else (existing.get("elo") if existing else 0),
+        "stats_cache": stats_cache,
+        "last_updated": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+    }
+    
+    headers = {"Prefer": "resolution=merge-duplicates"}
+    supabase_request("POST", "players_cache", data=payload, headers=headers)
+
+def compress_match_json(match_data):
+    if not match_data:
+        return {}
+    
+    # 1. Clean Metadata
+    raw_meta = match_data.get("metadata", {}) or {}
+    metadata = {
+        "map": raw_meta.get("map"),
+        "game_start": raw_meta.get("game_start") or raw_meta.get("gameStart"),
+        "matchid": raw_meta.get("matchid") or raw_meta.get("match_id"),
+        "mode": raw_meta.get("mode"),
+        "queue": raw_meta.get("queue"),
+        "rounds_played": raw_meta.get("rounds_played")
+    }
+    
+    # 2. Clean Players
+    players_data = match_data.get("players", {}) or {}
+    all_players = []
+    
+    raw_players = []
+    if isinstance(players_data, dict):
+        raw_players = players_data.get("all_players", []) or players_data.get("allPlayers", [])
+    elif isinstance(players_data, list):
+        raw_players = players_data
+        
+    for p in raw_players:
+        if not p: continue
+        raw_stats = p.get("stats", {}) or {}
+        stats = {
+            "score": raw_stats.get("score"),
+            "kills": raw_stats.get("kills"),
+            "deaths": raw_stats.get("deaths"),
+            "assists": raw_stats.get("assists"),
+            "headshots": raw_stats.get("headshots"),
+            "bodyshots": raw_stats.get("bodyshots"),
+            "legshots": raw_stats.get("legshots")
+        }
+        all_players.append({
+            "puuid": p.get("puuid"),
+            "name": p.get("name"),
+            "tag": p.get("tag"),
+            "team": p.get("team"),
+            "character": p.get("character") or p.get("agent", {}).get("name"),
+            "currenttier": p.get("currenttier"),
+            "currenttier_patched": p.get("currenttier_patched") or p.get("currenttierpatched"),
+            "stats": stats
+        })
+        
+    # 3. Clean Teams
+    teams = {}
+    raw_teams = match_data.get("teams", {}) or {}
+    for team_color in ["red", "blue"]:
+        t = raw_teams.get(team_color) or {}
+        teams[team_color] = {
+            "has_won": t.get("has_won") or t.get("hasWon"),
+            "rounds_won": t.get("rounds_won") or t.get("roundsWon")
+        }
+        
+    # 4. Clean Rounds (to fit green/red win dots under the free tier limit!)
+    rounds = []
+    raw_rounds = match_data.get("rounds", []) or []
+    for r in raw_rounds:
+        if not r: continue
+        rounds.append({
+            "winning_team": r.get("winning_team") or r.get("winningTeam")
+        })
+        
+    return {
+        "metadata": metadata,
+        "players": {
+            "all_players": all_players
+        },
+        "teams": teams,
+        "rounds": rounds
+    }
+
 
 app = Flask(__name__, static_folder="public", static_url_path="")
 
@@ -452,14 +673,194 @@ def proxy_api(subpath):
         print(f"[SECURITY] Blocked proxy request to unauthorized subpath: {subpath}")
         return jsonify({"status": 403, "errors": [{"message": "Forbidden: Path not allowed by API proxy"}]}), 403
 
-    # Proxy requests to henrikdev API
+    # 1. Extract Player Details & Interception Flags
+    name, tag = extract_player_params(subpath)
+    
+    is_profile_route = False
+    cache_key_type = None
+    if name and tag and request.method == "GET":
+        if subpath.startswith("v1/account/"):
+            is_profile_route = True
+            cache_key_type = "account"
+        elif subpath.startswith("v3/mmr/"):
+            is_profile_route = True
+            cache_key_type = "mmr"
+        elif subpath.startswith("v1/stored-mmr-history/"):
+            is_profile_route = True
+            cache_key_type = "stored_mmr_history"
+
+    # 2. Database Caching Interception for Profiles (Sub-second reads)
+    if is_profile_route:
+        cached_player = get_cached_player(name, tag)
+        if cached_player and is_player_fresh(cached_player, ttl_seconds=900): # 15 minutes TTL
+            stats_cache = cached_player.get("stats_cache") or {}
+            cached_data = stats_cache.get(cache_key_type)
+            if cached_data:
+                print(f"[DB CACHE HIT] Serving {cache_key_type} for {name}#{tag} instantly from Supabase!")
+                return jsonify(cached_data)
+
+    # 3. Database Caching & Merging Interception for Matches
+    is_matches_route = False
+    if name and tag and request.method == "GET" and subpath.startswith("v3/matches/"):
+        is_matches_route = True
+
+    if is_matches_route:
+        params = request.args.to_dict()
+        params.pop('_nocache', None)
+        mode = params.get("mode", "competitive").lower()
+        
+        # A. Fetch latest 20 matches from HenrikDev API
+        live_matches_data = None
+        try:
+            print(f"[MATCH INTERCEPT] Fetching live matches for {name}#{tag} from HenrikDev...")
+            encoded_subpath = urllib.parse.quote(subpath, safe='/')
+            target_url = f"https://api.henrikdev.xyz/valorant/{encoded_subpath}"
+            headers = {
+                "Authorization": API_KEY,
+                "Content-Type": "application/json"
+            }
+            response = requests.get(target_url, headers=headers, params=params, timeout=8)
+            if response.status_code == 200:
+                live_matches_data = response.json()
+        except Exception as e:
+            print(f"[MATCH INTERCEPT ERROR] Failed to fetch live matches: {e}")
+            
+        # B. Resolve player PUUID
+        puuid = None
+        cached_player = get_cached_player(name, tag)
+        if cached_player:
+            puuid = cached_player.get("puuid")
+            
+        # Fallback: Extract PUUID from live matches list if not in players_cache yet
+        if not puuid and live_matches_data and isinstance(live_matches_data.get("data"), list):
+            for m in live_matches_data["data"]:
+                if not m: continue
+                players = m.get("players", {})
+                raw_players = []
+                if isinstance(players, dict):
+                    raw_players = players.get("all_players", []) or players.get("allPlayers", [])
+                elif isinstance(players, list):
+                    raw_players = players
+                for p in raw_players:
+                    if p.get("name", "").lower() == name.lower() and p.get("tag", "").lower() == tag.lower():
+                        puuid = p.get("puuid")
+                        break
+                if puuid:
+                    break
+            
+            # If resolved, cache this minimal player entry
+            if puuid:
+                region = subpath.split("/")[2] if len(subpath.split("/")) >= 3 else "ap"
+                upsert_player(puuid, name, tag, region)
+
+        # C. Compress & archive matches into matches_cache
+        if puuid and live_matches_data and isinstance(live_matches_data.get("data"), list):
+            for m in live_matches_data["data"]:
+                if not m: continue
+                match_id = m.get("metadata", {}).get("matchid") or m.get("metadata", {}).get("match_id")
+                if not match_id: continue
+                
+                # Locate player stats in this match
+                me = None
+                players = m.get("players", {})
+                raw_players = []
+                if isinstance(players, dict):
+                    raw_players = players.get("all_players", []) or players.get("allPlayers", [])
+                elif isinstance(players, list):
+                    raw_players = players
+                for p in raw_players:
+                    if p.get("puuid") == puuid or (p.get("name", "").lower() == name.lower() and p.get("tag", "").lower() == tag.lower()):
+                        me = p
+                        break
+                        
+                if me:
+                    map_name = m.get("metadata", {}).get("map", "Unknown")
+                    game_start = m.get("metadata", {}).get("game_start") or m.get("metadata", {}).get("gameStart") or int(time.time())
+                    agent_name = me.get("character") or me.get("agent", {}).get("name", "Unknown")
+                    kills = me.get("stats", {}).get("kills", 0)
+                    deaths = me.get("stats", {}).get("deaths", 0)
+                    assists = me.get("stats", {}).get("assists", 0)
+                    score = me.get("stats", {}).get("score", 0)
+                    team = me.get("team", "Red")
+                    
+                    my_team_color = team.lower()
+                    opp_team_color = "blue" if my_team_color == "red" else "red"
+                    raw_teams = m.get("teams", {}) or {}
+                    
+                    my_team_info = raw_teams.get(my_team_color) or {}
+                    opp_team_info = raw_teams.get(opp_team_color) or {}
+                    
+                    won = my_team_info.get("has_won") or my_team_info.get("hasWon") or False
+                    if won is None:
+                        my_rounds = my_team_info.get("rounds_won") or my_team_info.get("roundsWon") or 0
+                        opp_rounds = opp_team_info.get("rounds_won") or opp_team_info.get("roundsWon") or 0
+                        won = my_rounds > opp_rounds
+                        
+                    rounds_str = f"{my_team_info.get('rounds_won', 0) or my_team_info.get('roundsWon', 0)}-{opp_team_info.get('rounds_won', 0) or opp_team_info.get('roundsWon', 0)}"
+                    stripped_raw_match = compress_match_json(m)
+                    
+                    match_payload = {
+                        "puuid": puuid,
+                        "match_id": match_id,
+                        "mode": mode,
+                        "map_name": map_name,
+                        "game_start": game_start,
+                        "agent_name": agent_name,
+                        "kills": kills,
+                        "deaths": deaths,
+                        "assists": assists,
+                        "score": score,
+                        "won": won,
+                        "team": team,
+                        "rounds_summary": rounds_str,
+                        "stripped_raw_match": stripped_raw_match
+                    }
+                    supabase_request("POST", "matches_cache", data=match_payload, headers={"Prefer": "resolution=merge-duplicates"})
+
+        # D. Fetch all archived matches from the database
+        db_matches = []
+        if puuid:
+            params_db = {
+                "puuid": f"eq.{puuid}",
+                "mode": f"eq.{mode}",
+                "order": "game_start.desc"
+            }
+            r_db = supabase_request("GET", "matches_cache", params=params_db)
+            if r_db and r_db.status_code == 200:
+                rows = r_db.json()
+                db_matches = [row["stripped_raw_match"] for row in rows if "stripped_raw_match" in row]
+
+        # E. Merge & Deduplicate
+        merged_map = {}
+        for dm in db_matches:
+            m_id = dm.get("metadata", {}).get("matchid") or dm.get("metadata", {}).get("match_id")
+            if m_id:
+                merged_map[m_id] = dm
+                
+        if live_matches_data and isinstance(live_matches_data.get("data"), list):
+            for lm in live_matches_data["data"]:
+                m_id = lm.get("metadata", {}).get("matchid") or lm.get("metadata", {}).get("match_id")
+                if m_id:
+                    merged_map[m_id] = compress_match_json(lm)
+                    
+        def get_game_start(m_obj):
+            meta = m_obj.get("metadata", {})
+            return int(meta.get("game_start") or meta.get("gameStart") or 0)
+            
+        merged_list = list(merged_map.values())
+        merged_list.sort(key=get_game_start, reverse=True)
+        
+        if merged_list:
+            print(f"[MERGE SUCCESS] Serving {len(merged_list)} matches (live + archive) for {name}#{tag}!")
+            return jsonify({"status": 200, "data": merged_list})
+        elif live_matches_data:
+            return jsonify(live_matches_data)
+
+    # Fallback to standard memory caching if database is offline/unconfigured
     encoded_subpath = urllib.parse.quote(subpath, safe='/')
     target_url = f"https://api.henrikdev.xyz/valorant/{encoded_subpath}"
-    
-    # Include query parameters in cache key so different modes don't collide
     cache_key = f"{target_url}?{request.query_string.decode('utf-8')}"
     
-    # Check cache for GET requests
     if request.method == "GET" and cache_key in cache:
         cache_entry = cache[cache_key]
         if time.time() - cache_entry["timestamp"] < CACHE_TTL:
@@ -490,7 +891,46 @@ def proxy_api(subpath):
             
         data = response.json()
         
-        # Save to cache if successful
+        # Save to database cache if successful GET on a profile route
+        if response.status_code == 200 and request.method == "GET" and is_profile_route:
+            try:
+                if cache_key_type == "account":
+                    a = data.get("data", {})
+                    puuid = a.get("puuid")
+                    p_name = a.get("name")
+                    p_tag = a.get("tag")
+                    p_region = a.get("region") or subpath.split("/")[2] if len(subpath.split("/")) >= 3 else "ap"
+                    p_level = a.get("account_level")
+                    p_card_id = a.get("card", {}).get("id") or (a.get("card") if isinstance(a.get("card"), str) else None)
+                    if puuid:
+                        print(f"[WRITE THROUGH] Caching account details for {p_name}#{p_tag} to database...")
+                        upsert_player(puuid, p_name, p_tag, p_region, level=p_level, card_id=p_card_id, cache_key="account", cache_val=data)
+                elif cache_key_type == "mmr":
+                    d = data.get("data", {})
+                    puuid = d.get("puuid")
+                    p_name = d.get("name")
+                    p_tag = d.get("tag")
+                    p_region = subpath.split("/")[2] if len(subpath.split("/")) >= 3 else "ap"
+                    current_tier = d.get("current", {}).get("tier", {}).get("id", 0)
+                    current_tier_patched = d.get("current", {}).get("tier", {}).get("name", "Unranked")
+                    peak_tier_patched = d.get("peak", {}).get("tier", {}).get("name", "Unranked")
+                    peak_tier = d.get("peak", {}).get("tier", {}).get("id", 0)
+                    rr = d.get("current", {}).get("rr", 0)
+                    elo = d.get("current", {}).get("elo", 0)
+                    if puuid:
+                        print(f"[WRITE THROUGH] Caching MMR details for {p_name}#{p_tag} to database...")
+                        upsert_player(puuid, p_name, p_tag, p_region, current_tier=current_tier, current_tier_patched=current_tier_patched, peak_tier_patched=peak_tier_patched, peak_tier=peak_tier, rr=rr, elo=elo, cache_key="mmr", cache_val=data)
+                elif cache_key_type == "stored_mmr_history":
+                    cached_p = get_cached_player(name, tag)
+                    if cached_p:
+                        puuid = cached_p.get("puuid")
+                        p_region = subpath.split("/")[2] if len(subpath.split("/")) >= 3 else "ap"
+                        print(f"[WRITE THROUGH] Caching MMR stored history for {name}#{tag} to database...")
+                        upsert_player(puuid, name, tag, p_region, cache_key="stored_mmr_history", cache_val=data)
+            except Exception as e_write:
+                print(f"[WRITE THROUGH ERROR] Failed to cache profile: {e_write}")
+
+        # Save to memory cache
         if response.status_code == 200 and request.method == "GET":
             cache[cache_key] = {
                 "data": data,
@@ -501,6 +941,7 @@ def proxy_api(subpath):
     except Exception as e:
         print(f"[ERROR] Proxy API failure: {e}")
         return jsonify({"status": 500, "errors": [{"message": "Internal server error"}]}), 500
+
 
 # --- ESPORTS ROUTES ---
 def get_henrik_schedule():
