@@ -139,6 +139,7 @@
       <option value="swiftplay">Swiftplay</option>
       <option value="spikerush">Spike Rush</option>
     </select>
+    <button class="fetch-btn" id="h2h-trigger-btn" onclick="toggleHeadToHead()" style="background:linear-gradient(135deg, #b366ff 0%, #8c26ff 100%); color:#fff; border-color:rgba(179,102,255,0.4); margin-right:8px; box-shadow:0 0 10px rgba(179,102,255,0.2)">⚔️ Compare (VS)</button>
     <button class="fetch-btn" id="fetch-btn" onclick="fetchAll()">↻ Fetch Stats</button>
   </div>
 </div>
@@ -4461,6 +4462,8 @@ function dismissLanding() {
   
   const fb = document.getElementById('fetch-btn');
   if (fb) fb.style.display = 'inline-block';
+  const h2hb = document.getElementById('h2h-trigger-btn');
+  if (h2hb) h2hb.style.display = 'inline-block';
 }
 
 function toggleSearchMode(showSearch) {
@@ -6475,6 +6478,8 @@ function toggleMainView(view) {
     document.getElementById('esports-view').style.display = 'none';
     document.querySelector('.player-search-wrap').style.display = 'flex';
     document.getElementById('fetch-btn').style.display = 'inline-block';
+    const h2hb = document.getElementById('h2h-trigger-btn');
+    if (h2hb) h2hb.style.display = 'inline-block';
     if(esportsLiveInterval) clearInterval(esportsLiveInterval);
     if(esportsCountdownInterval) clearInterval(esportsCountdownInterval);
     dismissLanding();
@@ -6483,6 +6488,8 @@ function toggleMainView(view) {
     document.getElementById('esports-view').style.display = 'block';
     document.querySelector('.player-search-wrap').style.display = 'none';
     document.getElementById('fetch-btn').style.display = 'none';
+    const h2hb = document.getElementById('h2h-trigger-btn');
+    if (h2hb) h2hb.style.display = 'none';
     
     const activeTab = document.querySelector('.esports-pill.active').textContent.toLowerCase();
     switchEsportsTab(activeTab);
