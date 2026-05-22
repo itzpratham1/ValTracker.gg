@@ -139,7 +139,6 @@
       <option value="swiftplay">Swiftplay</option>
       <option value="spikerush">Spike Rush</option>
     </select>
-    <button class="fetch-btn" id="h2h-trigger-btn" onclick="toggleHeadToHead()" style="background:linear-gradient(135deg, #b366ff 0%, #8c26ff 100%); color:#fff; border-color:rgba(179,102,255,0.4); margin-right:8px; box-shadow:0 0 10px rgba(179,102,255,0.2)">⚔️ Compare (VS)</button>
     <button class="fetch-btn" id="fetch-btn" onclick="fetchAll()">↻ Fetch Stats</button>
   </div>
 </div>
@@ -5984,26 +5983,6 @@ function toggleHeadToHead() {
   const chipsScroll = document.getElementById('h2h-quick-scroll');
   chipsScroll.innerHTML = '';
   
-  // Pro benchmarks
-  const pros = [
-    { name: 'TenZ', tag: 'NA1' },
-    { name: 'aspas', tag: 'LEV' },
-    { name: 'f0rsakeN', tag: 'PRX' },
-    { name: 'Asuna', tag: '1111' }
-  ];
-  
-  pros.forEach(pro => {
-    const chip = document.createElement('div');
-    chip.className = 'h2h-quick-chip pro';
-    chip.innerHTML = `👑 ${pro.name}#${pro.tag}`;
-    chip.onclick = () => {
-      document.getElementById('h2h-p2-name').value = pro.name;
-      document.getElementById('h2h-p2-tag').value = pro.tag;
-      fetchH2H();
-    };
-    chipsScroll.appendChild(chip);
-  });
-  
   // Extract teammates/enemies from loaded profile matches
   const recentPlMap = {};
   const matches = window._allRenderedMatches || window._recentMatchStats || [];
@@ -6019,20 +5998,27 @@ function toggleHeadToHead() {
   
   const sortedPls = Object.entries(recentPlMap)
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 12);
+    .slice(0, 15);
     
-  sortedPls.forEach(([key, count]) => {
-    const [name, tag] = key.split('#');
-    const chip = document.createElement('div');
-    chip.className = 'h2h-quick-chip';
-    chip.innerHTML = `👤 ${name}#${tag}`;
-    chip.onclick = () => {
-      document.getElementById('h2h-p2-name').value = name;
-      document.getElementById('h2h-p2-tag').value = tag;
-      fetchH2H();
-    };
-    chipsScroll.appendChild(chip);
-  });
+  if (sortedPls.length === 0) {
+    const tip = document.createElement('div');
+    tip.style = "color:var(--muted); font-size:12px; font-style:italic; padding:6px 12px;";
+    tip.innerText = "No recent scoreboard players detected. Fetch a player profile first to populate quick matchup suggestions!";
+    chipsScroll.appendChild(tip);
+  } else {
+    sortedPls.forEach(([key, count]) => {
+      const [name, tag] = key.split('#');
+      const chip = document.createElement('div');
+      chip.className = 'h2h-quick-chip';
+      chip.innerHTML = `👤 ${name}#${tag}`;
+      chip.onclick = () => {
+        document.getElementById('h2h-p2-name').value = name;
+        document.getElementById('h2h-p2-tag').value = tag;
+        fetchH2H();
+      };
+      chipsScroll.appendChild(chip);
+    });
+  }
 }
 
 function compilePlayerStats(matchData, pname, ptag) {
@@ -6124,10 +6110,10 @@ async function fetchH2H() {
   
   try {
     const [p1MmrRes, p2MmrRes, p1AccRes, p2AccRes, p1MatchRes, p2MatchRes] = await Promise.all([
-      fetch(`/api/v3/mmr/${region}/${encodeURIComponent(p1Name)}/${encodeURIComponent(p1Tag)}`),
-      fetch(`/api/v3/mmr/${region}/${encodeURIComponent(p2Name)}/${encodeURIComponent(p2Tag)}`),
-      fetch(`/api/v1/account/${region}/${encodeURIComponent(p1Name)}/${encodeURIComponent(p1Tag)}`),
-      fetch(`/api/v1/account/${region}/${encodeURIComponent(p2Name)}/${encodeURIComponent(p2Tag)}`),
+      fetch(`/api/v3/mmr/${region}/pc/${encodeURIComponent(p1Name)}/${encodeURIComponent(p1Tag)}`),
+      fetch(`/api/v3/mmr/${region}/pc/${encodeURIComponent(p2Name)}/${encodeURIComponent(p2Tag)}`),
+      fetch(`/api/v1/account/${encodeURIComponent(p1Name)}/${encodeURIComponent(p1Tag)}`),
+      fetch(`/api/v1/account/${encodeURIComponent(p2Name)}/${encodeURIComponent(p2Tag)}`),
       fetch(`/api/v3/matches/${region}/${encodeURIComponent(p1Name)}/${encodeURIComponent(p1Tag)}?mode=competitive&size=20`),
       fetch(`/api/v3/matches/${region}/${encodeURIComponent(p2Name)}/${encodeURIComponent(p2Tag)}?mode=competitive&size=20`)
     ]);
