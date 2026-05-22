@@ -261,6 +261,10 @@ def rate_limit(requests_per_minute=30):
             if "," in ip:
                 ip = ip.split(",")[0].strip()
             
+            # Bypass rate limiter for localhost and local network subnets to preserve dev stability
+            if ip in ["127.0.0.1", "localhost", "::1"] or ip.startswith("192.168.") or ip.startswith("10.") or ip.startswith("172."):
+                return f(*args, **kwargs)
+            
             now = time.time()
             if ip not in rate_limit_records:
                 rate_limit_records[ip] = []
@@ -526,7 +530,7 @@ def clear_server_cache():
     return jsonify({"status": "ok", "message": "Server cache cleared"})
 
 @app.route("/api/v1/live-match/<region>/<name>/<tag>", methods=["GET"])
-@rate_limit(requests_per_minute=10)
+@rate_limit(requests_per_minute=60)
 def live_match(region, name, tag):
     # 1. Try local active match scan via lockfile
     localappdata = os.getenv("LOCALAPPDATA")
@@ -660,7 +664,7 @@ def live_match(region, name, tag):
     })
 
 @app.route("/api/<path:subpath>", methods=["GET", "POST"])
-@rate_limit(requests_per_minute=20)
+@rate_limit(requests_per_minute=120)
 def proxy_api(subpath):
     # Security check: Allowlist proxy paths to prevent open proxy exploitation
     allowed = False
@@ -705,6 +709,23 @@ def proxy_api(subpath):
         is_matches_route = True
 
     if is_matches_route:
+        # A. Check memory cache first to prevent redundant slow API fetches
+        encoded_subpath = urllib.parse.quote(subpath, safe='/')
+        target_url = f"https://api.henrikdev.xyz/valorant/{encoded_subpath}"
+        bypass_cache = "true" in request.args.get("_nocache", "").lower() or len(request.args.get("_nocache", "")) > 0
+        
+        # Build normalized memory cache key
+        params_cache = request.args.to_dict()
+        params_cache.pop('_nocache', None)
+        qs = urllib.parse.urlencode(sorted(params_cache.items()))
+        cache_key = f"{target_url}?{qs}" if qs else target_url
+        
+        if not bypass_cache and cache_key in cache:
+            cache_entry = cache[cache_key]
+            if time.time() - cache_entry["timestamp"] < CACHE_TTL:
+                print(f"[MEMORY CACHE HIT] Serving matches for {name}#{tag} instantly from memory cache!")
+                return jsonify(cache_entry["data"])
+
         params = request.args.to_dict()
         params.pop('_nocache', None)
         mode = params.get("mode", "competitive").lower()
@@ -852,8 +873,19 @@ def proxy_api(subpath):
         
         if merged_list:
             print(f"[MERGE SUCCESS] Serving {len(merged_list)} matches (live + archive) for {name}#{tag}!")
-            return jsonify({"status": 200, "data": merged_list})
+            res_data = {"status": 200, "data": merged_list}
+            if not bypass_cache:
+                cache[cache_key] = {
+                    "data": res_data,
+                    "timestamp": time.time()
+                }
+            return jsonify(res_data)
         elif live_matches_data:
+            if not bypass_cache:
+                cache[cache_key] = {
+                    "data": live_matches_data,
+                    "timestamp": time.time()
+                }
             return jsonify(live_matches_data)
 
     # Fallback to standard memory caching if database is offline/unconfigured

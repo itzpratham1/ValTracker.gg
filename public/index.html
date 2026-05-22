@@ -1599,22 +1599,26 @@ function buildRounds(match,myTeamId){
   // Resolve my puuid + teammate puuids for clutch detection
   const allP = getPlayerList(match);
   const meR=allP.find(p=>p.name?.toLowerCase()===PLAYER_NAME.toLowerCase()&&p.tag?.toLowerCase()===PLAYER_TAG.toLowerCase());
-  const myPuuidR=meR?.puuid||'';
-  const teammatePuuids=allP.filter(p=>(p.team||'').toLowerCase()===myTeamId&&p.puuid!==myPuuidR).map(p=>p.puuid);
+  const myPuuidR=meR?.puuid||meR?.subject||meR?.id||'';
+  const myPuuids=[meR?.puuid, meR?.subject, meR?.id, myPuuidR].filter(Boolean);
+  const teammatePuuids=allP.filter(p=>(p.team||'').toLowerCase()===myTeamId&&!myPuuids.includes(p.puuid)).map(p=>p.puuid);
   let html='<div class="rounds-wrap">';
   rounds.forEach((r,i)=>{
     const myTeamWon=(r.winning_team||'').toLowerCase()===myTeamId;
-    // Detect clutch: count teammate deaths from all kill_events in this round
+    // Detect clutch: count teammate deaths and check if I died in this round
     let isClutch=false;
     if(myTeamWon && (r.player_stats||[]).length>0){
       let tmDeaths=0;
+      let meDied=false;
       (r.player_stats||[]).forEach(ps=>{
         (ps.kill_events||[]).forEach(k=>{
-          if(teammatePuuids.includes(k.victim_puuid)) tmDeaths++;
+          const victim = k.victim_puuid || k.victim;
+          if(victim && myPuuids.includes(victim)) meDied = true;
+          if(victim && teammatePuuids.includes(victim)) tmDeaths++;
         });
       });
-      // All 4 teammates died = I was last alive and we still won
-      if(tmDeaths>=teammatePuuids.length && teammatePuuids.length>0) isClutch=true;
+      // All teammates died AND I did not die AND we won = I clutched it
+      if(tmDeaths>=teammatePuuids.length && teammatePuuids.length>0 && !meDied) isClutch=true;
     }
     html+=`<div class="round-dot ${myTeamWon?'won':'lost'}${isClutch?' clutch':''}" title="Round ${i+1}${isClutch?' · Clutch':''}">${i+1}</div>`;
   });
@@ -1633,8 +1637,9 @@ function buildClutches(match,myTeamId){
   // Resolve my puuid + teammate puuids
   const allP = getPlayerList(match);
   const meC = allP.find(p=>p.name?.toLowerCase()===PLAYER_NAME.toLowerCase()&&p.tag?.toLowerCase()===PLAYER_TAG.toLowerCase());
-  const myPuuidC = meC?.puuid||meC?.subject||meC?.id;
-  const teammatePuuids = allP.filter(p=>(p.team||'').toLowerCase()===myTeamId&&p.puuid!==myPuuidC).map(p=>p.puuid);
+  const myPuuidC = meC?.puuid||meC?.subject||meC?.id||'';
+  const myPuuids = [meC?.puuid, meC?.subject, meC?.id, myPuuidC].filter(Boolean);
+  const teammatePuuids = allP.filter(p=>(p.team||'').toLowerCase()===myTeamId&&!myPuuids.includes(p.puuid)).map(p=>p.puuid);
 
   rounds.forEach((r,i)=>{
     const myWon=(r.winning_team||'').toLowerCase()===myTeamId;
@@ -1648,16 +1653,19 @@ function buildClutches(match,myTeamId){
       const myKillEvents = myPs?.kill_events||[];
       const myKills = typeof myPs?.kills === 'number' ? myPs.kills : myKillEvents.length;
 
-      // Count teammate deaths from ALL kill_events in this round
+      // Count teammate deaths and check if I died in this round
       let tmDeaths=0;
+      let meDied=false;
       playerStats.forEach(ps=>{
         (ps.kill_events||[]).forEach(k=>{
-          if(teammatePuuids.includes(k.victim_puuid)) tmDeaths++;
+          const victim = k.victim_puuid || k.victim;
+          if(victim && myPuuids.includes(victim)) meDied = true;
+          if(victim && teammatePuuids.includes(victim)) tmDeaths++;
         });
       });
-      // Clutch: all teammates died AND we still won the round
-      const isClutch = myWon && tmDeaths>=teammatePuuids.length && teammatePuuids.length>0;
-      const enemiesAlive = tmDeaths; // rough proxy for 1vX
+      // Clutch: all teammates died AND I survived AND we still won the round
+      const isClutch = myWon && tmDeaths>=teammatePuuids.length && teammatePuuids.length>0 && !meDied;
+      const enemiesAlive = Math.max(1, myKills); // mathematical proxy for clutch size based on kills secured
       if(isClutch) clutches.push({round:i+1, kills:myKills, vsCount:`1v${Math.min(enemiesAlive,5)}`});
       // Ace: 5 kills
       if(myKills>=5) aces.push({round:i+1});
@@ -4791,8 +4799,31 @@ function renderTopWeapons(matches) {
   const wrap = document.getElementById('weapons-grid-wrap');
   if(!wrap) return;
 
-  const entries=Object.entries(weaponData).filter(([,v])=>v.kills>=1)
+  let entries=Object.entries(weaponData).filter(([,v])=>v.kills>=1)
     .sort((a,b)=>b[1].kills-a[1].kills).slice(0,6);
+
+  let usingCachedData = false;
+  if(!entries.length){
+    if(PLAYER_NAME && PLAYER_TAG){
+      const key = `vt_wpn_hist_${PLAYER_NAME.toLowerCase()}_${PLAYER_TAG.toLowerCase()}`;
+      let history = [];
+      try { history = JSON.parse(localStorage.getItem(key)) || []; } catch(e) {}
+      if(history.length > 0){
+        const lastSnapshot = history[history.length - 1];
+        if(lastSnapshot && lastSnapshot.weapons && Object.keys(lastSnapshot.weapons).length > 0){
+          Object.entries(lastSnapshot.weapons).forEach(([wpn, data]) => {
+            weaponData[wpn] = {
+              kills: data.kills || 0,
+              hs: data.hs || 0
+            };
+          });
+          entries = Object.entries(weaponData).filter(([,v])=>v.kills>=1)
+            .sort((a,b)=>b[1].kills-a[1].kills).slice(0,6);
+          usingCachedData = true;
+        }
+      }
+    }
+  }
 
   if(!entries.length){
     wrap.innerHTML='<div class="placeholder-txt" style="padding:16px 0">Weapon data loads from full match details — expand matches and click Load Full Details on a few games, then re-fetch.</div>';
@@ -4800,7 +4831,9 @@ function renderTopWeapons(matches) {
   }
 
   // ── Save snapshot AFTER computing weaponData so history is always up-to-date ──
-  _saveWeaponSnapshot(weaponData);
+  if (!usingCachedData) {
+    _saveWeaponSnapshot(weaponData);
+  }
 
   const topWeapon = entries[0];
   const secondaryWeapons = entries.slice(1, 5); // limit to 4 secondary weapons
@@ -6160,14 +6193,14 @@ function renderH2HComparison(p1Data, p2Data, p1Mmr, p2Mmr, p1Acc, p2Acc, p1Name,
   const p1Level = p1Acc?.data?.account_level || '—';
   const p2Level = p2Acc?.data?.account_level || '—';
   
-  const p1RankIcon = p1Mmr?.data?.current_data?.images?.small || 'https://media.valorant-api.com/competitivetiers/03b096c3-416b-66a1-6351-ab9b122e0523/0/smallicon.png';
-  const p2RankIcon = p2Mmr?.data?.current_data?.images?.small || 'https://media.valorant-api.com/competitivetiers/03b096c3-416b-66a1-6351-ab9b122e0523/0/smallicon.png';
+  const p1RankName = p1Mmr?.data?.current?.tier?.name || 'Unranked';
+  const p2RankName = p2Mmr?.data?.current?.tier?.name || 'Unranked';
   
-  const p1RankName = p1Mmr?.data?.current_data?.currenttierpatched || 'Unranked';
-  const p2RankName = p2Mmr?.data?.current_data?.currenttierpatched || 'Unranked';
+  const p1RankIcon = getRankImgUrl(p1RankName) || 'https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/0/smallicon.png';
+  const p2RankIcon = getRankImgUrl(p2RankName) || 'https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/0/smallicon.png';
   
-  const p1RR = p1Mmr?.data?.current_data?.ranking_in_tier != null ? `${p1Mmr.data.current_data.ranking_in_tier} RR` : '';
-  const p2RR = p2Mmr?.data?.current_data?.ranking_in_tier != null ? `${p2Mmr.data.current_data.ranking_in_tier} RR` : '';
+  const p1RR = p1Mmr?.data?.current?.rr != null ? `${p1Mmr.data.current.rr} RR` : '';
+  const p2RR = p2Mmr?.data?.current?.rr != null ? `${p2Mmr.data.current.rr} RR` : '';
   
   // Math comparisons
   const maxKD = Math.max(s1.kd, s2.kd, 0.1);
@@ -6725,8 +6758,7 @@ function smoothScrollTo(elementId, event) {
 function initScrollSpy() {
   const sections = [
     'sec-combat', 'sec-performance', 'sec-trend', 'sec-agents',
-    'sec-maps', 'sec-clutch', 'sec-accuracy', 'sec-weapons',
-    'sec-matches', 'sec-ai', 'sec-deep', 'sec-lab'
+    'sec-maps', 'sec-weapons', 'sec-matches'
   ];
   
   const navItems = {
@@ -6735,13 +6767,8 @@ function initScrollSpy() {
     'sec-trend': document.querySelector('#tracker-nav a[onclick*="sec-trend"]'),
     'sec-agents': document.querySelector('#tracker-nav a[onclick*="sec-agents"]'),
     'sec-maps': document.querySelector('#tracker-nav a[onclick*="sec-maps"]'),
-    'sec-clutch': document.querySelector('#tracker-nav a[onclick*="sec-clutch"]'),
-    'sec-accuracy': document.querySelector('#tracker-nav a[onclick*="sec-accuracy"]'),
     'sec-weapons': document.querySelector('#tracker-nav a[onclick*="sec-weapons"]'),
-    'sec-matches': document.querySelector('#tracker-nav a[onclick*="sec-matches"]'),
-    'sec-ai': document.querySelector('#tracker-nav a[onclick*="sec-ai"]'),
-    'sec-deep': document.querySelector('#tracker-nav a[onclick*="sec-deep"]'),
-    'sec-lab': document.querySelector('#tracker-nav a[onclick*="sec-lab"]')
+    'sec-matches': document.querySelector('#tracker-nav a[onclick*="sec-matches"]')
   };
 
   window.addEventListener('scroll', () => {
