@@ -7282,7 +7282,7 @@ async function switchVctModalTab(stage, region) {
       const borderHoverStyle = isClickable ? `onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.05)'"` : '';
       
       const teamLogo = t.logo ? `<img src="${t.logo}" style="width:28px;height:28px;object-fit:contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />` : '';
-      const fallbackBadge = `<div class="team-logo-fallback" style="${t.logo ? 'display:none;' : 'display:flex;'} width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); align-items:center; justify-content:center; font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700; color:var(--accent);">${t.name.substring(0, 2).toUpperCase()}</div>`;
+      const fallbackBadge = `<div class="team-logo-fallback" style="${t.logo ? 'display:none;' : 'display:flex;'} width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); align-items:center; justify-content:center; font-family:Barlow Condensed,sans-serif; font-size:11px; font-weight:700; color:var(--accent);">${t.name.substring(0, 2).toUpperCase()}</div>`;
       
       const tagLabel = teamReg ? teamReg.toUpperCase() : (t.slug ? t.slug.substring(0,6).toUpperCase() : 'VCT');
       
@@ -7330,7 +7330,7 @@ function toggleTiers() {
 
 function getEsportsTeamLogoHtml(name) {
   if (!name || name === 'TBD') return '';
-  const fallback = `<div style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;color:var(--accent);margin-right:8px;">${name.substring(0, 2).toUpperCase()}</div>`;
+  const fallback = `<div style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-family:Barlow Condensed,sans-serif;font-size:9px;font-weight:700;color:var(--accent);margin-right:8px;">${name.substring(0, 2).toUpperCase()}</div>`;
   if (vctFranchiseData) {
     for (const reg in vctFranchiseData) {
       const match = vctFranchiseData[reg].find(t => t.name.toLowerCase() === name.toLowerCase() || t.id.toLowerCase() === name.toLowerCase().replace(/\s+/g, '_'));
