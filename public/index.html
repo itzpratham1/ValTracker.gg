@@ -525,44 +525,49 @@
         <!-- Timeline column 1 -->
         <div class="vct-roadmap-col">
           <div class="vct-roadmap-header concluded">International League</div>
-          <div class="vct-roadmap-card concluded">
+          <div class="vct-roadmap-card concluded" onclick="openVctTournamentModal('kickoff')" style="cursor: pointer;">
             <div class="vct-roadmap-title">VCT Kickoff</div>
             <div class="vct-roadmap-subtitle" style="color:var(--loss)">Concluded</div>
-            <div class="vct-roadmap-subtitle" style="font-size: 9px; margin-top: 4px;">Winner: Gen.G / SEN / KC / EDG</div>
+            <div class="vct-roadmap-subtitle" style="font-size: 9px; margin-top: 4px; line-height: 1.3;">
+              AMER: FUR | PAC: NS<br>EMEA: BBL | CN: AG
+            </div>
           </div>
         </div>
         <!-- Timeline column 2 -->
         <div class="vct-roadmap-col">
           <div class="vct-roadmap-header concluded">Global Event</div>
-          <div class="vct-roadmap-card concluded tall">
+          <div class="vct-roadmap-card concluded tall" onclick="openVctTournamentModal('masters_santiago')" style="cursor: pointer;">
             <div class="vct-roadmap-title" style="color: #c084fc;">Masters Santiago</div>
             <div class="vct-roadmap-subtitle" style="color:var(--loss)">Concluded</div>
             <div class="vct-roadmap-dates">Feb 28 - Mar 16, 2026</div>
-            <div class="vct-roadmap-subtitle" style="font-size: 9px; margin-top: 12px; color:#c084fc;">Winner: Sentinels</div>
+            <div class="vct-roadmap-subtitle" style="font-size: 9px; margin-top: 12px; color:#c084fc;">Winner: Nongshim RedForce</div>
           </div>
         </div>
         <!-- Timeline column 3 -->
         <div class="vct-roadmap-col">
           <div class="vct-roadmap-header ongoing">International League</div>
-          <div class="vct-roadmap-card ongoing">
+          <div class="vct-roadmap-card ongoing" onclick="openVctTournamentModal('stage1')" style="cursor: pointer;">
             <div class="vct-roadmap-title">VCT Stage 1</div>
             <div class="vct-roadmap-subtitle" style="color:var(--win)">Ongoing</div>
             <div class="vct-roadmap-dates">Apr 11 - May 25, 2026</div>
+            <div class="vct-roadmap-subtitle" style="font-size: 9px; margin-top: 4px; line-height: 1.3; color: var(--accent);">
+              PAC: PRX | EMEA: TH<br>CN: EDG | AMER: Ongoing
+            </div>
           </div>
         </div>
         <!-- Timeline column 4 -->
         <div class="vct-roadmap-col">
           <div class="vct-roadmap-header">Global Event</div>
-          <div class="vct-roadmap-card tall">
+          <div class="vct-roadmap-card tall" onclick="openVctTournamentModal('masters_london')" style="cursor: pointer;">
             <div class="vct-roadmap-title" style="color: #a855f7;">Masters London</div>
             <div class="vct-roadmap-subtitle" style="color:var(--muted)">Upcoming</div>
-            <div class="vct-roadmap-dates">June 2026</div>
+            <div class="vct-roadmap-dates">June 5 - June 21, 2026</div>
           </div>
         </div>
         <!-- Timeline column 5 -->
         <div class="vct-roadmap-col">
           <div class="vct-roadmap-header">International League</div>
-          <div class="vct-roadmap-card">
+          <div class="vct-roadmap-card" onclick="openVctTournamentModal('stage2')" style="cursor: pointer;">
             <div class="vct-roadmap-title">VCT Stage 2</div>
             <div class="vct-roadmap-subtitle" style="color:var(--muted)">Upcoming</div>
             <div class="vct-roadmap-dates">July 2026</div>
@@ -571,7 +576,7 @@
         <!-- Timeline column 6 -->
         <div class="vct-roadmap-col">
           <div class="vct-roadmap-header">Global Event</div>
-          <div class="vct-roadmap-card tall champions">
+          <div class="vct-roadmap-card tall champions" onclick="openVctTournamentModal('champions')" style="cursor: pointer;">
             <div class="vct-roadmap-title" style="color: #fbbf24;">Champions Shanghai</div>
             <div class="vct-roadmap-subtitle" style="color:var(--muted)">Upcoming</div>
             <div class="vct-roadmap-dates">September 2026</div>
@@ -696,6 +701,25 @@
       <canvas class="stat-chart-canvas" id="stat-chart-canvas"></canvas>
     </div>
     <div class="stat-modal-footer">Last <span id="stat-modal-count">—</span> matches · oldest → newest · click bars to see match details</div>
+  </div>
+</div>
+
+<!-- VCT ROADMAP TOURNAMENT MODAL -->
+<div class="stat-modal-overlay" id="vct-modal-overlay" onclick="if(event.target===this)closeVctModal()">
+  <div class="stat-modal" style="max-width: 640px; border-color: rgba(255, 70, 85, 0.4); background: linear-gradient(180deg, var(--surface) 0%, rgba(20,20,20,0.95) 100%);">
+    <div class="stat-modal-header" style="border-bottom: 1px solid rgba(255, 70, 85, 0.2); padding-bottom: 12px;">
+      <div class="stat-modal-title" id="vct-modal-title" style="color: var(--loss); font-size: 20px; font-family:'Barlow Condensed',sans-serif; font-weight:900; letter-spacing:0.5px; text-transform:uppercase;">VCT Tournament details</div>
+      <button class="stat-modal-close" onclick="closeVctModal()">✕</button>
+    </div>
+    <div class="stat-modal-body" style="padding: 20px 0; max-height: 480px; overflow-y: auto;">
+      <!-- Regional Winners -->
+      <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:14px; text-transform:uppercase; color:var(--accent); margin-bottom:12px; letter-spacing:0.5px; display:flex; align-items:center; gap:6px;">🏆 Regional Winners</h4>
+      <div id="vct-modal-winners" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; margin-bottom:24px;"></div>
+      
+      <!-- Participating Teams -->
+      <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:14px; text-transform:uppercase; color:#fff; margin-bottom:12px; letter-spacing:0.5px; display:flex; align-items:center; gap:6px;">👥 Participating Teams</h4>
+      <div id="vct-modal-teams" class="player-card-grid" style="grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px;"></div>
+    </div>
   </div>
 </div>
 
@@ -6698,6 +6722,171 @@ function switchEsportsTab(tab) {
   }
 }
 
+const VCT_STAGE_DATA = {
+  kickoff: {
+    title: "VCT Kickoff 2026",
+    dates: "Feb 15 - Mar 2, 2026",
+    winners: [
+      { region: "Americas", team: "FURIA Esports", tag: "FUR", logo: "https://owcdn.net/img/62a74c4314dc8.png", color: "#3b82f6" },
+      { region: "Pacific", team: "Nongshim RedForce", tag: "NS", logo: "https://owcdn.net/img/631fb2d87e076.png", color: "#ef4444" },
+      { region: "EMEA", team: "BBL Esports", tag: "BBL", logo: "https://owcdn.net/img/62b667bd4ec56.png", color: "#fbbf24" },
+      { region: "China", team: "All Gamers", tag: "AG", logo: "https://owcdn.net/img/627a8cbbeba23.png", color: "#a855f7" }
+    ],
+    teams: [
+      { name: "Nongshim RedForce", tag: "NS", region: "ov-pacific", id: "gen_g" },
+      { name: "BBL Esports", tag: "BBL", region: "ov-emea", id: "fnatic" },
+      { name: "All Gamers", tag: "AG", region: "ov-china", id: "edg" },
+      { name: "FURIA Esports", tag: "FUR", region: "ov-americas", id: "sentinels" },
+      { name: "Paper Rex", tag: "PRX", region: "ov-pacific", id: "paper_rex" },
+      { name: "DRX", tag: "DRX", region: "ov-pacific", id: "drx" },
+      { name: "Team Secret", tag: "TS", region: "ov-pacific", id: "team_secret" },
+      { name: "Fnatic", tag: "FNC", region: "ov-emea", id: "fnatic" },
+      { name: "Team Heretics", tag: "TH", region: "ov-emea", id: "team_heretics" },
+      { name: "Sentinels", tag: "SEN", region: "ov-americas", id: "sentinels" },
+      { name: "G2 Esports", tag: "G2", region: "ov-americas", id: "g2_esports" },
+      { name: "Global Esports", tag: "GE", region: "ov-pacific", id: "global_esports" }
+    ]
+  },
+  masters_santiago: {
+    title: "Masters Santiago 2026",
+    dates: "Feb 28 - Mar 16, 2026",
+    winners: [
+      { region: "Champion", team: "Nongshim RedForce", tag: "NS", logo: "https://owcdn.net/img/631fb2d87e076.png", color: "#ef4444" },
+      { region: "Runner-up", team: "Paper Rex", tag: "PRX", logo: "https://owcdn.net/img/62b6946bc0e88.png", color: "#db2777" }
+    ],
+    teams: [
+      { name: "Nongshim RedForce", tag: "NS", region: "ov-pacific", id: "gen_g" },
+      { name: "Paper Rex", tag: "PRX", region: "ov-pacific", id: "paper_rex" },
+      { name: "BBL Esports", tag: "BBL", region: "ov-emea", id: "fnatic" },
+      { name: "All Gamers", tag: "AG", region: "ov-china", id: "edg" },
+      { name: "FURIA Esports", tag: "FUR", region: "ov-americas", id: "sentinels" },
+      { name: "Fnatic", tag: "FNC", region: "ov-emea", id: "fnatic" },
+      { name: "Sentinels", tag: "SEN", region: "ov-americas", id: "sentinels" },
+      { name: "Team Heretics", tag: "TH", region: "ov-emea", id: "team_heretics" }
+    ]
+  },
+  stage1: {
+    title: "VCT Stage 1 2026",
+    dates: "Apr 11 - May 25, 2026",
+    winners: [
+      { region: "Pacific Winner", team: "Paper Rex", tag: "PRX", logo: "https://owcdn.net/img/62b6946bc0e88.png", color: "#db2777" },
+      { region: "EMEA Winner", team: "Team Heretics", tag: "TH", logo: "https://owcdn.net/img/635b7ecb1dc66.png", color: "#f97316" },
+      { region: "China Winner", team: "EDward Gaming", tag: "EDG", logo: "https://owcdn.net/img/627a8cbbeba23.png", color: "#a855f7" },
+      { region: "Americas Winner", team: "Ongoing (Grand Final May 24)", tag: "TBD", logo: "", color: "#8b5cf6" }
+    ],
+    teams: [
+      { name: "Paper Rex", tag: "PRX", region: "ov-pacific", id: "paper_rex" },
+      { name: "Team Heretics", tag: "TH", region: "ov-emea", id: "team_heretics" },
+      { name: "EDward Gaming", tag: "EDG", region: "ov-china", id: "edg" },
+      { name: "Sentinels", tag: "SEN", region: "ov-americas", id: "sentinels" },
+      { name: "G2 Esports", tag: "G2", region: "ov-americas", id: "g2_esports" },
+      { name: "Nongshim RedForce", tag: "NS", region: "ov-pacific", id: "gen_g" },
+      { name: "Fnatic", tag: "FNC", region: "ov-emea", id: "fnatic" },
+      { name: "DRX", tag: "DRX", region: "ov-pacific", id: "drx" },
+      { name: "Leviatán", tag: "LEV", region: "ov-americas", id: "leviatan" },
+      { name: "ZETA DIVISION", tag: "ZETA", region: "ov-pacific", id: "zeta_division" },
+      { name: "Team Secret", tag: "TS", region: "ov-pacific", id: "team_secret" },
+      { name: "Global Esports", tag: "GE", region: "ov-pacific", id: "global_esports" }
+    ]
+  },
+  masters_london: {
+    title: "Masters London 2026",
+    dates: "June 5 - June 21, 2026",
+    winners: [
+      { region: "Status", team: "Upcoming Global Event", tag: "TBD", logo: "", color: "#a855f7" }
+    ],
+    teams: [
+      { name: "Paper Rex", tag: "PRX", region: "ov-pacific", id: "paper_rex" },
+      { name: "Team Heretics", tag: "TH", region: "ov-emea", id: "team_heretics" },
+      { name: "EDward Gaming", tag: "EDG", region: "ov-china", id: "edg" },
+      { name: "Nongshim RedForce", tag: "NS", region: "ov-pacific", id: "gen_g" },
+      { name: "Fnatic", tag: "FNC", region: "ov-emea", id: "fnatic" },
+      { name: "DRX", tag: "DRX", region: "ov-pacific", id: "drx" }
+    ]
+  },
+  stage2: {
+    title: "VCT Stage 2 2026",
+    dates: "July - August 2026",
+    winners: [
+      { region: "Status", team: "Upcoming Regional Splits", tag: "TBD", logo: "", color: "#3b82f6" }
+    ],
+    teams: [
+      { name: "Sentinels", tag: "SEN", region: "ov-americas", id: "sentinels" },
+      { name: "Paper Rex", tag: "PRX", region: "ov-pacific", id: "paper_rex" },
+      { name: "Fnatic", tag: "FNC", region: "ov-emea", id: "fnatic" },
+      { name: "EDward Gaming", tag: "EDG", region: "ov-china", id: "edg" },
+      { name: "Team Heretics", tag: "TH", region: "ov-emea", id: "team_heretics" },
+      { name: "Leviatán", tag: "LEV", region: "ov-americas", id: "leviatan" },
+      { name: "DRX", tag: "DRX", region: "ov-pacific", id: "drx" }
+    ]
+  },
+  champions: {
+    title: "Champions Shanghai 2026",
+    dates: "September 2026",
+    winners: [
+      { region: "Status", team: "The Ultimate Crown", tag: "TBD", logo: "", color: "#fbbf24" }
+    ],
+    teams: [
+      { name: "TBD - Qualified Teams", tag: "VAL", region: "ov-pacific", id: "global_esports" }
+    ]
+  }
+};
+
+function openVctModal() {
+  document.getElementById('vct-modal-overlay').classList.add('open');
+}
+
+function closeVctModal() {
+  document.getElementById('vct-modal-overlay').classList.remove('open');
+}
+
+function openVctTournamentModal(stage) {
+  const data = VCT_STAGE_DATA[stage];
+  if (!data) return;
+  
+  document.getElementById('vct-modal-title').textContent = data.title;
+  
+  const winnersContainer = document.getElementById('vct-modal-winners');
+  winnersContainer.innerHTML = data.winners.map(w => {
+    const logoHtml = w.logo ? `<img src="${w.logo}" style="width:20px;height:20px;object-fit:contain;" />` : '';
+    return `
+      <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); padding:10px; border-radius:4px; display:flex; align-items:center; gap:10px;">
+        <div style="font-size:10px; color:var(--muted); text-transform:uppercase;">${w.region}</div>
+        <div style="display:flex; align-items:center; gap:6px; margin-left:auto;">
+          ${logoHtml}
+          <span style="font-weight:700; color:${w.color || '#fff'}">${w.team}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+  
+  const teamsContainer = document.getElementById('vct-modal-teams');
+  teamsContainer.innerHTML = data.teams.map(t => {
+    return `
+      <div class="player-card" onclick="selectTeamFromModal('${t.region}', '${t.id}')" style="cursor:pointer; min-height:60px; padding:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); transition:var(--transition);" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.05)'">
+        <div style="font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:12px; color:#fff; text-transform:uppercase; text-align:center;">${t.name}</div>
+        <div style="font-size:9px; color:var(--muted); text-transform:uppercase; margin-top:2px;">${t.tag}</div>
+      </div>
+    `;
+  }).join('');
+  
+  openVctModal();
+}
+
+function selectTeamFromModal(regionId, teamId) {
+  closeVctModal();
+  switchEsportsTab('teams');
+  
+  setTimeout(() => {
+    const list = document.getElementById(regionId);
+    if (list && list.classList.contains('collapsed')) {
+      toggleSidebarRegion(regionId);
+    }
+    const regionKey = regionId.replace('ov-', '');
+    selectFranchiseTeam(regionKey, teamId);
+  }, 100);
+}
+
 function toggleTiers() {
   const showTier2 = document.getElementById('tier-toggle').checked;
   const t2Cards = document.querySelectorAll('.tier-t2');
@@ -6730,7 +6919,7 @@ function getEspHTML(m, type) {
     if (m.vod) {
       mediaBtn = `<a href="${m.vod}" target="_blank" class="esp-btn vod">📺 Watch VOD</a>`;
     } else {
-      const searchQ = `VCT ${t1} vs ${t2} highlights`;
+      const searchQ = `${event} ${t1} vs ${t2} highlights`;
       mediaBtn = `<a href="https://www.youtube.com/results?search_query=${encodeURIComponent(searchQ)}" target="_blank" class="esp-btn vod">📺 View Highlights</a>`;
     }
   } else {
@@ -6877,8 +7066,9 @@ async function fetchEsportsStandings() {
     let html = '';
     rows.forEach((r, i) => {
       const logoHtml = r.logo ? `<img class="esp-standings-logo" src="${r.logo}" alt="logo"/>` : '';
-      const streakCls = r.streak.includes('W') ? 'w' : r.streak.includes('L') ? 'l' : '';
-      const streakHtml = `<span class="esp-streak-pill ${streakCls}">${r.streak}</span>`;
+      const streakVal = r.streak || '-';
+      const streakCls = streakVal.includes('W') ? 'w' : streakVal.includes('L') ? 'l' : '';
+      const streakHtml = `<span class="esp-streak-pill ${streakCls}">${streakVal}</span>`;
       
       html += `
         <tr>
@@ -6950,7 +7140,7 @@ async function initTeamsTab() {
   if (pList.innerHTML) return;
   
   try {
-    const res = await fetch('/public/vct_teams.json');
+    const res = await fetch('/vct_teams.json');
     vctFranchiseData = await res.json();
     
     const regions = { 'pacific': pList, 'americas': aList, 'emea': eList, 'china': cList };
