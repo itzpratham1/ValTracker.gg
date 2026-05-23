@@ -618,7 +618,10 @@
           <div id="esp-team-main-area">
             <div class="esp-team-hero">
               <div class="esp-team-title-row">
-                <div class="esp-team-name-lg" id="esp-active-team-name">Select a Team</div>
+              <div style="display: flex; align-items: center; margin-bottom: 16px;">
+                <div id="esp-active-team-logo" style="margin-right: 16px; font-size: 24px;"></div>
+                <div class="esp-team-name-lg" id="esp-active-team-name" style="margin-bottom: 0;">Select a Team</div>
+              </div>
               </div>
               <div class="esp-team-desc" id="esp-active-team-desc">Select a VCT Franchise team from the left sidebar to explorer their full roster players, coach staff, and capsule skin details.</div>
               
@@ -7424,14 +7427,14 @@ function getEspHTML(m, type) {
     statusHtml = `<div class="esp-status">UPCOMING</div>`;
   }
 
-  // Format ISO date to local string if possible
+  // Format date to local string if possible
   let displayDate = m.date || 'TBD';
-  if (displayDate.includes('T')) {
-    try {
-      const d = new Date(displayDate);
+  try {
+    const d = new Date(displayDate);
+    if (!isNaN(d.getTime())) {
       displayDate = d.toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
-    } catch(e) {}
-  }
+    }
+  } catch(e) {}
 
   return `
     <div class="esp-match-card ${tierClass}">
@@ -7628,7 +7631,7 @@ async function initTeamsTab() {
       `).join('');
     });
     
-    selectFranchiseTeam('pacific', 'global_esports');
+    selectFranchiseTeam('pacific', '918');
     
     if (!allMatchesCache.length) {
       const matchesRes = await fetch('/api/esports/upcoming');
@@ -7650,6 +7653,10 @@ function selectFranchiseTeam(region, teamId) {
   if (!team) return;
   
   document.getElementById('esp-active-team-name').textContent = team.name;
+  
+  const logoHtml = getEsportsTeamLogoHtml(team.name).replace(/width:20px;height:20px/g, 'width:40px;height:40px').replace(/margin-right:8px/g, 'margin-right:0').replace(/font-size:9px/g, 'font-size:16px');
+  document.getElementById('esp-active-team-logo').innerHTML = logoHtml;
+  
   document.getElementById('esp-active-team-desc').textContent = team.description;
   
   const capWrap = document.getElementById('esp-active-team-capsule-wrap');

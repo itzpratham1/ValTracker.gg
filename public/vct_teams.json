@@ -1,282 +1,747 @@
 {
-  "pacific": [
-    {
-      "id": "global_esports",
-      "name": "Global Esports",
-      "tag": "GE",
-      "description": "Global Esports started in 2017 as a way for a bunch of friends to do something cool playing video games and competing in events. VALORANT has been in our DNA and core from the closed Beta, we just have to showcase it on stage this year. In the last decade we have generated billions of views and are getting ready for our biggest finale yet in 2026. #GEFighting",
-      "capsule_title": "VCT x GE",
-      "capsule_desc": "Teams will earn a portion of proceeds from their respective Capsules.",
-      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/bltb9e4feee06fb1d42/65dcf594a10787ad7f59d57a/VCT24_Classic_Skin_GlobalEsports.png",
-      "roster": [
-        { "name": "AUTUMN", "real_name": "Kale Dunne", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "KR1STAL", "real_name": "Savva Fedorov", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "PATMEN", "real_name": "Jhon Patrick Ramos Mendoza", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "UDOTAN", "real_name": "Kyeongwon Ko", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "XAVI8K", "real_name": "Xavier Juan", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "FR0ST", "real_name": "Hector Rosario", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
-      ]
-    },
-    {
-      "id": "paper_rex",
-      "name": "Paper Rex",
-      "tag": "PRX",
-      "description": "Paper Rex is a Southeast Asian esports organization based in Singapore. Famed for their hyper-aggressive, off-meta double-duelist playstyles, Paper Rex has captured the hearts of fans worldwide as the absolute entertainment kings of VCT Pacific.",
-      "capsule_title": "VCT x PRX",
-      "capsule_desc": "Support Paper Rex by purchasing their official VCT Classic Capsule.",
-      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blt46d6cc98f4cc1450/65dcf594ec17a3a9ec1cc21b/VCT24_Classic_Skin_PaperRex.png",
-      "roster": [
-        { "name": "f0rsakeN", "real_name": "Jason Susanto", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "mindfreak", "real_name": "Aaron Leonhart", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "d4v41", "real_name": "Khalish Rusyaidee", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "something", "real_name": "Ilya Petrov", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "Jinggg", "real_name": "Wang Jing Jie", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "ALECKS", "real_name": "Alexandre Salle", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
-      ]
-    },
-    {
-      "id": "gen_g",
-      "name": "Gen.G Esports",
-      "tag": "GEN",
-      "description": "Gen.G Esports is a premier South Korean esports powerhouse. Crowned as the VCT Pacific Stage 1 and Masters Shanghai Champions, Gen.G boasts absolute precision, masterful strategy, and unbreakable team cohesion.",
-      "capsule_title": "VCT x GEN",
-      "capsule_desc": "Support Gen.G by purchasing their official VCT Classic Capsule.",
-      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blt221b2d45c5890bfa/65dcf594a10787ad7f59d57a/VCT24_Classic_Skin_GenG.png",
-      "roster": [
-        { "name": "Munchkin", "real_name": "Byeon Sang-beom", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "t3xture", "real_name": "Kim Na-ra", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "Meteor", "real_name": "Kim Tae-o", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "Lakia", "real_name": "Kim Jong-min", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "Karon", "real_name": "Kim Won-tae", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "SOLO", "real_name": "Kang Keun-chul", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
-      ]
-    },
-    {
-      "id": "drx",
-      "name": "Kiwoom DRX",
-      "tag": "DRX",
-      "description": "DRX is a leading South Korean esports organization. With a legendary history of dominant streaks in Korea and VCT Pacific, DRX is famous for nurturing world-class tier-1 talents and executing flawless site takes.",
-      "capsule_title": "VCT x DRX",
-      "capsule_desc": "Support DRX by purchasing their official VCT Classic Capsule.",
-      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blta5e39603f90f23cb/65dcf5941c2c2f2ffc424dfd/VCT24_Classic_Skin_DRX.png",
-      "roster": [
-        { "name": "BuZz", "real_name": "Yu Byung-chul", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "MaKo", "real_name": "Kim Myeong-kwan", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "Foxy9", "real_name": "Jung Jae-sung", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "Flashback", "real_name": "Min Min-gyu", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "HYN", "real_name": "Kim Ji-woo", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "TERMI", "real_name": "Pyeon Seon-ho", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
-      ]
-    },
-    {
-      "id": "t1",
-      "name": "T1 Esports",
-      "tag": "T1",
-      "description": "T1 is one of the most prestigious names in global esports. Based in South Korea, T1 VALORANT blends veteran gaming wisdom with raw mechanical skill to conquer the global stage.",
-      "capsule_title": "VCT x T1",
-      "capsule_desc": "Support T1 by purchasing their official VCT Classic Capsule.",
-      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/bltd9f1c7bfdfc9dbba/65dcf594e9feadbe9a9a3b93/VCT24_Classic_Skin_T1.png",
-      "roster": [
-        { "name": "xccurate", "real_name": "Kevin Susanto", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "Sayaplayer", "real_name": "Ha Jung-woo", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "Carpe", "real_name": "Lee Jae-hyeok", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "iZu", "real_name": "Ham Woo-joo", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "Rossy", "real_name": "Daniel Abedrabbo", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "AUTUMN", "real_name": "Yoon Eu-teum", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
-      ]
-    },
-    {
-      "id": "zeta_division",
-      "name": "ZETA DIVISION",
-      "tag": "ZETA",
-      "description": "ZETA DIVISION is Japan's premier gaming lifestyle and esports organization. Renowned for their historic 3rd place run at Masters Reykjavik, ZETA represents the pride and tactical excellence of Japanese VALORANT.",
-      "capsule_title": "VCT x ZETA",
-      "capsule_desc": "Support ZETA by purchasing their official VCT Classic Capsule.",
-      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blt46d6cc98f4cc1450/65dcf594ec17a3a9ec1cc21b/VCT24_Classic_Skin_ZetaDivision.png",
-      "roster": [
-        { "name": "Laz", "real_name": "Koji Ushida", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "Dep", "real_name": "Yuma Hashimoto", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "SugarZ3ro", "real_name": "Shota Watanabe", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "hiroronn", "real_name": "Hiroto Yanai", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "Yuran", "real_name": "Yushin Hada", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "CARLAO", "real_name": "Carlos Mohn", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
-      ]
-    },
-    {
-      "id": "team_secret",
-      "name": "Team Secret",
-      "tag": "TS",
-      "description": "Team Secret is a globally renowned esports organization. Their Filipino VALORANT roster represents the ultimate mechanical kings of the Philippines, bringing loud personalities and tactical depth to VCT Pacific.",
-      "capsule_title": "VCT x TS",
-      "capsule_desc": "Support Team Secret by purchasing their official VCT Classic Capsule.",
-      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/bltd9f1c7bfdfc9dbba/65dcf594e9feadbe9a9a3b93/VCT24_Classic_Skin_TeamSecret.png",
-      "roster": [
-        { "name": "JessieVash", "real_name": "Jessie Cristy Cuyco", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "invy", "real_name": "Adrian Jaldon", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "NDG", "real_name": "Noel De Guia", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "Jremy", "real_name": "Jeremy Cabrera", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "wild0reoo", "real_name": "Brando Urip", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "DUMMY", "real_name": "dummy", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
-      ]
-    },
-    {
-      "id": "detonation_focusme",
-      "name": "DetonatioN FocusMe",
-      "tag": "DFM",
-      "description": "DetonatioN FocusMe is a Japanese esports organization under the DetonatioN Gaming umbrella. Blending Japanese strategies and top-tier training infrastructure, they aim to disrupt VCT Pacific standings in 2026.",
-      "capsule_title": "VCT x DFM",
-      "capsule_desc": "Support DFM by purchasing their official VCT Classic Capsule.",
-      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/bltb9e4feee06fb1d42/65dcf594a10787ad7f59d57a/VCT24_Classic_Skin_DetonationFocusMe.png",
-      "roster": [
-        { "name": "Meiy", "real_name": "Ibuki Seki", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "Suggest", "real_name": "Seo Jae-young", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "neth", "real_name": "Yuma Kubo", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "Anthem", "real_name": "Yoshitaka Nakamoto", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "Astell", "real_name": "Moon Ji-won", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "MELOFOVIA", "real_name": "Hirotaka Okazaki", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
-      ]
-    },
-    {
-      "id": "full_sense",
-      "name": "FULL SENSE",
-      "tag": "FS",
-      "description": "FULL SENSE is a premier Thai esports team that rose through Challengers and Ascension to claim their rightful spot in VCT Pacific franchise leagues. Famous for their electric synergy and intense tactical setups.",
-      "capsule_title": "VCT x FS",
-      "capsule_desc": "Support FULL SENSE by purchasing their official VCT Classic Capsule.",
-      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blt46d6cc98f4cc1450/65dcf594ec17a3a9ec1cc21b/VCT24_Classic_Skin_PaperRex.png",
-      "roster": [
-        { "name": "SuperBusS", "real_name": "Nattawat Yoosawat", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "JohnOlsen", "real_name": "Chanawin Nakpathom", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "ChAlalala", "real_name": "Chanitpak Suwanaprateep", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "PTC", "real_name": "Kititkawin Rattanasukol", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "THEG9", "real_name": "Thanaphat Limpaphan", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "DOBY", "real_name": "doby", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
-      ]
-    },
-    {
-      "id": "varrel",
-      "name": "VARREL Esports",
-      "tag": "VL",
-      "description": "VARREL is a rising star Japanese esports franchise. Fighting their way out of VCL Japan with absolute dedication, VARREL brings sharp mechanical power and precise team play to VCT Pacific.",
-      "capsule_title": "VCT x VL",
-      "capsule_desc": "Support VARREL by purchasing their official VCT Classic Capsule.",
-      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blt46d6cc98f4cc1450/65dcf594ec17a3a9ec1cc21b/VCT24_Classic_Skin_ZetaDivision.png",
-      "roster": [
-        { "name": "Zepher", "real_name": "Jyousuke Jyousuke", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "LOB", "real_name": "Lim Byung-gun", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "BlackWiz", "real_name": "Naoki Sotoyama", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "Bangban", "real_name": "bangban", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "xnfri", "real_name": "Akihiro Moriya", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "EAMA", "real_name": "eama", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
-      ]
-    }
-  ],
   "americas": [
     {
-      "id": "sentinels",
+      "id": "2",
       "name": "Sentinels",
-      "tag": "SEN",
-      "description": "Sentinels is a premier esports organization based in Los Angeles, California. As the Masters Madrid Champions and one of the most followed VALORANT teams in history, Sentinels combines absolute mechanical supremacy with a massive fanbase.",
-      "capsule_title": "VCT x SEN",
-      "capsule_desc": "Support Sentinels by purchasing their official VCT Classic Capsule.",
-      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blteee9594cfeb6cb15/65dcf594ec17a3a9ec1cc213/VCT24_Classic_Skin_Sentinels.png",
-      "roster": [
-        { "name": "zekken", "real_name": "Zachary Patrone", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "johnqt", "real_name": "Mohamed Amine Ouarid", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "Zellsis", "real_name": "Jordan Montemurro", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "Sacy", "real_name": "Gustavo Rossi", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "TenZ", "real_name": "Tyson Ngo", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "KAPLAN", "real_name": "Adam Kaplan", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
-      ]
+      "logo": "https://owcdn.net/img/62875027c8e06.png"
     },
     {
-      "id": "g2_esports",
+      "id": "6961",
+      "name": "LOUD",
+      "logo": "https://owcdn.net/img/62bbec8dc1b9f.png"
+    },
+    {
+      "id": "1034",
+      "name": "NRG",
+      "logo": "https://owcdn.net/img/6610f026c1a9e.png"
+    },
+    {
+      "id": "120",
+      "name": "100 Thieves",
+      "logo": "https://owcdn.net/img/603c00d5c5a08.png"
+    },
+    {
+      "id": "2359",
+      "name": "LEVIAT\u00c1N",
+      "logo": "https://owcdn.net/img/61b8888cc3860.png"
+    },
+    {
+      "id": "11058",
       "name": "G2 Esports",
-      "tag": "G2",
-      "description": "G2 Esports is a world-renowned European powerhouse now competing in VCT Americas. Reaching the grand final of Stage 1, G2's unbreakable defensive systems and team strategy make them a top-tier contender.",
-      "capsule_title": "VCT x G2",
-      "capsule_desc": "Support G2 by purchasing their official VCT Classic Capsule.",
-      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blt46d6cc98f4cc1450/65dcf594ec17a3a9ec1cc21b/VCT24_Classic_Skin_PaperRex.png",
-      "roster": [
-        { "name": "valyn", "real_name": "Jacob Batio", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "JonahP", "real_name": "Jonah Pulice", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "trent", "real_name": "Trent Cairns", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "leaf", "real_name": "Nathan Orf", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "icy", "real_name": "Jacob Lange", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "JOSHRT", "real_name": "Josh Lee", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
-      ]
+      "logo": "https://owcdn.net/img/633822848a741.png"
     },
     {
-      "id": "leviatan",
-      "name": "Leviatán",
-      "tag": "LEV",
-      "description": "Leviatán is a premier Argentine esports organization. Armed with the legendary World Champion duelist 'aspas' and a roster of hyper-mechanical Latin American stars, they represent absolute lethal firepower.",
-      "capsule_title": "VCT x LEV",
-      "capsule_desc": "Support Leviatán by purchasing their official VCT Classic Capsule.",
-      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blt46d6cc98f4cc1450/65dcf594ec17a3a9ec1cc21b/VCT24_Classic_Skin_PaperRex.png",
-      "roster": [
-        { "name": "aspas", "real_name": "Erick Santos", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "kiNgg", "real_name": "Francisco Aravena", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "mazino", "real_name": "Roberto Rivas", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "tex", "real_name": "Ian Botisch", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "C0M", "real_name": "Corbin Lee", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "ITZ_CHRIZ", "real_name": "Christian Guerra", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
-      ]
+      "id": "cloud9",
+      "name": "Cloud9",
+      "logo": ""
+    },
+    {
+      "id": "2355",
+      "name": "KR\u00dc Esports",
+      "logo": "https://owcdn.net/img/63976677069e1.png"
+    },
+    {
+      "id": "7386",
+      "name": "MIBR",
+      "logo": "https://owcdn.net/img/632be7626d6d9.png"
+    },
+    {
+      "id": "2406",
+      "name": "FURIA",
+      "logo": "https://owcdn.net/img/632be843b7d51.png"
+    },
+    {
+      "id": "evil_geniuses",
+      "name": "Evil Geniuses",
+      "logo": ""
     }
   ],
   "emea": [
     {
-      "id": "fnatic",
-      "name": "Fnatic",
-      "tag": "FNC",
-      "description": "Fnatic is one of the most successful VALORANT teams in history. Based in London, Fnatic won back-to-back global trophies in 2023 (LOCK//IN and Masters Tokyo) and continues to dominate EMEA with tactical genius.",
-      "capsule_title": "VCT x FNC",
-      "capsule_desc": "Support Fnatic by purchasing their official VCT Classic Capsule.",
-      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blt46d6cc98f4cc1450/65dcf594ec17a3a9ec1cc21b/VCT24_Classic_Skin_PaperRex.png",
-      "roster": [
-        { "name": "Boaster", "real_name": "Jake Howlett", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "Derke", "real_name": "Nikita Sirmitev", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "Chronicle", "real_name": "Timofey Khromov", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "Alfajer", "real_name": "Emir Ali Beder", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "hiro", "real_name": "Hiroshi Miyamoto", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "ELMAPUDDY", "real_name": "Chris Tebbit", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
-      ]
+      "id": "2593",
+      "name": "FNATIC",
+      "logo": "https://owcdn.net/img/62a40cc2b5e29.png"
     },
     {
-      "id": "team_heretics",
+      "id": "natus_vincere",
+      "name": "Natus Vincere",
+      "logo": ""
+    },
+    {
+      "id": "17297",
+      "name": "Team Liquid Academy",
+      "logo": "https://owcdn.net/img/640c381f0603f.png"
+    },
+    {
+      "id": "karmine_corp",
+      "name": "Karmine Corp",
+      "logo": ""
+    },
+    {
+      "id": "1001",
       "name": "Team Heretics",
-      "tag": "TH",
-      "description": "Team Heretics is a Spanish esports organization that conquered VCT EMEA in 2026. Famous for their aggressive double-initiator setups and incredibly young mechanics, they represent the absolute future of European VALORANT.",
-      "capsule_title": "VCT x TH",
-      "capsule_desc": "Support Team Heretics by purchasing their official VCT Classic Capsule.",
-      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blt46d6cc98f4cc1450/65dcf594ec17a3a9ec1cc21b/VCT24_Classic_Skin_PaperRex.png",
-      "roster": [
-        { "name": "Boo", "real_name": "Ričardas Lukaševičius", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "Benjyfishy", "real_name": "Benjy David Fish", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "MiniBoo", "real_name": "Dominykas Lukaševičius", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "RieNs", "real_name": "Enes Ecirli", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "wo0t", "real_name": "Mert Alkan", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "NEILZINHO", "real_name": "Neil Finlay", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
-      ]
+      "logo": "https://owcdn.net/img/637b755224c12.png"
+    },
+    {
+      "id": "1184",
+      "name": "FUT Esports",
+      "logo": "https://owcdn.net/img/632be9976b8fe.png"
+    },
+    {
+      "id": "bbl_esports",
+      "name": "BBL Esports",
+      "logo": ""
+    },
+    {
+      "id": "2059",
+      "name": "Team Vitality",
+      "logo": "https://owcdn.net/img/6466d79e1ed40.png"
+    },
+    {
+      "id": "giantx",
+      "name": "GIANTX",
+      "logo": ""
+    },
+    {
+      "id": "koi",
+      "name": "KOI",
+      "logo": ""
+    },
+    {
+      "id": "21093",
+      "name": "Gentle Mates GC",
+      "logo": "https://owcdn.net/img/6670153fa9120.png"
+    }
+  ],
+  "pacific": [
+    {
+      "id": "624",
+      "name": "Paper Rex",
+      "logo": "https://owcdn.net/img/62bbeba74d5cb.png"
+    },
+    {
+      "id": "17",
+      "name": "Gen.G",
+      "logo": "https://owcdn.net/img/6970c986eddc6.png"
+    },
+    {
+      "id": "8185",
+      "name": "Kiwoom DRX",
+      "logo": "https://owcdn.net/img/63b17abd77fc0.png"
+    },
+    {
+      "id": "14",
+      "name": "T1",
+      "logo": "https://owcdn.net/img/62fe0b8f6b084.png"
+    },
+    {
+      "id": "zeta_division",
+      "name": "ZETA DIVISION",
+      "logo": ""
+    },
+    {
+      "id": "team_secret",
+      "name": "Team Secret",
+      "logo": ""
+    },
+    {
+      "id": "talon_esports",
+      "name": "Talon Esports",
+      "logo": ""
+    },
+    {
+      "id": "918",
+      "name": "Global Esports",
+      "logo": "https://owcdn.net/img/629f316ddd4dd.png"
+    },
+    {
+      "id": "878",
+      "name": "Rex Regum Qeon",
+      "logo": "https://owcdn.net/img/629f17f51e7a3.png"
+    },
+    {
+      "id": "278",
+      "name": "DetonatioN FocusMe",
+      "logo": "https://owcdn.net/img/63972e548cdc9.png"
+    },
+    {
+      "id": "bleed_esports",
+      "name": "Bleed Esports",
+      "logo": ""
     }
   ],
   "china": [
     {
-      "id": "edg",
-      "name": "Edward Gaming",
-      "tag": "EDG",
-      "description": "Edward Gaming is the undisputed king of Chinese VALORANT. Crowned as champions of every VCT CN split, EDG combines absolute hyper-aggressive playstyles led by star duelist KangKang with bulletproof tactical execution.",
-      "capsule_title": "VCT x EDG",
-      "capsule_desc": "Support Edward Gaming by purchasing their official VCT Classic Capsule.",
-      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blt46d6cc98f4cc1450/65dcf594ec17a3a9ec1cc21b/VCT24_Classic_Skin_PaperRex.png",
-      "roster": [
-        { "name": "ZmjjKK", "real_name": "Zheng Yongkang", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "CHICHOO", "real_name": "Wan Shunji", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "nobody", "real_name": "Wang Senxu", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "Smoggy", "real_name": "Zhang Zhao", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "S1Mon", "real_name": "Hsieh Meng-hsun", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
-        { "name": "MUGGLE", "real_name": "Lo Chi-wook", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
-      ]
+      "id": "1120",
+      "name": "EDward Gaming",
+      "logo": "https://owcdn.net/img/62c82049253b2.png"
+    },
+    {
+      "id": "funplus_phoenix",
+      "name": "FunPlus Phoenix",
+      "logo": ""
+    },
+    {
+      "id": "12010",
+      "name": "Bilibili Gaming",
+      "logo": "https://owcdn.net/img/63f25d72216c1.png"
+    },
+    {
+      "id": "trace_esports",
+      "name": "Trace Esports",
+      "logo": ""
+    },
+    {
+      "id": "titan_esports_club",
+      "name": "Titan Esports Club",
+      "logo": ""
+    },
+    {
+      "id": "nova_esports",
+      "name": "Nova Esports",
+      "logo": ""
+    },
+    {
+      "id": "jd_gaming",
+      "name": "JD Gaming",
+      "logo": ""
+    },
+    {
+      "id": "1119",
+      "name": "All Gamers",
+      "logo": "https://owcdn.net/img/6549c2b905061.png"
+    },
+    {
+      "id": "11981",
+      "name": "Dragon Ranger Gaming",
+      "logo": "https://owcdn.net/img/642233fc01f26.png"
+    },
+    {
+      "id": "731",
+      "name": "TYLOO",
+      "logo": "https://owcdn.net/img/63eb60fb08390.png"
+    },
+    {
+      "id": "wolves_esports",
+      "name": "Wolves Esports",
+      "logo": ""
+    }
+  ],
+  "others": [
+    {
+      "id": "876",
+      "name": "Enterprise Esports",
+      "logo": "https://owcdn.net/img/68643d0b1c72b.png"
+    },
+    {
+      "id": "21841",
+      "name": "REBORN",
+      "logo": "https://owcdn.net/img/69d70973a1882.png"
+    },
+    {
+      "id": "6392",
+      "name": "Eternal Fire",
+      "logo": "https://owcdn.net/img/6628980dcdaea.png"
+    },
+    {
+      "id": "4616",
+      "name": "UCAM Esports Club",
+      "logo": "https://owcdn.net/img/5f7f77ef1e2f0.png"
+    },
+    {
+      "id": "5214",
+      "name": "CGN Esports",
+      "logo": "https://owcdn.net/img/60defafec983c.png"
+    },
+    {
+      "id": "21838",
+      "name": "FlyQuest",
+      "logo": "https://owcdn.net/img/69cac541ed59b.png"
+    },
+    {
+      "id": "21714",
+      "name": "Division One",
+      "logo": "https://owcdn.net/img/69da93c726b68.png"
+    },
+    {
+      "id": "11001",
+      "name": "M80",
+      "logo": "https://owcdn.net/img/6945c73504452.png"
+    },
+    {
+      "id": "427",
+      "name": "ENVY",
+      "logo": "https://owcdn.net/img/5f3ca822464a3.png"
+    },
+    {
+      "id": "9353",
+      "name": "Shopify Rebellion Black",
+      "logo": "https://owcdn.net/img/679314c8ac387.png"
+    },
+    {
+      "id": "19265",
+      "name": "Team Solid",
+      "logo": "https://owcdn.net/img/689d0fc04ad22.png"
+    },
+    {
+      "id": "16606",
+      "name": "MIBR Academy",
+      "logo": "https://owcdn.net/img/67127fdb2ae3e.png"
+    },
+    {
+      "id": "15072",
+      "name": "2Game Esports",
+      "logo": "https://owcdn.net/img/67725c368d524.png"
+    },
+    {
+      "id": "6946",
+      "name": "TBK Esports",
+      "logo": "https://owcdn.net/img/61d39894f3d3a.png"
+    },
+    {
+      "id": "21089",
+      "name": "INTZ",
+      "logo": "https://owcdn.net/img/5fb3183339579.png"
+    },
+    {
+      "id": "18622",
+      "name": "ELEVATE",
+      "logo": "https://owcdn.net/img/65990c8ab7c2b.png"
+    },
+    {
+      "id": "1124",
+      "name": "RED Canids",
+      "logo": "https://owcdn.net/img/63876c258b1e3.png"
+    },
+    {
+      "id": "623",
+      "name": "Sharper Esports",
+      "logo": "https://owcdn.net/img/698dc40a29cda.png"
+    },
+    {
+      "id": "4050",
+      "name": "FULL SENSE",
+      "logo": "https://owcdn.net/img/6537a7954d915.png"
+    },
+    {
+      "id": "4330",
+      "name": "Fancy United Esports",
+      "logo": "https://owcdn.net/img/697f25edef1f7.png"
+    },
+    {
+      "id": "466",
+      "name": "BOOM Esports",
+      "logo": "https://owcdn.net/img/629f1bdae82ab.png"
+    },
+    {
+      "id": "21267",
+      "name": "555",
+      "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+    },
+    {
+      "id": "3136",
+      "name": "Oasis Gaming",
+      "logo": "https://owcdn.net/img/629f15187dd71.png"
+    },
+    {
+      "id": "18117",
+      "name": "Motiv Esports",
+      "logo": "https://owcdn.net/img/67e27ccb492e8.png"
+    },
+    {
+      "id": "11060",
+      "name": "Nongshim RedForce",
+      "logo": "https://owcdn.net/img/6399bb707aacb.png"
+    },
+    {
+      "id": "12446",
+      "name": "SLT Seongnam",
+      "logo": "https://owcdn.net/img/641d8f2b943ee.png"
+    },
+    {
+      "id": "19189",
+      "name": "ONSIDE GAMING",
+      "logo": "https://owcdn.net/img/6863ccdfabea7.png"
+    },
+    {
+      "id": "11348",
+      "name": "Dplus Esports",
+      "logo": "https://owcdn.net/img/63bbe4f904433.png"
+    },
+    {
+      "id": "17392",
+      "name": "Gen.G Global Academy",
+      "logo": "https://owcdn.net/img/6970c986eddc6.png"
+    },
+    {
+      "id": "15578",
+      "name": "T1 Academy",
+      "logo": "https://owcdn.net/img/5ea85d21e625f.png"
+    },
+    {
+      "id": "20617",
+      "name": "Strom Reign",
+      "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+    },
+    {
+      "id": "13581",
+      "name": "Xi Lai Gaming",
+      "logo": "https://owcdn.net/img/671742f863b9b.png"
+    },
+    {
+      "id": "11985",
+      "name": "Rare Atom",
+      "logo": "https://owcdn.net/img/63eb5aa842f05.png"
+    },
+    {
+      "id": "13576",
+      "name": "JDG Esports",
+      "logo": "https://owcdn.net/img/64f9825408326.png"
+    },
+    {
+      "id": "13579",
+      "name": "Chosen Clique Gaming",
+      "logo": "https://owcdn.net/img/651d2ecf7605a.png"
+    },
+    {
+      "id": "12784",
+      "name": "KeepBest Gaming",
+      "logo": "https://owcdn.net/img/64461a1131da5.png"
+    },
+    {
+      "id": "294",
+      "name": "CREST GAMING Zst",
+      "logo": "https://owcdn.net/img/63a33a790ae62.png"
+    },
+    {
+      "id": "14375",
+      "name": "RIDDLE ORDER",
+      "logo": "https://owcdn.net/img/6569a81625295.png"
+    },
+    {
+      "id": "11229",
+      "name": "VARREL",
+      "logo": "https://owcdn.net/img/63a74624cc76a.png"
+    },
+    {
+      "id": "2934",
+      "name": "FENNEL",
+      "logo": "https://owcdn.net/img/60d3986152cd4.png"
+    },
+    {
+      "id": "18299",
+      "name": "QT DIG\u221e",
+      "logo": "https://owcdn.net/img/67f4e2e7b3802.png"
+    },
+    {
+      "id": "104",
+      "name": "REJECT",
+      "logo": "https://owcdn.net/img/62a4139de7f7e.png"
+    },
+    {
+      "id": "5148",
+      "name": "Insomnia",
+      "logo": "https://owcdn.net/img/62e4c81144c03.png"
+    },
+    {
+      "id": "282",
+      "name": "SCARZ",
+      "logo": "https://owcdn.net/img/60693f9ee7109.png"
+    },
+    {
+      "id": "15596",
+      "name": "Delight",
+      "logo": "https://owcdn.net/img/6632780ca2eb8.png"
+    },
+    {
+      "id": "22142",
+      "name": "BESTIA",
+      "logo": "https://owcdn.net/img/69ea66a9d008c.png"
+    },
+    {
+      "id": "16971",
+      "name": "ShindeN",
+      "logo": "https://owcdn.net/img/6748dec4df18c.png"
+    },
+    {
+      "id": "19791",
+      "name": "KR\u00dc SPARK",
+      "logo": "https://owcdn.net/img/69cfd386538cf.png"
+    },
+    {
+      "id": "20296",
+      "name": "Berliners",
+      "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+    },
+    {
+      "id": "2360",
+      "name": "Kaos Latin Gamers",
+      "logo": "https://owcdn.net/img/600b19ed2c674.png"
+    },
+    {
+      "id": "367",
+      "name": "9z Globant",
+      "logo": "https://owcdn.net/img/65e447b0c2415.png"
+    },
+    {
+      "id": "9425",
+      "name": "LEVIAT\u00c1N Academy",
+      "logo": "https://owcdn.net/img/61b8888cc3860.png"
+    },
+    {
+      "id": "16781",
+      "name": "Freddyneta",
+      "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+    },
+    {
+      "id": "17320",
+      "name": "Quantum Void",
+      "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+    },
+    {
+      "id": "20784",
+      "name": "LYON",
+      "logo": "https://owcdn.net/img/6961e1fe322bd.png"
+    },
+    {
+      "id": "21459",
+      "name": "STREAMER ARENA",
+      "logo": "https://owcdn.net/img/69c4c2382b847.png"
+    },
+    {
+      "id": "17257",
+      "name": "DCT eSports",
+      "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+    },
+    {
+      "id": "17252",
+      "name": "FUEGO",
+      "logo": "https://owcdn.net/img/678f90b7b65e5.png"
+    },
+    {
+      "id": "10376",
+      "name": "Contra",
+      "logo": "https://owcdn.net/img/66572b1da4d79.png"
+    },
+    {
+      "id": "20808",
+      "name": "LAZER",
+      "logo": "https://owcdn.net/img/698051cea67f9.png"
+    },
+    {
+      "id": "2131",
+      "name": "Chivas Esports",
+      "logo": "https://owcdn.net/img/63ce2eedbe573.png"
+    },
+    {
+      "id": "17289",
+      "name": "AB3 Esports",
+      "logo": "https://owcdn.net/img/679061092d445.png"
+    },
+    {
+      "id": "15624",
+      "name": "KTANA Esports",
+      "logo": "https://owcdn.net/img/67174040b82f5.png"
+    },
+    {
+      "id": "7269",
+      "name": "FUSION",
+      "logo": "https://owcdn.net/img/63bde15e27452.png"
+    },
+    {
+      "id": "22282",
+      "name": "Yi-Jing",
+      "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+    },
+    {
+      "id": "21670",
+      "name": "Finishers",
+      "logo": "https://owcdn.net/img/69d48940ee5bf.png"
+    },
+    {
+      "id": "13849",
+      "name": "Justice For Tomorrow",
+      "logo": "https://owcdn.net/img/65eee36191b62.png"
+    },
+    {
+      "id": "22234",
+      "name": "MeatZn",
+      "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+    },
+    {
+      "id": "22251",
+      "name": "Evolve",
+      "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+    },
+    {
+      "id": "21862",
+      "name": "Squishy Cheeks",
+      "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+    },
+    {
+      "id": "21867",
+      "name": "Clueless",
+      "logo": "https://owcdn.net/img/6a0be4bb2f927.png"
+    },
+    {
+      "id": "18894",
+      "name": "rabbit gang",
+      "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+    },
+    {
+      "id": "22380",
+      "name": "ZO Esports",
+      "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+    },
+    {
+      "id": "18113",
+      "name": "EDGE",
+      "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+    },
+    {
+      "id": "16598",
+      "name": "AlQadsiah Esports",
+      "logo": "https://owcdn.net/img/672b6e5ef0749.png"
+    },
+    {
+      "id": "1458",
+      "name": "The Ultimates",
+      "logo": "https://owcdn.net/img/65cb2b05be39e.png"
+    },
+    {
+      "id": "18120",
+      "name": "Stallions Esports",
+      "logo": "https://owcdn.net/img/68366aa3c10fd.png"
+    },
+    {
+      "id": "13589",
+      "name": "Ghools Esports",
+      "logo": "https://owcdn.net/img/6989d854eb259.png"
+    },
+    {
+      "id": "8945",
+      "name": "One More Esports",
+      "logo": "https://owcdn.net/img/67caad9a7d831.png"
+    },
+    {
+      "id": "1471",
+      "name": "Team RA'AD",
+      "logo": "https://owcdn.net/img/61d48692758bc.png"
+    },
+    {
+      "id": "18504",
+      "name": "VillianArc",
+      "logo": "https://owcdn.net/img/695b53995e03f.png"
+    },
+    {
+      "id": "17985",
+      "name": "BAAM Esports",
+      "logo": "https://owcdn.net/img/67caae5a045bd.png"
+    },
+    {
+      "id": "20960",
+      "name": "MAYHEM",
+      "logo": "https://owcdn.net/img/695b9f527303a.png"
+    },
+    {
+      "id": "11856",
+      "name": "GnG Esports",
+      "logo": "https://owcdn.net/img/65cb340b03017.png"
+    },
+    {
+      "id": "14278",
+      "name": "Shopify Rebellion Gold",
+      "logo": "https://owcdn.net/img/679314e3d25f4.png"
+    },
+    {
+      "id": "7055",
+      "name": "Team Liquid Brazil",
+      "logo": "https://owcdn.net/img/640c381f0603f.png"
+    },
+    {
+      "id": "9314",
+      "name": "Team Falcons Vega",
+      "logo": "https://owcdn.net/img/634277afb6e03.png"
+    },
+    {
+      "id": "7511",
+      "name": "KR\u00dc BLAZE",
+      "logo": "https://owcdn.net/img/6704ad6a515a1.png"
+    },
+    {
+      "id": "7412",
+      "name": "Akave Esports GC",
+      "logo": "https://owcdn.net/img/61da5f0488060.png"
+    },
+    {
+      "id": "21858",
+      "name": "Gen.G GC",
+      "logo": "https://owcdn.net/img/6970c986eddc6.png"
+    },
+    {
+      "id": "6530",
+      "name": "G2 Gozen",
+      "logo": "https://owcdn.net/img/633822848a741.png"
+    },
+    {
+      "id": "9516",
+      "name": "FENNEL GC",
+      "logo": "https://owcdn.net/img/60d3986152cd4.png"
+    },
+    {
+      "id": "21780",
+      "name": "Stallions Lyra",
+      "logo": "https://owcdn.net/img/68366aa3c10fd.png"
+    },
+    {
+      "id": "12900",
+      "name": "Maryville University",
+      "logo": "https://owcdn.net/img/6457181dc433a.png"
+    },
+    {
+      "id": "10448",
+      "name": "Winthrop University",
+      "logo": "https://owcdn.net/img/636c2f2592313.png"
+    },
+    {
+      "id": "10533",
+      "name": "Northwood University",
+      "logo": "https://owcdn.net/img/636c597cd68a7.png"
+    },
+    {
+      "id": "10479",
+      "name": "Fisher Navy",
+      "logo": "https://owcdn.net/img/63b525814a4ef.png"
+    },
+    {
+      "id": "10577",
+      "name": "UC Irvine",
+      "logo": "https://owcdn.net/img/63bca3eb92319.png"
+    },
+    {
+      "id": "16884",
+      "name": "Binus x Widyatama",
+      "logo": "https://owcdn.net/img/687ca0eab6d66.png"
+    },
+    {
+      "id": "10505",
+      "name": "UST Esports",
+      "logo": "https://owcdn.net/img/636dafd3a1796.png"
+    },
+    {
+      "id": "11917",
+      "name": "Columbia College",
+      "logo": "https://owcdn.net/img/642437560fcab.png"
+    },
+    {
+      "id": "8998",
+      "name": "UWaterloo Gold",
+      "logo": "https://owcdn.net/img/636ee7fde12b6.png"
+    },
+    {
+      "id": "2785",
+      "name": "TAMU Maroon",
+      "logo": "https://owcdn.net/img/663e4f87ad0d9.png"
     }
   ]
 }
