@@ -6978,10 +6978,13 @@ function openVctTournamentModal(stage) {
   
   // Create regional tabs
   const tabContainer = document.getElementById('vct-modal-tabs');
-  const availableRegions = Object.keys(data.regions);
+  const isInternational = stage.includes('masters') || stage === 'champions';
+  const availableRegions = isInternational 
+    ? ['global', 'americas', 'pacific', 'emea', 'china']
+    : Object.keys(data.regions);
   
   const regionLabels = {
-    global: "🌎 Overview",
+    global: isInternational ? "🌎 All Qualified" : "🌎 Overview",
     americas: "🇺🇸 Americas",
     pacific: "🇰🇷 Pacific",
     emea: "🇪🇺 EMEA",
@@ -7028,12 +7031,37 @@ const VCT_VLR_EVENTS = {
   }
 };
 
+function getTeamRegion(localId, teamName) {
+  if (vctFranchiseData) {
+    for (const reg in vctFranchiseData) {
+      if (vctFranchiseData[reg].some(item => item.id === localId)) {
+        return reg;
+      }
+    }
+  }
+  
+  const nameLower = teamName.toLowerCase();
+  const idLower = localId.toLowerCase();
+  
+  if (idLower.includes('nongshim') || idLower.includes('redforce') || idLower.includes('ns') || nameLower.includes('nongshim') || nameLower.includes('redforce') || nameLower.includes('bleed') || nameLower.includes('talon') || nameLower.includes('rex regum') || nameLower.includes('rrq') || nameLower.includes('t1') || idLower === 't1' || idLower.includes('detonation') || idLower.includes('dfm') || idLower.includes('zeta') || idLower.includes('secret') || idLower.includes('paper') || idLower.includes('prx') || idLower.includes('gen_g') || idLower.includes('drx') || idLower.includes('global_esports') || idLower.includes('full_sense') || idLower.includes('varrel')) {
+    return 'pacific';
+  }
+  if (idLower.includes('furia') || idLower.includes('loud') || idLower.includes('mibr') || idLower.includes('kru') || idLower.includes('100t') || idLower.includes('nrg') || idLower.includes('eg') || idLower.includes('sentinels') || idLower.includes('g2') || idLower.includes('leviatan') || nameLower.includes('100 thieves') || nameLower.includes('evil geniuses') || nameLower.includes('sen') || nameLower.includes('lev')) {
+    return 'americas';
+  }
+  if (idLower.includes('fnatic') || idLower.includes('heretics') || idLower.includes('bbl') || idLower.includes('vitality') || idLower.includes('fut') || idLower.includes('karmine') || idLower.includes('kc') || idLower.includes('giant') || idLower.includes('koi') || nameLower.includes('gentlemen mates') || nameLower.includes('fnc') || nameLower.includes('th') || nameLower.includes('vit')) {
+    return 'emea';
+  }
+  if (idLower.includes('edg') || idLower.includes('edward') || idLower.includes('fpx') || idLower.includes('funplus') || idLower.includes('trace') || idLower.includes('te') || idLower.includes('bilibili') || idLower.includes('blg') || idLower.includes('xlg') || idLower.includes('all gamers') || idLower.includes('ag') || nameLower.includes('dragon ranger') || nameLower.includes('tyloo') || nameLower.includes('nova')) {
+    return 'china';
+  }
+  
+  return 'pacific'; // default fallback
+}
+
 async function switchVctModalTab(stage, region) {
   const data = VCT_STAGE_DATA[stage];
   if (!data) return;
-  
-  const regData = data.regions[region];
-  if (!regData) return;
   
   // Highlight active tab
   document.querySelectorAll('.vct-modal-tab-btn').forEach(btn => {
@@ -7048,10 +7076,11 @@ async function switchVctModalTab(stage, region) {
     activeBtn.style.color = '#fff';
   }
   
-  // Render Winners
+  // Render Winners (if regional data has winners for the selected tab)
+  const regData = data.regions[region] || (region === 'global' ? data.regions.global : null);
   const winnersContainer = document.getElementById('vct-modal-winners');
   const winnersTitle = document.getElementById('vct-modal-winners-title');
-  if (regData.winners && regData.winners.length > 0) {
+  if (regData && regData.winners && regData.winners.length > 0) {
     winnersTitle.style.display = 'flex';
     winnersContainer.style.display = 'grid';
     winnersContainer.innerHTML = regData.winners.map(w => {
@@ -7080,7 +7109,7 @@ async function switchVctModalTab(stage, region) {
   teamsContainer.innerHTML = `
     <div style="grid-column: 1/-1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:30px; gap:12px; color:var(--muted);">
       <div class="cyber-spinner" style="width:30px; height:30px; border:2px solid rgba(255, 70, 85, 0.2); border-top-color:var(--loss); border-radius:50%; animation:spin 0.8s linear infinite;"></div>
-      <div style="font-family:'DM Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:1px;">Scraping VLR.gg rosters in real-time...</div>
+      <div style="font-family:'DM Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:1px;">ESTABLISHING SECURE DATA GRID CONNECTION...</div>
     </div>
   `;
   
@@ -7101,13 +7130,20 @@ async function switchVctModalTab(stage, region) {
   }
   
   let vlrIds = [];
+  const isInternational = stage.includes('masters') || stage === 'champions';
   const stageEvents = VCT_VLR_EVENTS[stage];
+  
   if (stageEvents) {
-    if (region === 'global') {
-      vlrIds = Object.values(stageEvents);
+    if (isInternational) {
+      // International events always pull from the single global event ID
+      vlrIds = [stageEvents.global];
     } else {
-      if (stageEvents[region]) {
-        vlrIds = [stageEvents[region]];
+      if (region === 'global') {
+        vlrIds = Object.values(stageEvents);
+      } else {
+        if (stageEvents[region]) {
+          vlrIds = [stageEvents[region]];
+        }
       }
     }
   }
@@ -7142,8 +7178,13 @@ async function switchVctModalTab(stage, region) {
       });
     });
     
+    // Filter by region for international events if a specific region tab is chosen
+    if (isInternational && region !== 'global') {
+      allTeams = allTeams.filter(t => getTeamRegion(t.local_id, t.name) === region);
+    }
+    
     if (allTeams.length === 0) {
-      teamsContainer.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--muted); padding:20px; font-family:'DM Mono',monospace;">No teams found or scraping timed out.</div>`;
+      teamsContainer.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--muted); padding:20px; font-family:'DM Mono',monospace;">No qualified teams found for this region.</div>`;
       return;
     }
     
@@ -7162,6 +7203,9 @@ async function switchVctModalTab(stage, region) {
         }
       }
       
+      // Fallback region lookup for Tier 1 non-franchise/ascension teams
+      const teamReg = matchedRegion || getTeamRegion(localId, t.name);
+      
       const isClickable = !!matchedRegion;
       const clickAttr = isClickable ? `onclick="selectTeamFromModal('ov-${matchedRegion}', '${localId}')"` : '';
       const cursorStyle = isClickable ? 'cursor:pointer;' : 'cursor:default;';
@@ -7170,7 +7214,7 @@ async function switchVctModalTab(stage, region) {
       const teamLogo = t.logo ? `<img src="${t.logo}" style="width:28px;height:28px;object-fit:contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />` : '';
       const fallbackBadge = `<div class="team-logo-fallback" style="${t.logo ? 'display:none;' : 'display:flex;'} width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); align-items:center; justify-content:center; font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700; color:var(--accent);">${t.name.substring(0, 2).toUpperCase()}</div>`;
       
-      const tagLabel = matchedRegion ? `${matchedRegion.toUpperCase()}` : (t.slug ? t.slug.substring(0,6).toUpperCase() : 'VCT');
+      const tagLabel = teamReg ? teamReg.toUpperCase() : (t.slug ? t.slug.substring(0,6).toUpperCase() : 'VCT');
       
       return `
         <div class="player-card" ${clickAttr} ${borderHoverStyle} style="${cursorStyle} min-height:85px; padding:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); transition:var(--transition); border-radius:4px; gap:8px;">
@@ -7252,7 +7296,8 @@ function getEspHTML(m, type) {
         
         datePart = m.date.replace(/\b\d{1,2}:\d{2}\s*(?:AM|PM)?/gi, '').trim();
         datePart = datePart.replace(/(Today|Yesterday|Tomorrow|Recent)/i, '').trim();
-        datePart = datePart.replace(/^[,\s]+|[,\s]+$/g, '');
+        datePart = datePart.replace(/^(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),\s*/gi, '').trim();
+        datePart = datePart.replace(/^[,\s]+|[,\s]+$/g, '').trim();
         
         if (hasToday || hasYesterday) {
           const d = new Date();
@@ -7260,18 +7305,36 @@ function getEspHTML(m, type) {
             d.setDate(d.getDate() - 1);
           }
           const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-          datePart = `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+          datePart = `${months[d.getMonth()]} ${d.getDate()} ${d.getFullYear()}`;
         } else if (!datePart) {
           datePart = new Date().getFullYear().toString();
         } else {
           if (!/\b\d{4}\b/.test(datePart)) {
-            datePart += `, ${new Date().getFullYear()}`;
+            datePart += ` ${new Date().getFullYear()}`;
           }
+          datePart = datePart.replace(/,/g, '');
         }
       } else {
         datePart = new Date().getFullYear().toString();
       }
-      const searchQ = `${event} ${t1} vs ${t2} highlights ${datePart}`.trim();
+      
+      let cleanEvent = event;
+      const evLower = event.toLowerCase();
+      if (evLower.includes('masters')) {
+        cleanEvent = 'VCT Masters';
+      } else if (evLower.includes('champions')) {
+        cleanEvent = 'VCT Champions';
+      } else if (evLower.includes('pacific')) {
+        cleanEvent = 'VCT Pacific';
+      } else if (evLower.includes('emea')) {
+        cleanEvent = 'VCT EMEA';
+      } else if (evLower.includes('americas')) {
+        cleanEvent = 'VCT Americas';
+      } else if (evLower.includes('china') || evLower.includes('cn')) {
+        cleanEvent = 'VCT China';
+      }
+      
+      const searchQ = `${cleanEvent} ${t1} vs ${t2} highlights ${datePart}`.trim();
       mediaBtn = `<a href="https://www.youtube.com/results?search_query=${encodeURIComponent(searchQ)}" target="_blank" class="esp-btn vod">📺 View Highlights</a>`;
     }
   } else {

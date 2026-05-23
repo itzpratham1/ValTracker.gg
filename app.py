@@ -1356,7 +1356,12 @@ def esports_event_teams(event_id):
                     logo_url = ""
                     if img_el and img_el.get('src'):
                         src = img_el.get('src')
-                        logo_url = "https:" + src if src.startswith('//') else src
+                        if src.startswith('//'):
+                            logo_url = "https:" + src
+                        elif src.startswith('/'):
+                            logo_url = "https://www.vlr.gg" + src
+                        else:
+                            logo_url = src
                         
                     local_id = team_slug.replace('-', '_')
                     if "paper_rex" in local_id: local_id = "paper_rex"
