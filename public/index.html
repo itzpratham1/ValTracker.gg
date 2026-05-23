@@ -87,6 +87,7 @@
     <div class="topbar-tabs">
       <div class="topbar-tab active" id="tab-tracker" onclick="toggleMainView('tracker')">Tracker</div>
       <div class="topbar-tab" id="tab-esports" onclick="toggleMainView('esports')">Esports</div>
+      <div class="topbar-tab" id="tab-store" onclick="toggleMainView('store')">Skins Store</div>
     </div>
     
     <div class="topbar-divider" id="tracker-divider-1"></div>
@@ -699,6 +700,133 @@
       <div id="vct-modal-teams" class="player-card-grid" style="grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px;"></div>
     </div>
   </div>
+</div>
+
+<div id="store-view" style="display:none; padding: 24px; max-width: 1400px; margin: 0 auto;">
+  
+  <!-- Banner Header -->
+  <div style="background: linear-gradient(135deg, rgba(250, 68, 84, 0.12) 0%, rgba(20, 20, 22, 0.45) 100%); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 8px;">
+    <h2 style="font-family:'Barlow Condensed', sans-serif; font-size: 32px; font-weight: 900; text-transform: uppercase; color: #fff; letter-spacing: 1.5px; margin: 0;">Valorant Store & Cosmetics Explorer</h2>
+    <p style="font-size: 13px; color: var(--muted); margin: 0; max-width: 700px;">Track global featured bundles with pricing in VP, live countdown timers, and browse the complete Valorant weapon skins database. Click on any skin to explore chroma color variants and watch high-definition video finisher previews inline.</p>
+  </div>
+
+  <!-- Store Split Grid -->
+  <div style="display: grid; grid-template-columns: 1fr; gap: 28px; margin-bottom: 30px;" class="store-grid">
+    
+    <!-- LEFT PANEL: Featured Bundles -->
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+      <div class="section-label visible" style="margin-bottom: 0;">
+        <span class="sl-text">Featured Store Bundles</span>
+        <div class="sl-line"></div>
+      </div>
+      <div id="store-featured-container" style="display: flex; flex-direction: column; gap: 20px;">
+        <!-- Loaded dynamically -->
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: Skins Search & Catalog Explorer -->
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+      <div class="section-label visible" style="margin-bottom: 0;">
+        <span class="sl-text">Weapon Skins Catalog Explorer</span>
+        <div class="sl-line"></div>
+      </div>
+      
+      <!-- Search & Filters Bar -->
+      <div class="card" style="padding: 16px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; border-radius: 12px; background: rgba(20, 20, 22, 0.45); border: 1px solid var(--border);">
+        <div style="flex: 1; min-width: 280px; position: relative;">
+          <input type="text" id="skin-search-input" placeholder="Search weapon skins (e.g. Prime, Reaver, RGX)..." style="width: 100%; padding: 11px 16px; border: 1px solid var(--border); border-radius: 8px; background: rgba(0,0,0,0.4); color: #fff; font-size: 13px; outline: none; transition: var(--transition);" onkeyup="filterSkins()">
+        </div>
+        
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <select id="skin-weapon-select" onchange="filterSkins()" style="padding: 11px 14px; border: 1px solid var(--border); border-radius: 8px; background: rgba(0,0,0,0.4); color: #fff; font-size: 13px; outline: none; cursor: pointer; transition: var(--transition);">
+            <option value="all">All Weapons</option>
+            <option value="vandal">Vandal</option>
+            <option value="phantom">Phantom</option>
+            <option value="sheriff">Sheriff</option>
+            <option value="operator">Operator</option>
+            <option value="spectre">Spectre</option>
+            <option value="ghost">Ghost</option>
+            <option value="classic">Classic</option>
+            <option value="melee">Melee / Knives</option>
+            <option value="guardian">Guardian</option>
+            <option value="bulldog">Bulldog</option>
+            <option value="marshal">Marshal</option>
+            <option value="outlaw">Outlaw</option>
+            <option value="stinger">Stinger</option>
+            <option value="shorty">Shorty</option>
+            <option value="frenzy">Frenzy</option>
+            <option value="bucky">Bucky</option>
+            <option value="judge">Judge</option>
+            <option value="odin">Odin</option>
+            <option value="ares">Ares</option>
+          </select>
+
+          <select id="skin-rarity-select" onchange="filterSkins()" style="padding: 11px 14px; border: 1px solid var(--border); border-radius: 8px; background: rgba(0,0,0,0.4); color: #fff; font-size: 13px; outline: none; cursor: pointer; transition: var(--transition);">
+            <option value="all">All Rarities</option>
+            <option value="exclusive">Exclusive (Gold)</option>
+            <option value="ultra">Ultra (Purple)</option>
+            <option value="premium">Premium (Pink)</option>
+            <option value="deluxe">Deluxe (Blue)</option>
+            <option value="select">Select (Green)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Catalog grid -->
+      <div id="skin-catalog-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px;">
+        <!-- Loaded dynamically -->
+      </div>
+      
+      <!-- Pagination / Show More -->
+      <div style="display: flex; justify-content: center; margin-top: 15px; margin-bottom: 30px;">
+        <button class="fetch-btn" id="skin-show-more-btn" onclick="showMoreSkins()" style="padding: 11px 32px; font-size: 12px;">Load More Skins</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SKIN DETAIL MODAL -->
+  <div class="stat-modal-overlay" id="skin-modal-overlay" onclick="if(event.target===this)closeSkinModal()">
+    <div class="stat-modal" style="max-width: 780px; border-color: rgba(255,255,255,0.1); background: linear-gradient(180deg, var(--surface) 0%, rgba(10,10,12,0.98) 100%); width: 95vw; border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.6);">
+      <div class="stat-modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px; display:flex; align-items:center;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div id="skin-modal-rarity-icon" style="width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); border-radius: 6px;"></div>
+          <div class="stat-modal-title" id="skin-modal-title" style="color: #fff; font-size: 22px; font-family:'Barlow Condensed',sans-serif; font-weight:900; text-transform:uppercase; letter-spacing: 0.5px;">Skin Name</div>
+        </div>
+        <button class="stat-modal-close" onclick="closeSkinModal()">✕</button>
+      </div>
+      
+      <div class="stat-modal-body" style="padding: 20px 0; max-height: 75vh; overflow-y: auto;">
+        
+        <!-- Big Preview Image -->
+        <div style="background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0.5) 100%); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 40px 30px; display: flex; align-items: center; justify-content: center; min-height: 260px; position: relative; overflow: hidden; margin-bottom: 24px;">
+          <img id="skin-modal-large-img" src="" alt="Skin Preview" style="max-width: 90%; max-height: 180px; object-fit: contain; filter: drop-shadow(0 12px 24px rgba(0,0,0,0.75)); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);">
+          <div id="skin-modal-price-badge" style="position: absolute; bottom: 14px; right: 14px; background: rgba(250, 68, 84, 0.12); border: 1px solid rgba(250, 68, 84, 0.3); padding: 7px 14px; border-radius: 20px; font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(250, 68, 84, 0.15);">
+            <span style="font-size: 13px;">🪙</span> <span id="skin-modal-price-val">1775</span> VP
+          </div>
+        </div>
+
+        <!-- Dynamic Chroma Selector -->
+        <div style="margin-bottom: 24px;">
+          <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:13px; text-transform:uppercase; color:var(--muted); margin-bottom:12px; letter-spacing:0.5px; display:flex; align-items:center; gap:6px;">🎨 Chroma Color Variants</h4>
+          <div id="skin-modal-chromas" style="display: flex; gap: 12px; flex-wrap: wrap;"></div>
+        </div>
+
+        <!-- Levels / Media Preview Selector -->
+        <div>
+          <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:13px; text-transform:uppercase; color:var(--muted); margin-bottom:12px; letter-spacing:0.5px; display:flex; align-items:center; gap:6px;">🎬 Upgrade Levels & Finisher Demos</h4>
+          <div id="skin-modal-levels" style="display: flex; flex-direction: column; gap: 8px;"></div>
+        </div>
+        
+        <!-- Inline Video Player -->
+        <div id="skin-modal-video-container" style="display: none; margin-top: 24px; background: #000; border-radius: 8px; border: 1px solid var(--border); overflow: hidden; aspect-ratio: 16/9; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+          <video id="skin-modal-video-player" controls style="width: 100%; height: 100%; object-fit: contain;"></video>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <div class="toast" id="toast"></div>
@@ -6708,11 +6836,13 @@ let allMatchesCache = [];
 
 function toggleMainView(view) {
   document.querySelectorAll('.topbar-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-' + view).classList.add('active');
+  const targetTab = document.getElementById('tab-' + view);
+  if (targetTab) targetTab.classList.add('active');
   
   if (view === 'tracker') {
     document.getElementById('tracker-view').style.display = 'block';
     document.getElementById('esports-view').style.display = 'none';
+    document.getElementById('store-view').style.display = 'none';
     document.querySelector('.player-search-wrap').style.display = 'flex';
     document.getElementById('fetch-btn').style.display = 'inline-block';
     const h2hb = document.getElementById('h2h-trigger-btn');
@@ -6720,9 +6850,10 @@ function toggleMainView(view) {
     if(esportsLiveInterval) clearInterval(esportsLiveInterval);
     if(esportsCountdownInterval) clearInterval(esportsCountdownInterval);
     dismissLanding();
-  } else {
+  } else if (view === 'esports') {
     document.getElementById('tracker-view').style.display = 'none';
     document.getElementById('esports-view').style.display = 'block';
+    document.getElementById('store-view').style.display = 'none';
     document.querySelector('.player-search-wrap').style.display = 'none';
     document.getElementById('fetch-btn').style.display = 'none';
     const h2hb = document.getElementById('h2h-trigger-btn');
@@ -6730,6 +6861,18 @@ function toggleMainView(view) {
     
     const activeTab = document.querySelector('.esports-pill.active').textContent.toLowerCase();
     switchEsportsTab(activeTab);
+  } else if (view === 'store') {
+    document.getElementById('tracker-view').style.display = 'none';
+    document.getElementById('esports-view').style.display = 'none';
+    document.getElementById('store-view').style.display = 'block';
+    document.querySelector('.player-search-wrap').style.display = 'none';
+    document.getElementById('fetch-btn').style.display = 'none';
+    const h2hb = document.getElementById('h2h-trigger-btn');
+    if (h2hb) h2hb.style.display = 'none';
+    
+    if(esportsLiveInterval) clearInterval(esportsLiveInterval);
+    if(esportsCountdownInterval) clearInterval(esportsCountdownInterval);
+    initStoreView();
   }
 }
 
@@ -7788,6 +7931,403 @@ function initScrollSpy() {
       });
     }
   });
+}
+
+// --- SKINS STORE & COSMETICS LOGIC ---
+let storeBundleTimer = null;
+let allSkinsList = [];
+let filteredSkinsList = [];
+let skinCatalogPageSize = 24;
+let currentSkinCatalogIndex = 0;
+
+async function initStoreView() {
+  const featuredContainer = document.getElementById('store-featured-container');
+  const catalogGrid = document.getElementById('skin-catalog-grid');
+  
+  if (!featuredContainer.innerHTML) {
+    featuredContainer.innerHTML = `
+      <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:50px; gap:12px; color:var(--muted); border:1px dashed var(--border); border-radius:12px;">
+        <div class="cyber-spinner" style="width:32px; height:32px; border:2px solid rgba(250,68,84,0.2); border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite;"></div>
+        <div style="font-family:'DM Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:1.5px;">ESTABLISHING SECURE DECRYPTED STORE LINK...</div>
+      </div>
+    `;
+  }
+  
+  if (!catalogGrid.innerHTML) {
+    catalogGrid.innerHTML = `
+      <div style="grid-column: 1/-1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:50px; gap:12px; color:var(--muted);">
+        <div class="cyber-spinner" style="width:32px; height:32px; border:2px solid rgba(250,68,84,0.2); border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite;"></div>
+        <div style="font-family:'DM Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:1.5px;">LOADING VALORANT SKIN CATALOG...</div>
+      </div>
+    `;
+  }
+
+  // 1. Fetch and render featured store bundles
+  try {
+    const res = await fetch('/api/store/featured');
+    const json = await res.json();
+    if (json.data && json.data.length > 0) {
+      renderFeaturedBundles(json.data);
+    } else {
+      featuredContainer.innerHTML = `<div style="text-align:center; color:var(--muted); padding:30px; font-family:'DM Mono',monospace; border:1px dashed var(--border); border-radius:12px;">Failed to parse global store offers. Try again later.</div>`;
+    }
+  } catch (err) {
+    console.error("Store bundles load failed:", err);
+    featuredContainer.innerHTML = `<div style="text-align:center; color:var(--loss); padding:30px; font-family:'DM Mono',monospace; border:1px dashed var(--border); border-radius:12px;">Store connection timed out.</div>`;
+  }
+
+  // 2. Fetch and render skins catalog
+  if (allSkinsList.length === 0) {
+    try {
+      const res = await fetch('https://valorant-api.com/v1/weapons/skins');
+      const json = await res.json();
+      if (json.data && json.data.length > 0) {
+        // Filter out default skins (skins that have "Standard" in name or displayIcon is null)
+        allSkinsList = json.data.filter(s => 
+          s.displayIcon && 
+          !s.displayName.toLowerCase().startsWith('standard') && 
+          !s.displayName.toLowerCase().includes('default') &&
+          s.themeUuid !== "5a62f6b5-4b0d-c0df-d3ca-9dab2686f107" // filter base weapons
+        );
+        allSkinsList.sort((a, b) => a.displayName.localeCompare(b.displayName));
+        filteredSkinsList = [...allSkinsList];
+        
+        currentSkinCatalogIndex = 0;
+        catalogGrid.innerHTML = '';
+        renderSkinsCatalogSlice();
+      }
+    } catch (err) {
+      console.error("Skins catalog load failed:", err);
+      catalogGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--loss); padding:30px; font-family:'DM Mono',monospace;">Failed to connect to the skin catalog server.</div>`;
+    }
+  }
+}
+
+function renderFeaturedBundles(bundles) {
+  const container = document.getElementById('store-featured-container');
+  if (storeBundleTimer) clearInterval(storeBundleTimer);
+  
+  container.innerHTML = bundles.map((b, idx) => {
+    let secondsLeft = b.seconds_remaining;
+    const timerId = `bundle-timer-${idx}`;
+    
+    // Set up countdown timer interval
+    storeBundleTimer = setInterval(() => {
+      const el = document.getElementById(timerId);
+      if (!el) return;
+      if (secondsLeft <= 0) {
+        el.textContent = "EXPIRED";
+        return;
+      }
+      secondsLeft--;
+      const d = Math.floor(secondsLeft / (3600 * 24));
+      const h = Math.floor((secondsLeft % (3600 * 24)) / 3600);
+      const m = Math.floor((secondsLeft % 3600) / 60);
+      const s = Math.floor(secondsLeft % 60);
+      el.textContent = `${d}D ${h}H ${m}M ${s}S`;
+    }, 1000);
+
+    const itemsList = (b.items || []).map(item => {
+      const discountedPrice = item.discounted_price || item.base_price || 0;
+      const discountPct = item.discount_percent ? Math.round(item.discount_percent * 100) : 0;
+      const originalPriceHtml = discountPct > 0 ? `<span style="text-decoration:line-through; font-size:10px; color:var(--muted); margin-right:6px;">${item.base_price}</span>` : '';
+      const discountBadge = discountPct > 0 ? `<div style="position:absolute; top:6px; left:6px; background:var(--win); font-family:'DM Mono',monospace; font-size:9px; font-weight:800; color:#fff; padding:2px 6px; border-radius:10px; box-shadow:0 2px 6px rgba(62,207,142,0.3); z-index:2;">-${discountPct}%</div>` : '';
+      const fallbackBadge = `<div class="team-logo-fallback" style="width:50px; height:50px; border-radius:50%; background:rgba(255,255,255,0.03); display:flex; align-items:center; justify-content:center; font-family:Barlow Condensed,sans-serif; font-size:18px; font-weight:900; color:var(--accent);">${item.name.substring(0,2).toUpperCase()}</div>`;
+      const itemImg = item.image ? `<img src="${item.image}" style="width:100%; height:55px; object-fit:contain; filter:drop-shadow(0 4px 8px rgba(0,0,0,0.5)); transition:all 0.2s;" class="store-item-img" />` : fallbackBadge;
+      
+      const itemTitle = item.name;
+      
+      // Let's see if we can link this item to our skin catalog if it's a skin
+      let clickAttr = '';
+      let cursorStyle = 'cursor:default;';
+      if (item.type === 'skin') {
+        clickAttr = `onclick="openSkinByName('${item.name.replace(/'/g, "\\'")}')"`;
+        cursorStyle = 'cursor:pointer;';
+      }
+      
+      return `
+        <div class="player-card store-item-card" ${clickAttr} style="min-height:115px; padding:10px; position:relative; background:rgba(255,255,255,0.015); border:1px solid rgba(255,255,255,0.04); border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; transition:all 0.2s; ${cursorStyle}">
+          ${discountBadge}
+          <div style="height:55px; width:100%; display:flex; align-items:center; justify-content:center;">
+            ${itemImg}
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:2px; width:100%;">
+            <div style="font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:11px; color:#fff; text-transform:uppercase; text-align:center; line-height:1.1; max-width:98%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${item.name}">${itemTitle}</div>
+            <div style="display:flex; align-items:center; justify-content:center; gap:3px;">
+              ${originalPriceHtml}
+              <span style="font-family:'DM Mono',monospace; font-size:11px; font-weight:800; color:var(--accent);">${discountedPrice} VP</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    return `
+      <div class="card" style="padding:20px; border-radius:12px; background:rgba(20, 20, 22, 0.45); border:1px solid var(--border); display:flex; flex-direction:column; gap:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div>
+            <div style="font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:18px; text-transform:uppercase; color:#fff; display:flex; align-items:center; gap:8px;">
+              <span style="width:8px; height:8px; background:var(--accent); border-radius:50%"></span> Bundle Offer
+            </div>
+            <div style="font-size:11px; color:var(--muted); font-family:'DM Mono',monospace; margin-top:2px;">UUID: ${b.bundle_uuid.substring(0,8)}...</div>
+          </div>
+          
+          <div style="display:flex; gap:16px;">
+            <div style="text-align:right;">
+              <div style="font-size:9px; color:var(--muted); text-transform:uppercase; font-family:'DM Mono',monospace;">Bundle Price</div>
+              <div style="font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:20px; color:#ffb700; text-shadow:0 0 10px rgba(255,183,0,0.25);">🪙 ${b.bundle_price} VP</div>
+            </div>
+            
+            <div style="text-align:right; border-left: 1px solid rgba(255,255,255,0.08); padding-left:16px;">
+              <div style="font-size:9px; color:var(--muted); text-transform:uppercase; font-family:'DM Mono',monospace;">Bundle Expiry</div>
+              <div id="${timerId}" style="font-family:'DM Mono',monospace; font-weight:800; font-size:14px; color:var(--accent); text-shadow:0 0 8px rgba(250,68,84,0.3); margin-top:4px;">0D 0H 0M 0S</div>
+            </div>
+          </div>
+        </div>
+        
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(130px, 1fr)); gap:12px; border-top:1px solid rgba(255,255,255,0.05); padding-top:16px;">
+          ${itemsList}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderSkinsCatalogSlice() {
+  const catalogGrid = document.getElementById('skin-catalog-grid');
+  const showMoreBtn = document.getElementById('skin-show-more-btn');
+  
+  const end = Math.min(currentSkinCatalogIndex + skinCatalogPageSize, filteredSkinsList.length);
+  const slice = filteredSkinsList.slice(currentSkinCatalogIndex, end);
+  
+  if (slice.length === 0 && currentSkinCatalogIndex === 0) {
+    catalogGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--muted); padding:30px; font-family:'DM Mono',monospace;">No skins found matching your search.</div>`;
+    showMoreBtn.style.display = 'none';
+    return;
+  }
+  
+  const html = slice.map(s => {
+    // Determine rarity tier details
+    const tier = getSkinRarityTier(s.contentTierUuid);
+    const fallbackLetter = s.displayName.substring(0, 2).toUpperCase();
+    const isMelee = s.displayName.toLowerCase().includes('melee') || s.displayName.toLowerCase().includes('knife') || s.displayName.toLowerCase().includes('axe');
+    const fallbackBadge = `<div class="team-logo-fallback" style="width:100%; height:80px; background:rgba(255,255,255,0.02); display:flex; align-items:center; justify-content:center; font-family:'Barlow Condensed',sans-serif; font-size:36px; font-weight:900; color:rgba(255,255,255,0.05);">${fallbackLetter}</div>`;
+    const imageStyle = isMelee ? 'max-width:70%; max-height:60px;' : 'max-width:90%; max-height:55px;';
+    const displayImg = s.displayIcon ? `<img src="${s.displayIcon}" style="${imageStyle} object-fit:contain; filter:drop-shadow(0 6px 12px rgba(0,0,0,0.55)); transition:all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);" class="skin-card-img" />` : fallbackBadge;
+    
+    // Estimate pricing in VP based on Content Tier
+    const estimatedPrice = s.displayName.toLowerCase().includes('melee') || s.displayName.toLowerCase().includes('knife') 
+      ? tier.meleePrice 
+      : tier.price;
+      
+    const rarityStyle = `border-left: 3px solid ${tier.color};`;
+    const borderHoverColor = tier.color;
+    
+    return `
+      <div class="card player-card skin-catalog-card" onclick="openSkinModal('${s.uuid}')" onmouseover="this.style.borderColor='${borderHoverColor}'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'" style="${rarityStyle} min-height:165px; padding:16px; background:rgba(20, 20, 22, 0.35); border-radius:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; transition:all 0.2s cubic-bezier(0.25,0.8,0.25,1); position:relative;">
+        <div style="position:absolute; top:8px; right:8px; width:14px; height:14px; background:${tier.color}; border-radius:50%; opacity:0.75; display:flex; align-items:center; justify-content:center; font-size:7px; font-weight:900; color:#000;" title="${tier.name}">R</div>
+        <div style="height:70px; width:100%; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+          ${displayImg}
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:3px; width:100%;">
+          <div style="font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:12px; color:#fff; text-transform:uppercase; text-align:center; line-height:1.2; max-width:98%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${s.displayName}">${s.displayName}</div>
+          <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; display:flex; align-items:center; gap:4px;">
+            <span style="font-size:11px;">🪙</span> ${estimatedPrice} VP
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  
+  if (currentSkinCatalogIndex === 0) {
+    catalogGrid.innerHTML = html;
+  } else {
+    catalogGrid.insertAdjacentHTML('beforeend', html);
+  }
+  
+  currentSkinCatalogIndex = end;
+  showMoreBtn.style.display = currentSkinCatalogIndex >= filteredSkinsList.length ? 'none' : 'block';
+}
+
+function showMoreSkins() {
+  renderSkinsCatalogSlice();
+}
+
+function filterSkins() {
+  const searchQ = document.getElementById('skin-search-input').value.toLowerCase().trim();
+  const weaponFilter = document.getElementById('skin-weapon-select').value.toLowerCase();
+  const rarityFilter = document.getElementById('skin-rarity-select').value.toLowerCase();
+  
+  filteredSkinsList = allSkinsList.filter(s => {
+    const nameMatches = s.displayName.toLowerCase().includes(searchQ);
+    
+    // Weapon Type Filter
+    let weaponMatches = true;
+    if (weaponFilter !== 'all') {
+      const displayName = s.displayName.toLowerCase();
+      if (weaponFilter === 'melee') {
+        weaponMatches = displayName.includes('melee') || displayName.includes('knife') || displayName.includes('axe') || displayName.includes('dagger') || displayName.includes('blade') || displayName.includes('bat') || displayName.includes('sword') || displayName.includes('anchor') || displayName.includes('karambit') || displayName.includes('scythe');
+      } else {
+        weaponMatches = displayName.includes(weaponFilter);
+      }
+    }
+    
+    // Rarity Tier Filter
+    let rarityMatches = true;
+    if (rarityFilter !== 'all') {
+      const tier = getSkinRarityTier(s.contentTierUuid);
+      rarityMatches = tier.shortName.toLowerCase() === rarityFilter;
+    }
+    
+    return nameMatches && weaponMatches && rarityMatches;
+  });
+  
+  currentSkinCatalogIndex = 0;
+  document.getElementById('skin-catalog-grid').innerHTML = '';
+  renderSkinsCatalogSlice();
+}
+
+function getSkinRarityTier(tierUuid) {
+  // Map Valorant Skin Content Tiers (Rarities)
+  const tiers = {
+    // Select Edition (Blue Rarity)
+    "12683d76-48d7-84a3-4e11-5be5b4574b72": { name: "Select Edition", shortName: "select", color: "#3ecf8e", price: 875, meleePrice: 1750, icon: "🟢" },
+    // Deluxe Edition (Green Rarity)
+    "0cebb8be-46e7-c15a-e1d5-89f58f5d883b": { name: "Deluxe Edition", shortName: "deluxe", color: "#00b2ff", price: 1275, meleePrice: 2550, icon: "🔵" },
+    // Premium Edition (Pink Rarity)
+    "607b0394-4343-4343-d2df-8b9ed9381734": { name: "Premium Edition", shortName: "premium", color: "#d154ff", price: 1775, meleePrice: 3550, icon: "🟣" },
+    // Ultra Edition (Yellow Rarity)
+    "11111111-1111-1111-1111-111111111111": { name: "Ultra Edition", shortName: "ultra", color: "#ffb700", price: 2175, meleePrice: 4350, icon: "🟡" },
+    "e046854e-406c-37f4-660d-419b228b7684": { name: "Ultra Edition", shortName: "ultra", color: "#ffb700", price: 2175, meleePrice: 4350, icon: "🟡" },
+    // Exclusive Edition (Orange Rarity)
+    "411e4e55-4e59-7757-41a0-bf9e228b7634": { name: "Exclusive Edition", shortName: "exclusive", color: "#fa4454", price: 2175, meleePrice: 4350, icon: "🔴" }
+  };
+  
+  return tiers[tierUuid] || { name: "Exclusive Edition", shortName: "exclusive", color: "#fa4454", price: 1775, meleePrice: 3550, icon: "🔴" };
+}
+
+function openSkinByName(name) {
+  if (allSkinsList.length === 0) return;
+  const skin = allSkinsList.find(s => s.displayName.toLowerCase().trim() === name.toLowerCase().trim());
+  if (skin) {
+    openSkinModal(skin.uuid);
+  }
+}
+
+function openSkinModal(uuid) {
+  if (allSkinsList.length === 0) return;
+  const s = allSkinsList.find(item => item.uuid === uuid);
+  if (!s) return;
+  
+  // Set Up Basic Info
+  const tier = getSkinRarityTier(s.contentTierUuid);
+  const estimatedPrice = s.displayName.toLowerCase().includes('melee') || s.displayName.toLowerCase().includes('knife') 
+    ? tier.meleePrice 
+    : tier.price;
+    
+  document.getElementById('skin-modal-title').textContent = s.displayName;
+  document.getElementById('skin-modal-rarity-icon').textContent = tier.icon;
+  document.getElementById('skin-modal-price-val').textContent = estimatedPrice;
+  
+  // Set Main Image
+  const largeImg = document.getElementById('skin-modal-large-img');
+  largeImg.src = s.displayIcon;
+  
+  // Setup Chromas Choices
+  const chromasContainer = document.getElementById('skin-modal-chromas');
+  chromasContainer.innerHTML = '';
+  
+  if (s.chromas && s.chromas.length > 0) {
+    s.chromas.forEach((chroma, idx) => {
+      // Create clickable circular color badge
+      const activeStyle = idx === 0 ? 'border-color:var(--accent); background:rgba(250,68,84,0.1);' : '';
+      const title = chroma.displayName.includes('\n') ? chroma.displayName.replace('\n', ' ') : chroma.displayName;
+      
+      const badge = document.createElement('div');
+      badge.className = 'player-card';
+      badge.style = `cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; padding:6px 12px; border:1px solid rgba(255,255,255,0.08); border-radius:18px; font-size:10px; font-family:'DM Mono',monospace; font-weight:800; background:rgba(255,255,255,0.02); transition:var(--transition); ${activeStyle}`;
+      badge.innerHTML = `
+        <img src="${chroma.displayIcon || s.displayIcon}" style="width:28px; height:14px; object-fit:contain; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));" />
+        <span style="color:#fff">${title.replace(s.displayName, '').replace('(', '').replace(')', '').trim() || 'Default'}</span>
+      `;
+      badge.onclick = () => {
+        // Toggle active border
+        chromasContainer.querySelectorAll('.player-card').forEach(b => b.style.borderColor = 'rgba(255,255,255,0.08)');
+        badge.style.borderColor = 'var(--accent)';
+        largeImg.style.transform = 'scale(0.85)';
+        largeImg.style.opacity = '0';
+        
+        setTimeout(() => {
+          largeImg.src = chroma.fullRender || chroma.displayIcon || s.displayIcon;
+          largeImg.style.transform = 'scale(1)';
+          largeImg.style.opacity = '1';
+        }, 150);
+      };
+      
+      chromasContainer.appendChild(badge);
+    });
+  }
+
+  // Setup Upgrade Levels and Demos
+  const levelsContainer = document.getElementById('skin-modal-levels');
+  const videoContainer = document.getElementById('skin-modal-video-container');
+  const videoPlayer = document.getElementById('skin-modal-video-player');
+  
+  levelsContainer.innerHTML = '';
+  videoContainer.style.display = 'none';
+  videoPlayer.src = '';
+  
+  if (s.levels && s.levels.length > 0) {
+    s.levels.forEach((level, idx) => {
+      const isPlayable = !!level.streamedVideo;
+      const playIcon = isPlayable ? '<span style="color:var(--win); font-weight:bold; font-size:11px;">▶ Watch Demonstration Video</span>' : '';
+      const borderHoverStyle = isPlayable ? `onmouseover="this.style.borderColor='var(--win)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.05)'"` : '';
+      const cursorStyle = isPlayable ? 'cursor:pointer;' : 'cursor:default;';
+      const levelItem = document.createElement('div');
+      
+      levelItem.className = 'player-card';
+      levelItem.style = `padding:10px 14px; display:flex; align-items:center; justify-content:space-between; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.05); border-radius:6px; font-size:11px; ${cursorStyle} ${borderHoverStyle} transition:var(--transition);`;
+      
+      // Clean up level name
+      let displayName = level.displayName || `Level ${idx+1}`;
+      displayName = displayName.replace(s.displayName, '').replace('(', '').replace(')', '').trim() || `Base Level 1`;
+      
+      levelItem.innerHTML = `
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-family:'DM Mono',monospace; font-weight:800; color:var(--accent);">LVL ${idx+1}</span>
+          <span style="font-weight:700; color:#fff; text-transform:uppercase;">${displayName}</span>
+        </div>
+        ${playIcon}
+      `;
+      
+      if (isPlayable) {
+        levelItem.onclick = () => {
+          videoContainer.style.display = 'block';
+          videoPlayer.src = level.streamedVideo;
+          videoPlayer.play();
+          
+          // Smooth scroll to video player
+          setTimeout(() => {
+            videoContainer.scrollIntoView({ behavior: 'smooth', block: 'end' });
+          }, 100);
+        };
+      }
+      
+      levelsContainer.appendChild(levelItem);
+    });
+  }
+
+  // Open the Modal
+  document.getElementById('skin-modal-overlay').classList.add('open');
+}
+
+function closeSkinModal() {
+  document.getElementById('skin-modal-overlay').classList.remove('open');
+  const videoPlayer = document.getElementById('skin-modal-video-player');
+  if (videoPlayer) {
+    videoPlayer.pause();
+    videoPlayer.src = '';
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => { 

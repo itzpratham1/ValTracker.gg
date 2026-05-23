@@ -1497,6 +1497,26 @@ def esports_event_teams(event_id):
         print("[ERROR] Esports Event Teams fetch failed:", e)
         return jsonify({"error": "Internal server error", "data": []}), 500
 
+@app.route("/api/store/featured")
+@rate_limit(requests_per_minute=30)
+def store_featured():
+    cache_key = "store_featured"
+    if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < 3600:
+        return jsonify(cache[cache_key]["data"])
+        
+    try:
+        headers = {"Authorization": API_KEY}
+        r = requests.get("https://api.henrikdev.xyz/valorant/v2/store-featured", headers=headers, timeout=10)
+        if r.status_code == 200:
+            data = r.json()
+            cache[cache_key] = {"data": data, "timestamp": time.time()}
+            return jsonify(data)
+        else:
+            return jsonify({"status": r.status_code, "error": "Failed to fetch store"}), r.status_code
+    except Exception as e:
+        print("[ERROR] Store Featured fetch failed:", e)
+        return jsonify({"status": 500, "error": "Internal server error"}), 500
+
 if __name__ == "__main__":
     if not API_KEY:
         print("\n[WARNING] API Key missing in .env file! Requests to HenrikDev might fail.\n")
