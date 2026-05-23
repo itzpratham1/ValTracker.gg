@@ -1272,6 +1272,33 @@ def esports_news():
         return jsonify({"data": cache[cache_key]["data"]})
         
     try:
+        # First layer: Try public unauthenticated vlrggapi instance to bypass Cloudflare
+        print("[INFO] Attempting to fetch news from public vlrggapi instance...")
+        r = requests.get('https://vlrggapi.vercel.app/news', timeout=5)
+        if r.status_code == 200:
+            data = r.json()
+            segments = data.get('data', {}).get('segments', [])
+            if segments:
+                news_items = []
+                for s in segments[:15]:
+                    url = s.get('url_path', '') or s.get('url', '')
+                    url_path = url.replace('https://www.vlr.gg', '').replace('http://www.vlr.gg', '').replace('https://vlr.gg', '').replace('http://vlr.gg', '')
+                    news_items.append({
+                        "title": s.get('title', '').strip(),
+                        "description": s.get('description', '').strip(),
+                        "date": s.get('date', '').strip(),
+                        "author": s.get('author', '').strip(),
+                        "url_path": url_path
+                    })
+                cache[cache_key] = {"data": news_items, "timestamp": time.time()}
+                print(f"[SUCCESS] Esports News successfully fetched {len(news_items)} items from vlrggapi.")
+                return jsonify({"data": news_items})
+    except Exception as e:
+        print("[WARNING] Public vlrggapi news fetch failed, falling back to scraper:", e)
+        
+    # Second layer: Fall back to local BeautifulSoup scraper
+    try:
+        print("[INFO] Falling back to local BeautifulSoup scraping for VLR news...")
         from bs4 import BeautifulSoup
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
         r = requests.get('https://www.vlr.gg/news', headers=headers, timeout=10)
@@ -1284,7 +1311,6 @@ def esports_news():
             
             if title_el:
                 description = desc_el.text.strip() if desc_el else ""
-                
                 raw_txt = date_author_el.text.strip() if date_author_el else "Recent"
                 raw_txt = raw_txt.replace('\n', ' ').replace('\t', ' ')
                 
@@ -1303,10 +1329,12 @@ def esports_news():
                     "url_path": item.get('href', '')
                 })
         cache[cache_key] = {"data": news_items, "timestamp": time.time()}
+        print(f"[SUCCESS] Esports News successfully scraped {len(news_items)} items from VLR.gg.")
         return jsonify({"data": news_items})
     except Exception as e:
-        print("[ERROR] Esports News fetch failed:", e)
+        print("[ERROR] Esports News local scraper also failed:", e)
         return jsonify({"error": "Internal server error", "data": []}), 500
+
 
 @app.route("/api/esports/standings/<region>")
 @rate_limit(requests_per_minute=30)

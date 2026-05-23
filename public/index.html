@@ -7079,10 +7079,10 @@ const VCT_VLR_EVENTS = {
     china: 2685
   },
   masters_santiago: {
-    global: 1758
+    global: 2760
   },
   stage1: {
-    americas: 2862,
+    americas: 2860,
     pacific: 2775,
     emea: 2863,
     china: 2864
@@ -7091,27 +7091,27 @@ const VCT_VLR_EVENTS = {
     global: 2765
   },
   stage2: {
-    americas: 2866,
-    pacific: 2867,
-    emea: 2868,
-    china: 2869
+    americas: 2977,
+    pacific: 2776,
+    emea: 2976,
+    china: 2978
   },
   champions: {
-    global: 2085
+    global: 2766
   }
 };
 
-function getTeamRegion(localId, teamName) {
+function getTeamRegion(tId, localId, teamName) {
   if (vctFranchiseData) {
     for (const reg in vctFranchiseData) {
-      if (vctFranchiseData[reg].some(item => item.id === localId)) {
+      if (vctFranchiseData[reg].some(item => item.id === tId || item.id === localId || item.name.toLowerCase() === teamName.toLowerCase())) {
         return reg;
       }
     }
   }
   
   const nameLower = teamName.toLowerCase();
-  const idLower = localId.toLowerCase();
+  const idLower = (localId || '').toLowerCase();
   
   if (idLower.includes('nongshim') || idLower.includes('redforce') || idLower.includes('ns') || nameLower.includes('nongshim') || nameLower.includes('redforce') || nameLower.includes('bleed') || nameLower.includes('talon') || nameLower.includes('rex regum') || nameLower.includes('rrq') || nameLower.includes('t1') || idLower === 't1' || idLower.includes('detonation') || idLower.includes('dfm') || idLower.includes('zeta') || idLower.includes('secret') || idLower.includes('paper') || idLower.includes('prx') || idLower.includes('gen_g') || idLower.includes('drx') || idLower.includes('global_esports') || idLower.includes('full_sense') || idLower.includes('varrel')) {
     return 'pacific';
@@ -7250,7 +7250,7 @@ async function switchVctModalTab(stage, region) {
     
     // Filter by region for international events if a specific region tab is chosen
     if (isInternational && region !== 'global') {
-      allTeams = allTeams.filter(t => getTeamRegion(t.local_id, t.name) === region);
+      allTeams = allTeams.filter(t => getTeamRegion(t.id, t.local_id, t.name) === region);
     }
     
     if (allTeams.length === 0) {
@@ -7266,7 +7266,7 @@ async function switchVctModalTab(stage, region) {
       
       if (vctFranchiseData) {
         for (const reg in vctFranchiseData) {
-          if (vctFranchiseData[reg].some(item => item.id === localId)) {
+          if (vctFranchiseData[reg].some(item => item.id === t.id || item.id === localId || item.name.toLowerCase() === t.name.toLowerCase())) {
             matchedRegion = reg;
             break;
           }
@@ -7274,10 +7274,10 @@ async function switchVctModalTab(stage, region) {
       }
       
       // Fallback region lookup for Tier 1 non-franchise/ascension teams
-      const teamReg = matchedRegion || getTeamRegion(localId, t.name);
+      const teamReg = matchedRegion || getTeamRegion(t.id, localId, t.name);
       
       const isClickable = !!matchedRegion;
-      const clickAttr = isClickable ? `onclick="selectTeamFromModal('ov-${matchedRegion}', '${localId}')"` : '';
+      const clickAttr = isClickable ? `onclick="selectTeamFromModal('ov-${matchedRegion}', '${t.id}')"` : '';
       const cursorStyle = isClickable ? 'cursor:pointer;' : 'cursor:default;';
       const borderHoverStyle = isClickable ? `onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.05)'"` : '';
       
