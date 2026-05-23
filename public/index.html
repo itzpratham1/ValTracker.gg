@@ -7281,7 +7281,8 @@ async function switchVctModalTab(stage, region) {
       const cursorStyle = isClickable ? 'cursor:pointer;' : 'cursor:default;';
       const borderHoverStyle = isClickable ? `onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.05)'"` : '';
       
-      const teamLogo = t.logo ? `<img src="/api/image?url=${encodeURIComponent(t.logo)}" style="width:28px;height:28px;object-fit:contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />` : '';
+      const teamLogoUrl = t.logo ? (t.logo.startsWith('/api/image') ? t.logo : `/api/image?url=${encodeURIComponent(t.logo)}`) : '';
+      const teamLogo = teamLogoUrl ? `<img src="${teamLogoUrl}" style="width:28px;height:28px;object-fit:contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />` : '';
       const fallbackBadge = `<div class="team-logo-fallback" style="${t.logo ? 'display:none;' : 'display:flex;'} width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); align-items:center; justify-content:center; font-family:Barlow Condensed,sans-serif; font-size:11px; font-weight:700; color:var(--accent);">${t.name.substring(0, 2).toUpperCase()}</div>`;
       
       const tagLabel = teamReg ? teamReg.toUpperCase() : (t.slug ? t.slug.substring(0,6).toUpperCase() : 'VCT');
@@ -7335,7 +7336,8 @@ function getEsportsTeamLogoHtml(name) {
       if (t.name.toLowerCase() === name.toLowerCase() || t.tag?.toLowerCase() === name.toLowerCase()) {
         const fallback = `<div class="team-logo-fallback" style="width:20px; height:20px; border-radius:50%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-family:Barlow Condensed,sans-serif; font-size:9px; font-weight:700; color:var(--accent); margin-right:8px;">${t.name.substring(0, 2).toUpperCase()}</div>`;
         const fallbackEscaped = fallback.replace(/"/g, '&quot;');
-        return `<img src="/api/image?url=${encodeURIComponent(t.logo)}" style="width:20px;height:20px;object-fit:contain;margin-right:8px;" onerror="this.outerHTML='${fallbackEscaped}';" />`;
+        const teamLogoUrl = t.logo.startsWith('/api/image') ? t.logo : `/api/image?url=${encodeURIComponent(t.logo)}`;
+        return `<img src="${teamLogoUrl}" style="width:20px;height:20px;object-fit:contain;margin-right:8px;" onerror="this.outerHTML='${fallbackEscaped}';" />`;
       }
     }
   }
@@ -7344,7 +7346,8 @@ function getEsportsTeamLogoHtml(name) {
   if (match && match.logo) {
     const fallback = `<div class="team-logo-fallback" style="width:20px; height:20px; border-radius:50%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-family:Barlow Condensed,sans-serif; font-size:9px; font-weight:700; color:var(--accent); margin-right:8px;">${name.substring(0, 2).toUpperCase()}</div>`;
     const fallbackEscaped = fallback.replace(/"/g, '&quot;');
-    return `<img src="/api/image?url=${encodeURIComponent(match.logo)}" style="width:20px;height:20px;object-fit:contain;margin-right:8px;" onerror="this.outerHTML='${fallbackEscaped}';" />`;
+    const teamLogoUrl = match.logo.startsWith('/api/image') ? match.logo : `/api/image?url=${encodeURIComponent(match.logo)}`;
+    return `<img src="${teamLogoUrl}" style="width:20px;height:20px;object-fit:contain;margin-right:8px;" onerror="this.outerHTML='${fallbackEscaped}';" />`;
   }
   
   return '';

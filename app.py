@@ -1039,7 +1039,7 @@ def scrape_vlr_matches():
         current_date = "Today"
         
         for card in cards:
-            date_el = card.find(class_='wf-label')
+            date_el = card.find_previous_sibling('div', class_='wf-label')
             if date_el and 'mod-large' in date_el.get('class', []):
                 current_date = date_el.text.strip()
                 
@@ -1141,7 +1141,7 @@ def scrape_vlr_results():
         current_date = "Recent"
         
         for card in cards:
-            date_el = card.find(class_='wf-label')
+            date_el = card.find_previous_sibling('div', class_='wf-label')
             if date_el and 'mod-large' in date_el.get('class', []):
                 current_date = date_el.text.strip()
                 
