@@ -3705,6 +3705,7 @@ input:checked + .slider:before {
   justify-content: space-between;
   cursor: pointer;
   border-bottom: 1px solid rgba(255,255,255,0.03);
+  flex-shrink: 0;
 }
 .esp-sidebar-region-header:hover {
   color: #fff;
@@ -3726,6 +3727,7 @@ input:checked + .slider:before {
   padding-left: 4px;
   transition: max-height 0.3s ease, opacity 0.3s ease;
   overflow: hidden;
+  flex-shrink: 0;
 }
 .esp-sidebar-team-list.collapsed {
   max-height: 0 !important;
