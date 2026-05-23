@@ -706,33 +706,33 @@ function expandTeamName(name) {
   const clean = name.trim();
   const lower = clean.toLowerCase();
   
-  if (lower.startsWith('100 th') || lower.includes('100t')) return '100 Thieves';
-  if (lower.startsWith('nongshim') || lower.includes('redforce') || lower.includes('redfor')) return 'Nongshim RedForce';
-  if (lower.startsWith('paper r') || lower === 'prx') return 'Paper Rex';
-  if (lower.startsWith('edward') || lower === 'edg') return 'EDward Gaming';
-  if (lower.startsWith('gen.g') || lower === 'geng') return 'Gen.G Esports';
-  if (lower.startsWith('sentinel') || lower === 'sen') return 'Sentinels';
-  if (lower.startsWith('leviat')) return 'Leviatán';
-  if (lower.startsWith('team heret') || lower === 'th') return 'Team Heretics';
-  if (lower.startsWith('karmine') || lower === 'kc') return 'Karmine Corp';
-  if (lower.startsWith('fnatic') || lower === 'fnc') return 'Fnatic';
+  if (lower === '100 th' || lower === '100t' || lower === '100 thieves') return '100 Thieves';
+  if (lower === 'nongshim' || lower.includes('redforce') || lower.includes('redfor')) return 'Nongshim RedForce';
+  if (lower === 'paper rex' || lower === 'prx') return 'Paper Rex';
+  if (lower === 'edward gaming' || lower === 'edg') return 'EDward Gaming';
+  if (lower === 'gen.g' || lower === 'geng' || lower === 'gen.g esports') return 'Gen.G Esports';
+  if (lower === 'sentinels' || lower === 'sen') return 'Sentinels';
+  if (lower === 'leviatán' || lower === 'leviatan' || lower === 'lev') return 'Leviatán';
+  if (lower === 'team heretics' || lower === 'th') return 'Team Heretics';
+  if (lower === 'karmine corp' || lower === 'kc') return 'Karmine Corp';
+  if (lower === 'fnatic' || lower === 'fnc') return 'Fnatic';
   
-  if (lower.startsWith('funplus') || lower === 'fpx') return 'FunPlus Phoenix';
-  if (lower.startsWith('trace') || lower === 'te') return 'Trace Esports';
-  if (lower.startsWith('bilibili') || lower === 'blg') return 'Bilibili Gaming';
+  if (lower === 'funplus phoenix' || lower === 'fpx') return 'FunPlus Phoenix';
+  if (lower === 'trace esports' || lower === 'te') return 'Trace Esports';
+  if (lower === 'bilibili gaming' || lower === 'blg') return 'Bilibili Gaming';
   
-  if (lower.startsWith('zeta') || lower.startsWith('zeta d')) return 'ZETA DIVISION';
-  if (lower.startsWith('detonation') || lower.startsWith('dfm') || lower.startsWith('detonati')) return 'DetonatioN FocusMe';
-  if (lower.startsWith('global') || lower.startsWith('ge')) return 'Global Esports';
+  if (lower === 'zeta division' || lower === 'zeta' || lower === 'zeta d') return 'ZETA DIVISION';
+  if (lower === 'detonation focusme' || lower === 'dfm' || lower.startsWith('detonati')) return 'DetonatioN FocusMe';
+  if (lower === 'global esports' || lower === 'ge') return 'Global Esports';
   
-  if (lower.startsWith('furia')) return 'FURIA Esports';
+  if (lower === 'furia' || lower === 'furia esports') return 'FURIA Esports';
   
-  if (lower.startsWith('fut') || lower === 'fut') return 'FUT Esports';
-  if (lower.startsWith('vitali') || lower.startsWith('team vit')) return 'Team Vitality';
-  if (lower.startsWith('bbl') || lower === 'bbl') return 'BBL Esports';
+  if (lower === 'fut esports' || lower === 'fut') return 'FUT Esports';
+  if (lower === 'team vitality' || lower === 'vit') return 'Team Vitality';
+  if (lower === 'bbl esports' || lower === 'bbl') return 'BBL Esports';
   
-  if (lower.startsWith('xlg')) return 'XLG Esports';
-  if (lower.startsWith('dragon') || lower.startsWith('drg')) return 'Dragon Ranger Gaming';
+  if (lower === 'xlg esports' || lower === 'xlg') return 'XLG Esports';
+  if (lower === 'dragon ranger gaming' || lower === 'drg') return 'Dragon Ranger Gaming';
   
   return clean;
 }
@@ -7365,7 +7365,7 @@ function getEspHTML(m, type) {
   let mediaBtn = '';
   if (m.state === 'in_progress' || m.state === 'inProgress') {
     statusHtml = `<div class="esp-status live">LIVE</div>`;
-    mediaBtn = `<a href="https://twitch.tv/valorant" target="_blank" class="esp-btn live">🔴 Watch Live</a>`;
+    mediaBtn = `<a href="https://twitch.tv/valorantesports" target="_blank" class="esp-btn live">🔴 Watch Live</a>`;
   } else if (m.state === 'completed') {
     statusHtml = `<div class="esp-status">FINAL</div>`;
     if (m.vod) {

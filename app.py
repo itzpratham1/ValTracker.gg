@@ -1008,6 +1008,8 @@ def scrape_vlr_matches():
                 
                 time_el = item.find('div', class_='match-item-time')
                 time_str = time_el.text.strip() if time_el else "00:00"
+                if time_str and "TBD" not in time_str.upper() and "ET" not in time_str:
+                    time_str += " ET"
                 
                 teams_divs = item.find_all('div', class_='match-item-vs-team')
                 teams_data = []
@@ -1109,6 +1111,8 @@ def scrape_vlr_results():
                 
                 time_el = item.find('div', class_='match-item-time')
                 time_str = time_el.text.strip() if time_el else "00:00"
+                if time_str and "TBD" not in time_str.upper() and "ET" not in time_str:
+                    time_str += " ET"
                 
                 teams_divs = item.find_all('div', class_='match-item-vs-team')
                 teams_data = []
