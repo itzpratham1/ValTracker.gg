@@ -1319,6 +1319,77 @@ def esports_standings(region):
         print(f"[ERROR] VLR Standings scraping failed:", e)
         return jsonify({"error": "Internal server error", "data": []}), 500
 
+@app.route("/api/esports/event/<event_id>")
+@rate_limit(requests_per_minute=30)
+def esports_event_teams(event_id):
+    cache_key = f"vlr_event_teams_{event_id}"
+    if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < 86400:
+        return jsonify({"data": cache[cache_key]["data"]})
+        
+    try:
+        from bs4 import BeautifulSoup
+        import re
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
+        r = requests.get(f'https://www.vlr.gg/event/{event_id}', headers=headers, timeout=10)
+        if r.status_code != 200:
+            return jsonify({"error": "Failed to load VLR event page", "data": []}), 500
+            
+        soup = BeautifulSoup(r.text, 'html.parser')
+        teams = []
+        seen_ids = set()
+        
+        for a in soup.find_all('a'):
+            href = a.get('href', '')
+            if '/team/' in href:
+                match = re.search(r'/team/(\d+)/([^/]+)', href)
+                if match:
+                    team_id = match.group(1)
+                    team_slug = match.group(2)
+                    
+                    team_name = a.text.strip().split('\n')[0].strip()
+                    if not team_name or team_id in seen_ids:
+                        continue
+                        
+                    seen_ids.add(team_id)
+                    
+                    img_el = a.find('img')
+                    logo_url = ""
+                    if img_el and img_el.get('src'):
+                        src = img_el.get('src')
+                        logo_url = "https:" + src if src.startswith('//') else src
+                        
+                    local_id = team_slug.replace('-', '_')
+                    if "paper_rex" in local_id: local_id = "paper_rex"
+                    elif "sentinels" in local_id: local_id = "sentinels"
+                    elif "gen_g" in local_id: local_id = "gen_g"
+                    elif "fnatic" in local_id: local_id = "fnatic"
+                    elif "edward_gaming" in local_id or "edg" in local_id: local_id = "edg"
+                    elif "drx" in local_id: local_id = "drx"
+                    elif "global_esports" in local_id or "ge" in local_id: local_id = "global_esports"
+                    elif "team_secret" in local_id: local_id = "team_secret"
+                    elif "detonation" in local_id: local_id = "detonation_focusme"
+                    elif "full_sense" in local_id: local_id = "full_sense"
+                    elif "varrel" in local_id: local_id = "varrel"
+                    elif "zeta" in local_id: local_id = "zeta_division"
+                    elif "g2" in local_id: local_id = "g2_esports"
+                    elif "leviatan" in local_id: local_id = "leviatan"
+                    elif "heretics" in local_id: local_id = "team_heretics"
+                    
+                    teams.append({
+                        "id": team_id,
+                        "name": team_name,
+                        "slug": team_slug,
+                        "logo": logo_url,
+                        "local_id": local_id
+                    })
+                    
+        if teams:
+            cache[cache_key] = {"data": teams, "timestamp": time.time()}
+        return jsonify({"data": teams})
+    except Exception as e:
+        print("[ERROR] VLR Event Teams scraping failed:", e)
+        return jsonify({"error": "Internal server error", "data": []}), 500
+
 if __name__ == "__main__":
     if not API_KEY:
         print("\n[WARNING] API Key missing in .env file! Requests to HenrikDev might fail.\n")

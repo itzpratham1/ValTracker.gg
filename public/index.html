@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
 <title>ValTracker.gg — Valorant Stats Tracker</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230d0d0f'/%3E%3Crect width='32' height='32' rx='7' fill='url(%23g)'/%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23e8ff47' stop-opacity='0.15'/%3E%3Cstop offset='1' stop-color='%230d0d0f' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ctext x='5' y='23' font-size='17' font-family='Arial Black,sans-serif' font-weight='900' fill='%23e8ff47'%3EVT%3C/text%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -456,7 +457,6 @@
     <div class="esports-pill" onclick="switchEsportsTab('schedule')">Schedule</div>
     <div class="esports-pill" onclick="switchEsportsTab('vct26')">VCT26</div>
     <div class="esports-pill" onclick="switchEsportsTab('teams')">Teams</div>
-    <div class="esports-pill" onclick="switchEsportsTab('standings')">Rankings</div>
     <div class="esports-pill" onclick="switchEsportsTab('news')">News</div>
     <div style="flex-grow:1"></div>
     <div class="tier-toggle-wrapper">
@@ -648,36 +648,7 @@
       </div>
     </div>
     
-    <!-- STANDINGS SECTION -->
-    <div id="esp-sec-standings" class="esports-section">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-        <div class="section-label visible" style="flex:1;">
-          <span class="sl-text">Regional Standings</span>
-          <div class="sl-line"></div>
-        </div>
-        <select class="region-select" id="esp-standings-region" onchange="fetchEsportsStandings()">
-          <option value="ap">Pacific</option>
-          <option value="na">Americas</option>
-          <option value="eu">EMEA</option>
-          <option value="mn">China</option>
-          <option value="all">All Regions</option>
-        </select>
-      </div>
-      <div class="esp-standings-wrap">
-        <table class="esp-standings-table">
-          <thead>
-            <tr>
-              <th style="width:50px">Rank</th>
-              <th>Team</th>
-              <th style="width:100px">Rating (ELO)</th>
-              <th style="width:100px">W - L</th>
-              <th style="width:100px">Streak</th>
-            </tr>
-          </thead>
-          <tbody id="esp-standings-tbody"></tbody>
-        </table>
-      </div>
-    </div>
+
     
     <!-- NEWS SECTION -->
     <div id="esp-sec-news" class="esports-section">
@@ -6718,9 +6689,6 @@ function switchEsportsTab(tab) {
   else if (tab === 'teams') {
     initTeamsTab();
   }
-  else if (tab === 'standings') {
-    fetchEsportsStandings();
-  }
   else if (tab === 'news') {
     fetchEsportsNews();
   }
@@ -7030,7 +6998,37 @@ function openVctTournamentModal(stage) {
   openVctModal();
 }
 
-function switchVctModalTab(stage, region) {
+const VCT_VLR_EVENTS = {
+  kickoff: {
+    americas: 2682,
+    pacific: 2683,
+    emea: 2684,
+    china: 2685
+  },
+  masters_santiago: {
+    global: 1758
+  },
+  stage1: {
+    americas: 2862,
+    pacific: 2775,
+    emea: 2863,
+    china: 2864
+  },
+  masters_london: {
+    global: 2765
+  },
+  stage2: {
+    americas: 2866,
+    pacific: 2867,
+    emea: 2868,
+    china: 2869
+  },
+  champions: {
+    global: 2085
+  }
+};
+
+async function switchVctModalTab(stage, region) {
   const data = VCT_STAGE_DATA[stage];
   if (!data) return;
   
@@ -7076,20 +7074,121 @@ function switchVctModalTab(stage, region) {
   // Render Teams
   const teamsContainer = document.getElementById('vct-modal-teams');
   const teamsTitle = document.getElementById('vct-modal-teams-title');
-  if (regData.teams && regData.teams.length > 0) {
-    teamsTitle.style.display = 'flex';
-    teamsContainer.style.display = 'grid';
-    teamsContainer.innerHTML = regData.teams.map(t => {
+  
+  teamsTitle.style.display = 'flex';
+  teamsContainer.style.display = 'grid';
+  teamsContainer.innerHTML = `
+    <div style="grid-column: 1/-1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:30px; gap:12px; color:var(--muted);">
+      <div class="cyber-spinner" style="width:30px; height:30px; border:2px solid rgba(255, 70, 85, 0.2); border-top-color:var(--loss); border-radius:50%; animation:spin 0.8s linear infinite;"></div>
+      <div style="font-family:'DM Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:1px;">Scraping VLR.gg rosters in real-time...</div>
+    </div>
+  `;
+  
+  if (!document.getElementById('cyber-spinner-style')) {
+    const style = document.createElement('style');
+    style.id = 'cyber-spinner-style';
+    style.innerHTML = `@keyframes spin { to { transform: rotate(360deg); } }`;
+    document.head.appendChild(style);
+  }
+  
+  if (!vctFranchiseData) {
+    try {
+      const res = await fetch('/vct_teams.json');
+      vctFranchiseData = await res.json();
+    } catch (e) {
+      console.error("Failed to load franchise data:", e);
+    }
+  }
+  
+  let vlrIds = [];
+  const stageEvents = VCT_VLR_EVENTS[stage];
+  if (stageEvents) {
+    if (region === 'global') {
+      vlrIds = Object.values(stageEvents);
+    } else {
+      if (stageEvents[region]) {
+        vlrIds = [stageEvents[region]];
+      }
+    }
+  }
+  
+  if (vlrIds.length === 0) {
+    teamsContainer.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--muted); padding:20px; font-family:'DM Mono',monospace;">No VLR event mapped for this stage.</div>`;
+    return;
+  }
+  
+  try {
+    const fetchedResults = await Promise.all(
+      vlrIds.map(async id => {
+        try {
+          const res = await fetch(`/api/esports/event/${id}`);
+          const json = await res.json();
+          return json.data || [];
+        } catch (err) {
+          console.error(`Failed to fetch event ${id}:`, err);
+          return [];
+        }
+      })
+    );
+    
+    let allTeams = [];
+    const seenIds = new Set();
+    fetchedResults.forEach(teamsList => {
+      teamsList.forEach(t => {
+        if (!seenIds.has(t.id)) {
+          seenIds.add(t.id);
+          allTeams.push(t);
+        }
+      });
+    });
+    
+    if (allTeams.length === 0) {
+      teamsContainer.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--muted); padding:20px; font-family:'DM Mono',monospace;">No teams found or scraping timed out.</div>`;
+      return;
+    }
+    
+    allTeams.sort((a, b) => a.name.localeCompare(b.name));
+    
+    teamsContainer.innerHTML = allTeams.map(t => {
+      let localId = t.local_id;
+      let matchedRegion = null;
+      
+      if (vctFranchiseData) {
+        for (const reg in vctFranchiseData) {
+          if (vctFranchiseData[reg].some(item => item.id === localId)) {
+            matchedRegion = reg;
+            break;
+          }
+        }
+      }
+      
+      const isClickable = !!matchedRegion;
+      const clickAttr = isClickable ? `onclick="selectTeamFromModal('ov-${matchedRegion}', '${localId}')"` : '';
+      const cursorStyle = isClickable ? 'cursor:pointer;' : 'cursor:default;';
+      const borderHoverStyle = isClickable ? `onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.05)'"` : '';
+      
+      const teamLogo = t.logo ? `<img src="${t.logo}" style="width:28px;height:28px;object-fit:contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />` : '';
+      const fallbackBadge = `<div class="team-logo-fallback" style="${t.logo ? 'display:none;' : 'display:flex;'} width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); align-items:center; justify-content:center; font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700; color:var(--accent);">${t.name.substring(0, 2).toUpperCase()}</div>`;
+      
+      const tagLabel = matchedRegion ? `${matchedRegion.toUpperCase()}` : (t.slug ? t.slug.substring(0,6).toUpperCase() : 'VCT');
+      
       return `
-        <div class="player-card" onclick="selectTeamFromModal('${t.region}', '${t.id}')" style="cursor:pointer; min-height:60px; padding:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); transition:var(--transition);" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.05)'">
-          <div style="font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:12px; color:#fff; text-transform:uppercase; text-align:center;">${t.name}</div>
-          <div style="font-size:9px; color:var(--muted); text-transform:uppercase; margin-top:2px;">${t.tag}</div>
+        <div class="player-card" ${clickAttr} ${borderHoverStyle} style="${cursorStyle} min-height:85px; padding:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); transition:var(--transition); border-radius:4px; gap:8px;">
+          <div style="display:flex; align-items:center; justify-content:center; height:32px;">
+            ${teamLogo}
+            ${fallbackBadge}
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+            <div style="font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:11px; color:#fff; text-transform:uppercase; text-align:center; line-height:1.1; max-width:90px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${t.name}">${t.name}</div>
+            <div style="font-size:8px; color:var(--muted); text-transform:uppercase; font-family:'DM Mono',monospace;">${tagLabel}</div>
+          </div>
         </div>
       `;
     }).join('');
-  } else {
-    teamsTitle.style.display = 'none';
-    teamsContainer.style.display = 'none';
+    
+  } catch (err) {
+    console.error("Error loading VLR teams in modal:", err);
+    teamsContainer.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--loss); padding:20px; font-family:'DM Mono',monospace;">Failed to fetch rosters. Try again later.</div>`;
   }
 }
 
@@ -7148,9 +7247,29 @@ function getEspHTML(m, type) {
     } else {
       let datePart = '';
       if (m.date) {
-        datePart = m.date.replace(/\b\d{1,2}:\d{2}\b/, '').trim(); // Remove HH:MM
-        datePart = datePart.replace(/(Today|Yesterday|Tomorrow)/i, '').trim(); // Remove Today/Yesterday
-        datePart = datePart.replace(/^[,\s]+|[,\s]+$/g, ''); // Trim commas and whitespace
+        const hasToday = /today/i.test(m.date);
+        const hasYesterday = /yesterday/i.test(m.date);
+        
+        datePart = m.date.replace(/\b\d{1,2}:\d{2}\s*(?:AM|PM)?/gi, '').trim();
+        datePart = datePart.replace(/(Today|Yesterday|Tomorrow|Recent)/i, '').trim();
+        datePart = datePart.replace(/^[,\s]+|[,\s]+$/g, '');
+        
+        if (hasToday || hasYesterday) {
+          const d = new Date();
+          if (hasYesterday) {
+            d.setDate(d.getDate() - 1);
+          }
+          const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+          datePart = `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+        } else if (!datePart) {
+          datePart = new Date().getFullYear().toString();
+        } else {
+          if (!/\b\d{4}\b/.test(datePart)) {
+            datePart += `, ${new Date().getFullYear()}`;
+          }
+        }
+      } else {
+        datePart = new Date().getFullYear().toString();
       }
       const searchQ = `${event} ${t1} vs ${t2} highlights ${datePart}`.trim();
       mediaBtn = `<a href="https://www.youtube.com/results?search_query=${encodeURIComponent(searchQ)}" target="_blank" class="esp-btn vod">📺 View Highlights</a>`;
@@ -7283,47 +7402,6 @@ async function fetchEsportsUpcoming() {
   }
 }
 
-async function fetchEsportsStandings() {
-  const container = document.getElementById('esp-standings-tbody');
-  const region = document.getElementById('esp-standings-region').value;
-  container.innerHTML = '<tr><td colspan="5" class="placeholder-txt" style="border:none">Loading Rankings...</td></tr>';
-  try {
-    const res = await fetch('/api/esports/standings/' + region);
-    const data = await res.json();
-    let rows = data.data || [];
-
-    if (!rows || rows.length === 0) {
-      container.innerHTML = '<tr><td colspan="5" class="placeholder-txt" style="border:none">No standings found for this region.</td></tr>';
-      return;
-    }
-    let html = '';
-    rows.forEach((r, i) => {
-      const logoHtml = r.logo ? `<img class="esp-standings-logo" src="${r.logo}" alt="logo"/>` : '';
-      const streakVal = r.streak || '-';
-      const streakCls = streakVal.includes('W') ? 'w' : streakVal.includes('L') ? 'l' : '';
-      const streakHtml = `<span class="esp-streak-pill ${streakCls}">${streakVal}</span>`;
-      
-      html += `
-        <tr>
-          <td style="color:var(--muted)">#${r.rank || i+1}</td>
-          <td>
-            <div class="esp-standings-team">
-              ${logoHtml}
-              <div style="font-size:10px;color:var(--muted);width:20px;text-align:center">${r.country||''}</div>
-              <span style="font-weight:700;color:#fff">${r.team || 'Unknown'}</span>
-            </div>
-          </td>
-          <td style="color:var(--accent); font-weight:700;">${r.rating||'1000'}</td>
-          <td>${r.wins||0}W - ${r.losses||0}L</td>
-          <td>${streakHtml}</td>
-        </tr>
-      `;
-    });
-    container.innerHTML = html;
-  } catch (err) {
-    container.innerHTML = '<tr><td colspan="5" class="placeholder-txt" style="color:var(--loss);border:none">Rankings service timed out. <button class="fetch-btn" onclick="fetchEsportsStandings()" style="margin-top:8px;">Retry</button></td></tr>';
-  }
-}
 
 async function fetchEsportsNews() {
   const container = document.getElementById('esp-news-container');
