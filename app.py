@@ -993,13 +993,41 @@ def proxy_api(subpath):
 
 # --- ESPORTS ROUTES ---
 
-def parse_vlr_time(date_str, time_str):
+def parse_vlr_time(date_str, time_str, eta_str=""):
+    import datetime
+    if eta_str:
+        try:
+            eta_lower = eta_str.lower()
+            if 'live' in eta_lower:
+                return datetime.datetime.now(datetime.timezone.utc).isoformat()
+            
+            hours = 0
+            minutes = 0
+            days = 0
+            
+            parts = eta_lower.replace('upcoming', '').replace('completed', '').strip().split()
+            for p in parts:
+                if 'd' in p:
+                    days = int(p.replace('d', ''))
+                elif 'h' in p:
+                    hours = int(p.replace('h', ''))
+                elif 'm' in p:
+                    minutes = int(p.replace('m', ''))
+                    
+            if days or hours or minutes:
+                delta = datetime.timedelta(days=days, hours=hours, minutes=minutes)
+                if 'completed' in eta_lower:
+                    utc_time = datetime.datetime.now(datetime.timezone.utc) - delta
+                else:
+                    utc_time = datetime.datetime.now(datetime.timezone.utc) + delta
+                return utc_time.isoformat()
+        except:
+            pass
+
     if time_str == "TBD" or not time_str:
         return f"{date_str} {time_str}"
     try:
-        import datetime
         now = datetime.datetime.now()
-        
         time_clean = time_str.replace(" ET", "").strip()
         
         if "Today" in date_str:
@@ -1015,7 +1043,6 @@ def parse_vlr_time(date_str, time_str):
             clean_date = date_str.split(',')[1].strip() if ',' in date_str else date_str.strip()
             date_clean = f"{clean_date}, {now.year}"
             
-        # Just return the raw local time, JS will parse it as local time
         return f"{date_clean} {time_clean}"
     except Exception as e:
         return f"{date_str} {time_str}"
@@ -1051,7 +1078,6 @@ def scrape_vlr_matches():
                 
                 time_el = item.find('div', class_='match-item-time')
                 time_str = time_el.text.strip() if time_el else "00:00"
-                date_meta = parse_vlr_time(current_date, time_str)
                 
                 teams_divs = item.find_all('div', class_='match-item-vs-team')
                 teams_data = []
@@ -1075,8 +1101,10 @@ def scrape_vlr_matches():
                 if len(teams_data) < 2:
                     teams_data = [{"name": "TBD", "game_wins": 0, "has_won": False}, {"name": "TBD", "game_wins": 0, "has_won": False}]
                     
-                eta_el = item.find('div', class_='ml-status')
+                eta_el = item.find('div', class_='match-item-eta')
                 status_text = eta_el.text.strip().upper() if eta_el else "UPCOMING"
+                
+                date_meta = parse_vlr_time(current_date, time_str, status_text)
                 
                 state = "unstarted"
                 if "LIVE" in status_text:
@@ -1100,8 +1128,6 @@ def scrape_vlr_matches():
                     stage_name = parts[0] if len(parts) >= 1 else ""
                     event_name = parts[1] if len(parts) >= 2 else stage_name
                     
-                date_meta = parse_vlr_time(current_date, time_str)
-                
                 matches.append({
                     "id": match_id,
                     "date": date_meta,
@@ -1194,7 +1220,9 @@ def scrape_vlr_results():
                     stage_name = parts[0] if len(parts) >= 1 else ""
                     event_name = parts[1] if len(parts) >= 2 else stage_name
                     
-                date_meta = parse_vlr_time(current_date, time_str)
+                eta_el = item.find('div', class_='match-item-eta')
+                status_text = eta_el.text.strip().upper() if eta_el else "COMPLETED"
+                date_meta = parse_vlr_time(current_date, time_str, status_text)
                 
                 matches.append({
                     "id": match_id,

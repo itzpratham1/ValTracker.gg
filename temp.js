@@ -1,0 +1,5598 @@
+
+function getPlayerList(match) {
+  if (!match) return [];
+  if (Array.isArray(match.players)) return match.players;
+  return match.players?.all_players || match.players || [];
+}
+// API_KEY has been securely moved to the backend
+let PLAYER_NAME = '';
+let PLAYER_TAG  = '';
+
+const AGENT_ROLES = {
+  jett:'duelist',reyna:'duelist',phoenix:'duelist',neon:'duelist',iso:'duelist',yoru:'duelist',waylay:'duelist',raze:'duelist',
+  sage:'sentinel',killjoy:'sentinel',cypher:'sentinel',chamber:'sentinel',deadlock:'sentinel',vyse:'sentinel',
+  sova:'initiator',breach:'initiator',skye:'initiator',fade:'initiator',gekko:'initiator',tejo:'initiator','kay/o':'initiator',kayo:'initiator',
+  brimstone:'controller',viper:'controller',omen:'controller',astra:'controller',harbor:'controller',clove:'controller'
+};
+const AGENT_UUIDS = {
+  // Duelists
+  'Jett':     'add6443a-41bd-e414-f6ad-e58d267f4e95',
+  'Reyna':    'a3bfb853-43b2-7238-a4f1-ad90e9e46bcc',
+  'Phoenix':  'eb93336a-449b-9c1b-0a54-a891f7921d69',
+  'Neon':     'bb2a4828-46eb-8cd1-e765-15848195d751',
+  'Iso':      '0e38b510-41a8-5780-5e8f-568b2a4f2d6c',
+  'Yoru':     '7f94d92c-4234-0a36-9646-3a87eb8b5c89',
+  'Raze':     'f94c3b30-42be-e959-889c-5aa313dba261',
+  'Waylay':   '7f8b8c8e-4f2d-4b6e-8f2e-3d5c1a2b4e6f', // placeholder — update when API available
+  // Sentinels
+  'Sage':     '569fdd95-4d10-43ab-ca70-79becc718b46',
+  'Killjoy':  '1e58de9c-4950-5125-93e9-a0aee9f98746',
+  'Cypher':   '117ed9e3-49f3-6512-3ccf-0cada7e3823b',
+  'Chamber':  '22697a3d-45bf-8dd7-4fec-84a9e28c69d7',
+  'Deadlock': 'cc8b64c8-4b25-4ff9-6e7f-37b4da43d235',
+  'Vyse':     'efba5359-4016-a1e5-7626-b1ae7d0ac65a',
+  // Initiators
+  'Sova':     '320b2a48-4d9b-a075-30f1-1f93a9b638fa',
+  'Breach':   '5f8d3a7f-467b-97f3-062c-13acf203c006',
+  'Skye':     '6f2a04ca-43e0-be17-7f36-b3908627744d',
+  'Fade':     'dade69b4-4f5a-8528-247b-219e5a1facd6',
+  'Gekko':    'e370fa57-4757-3604-3648-499e1f642d3f',
+  'KAY/O':    '601dbbe7-43ce-be57-2a40-4abd24953621',
+  'Tejo':     '3be7fc21-0c03-fa0b-a4c6-d7a0ed23b027',
+  // Controllers
+  'Brimstone':'9f0d8ba9-4140-b941-57d3-a7ad57c6b417',
+  'Viper':    '707eab51-4836-f488-046a-cda6bf494859',
+  'Omen':     '8e253930-4c05-31dd-1b6c-968525494517',
+  'Astra':    '41fb69c1-4189-7b37-f117-bcaf1e96f1bf',
+  'Harbor':   '95b78ed7-4637-86d9-7e41-71ba8c293152',
+  'Clove':    '1dbf2edd-4729-0984-3115-daa5eed44993',
+};
+
+const RANKS=[
+  {name:'Iron 1',rr:0},{name:'Iron 2',rr:100},{name:'Iron 3',rr:200},
+  {name:'Bronze 1',rr:300},{name:'Bronze 2',rr:400},{name:'Bronze 3',rr:500},
+  {name:'Silver 1',rr:600},{name:'Silver 2',rr:700},{name:'Silver 3',rr:800},
+  {name:'Gold 1',rr:900},{name:'Gold 2',rr:1000},{name:'Gold 3',rr:1100},
+  {name:'Platinum 1',rr:1200},{name:'Platinum 2',rr:1300},{name:'Platinum 3',rr:1400},
+  {name:'Diamond 1',rr:1500},{name:'Diamond 2',rr:1600},{name:'Diamond 3',rr:1700},
+  {name:'Ascendant 1',rr:1800},{name:'Ascendant 2',rr:1900},{name:'Ascendant 3',rr:2000},
+  {name:'Immortal 1',rr:2100},{name:'Immortal 2',rr:2200},{name:'Immortal 3',rr:2300},
+  {name:'Radiant',rr:2400}
+];
+const RANK_COLORS={
+  Iron:'#8a8a8a',Bronze:'#cd7f32',Silver:'#c0c0c0',Gold:'#f5a623',
+  Platinum:'#00d4e0',Diamond:'#a78bfa',Ascendant:'#3ecf8e',Immortal:'#ff5757',Radiant:'#ffd700'
+};
+
+function getRankImgUrl(rankName){
+  const tierMap={'Iron 1':3,'Iron 2':4,'Iron 3':5,'Bronze 1':6,'Bronze 2':7,'Bronze 3':8,'Silver 1':9,'Silver 2':10,'Silver 3':11,'Gold 1':12,'Gold 2':13,'Gold 3':14,'Platinum 1':15,'Platinum 2':16,'Platinum 3':17,'Diamond 1':18,'Diamond 2':19,'Diamond 3':20,'Ascendant 1':21,'Ascendant 2':22,'Ascendant 3':23,'Immortal 1':24,'Immortal 2':25,'Immortal 3':26,'Radiant':27};
+  const tier=tierMap[rankName];
+  return tier?`https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/${tier}/smallicon.png`:null;
+}
+function getRankFromRR(v){for(let i=RANKS.length-1;i>=0;i--){if(v>=RANKS[i].rr)return RANKS[i];}return RANKS[0];}
+function getRankColor(n){const t=n.split(' ')[0];return RANK_COLORS[t]||'#fff';}
+// ── Live asset cache — fetches from valorant-api.com at startup ──
+const _assetCache = { agents: {}, maps: {}, weapons: {}, ready: false };
+
+async function initAssetCache() {
+  try {
+    const [agentRes, mapRes, wpnRes] = await Promise.all([
+      fetch('https://valorant-api.com/v1/agents?isPlayableCharacter=true'),
+      fetch('https://valorant-api.com/v1/maps'),
+      fetch('https://valorant-api.com/v1/weapons')
+    ]);
+    const [agentData, mapData, weaponData] = await Promise.all([agentRes.json(), mapRes.json(), wpnRes.json()]);
+
+    // Agents: name → { uuid, role, iconUrl, portraitUrl }
+    (agentData.data || []).forEach(a => {
+      const name = a.displayName;
+      _assetCache.agents[name] = {
+        uuid:       a.uuid,
+        iconUrl:    a.displayIcon,
+        portraitUrl:a.fullPortrait || a.fullPortraitV2 || a.displayIcon,
+        role:       (a.role?.displayName || '').toLowerCase()
+      };
+      // Also index by lowercase for fuzzy matching
+      _assetCache.agents[name.toLowerCase()] = _assetCache.agents[name];
+    });
+
+    // Maps: displayName → { uuid, splashUrl, minimap }
+    (mapData.data || []).forEach(m => {
+      if (!m.displayName || m.displayName === 'The Range' || m.displayName === 'Shooting Range') return;
+      // splash is the wide banner; fallback to listViewIcon or displayIcon
+      const splashUrl = m.splash || m.listViewIcon || m.displayIcon || null;
+      console.log('[Assets] Map:', m.displayName, '| splash:', splashUrl ? splashUrl.substring(0,60)+'...' : 'NULL');
+      _assetCache.maps[m.displayName] = {
+        uuid:      m.uuid,
+        splashUrl: splashUrl,
+        minimap:   m.displayIcon
+      };
+      _assetCache.maps[m.displayName.toLowerCase()] = _assetCache.maps[m.displayName];
+    });
+
+    // Weapons: uuid -> { displayName, displayIcon }
+    (weaponData.data || []).forEach(w => {
+      _assetCache.weapons[w.uuid.toLowerCase()] = { name: w.displayName, iconUrl: w.displayIcon };
+      _assetCache.weapons[w.displayName.toLowerCase()] = { name: w.displayName, iconUrl: w.displayIcon };
+    });
+
+    _assetCache.ready = true;
+    const mapNames = Object.keys(_assetCache.maps).filter(k => k === k.charAt(0).toUpperCase() + k.slice(1));
+    console.log('[Assets] Maps loaded:', mapNames.join(', '));
+    console.log(`[Assets] Loaded ${Object.keys(_assetCache.agents).length/2} agents, ${mapNames.length} maps`);
+
+    // Always re-render agents + maps with correct live URLs
+    console.log('[Assets] Re-rendering. lastMatches:', _lastAllMatches.length, 'mapData keys:', Object.keys(_lastMapData).length);
+    if (Object.keys(_lastMapData).length) {
+      renderAgents(_lastAgentMap, _lastAllMatches);
+      renderMaps(_lastMapData);
+    }
+    // Also patch any img tags directly regardless
+    document.querySelectorAll('img[data-agent]').forEach(img => {
+      const url = getAgentIconUrl(img.dataset.agent);
+      if (url) img.src = url;
+    });
+    document.querySelectorAll('img[data-map]').forEach(img => {
+      const url = getMapImg(img.dataset.map);
+      if (url) img.src = url;
+    });
+  } catch(e) {
+    console.warn('[Assets] Cache fetch failed, using fallback UUIDs:', e.message);
+    _assetCache.ready = false;
+  }
+}
+
+function getAgentIconUrl(name) {
+  if (!name) return null;
+  // Try live cache first
+  const cached = _assetCache.agents[name] || _assetCache.agents[name.toLowerCase()];
+  if (cached?.iconUrl) return cached.iconUrl;
+  // Fallback to hardcoded UUID map
+  const u = AGENT_UUIDS[name];
+  if (u) return `https://media.valorant-api.com/agents/${u}/displayicon.png`;
+  return null;
+}
+
+function getAgentPortraitUrl(name) {
+  if (!name) return null;
+  const cached = _assetCache.agents[name] || _assetCache.agents[name.toLowerCase()];
+  if (cached?.portraitUrl) return cached.portraitUrl;
+  const u = AGENT_UUIDS[name];
+  if (u) return `https://media.valorant-api.com/agents/${u}/fullportrait.png`;
+  return null;
+}
+
+function getRoleClass(agentName) {
+  // Try live cache for role
+  const cached = _assetCache.agents[agentName] || _assetCache.agents[(agentName||'').toLowerCase()];
+  if (cached?.role) {
+    const r = cached.role;
+    if (r.includes('duelist'))   return 'duelist';
+    if (r.includes('sentinel'))  return 'sentinel';
+    if (r.includes('initiator')) return 'initiator';
+    if (r.includes('controller'))return 'controller';
+  }
+  return AGENT_ROLES[(agentName||'').toLowerCase().replace(/\//g,'')] || 'duelist';
+}
+
+// Hardcoded map splashes as fallback (known-good UUIDs)
+const MAP_IMAGES_FALLBACK = {
+  'Ascent':  'https://media.valorant-api.com/maps/7eaecc1b-4337-bbf6-6ab9-04b8f06b3319/splash.png',
+  'Bind':    'https://media.valorant-api.com/maps/2c9d57ec-4431-9c5e-2939-8f9ef6dd5cba/splash.png',
+  'Breeze':  'https://media.valorant-api.com/maps/2fb9a4fd-47b8-4e7d-a969-74b4046ebd53/splash.png',
+  'Fracture':'https://media.valorant-api.com/maps/b529448b-4d60-346e-e89e-00a4c527a405/splash.png',
+  'Haven':   'https://media.valorant-api.com/maps/2bee0dc9-4ffe-519b-1cbd-7fbe763a6047/splash.png',
+  'Icebox':  'https://media.valorant-api.com/maps/e2ad5c54-4114-a870-9641-8ea21279579a/splash.png',
+  'Lotus':   'https://media.valorant-api.com/maps/2fe4ed3a-450a-01be-2778-15ed97f17c6d/splash.png',
+  'Pearl':   'https://media.valorant-api.com/maps/fd267378-4d1d-484f-ff52-77821ed10dc2/splash.png',
+  'Split':   'https://media.valorant-api.com/maps/d960549e-485c-e861-8d71-aa9d1aed12a2/splash.png',
+  'Sunset':  'https://media.valorant-api.com/maps/92584fbe-486a-b1b2-9faa-39049f7702f2/splash.png',
+  'Abyss':   'https://media.valorant-api.com/maps/224b0a95-48b9-d703-5ebe-d58a2f2d3774/splash.png',
+  'Corrode': 'https://media.valorant-api.com/maps/fc28a86b-4279-6d37-7499-08a285d22f47/splash.png',
+};
+
+function getMapImg(name) {
+  if (!name) return null;
+  // 1. Try live cache (fetched at startup from valorant-api.com)
+  const cached = _assetCache.maps[name] || _assetCache.maps[(name||'').toLowerCase()];
+  if (cached?.splashUrl) return cached.splashUrl;
+  // 2. Try fallback hardcoded UUIDs
+  return MAP_IMAGES_FALLBACK[name] || null;
+}
+
+// Called when a map image 404s — triggers a targeted re-fetch for just that map
+async function retryMapImg(imgEl, mapName) {
+  if (!mapName || imgEl._retried) return;
+  imgEl._retried = true;
+  try {
+    if (!_assetCache.ready) {
+      // Cache not loaded yet — wait for it then retry
+      await new Promise(r => setTimeout(r, 2000));
+      const url = getMapImg(mapName);
+      if (url) { imgEl.src = url; return; }
+    }
+    // Fetch just this map from the API by searching all maps
+    const res = await fetch('https://valorant-api.com/v1/maps');
+    const data = await res.json();
+    const found = (data.data||[]).find(m => {
+      const dn = (m.displayName||'').toLowerCase();
+      const mn = mapName.toLowerCase();
+      return dn === mn || dn.includes(mn) || mn.includes(dn);
+    });
+    if (found) {
+      console.log('[Assets] Resolved map', mapName, '->', found.displayName, found.uuid);
+    }
+    if (found?.splash) {
+      // Update cache
+      _assetCache.maps[mapName] = { splashUrl: found.splash, uuid: found.uuid };
+      _assetCache.maps[mapName.toLowerCase()] = _assetCache.maps[mapName];
+      imgEl.src = found.splash;
+    } else {
+      imgEl.parentElement.style.background = 'var(--surface2)';
+    }
+  } catch(e) {
+    imgEl.parentElement.style.background = 'var(--surface2)';
+  }
+}
+
+function setStatus(msg,type=''){ if(type==='error') { showToast(msg); } else { console.log('[STATUS]', msg); } }
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+// ── Copy Riot ID ──
+function copyRiotId() {
+  const name = document.getElementById('player-name-input')?.value.trim() || '';
+  const tag  = document.getElementById('player-tag-input')?.value.trim().replace(/^#/,'') || '';
+  if (!name) { showToast('No player loaded'); return; }
+  const id = tag ? `${name}#${tag}` : name;
+  navigator.clipboard.writeText(id).then(() => {
+    showToast(`Copied: ${id}`);
+    const btn = document.getElementById('copy-riot-btn');
+    if (btn) {
+      btn.classList.add('copied');
+      const span = btn.querySelector('span');
+      if (span) span.textContent = 'Copied!';
+      setTimeout(() => { 
+        btn.classList.remove('copied'); 
+        if (span) span.textContent = 'Copy ID';
+      }, 1500);
+    }
+  }).catch(() => { showToast('Copy failed — check browser permissions'); });
+}
+
+// ── Back to Top visibility ──
+window.addEventListener('scroll', () => {
+  const btn = document.getElementById('back-to-top');
+  if (!btn) return;
+  if (window.scrollY > 300) btn.classList.add('visible');
+  else btn.classList.remove('visible');
+}, { passive: true });
+
+// ── Performance Trend Chart ──
+let _perfTrendChart = null;
+function renderTrendChart(matches) {
+  const placeholder = document.getElementById('perf-trend-placeholder');
+  const canvas = document.getElementById('perf-trend-chart');
+  if (!canvas) return;
+
+  if (!matches || matches.length < 2) {
+    if (placeholder) placeholder.style.display = 'block';
+    canvas.style.display = 'none';
+    return;
+  }
+
+  const data = matches.slice().reverse(); // oldest → newest
+  const labels = data.map((m, i) => {
+    const ag = (m.agentName || '').substring(0, 3).toUpperCase();
+    return `#${i + 1} ${ag}`;
+  });
+
+  const kdVals  = data.map(m => m.deaths > 0 ? +(m.kills / m.deaths).toFixed(2) : m.kills);
+  const acsVals = data.map(m => +(m.acs / 100).toFixed(2)); // scale to ~same axis as KD
+  const hsVals  = data.map(m => +((m.hs / Math.max(1, m.shots)) * 100).toFixed(1)); // HS% from shots
+  const hsScaled = hsVals.map(v => +(v / 10).toFixed(2)); // scale HS% /10 so all 3 fit on same axis
+
+  if (placeholder) placeholder.style.display = 'none';
+  canvas.style.display = 'block';
+
+  if (_perfTrendChart) { _perfTrendChart.destroy(); _perfTrendChart = null; }
+
+  const ctx = canvas.getContext('2d');
+  _perfTrendChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'K/D',
+          data: kdVals,
+          borderColor: '#e8ff47',
+          backgroundColor: 'rgba(232,255,71,0.06)',
+          borderWidth: 2,
+          pointRadius: 3,
+          pointHoverRadius: 5,
+          pointBackgroundColor: '#e8ff47',
+          tension: 0.35,
+          fill: false,
+        },
+        {
+          label: 'ACS/100',
+          data: acsVals,
+          borderColor: '#3ecf8e',
+          backgroundColor: 'rgba(62,207,142,0.06)',
+          borderWidth: 2,
+          pointRadius: 3,
+          pointHoverRadius: 5,
+          pointBackgroundColor: '#3ecf8e',
+          tension: 0.35,
+          fill: false,
+        },
+        {
+          label: 'HS%',
+          data: hsScaled,
+          borderColor: '#ff5757',
+          backgroundColor: 'rgba(255,87,87,0.06)',
+          borderWidth: 2,
+          pointRadius: 3,
+          pointHoverRadius: 5,
+          pointBackgroundColor: '#ff5757',
+          tension: 0.35,
+          fill: false,
+          borderDash: [4, 3],
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 500 },
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1a1a1f',
+          borderColor: '#2a2a2f',
+          borderWidth: 1,
+          titleColor: '#888',
+          bodyColor: '#f0f0f2',
+          titleFont: { family: 'DM Mono', size: 9 },
+          bodyFont: { family: 'Barlow Condensed', size: 14, weight: '700' },
+          padding: 10,
+          callbacks: {
+            title: (items) => {
+              const m = data[items[0].dataIndex];
+              return `${m.agentName} · ${m.map} · ${m.won ? 'WIN' : 'LOSS'}`;
+            },
+            label: (item) => {
+              const m = data[item.dataIndex];
+              if (item.datasetIndex === 0) return `K/D: ${item.raw}`;
+              if (item.datasetIndex === 1) return `ACS: ${m.acs}`;
+              return `HS%: ${hsVals[item.dataIndex]}%`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(255,255,255,0.04)' },
+          ticks: { color: '#555', font: { family: 'DM Mono', size: 8 }, maxRotation: 45, autoSkip: true, maxTicksLimit: 20 }
+        },
+        y: {
+          grid: { color: 'rgba(255,255,255,0.05)' },
+          ticks: { color: '#555', font: { family: 'DM Mono', size: 9 } },
+          min: 0
+        }
+      }
+    }
+  });
+}
+
+// ── STAGGER ANIMATION ──
+function animateIn(selector, baseDelay=0) {
+  const els = typeof selector === 'string' ? document.querySelectorAll(selector) : selector;
+  els.forEach((el,i) => {
+    el.style.animationDelay = `${baseDelay + i*60}ms`;
+    el.classList.add('visible');
+  });
+}
+
+// ── INDEXEDDB MATCH STORE ──
+const DB_NAME = 'ValStatsDB';
+const DB_VERSION = 1;
+const STORE_NAME = 'matches';
+let _db = null;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    if (_db) return resolve(_db);
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        const store = db.createObjectStore(STORE_NAME, { keyPath: 'matchId' });
+        store.createIndex('date', 'date', { unique: false });
+      }
+    };
+    req.onsuccess = e => { _db = e.target.result; resolve(_db); };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function saveMatches(matches) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    let saved = 0;
+    matches.forEach(m => {
+      const id = m.metadata?.matchid || m.metadata?.match_id;
+      if (!id) return;
+      // Key includes player+mode so different players/modes don't mix
+      const storeKey = `${PLAYER_NAME}#${PLAYER_TAG}|${window._currentMode||'competitive'}|${id}`;
+      store.put({ matchId: storeKey, date: m.metadata?.game_start || Date.now(), data: m });
+      saved++;
+    });
+    tx.oncomplete = () => resolve(saved);
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+async function loadAllMatches() {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readonly');
+    const req = tx.objectStore(STORE_NAME).index('date').getAll();
+    req.onsuccess = () => {
+      const prefix = `${PLAYER_NAME}#${PLAYER_TAG}|${window._currentMode||'competitive'}|`;
+      const all = (req.result || []).filter(r => r.matchId.startsWith(prefix));
+      const records = all.sort((a,b) => (b.date||0)-(a.date||0));
+      resolve(records.map(r => r.data));
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function clearAllMatches() {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    tx.objectStore(STORE_NAME).clear();
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+// Clears only matches for the current player+mode — preserves other players' data
+async function clearPlayerMatches() {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const prefix = `${PLAYER_NAME}#${PLAYER_TAG}|${window._currentMode||'competitive'}|`;
+    // Use a key range: everything from prefix to prefix + \uffff (last unicode char)
+    // This efficiently deletes all records whose matchId starts with the prefix
+    const range = IDBKeyRange.bound(prefix, prefix + '\uffff', false, false);
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    const req = store.delete(range);
+    req.onerror = () => reject(req.error);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+async function getMatchCount() {
+  const db = await openDB();
+  return new Promise(resolve => {
+    const tx = db.transaction(STORE_NAME, 'readonly');
+    const req = tx.objectStore(STORE_NAME).count();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => resolve(0);
+  });
+}
+
+// Load stored matches on page open
+window.addEventListener('DOMContentLoaded', async () => {
+  // Fetch live agent/map assets from valorant-api.com (no auth needed, free)
+  initAssetCache();
+  try {
+    const count = await getMatchCount();
+    const savedProfile = loadMyProfile();
+    if (count > 0 && savedProfile) {
+      PLAYER_NAME = savedProfile.name;
+      PLAYER_TAG = savedProfile.tag;
+      document.getElementById('player-name-input').value = savedProfile.name;
+      document.getElementById('player-tag-input').value = savedProfile.tag;
+      if (savedProfile.region) document.getElementById('region-select').value = savedProfile.region;
+      if (savedProfile.mode) document.getElementById('mode-select').value = savedProfile.mode;
+      setStatus(`${count} matches stored — hit Fetch to update`, 'ok');
+      const stored = await loadAllMatches();
+      processMatches(stored);
+      dismissLanding();
+    } else if (count > 0) {
+      setStatus(`${count} matches cached — fetch to view`, 'ok');
+    }
+  } catch(e) { console.warn('DB load:', e); }
+
+  // Player search — Enter key
+  ['player-name-input','player-tag-input'].forEach(id => {
+    document.getElementById(id)?.addEventListener('keydown', e => {
+      if (e.key === 'Enter') fetchAll();
+    });
+  });
+  // Landing Enter key
+  ['l-name','l-tag'].forEach(id => {
+    document.getElementById(id)?.addEventListener('keydown', e => {
+      if (e.key === 'Enter') landingFetch();
+    });
+  });
+  // Mode selector — auto-fetch on change
+  document.getElementById('mode-select')?.addEventListener('change', () => { updateHeroName(); applyModeUI(); fetchAll(); });
+  // Init hero
+  updateHeroName();
+  applyModeUI();
+  // Render saved profile on landing
+  renderLandingProfile();
+  // Update landing subtitle with cached count
+  getMatchCount().then(count => {
+    if (count > 0) {
+      const sub = document.querySelector('.landing-card-sub');
+      if (sub) sub.textContent = `${count} matches cached — look up a player or jump to your profile`;
+    }
+  }).catch(()=>{});
+});
+
+let rrChart=null;
+
+async function handleClear(){
+  if(!confirm('Clear all stored match history? This cannot be undone.')) return;
+  await clearAllMatches();
+  _db = null;
+  setStatus('Storage cleared','');
+  showToast('All match data cleared');
+  // Reset UI
+  ['v-kd','v-kills','v-deaths','v-assists','v-acs','v-hs','v-wr','v-wins','v-losses'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.textContent='—';
+  });
+  document.getElementById('v-wr').textContent='—%';
+  document.getElementById('wr-bar').style.width='0%';
+  document.getElementById('agents-wrap').innerHTML='<div class="card placeholder-card span-12"><div class="placeholder-txt">Fetch stats to see agents</div></div>';
+  document.getElementById('maps-wrap').innerHTML='<div class="card placeholder-card span-12"><div class="placeholder-txt">Fetch stats to see maps</div></div>';
+  document.getElementById('clutch-wrap').innerHTML='<div class="card placeholder-card span-12"><div class="placeholder-txt">Fetch stats to see impact</div></div>';
+  document.getElementById('matches-list').innerHTML='<div class="card placeholder-card span-12"><div class="placeholder-txt">Fetch stats to see match history</div></div>';
+  document.getElementById('rr-placeholder').style.display='block';
+  document.getElementById('rr-chart').style.display='none';
+  document.getElementById('graph-note').style.display='none';
+  if(rrChart){rrChart.destroy();rrChart=null;}
+  // tracker-nav is inside tracker-view; no need to explicitly hide it
+}
+
+async function fetchAll(){
+  // Read player from inputs
+  const inputName = document.getElementById('player-name-input')?.value.trim();
+  const inputTag  = document.getElementById('player-tag-input')?.value.trim().replace(/^#/,'');
+  if (inputName) PLAYER_NAME = inputName;
+  if (inputTag)  PLAYER_TAG  = inputTag;
+
+  const region=document.getElementById('region-select').value;
+  const mode=document.getElementById('mode-select')?.value||'competitive';
+  window._currentMode = mode;
+  const btn=document.getElementById('fetch-btn');
+  btn.disabled=true;btn.textContent='Fetching...';
+  setStatus('Connecting...','');
+  document.getElementById('live-badge').style.display='none';
+  showSkeletons();
+
+  // Update hero immediately with input values
+  updateHeroName();
+  applyModeUI();
+
+  try{
+    const enc=encodeURIComponent(PLAYER_NAME);
+    setStatus('Loading data...','');
+    const isRanked = mode === 'competitive';
+    const _nc = Date.now();
+    const[mmrRes,matchRes,accountRes,mmrHistRes,liveRes]=await Promise.all([
+      isRanked ? fetch(`/api/v3/mmr/${region}/pc/${enc}/${PLAYER_TAG}?_nocache=${_nc}`) : Promise.resolve(null),
+      fetch(`/api/v3/matches/${region}/${enc}/${PLAYER_TAG}?mode=${mode}&size=25&_nocache=${_nc}`),
+      fetch(`/api/v1/account/${enc}/${PLAYER_TAG}?_nocache=${_nc}`),
+      fetch(`/api/v1/stored-mmr-history/${region}/${enc}/${PLAYER_TAG}?_nocache=${_nc}`),
+      fetch(`/api/v1/live-match/${region}/${enc}/${PLAYER_TAG}`).catch(()=>null),
+    ]);
+    const mmrData=mmrRes?.ok?await mmrRes.json():null;
+    const matchData=matchRes.ok?await matchRes.json():null;
+    const accountData=accountRes.ok?await accountRes.json():null;
+    const mmrHistData=mmrHistRes?.ok?await mmrHistRes.json():null;
+    const liveData=(liveRes?.ok)?await liveRes.json():null;
+    if(!matchData)throw new Error(`API error — check player name/tag`);
+
+    if(accountData?.data){
+      const a=accountData.data;
+      const cardUrl=a.card?.wide||a.card?.large||(typeof a.card==='string'?`https://media.valorant-api.com/playercards/${a.card}/wideart.png`:null);
+      const lvl=`LVL ${a.account_level||'—'}`;
+      document.getElementById('player-level').textContent=lvl;
+      document.getElementById('hero-level-badge').textContent=lvl;
+      document.getElementById('hero-level-badge').style.display='inline-block';
+      document.getElementById('banner-lvl').textContent=lvl;
+      if(cardUrl){
+        const bg=document.getElementById('player-card-bg');
+        bg.style.backgroundImage=`url('${cardUrl}')`;
+        bg.style.opacity='0.22';
+        // Also populate the banner card
+        const bannerImg=document.getElementById('player-banner-img');
+        bannerImg.src=cardUrl;
+        bannerImg.style.display='block';
+      }
+    }
+
+    if(isRanked && mmrData?.data){
+      const d=mmrData.data;
+      const rankName=(d.current?.tier?.name||'—');
+      const rankImgUrl=getRankImgUrl(d.current?.tier?.name||'');
+      const tierId=d.current?.tier?.id??0;
+      const rr=d.current?.rr??0;
+      const rankIndex=Math.max(0,tierId-3);
+      window._currentRankRR=(rankIndex*100)+rr;
+      document.getElementById('rank-display').textContent=rankName.toUpperCase();
+      document.getElementById('rank-rr-txt').textContent=`${rr} RR · Peak: ${d.peak?.tier?.name||'—'}`;
+      const peakImg=getRankImgUrl(d.peak?.tier?.name||'');
+      document.getElementById('rank-icon').innerHTML=rankImgUrl?`<img src="${rankImgUrl}" style="width:64px;height:64px;object-fit:contain;" onerror="this.style.display='none'">`:
+        `<div style="width:64px;height:64px;background:var(--surface2);border-radius:8px;"></div>`;
+      document.getElementById('peak-icon').innerHTML=peakImg?`<img src="${peakImg}" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-right:4px;" onerror="this.style.display='none'">`:'' ;
+    }
+
+    window._mmrHistory={};
+    if(mmrHistData?.data?.length){
+      mmrHistData.data.forEach(e=>{window._mmrHistory[e.match_id]=e.last_mmr_change;});
+    }
+
+    if(liveData?.data){
+      renderLiveMatch(liveData.data);
+    }else{
+      document.getElementById('live-section').style.display='none';
+    }
+
+    if(matchData?.data?.length){
+      // Clear stale data for this player+mode — ensures new act data replaces old act data
+      await clearPlayerMatches();
+      // Save fresh matches from API
+      await saveMatches(matchData.data);
+      // Load full history from DB and process all of it
+      const allMatches = await loadAllMatches();
+      processMatches(allMatches);
+      const newCount = matchData.data.length;
+      const totalCount = allMatches.length;
+      setStatus(`${newCount} new · ${totalCount} total stored`,'ok');
+      document.getElementById('live-badge').style.display='flex';
+      showToast(`${totalCount} matches total ✓`);
+      dismissLanding();
+    }else{
+      setStatus(`No ${mode} matches found — try a different region`,'error');
+      showToast('No data');
+    }
+  }catch(e){
+    console.error(e);
+    setStatus('Error: '+(e.message||'Check region'),'error');
+    showToast('Fetch failed');
+  }
+  btn.disabled=false;btn.textContent='↻ Fetch Stats';
+}
+
+function findMe(match){
+  const all = getPlayerList(match);
+  return(Array.isArray(all)?all:[]).find(p=>p.name?.toLowerCase()===PLAYER_NAME.toLowerCase()&&p.tag?.toLowerCase()===PLAYER_TAG.toLowerCase());
+}
+
+let _lastAgentMap = {}, _lastMapData = {}, _lastAllMatches = [];
+function processMatches(matches){
+  let tK=0,tD=0,tA=0,tS=0,tHS=0,tShots=0,wins=0,losses=0,counted=0;
+  const agentMap={},mapData={},rrHistory=[],recentMatches=[];
+
+  matches.forEach(match=>{
+    const me=findMe(match);
+    if(!me)return;
+    counted++;
+    const s=me.stats||{};
+    const k=s.kills||0,d=s.deaths||0,a=s.assists||0,sc=s.score||0;
+    const hs=s.headshots||0,shots=(s.headshots||0)+(s.bodyshots||0)+(s.legshots||0);
+    tK+=k;tD+=d;tA+=a;tS+=sc;tHS+=hs;tShots+=shots;
+    const myTeamId=(me.team||'').toLowerCase();
+    const teams=match.teams||{};
+    const myTeam=teams[myTeamId]||null;
+    const oppId=myTeamId==='red'?'blue':'red';
+    const oppTeam=teams[oppId]||null;
+    // Bulletproof win detection for all modes
+    let won = false;
+    if (myTeam?.has_won === true) {
+      won = true;
+    } else if (myTeam?.has_won === false) {
+      won = false;
+    } else if (myTeam?.rounds_won != null && oppTeam?.rounds_won != null) {
+      won = myTeam.rounds_won > oppTeam.rounds_won;
+    } else {
+      // DM / no teams structure — highest scorer wins
+      const allScores = getPlayerList(match).map(p=>p.stats?.score||0).sort((a,b)=>b-a);
+      const myScoreVal = me.stats?.score||0;
+      won = allScores.length > 0 && myScoreVal >= allScores[0];
+    }
+    if(won)wins++;else losses++;
+    const agentName=me.character||me.agent?.name||'Unknown';
+    if(!agentMap[agentName])agentMap[agentName]={matches:0,wins:0,kills:0,deaths:0,assists:0,score:0};
+    const ag=agentMap[agentName];
+    ag.matches++;if(won)ag.wins++;ag.kills+=k;ag.deaths+=d;ag.assists+=a;ag.score+=sc;
+    const mapName=match.metadata?.map||'Unknown';
+    if(!mapData[mapName])mapData[mapName]={matches:0,wins:0,kills:0,deaths:0,score:0,agents:{}};
+    const mp=mapData[mapName];
+    mp.matches++;if(won)mp.wins++;mp.kills+=k;mp.deaths+=d;mp.score+=sc;
+    if(!mp.agents[agentName])mp.agents[agentName]={matches:0,wins:0,kd:0};
+    const ma=mp.agents[agentName];
+    ma.matches++;if(won)ma.wins++;ma.kd+=d?(k/d):k;
+    const myR=myTeam?.rounds_won??'?';
+    const oppR=oppTeam?.rounds_won??'?';
+    rrHistory.push({won,kills:k,matchId:match.metadata?.matchid||match.metadata?.match_id});
+    const gameStart=match.metadata?.game_start||match.metadata?.gameStart||null;const totalRoundsPlayed=(typeof myR==='number'&&typeof oppR==='number')?(myR+oppR):(match.rounds?.length||1);const matchACS=Math.round(sc/Math.max(1,totalRoundsPlayed));recentMatches.push({won,agentName,map:mapName,kills:k,deaths:d,assists:a,score:sc,acs:matchACS,rounds:`${myR}-${oppR}`,hs,shots,myTeamId,matchId:match.metadata?.matchid||match.metadata?.match_id,gameStart,rawMatch:match});
+  });
+
+  const n=counted||1;
+  const kd=tD?(tK/tD).toFixed(2):tK.toFixed(2);
+  const total=wins+losses;
+  const wr=total?Math.round((wins/total)*100):0;
+  const hsPct=tShots?Math.round((tHS/tShots)*100):0;
+  const avgACS=Math.round(tS/n/100);
+
+  document.getElementById('v-kd').textContent=kd;
+  document.getElementById('v-kills').textContent=(tK/n).toFixed(1);
+  document.getElementById('v-deaths').textContent=(tD/n).toFixed(1);
+  document.getElementById('v-assists').textContent=(tA/n).toFixed(1);
+  document.getElementById('v-acs').textContent=avgACS;
+  document.getElementById('v-hs').textContent=hsPct+'%';
+  document.getElementById('v-wr').textContent=wr+'%';
+  document.getElementById('v-wins').textContent=wins;
+  document.getElementById('v-losses').textContent=losses;
+  document.getElementById('wr-bar').style.width=wr+'%';
+  document.getElementById('wr-detail').textContent=`${total} matches tracked`;
+
+  // Animate stat cards
+  setTimeout(()=>animateIn('.card'),50);
+
+  renderRRGraph(rrHistory,window._currentRankRR,window._mmrHistory||{});
+  _lastAgentMap = agentMap; _lastMapData = mapData; _lastAllMatches = matches;
+  window._recentMatchStats = recentMatches.slice().reverse(); // oldest→newest for graph
+  renderAgents(agentMap, matches);
+  renderMaps(mapData);
+  renderAccuracyAndRoles(matches);
+  renderTopWeapons(matches);
+  renderClutch(wins,losses,tK,n,agentMap);
+  renderMatches(recentMatches);
+  renderStreak(matches);
+  renderTrendChart(recentMatches);
+  // tracker-nav is inside tracker-view; visibility controlled by parent
+}
+
+function renderRRGraph(history,currentTotalRR,mmrHistory={}){
+  document.getElementById('rr-placeholder').style.display='none';
+  document.getElementById('rr-chart').style.display='block';
+  document.getElementById('graph-note').style.display='block';
+  const hasRealRR=history.some(m=>mmrHistory[m.matchId]!==undefined);
+  let totalRR=currentTotalRR||600;
+  const points=[];
+  if(hasRealRR){
+    history.forEach(m=>{points.unshift(totalRR);const c=mmrHistory[m.matchId];if(c!==undefined)totalRR-=c;else totalRR-=m.won?20:-18;totalRR=Math.max(0,totalRR);});
+    document.getElementById('graph-note').textContent='✓ Real RR data from stored match history';
+    document.getElementById('graph-note').style.color='var(--win)';
+  }else{
+    history.forEach(m=>{points.unshift(totalRR);totalRR-=m.won?(18+Math.floor(Math.random()*8)):-(18+Math.floor(Math.random()*6));totalRR=Math.max(0,totalRR);});
+    document.getElementById('graph-note').textContent='* Estimated from win/loss — stored history unavailable';
+    document.getElementById('graph-note').style.color='';
+  }
+  const labels=history.map((_,i)=>`G${i+1}`);
+  const data=points;
+  const colors=data.map(v=>getRankColor(getRankFromRR(v).name));
+  const rankLabels=data.map((v,i)=>{const r=getRankFromRR(v);const rc=mmrHistory[history[i]?.matchId];return{rank:r.name,rr:v-r.rr,change:rc};});
+  if(rrChart)rrChart.destroy();
+  const ctx=document.getElementById('rr-chart').getContext('2d');
+  const rankZones=[];
+  for(let i=0;i<RANKS.length-1;i++){const t=RANKS[i].name.split(' ')[0];rankZones.push({yMin:RANKS[i].rr,yMax:RANKS[i+1].rr,color:RANK_COLORS[t]||'#fff',label:RANKS[i].name});}
+  const minRR=Math.max(0,Math.min(...data)-150);
+  const maxRR=Math.max(...data)+150;
+  rrChart=new Chart(ctx,{type:'line',data:{labels,datasets:[{data,borderColor:'rgba(232,255,71,0.9)',backgroundColor:'rgba(232,255,71,0.04)',borderWidth:2,pointBackgroundColor:colors,pointBorderColor:colors,pointRadius:4,pointHoverRadius:6,tension:0.3,fill:true}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{backgroundColor:'#141416',borderColor:'rgba(255,255,255,0.1)',borderWidth:1,titleColor:'#f0f0f2',bodyColor:'#f0f0f2',titleFont:{family:'DM Mono',size:9},bodyFont:{family:'Barlow Condensed',size:16},callbacks:{title:c=>`Match ${c[0].label} · ${rankLabels[c[0].dataIndex]?.rank||''}`,label:c=>{const rl=rankLabels[c.dataIndex];const cs=rl?.change!=null?(rl.change>0?` (+${rl.change})`:(` (${rl.change})`)):'';return rl?` ${rl.rr} RR${cs}`:` ${c.parsed.y} RR`;}}}},scales:{x:{grid:{color:'rgba(255,255,255,0.03)'},ticks:{color:'#3a3a40',font:{family:'DM Mono',size:8}}},y:{grid:{color:'rgba(255,255,255,0.03)'},ticks:{color:'#4a4a52',font:{family:'DM Mono',size:8},callback(v){const r=getRankFromRR(v);return r?r.name:'';}},min:minRR,max:maxRR}}},plugins:[{id:'rankBands',beforeDraw(chart){const{ctx,chartArea,scales}=chart;if(!chartArea)return;rankZones.forEach(zone=>{const yTop=scales.y.getPixelForValue(Math.min(zone.yMax,maxRR));const yBot=scales.y.getPixelForValue(Math.max(zone.yMin,minRR));if(yBot<chartArea.top||yTop>chartArea.bottom)return;ctx.save();ctx.fillStyle=zone.color+'12';ctx.fillRect(chartArea.left,Math.max(yTop,chartArea.top),chartArea.width,Math.min(yBot,chartArea.bottom)-Math.max(yTop,chartArea.top));ctx.fillStyle=zone.color+'66';ctx.font='8px DM Mono';ctx.fillText(zone.label,chartArea.left+6,Math.min(yBot,chartArea.bottom)-4);ctx.restore();});}}]});
+}
+
+function renderAgents(agentMap, allMatches=[]){
+  const sorted=Object.entries(agentMap).sort((a,b)=>b[1].matches-a[1].matches).slice(0,6);
+  if(!sorted.length)return;
+  const wrap=document.getElementById('agents-wrap');
+  wrap.style.display='contents';
+  let html='';
+  sorted.forEach(([name,s],i)=>{
+    const role=getRoleClass(name);
+    const wr=Math.round((s.wins/s.matches)*100);
+    const kd=s.deaths?(s.kills/s.deaths).toFixed(2):s.kills.toFixed(2);
+    const acs=Math.round(s.score/s.matches/100);
+    const wrCls=wr>=55?'good':wr>=45?'mid':'bad';
+    const img=getAgentIconUrl(name);
+    html+=`<div class="agent-bento" style="animation-delay:${i*60}ms">
+      <div class="agent-wr-chip ${wrCls}">${wr}%</div>
+      ${img?`<img class="agent-portrait" data-agent="${name}" src="${img}" alt="${name}" onerror="const fb=this.nextElementSibling;const u=getAgentIconUrl(this.dataset.agent);if(u&&u!==this.src){this.src=u}else{this.style.display='none';if(fb)fb.style.display='flex';}">
+             <div class="agent-portrait-fallback" style="display:none">${name[0]}</div>`
+           :`<div class="agent-portrait-fallback">${name[0]}</div>`}
+      <div class="agent-info">
+        <div class="agent-name">${name}</div>
+        <div class="agent-role-chip ${role}">${role}</div>
+        <div class="agent-stats-row">
+          <div class="asr-item"><div class="asv">${s.matches}</div><div class="asl">Games</div></div>
+          <div class="asr-item"><div class="asv">${kd}</div><div class="asl">K/D</div></div>
+          <div class="asr-item"><div class="asv">${acs}</div><div class="asl">ACS</div></div>
+        </div>
+        ${(()=>{const trend=getAgentTrend(name,allMatches);if(!trend.length)return'';return'<div class="agent-trend">'+trend.map(t=>`<div class="agent-trend-dot ${t}"></div>`).join('')+'<span class="agent-trend-label">Last '+trend.length+'</span></div>';})()}
+      </div>
+    </div>`;
+  });
+  wrap.innerHTML=html;
+  setTimeout(()=>animateIn('#agents-wrap .agent-bento'),50);
+}
+
+function renderMaps(mapData){
+  const maps=Object.entries(mapData).sort((a,b)=>b[1].matches-a[1].matches);
+  if(!maps.length)return;
+  const wrap=document.getElementById('maps-wrap');
+  wrap.style.display='contents';
+  let html='';
+  maps.forEach(([name,m],i)=>{
+    const wr=Math.round((m.wins/m.matches)*100);
+    const cls=wr>=55?'good':wr>=45?'mid':'bad';
+    const kd=m.deaths?(m.kills/m.deaths).toFixed(2):m.kills.toFixed(2);
+    const acs=Math.round(m.score/m.matches/100);
+    const bestEntry=Object.entries(m.agents).filter(([,a])=>a.matches>=1).sort((a,b)=>(b[1].wins/b[1].matches)-(a[1].wins/a[1].matches))[0];
+    const bestAgent=bestEntry?bestEntry[0]:'—';
+    const bestWR=bestEntry?Math.round((bestEntry[1].wins/bestEntry[1].matches)*100):'';
+    const agentIcon=getAgentIconUrl(bestAgent);
+    const mapImg = getMapImg(name);
+    html+=`<div class="map-card-bento" style="animation-delay:${i*60}ms">
+      ${mapImg
+        ? `<div class="map-splash-wrap">
+             <img class="map-splash" data-map="${name}" src="${mapImg}" alt="${name}" onerror="retryMapImg(this, this.dataset.map)">
+             <div class="map-splash-overlay"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:20px;letter-spacing:1px;text-transform:uppercase;color:#fff;">${name}</span></div>
+           </div>`
+        : `<div class="map-splash-placeholder">${name}</div>`}
+      <div class="map-card-inner">
+        <div class="map-header">
+          <div class="map-wr-pct ${cls}">${wr}% WR</div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${m.matches} games</div>
+        </div>
+        <div class="map-bar"><div class="map-bar-fill ${cls}" style="width:${wr}%"></div></div>
+        <div class="map-stats-mini">
+          <div class="msm-item"><div class="msmv">${m.wins}</div><div class="msml">Wins</div></div>
+          <div class="msm-item"><div class="msmv">${m.matches-m.wins}</div><div class="msml">Losses</div></div>
+          <div class="msm-item"><div class="msmv">${kd}</div><div class="msml">K/D</div></div>
+          <div class="msm-item"><div class="msmv">${acs}</div><div class="msml">ACS</div></div>
+        </div>
+        <div class="map-best-agent">
+          ${agentIcon?`<img src="${agentIcon}" style="width:14px;height:14px;object-fit:contain;" onerror="this.style.display='none'">`:''}
+          Best: <b style="color:var(--text);margin:0 2px">${bestAgent}</b>${bestWR?` · ${bestWR}% WR`:''}
+        </div>
+      </div>
+    </div>`;
+  });
+  wrap.innerHTML=html;
+  setTimeout(()=>animateIn('#maps-wrap .map-card-bento'),50);
+}
+
+function renderClutch(wins,losses,totalKills,n,agentMap){
+  const total=wins+losses;
+  const topKD=Object.entries(agentMap).filter(([,s])=>s.matches>=2).sort((a,b)=>(b[1].kills/(b[1].deaths||1))-(a[1].kills/(a[1].deaths||1)))[0];
+  const topWR=Object.entries(agentMap).filter(([,s])=>s.matches>=2).sort((a,b)=>(b[1].wins/b[1].matches)-(a[1].wins/a[1].matches))[0];
+  const estFB=Math.round(totalKills*0.18);
+  const estMulti=Math.round(n*0.35);
+  const cards=[
+    {icon:'💀',label:'Total Kills',val:totalKills,sub:`${total} matches`},
+    {icon:'🎯',label:'Est. First Bloods',val:estFB,sub:'~18% of kills'},
+    {icon:'⚡',label:'Est. Multi-Kills',val:estMulti,sub:'3K+ rounds'},
+    {icon:'🏆',label:'Wins',val:wins,sub:`${total} total`},
+    {icon:'🔫',label:'Best K/D Agent',val:topKD?(topKD[1].kills/(topKD[1].deaths||1)).toFixed(2):'—',sub:topKD?topKD[0]:'Play more'},
+    {icon:'👑',label:'Best WR Agent',val:topWR?Math.round((topWR[1].wins/topWR[1].matches)*100)+'%':'—',sub:topWR?topWR[0]:'Play more'},
+  ];
+  const wrap=document.getElementById('clutch-wrap');
+  wrap.style.display='contents';
+  let html='';
+  cards.forEach((c,i)=>{
+    html+=`<div class="impact-bento" style="animation-delay:${i*60}ms">
+      <div class="impact-icon">${c.icon}</div>
+      <div class="impact-label">${c.label}</div>
+      <div class="impact-val">${c.val}</div>
+      <div class="impact-sub">${c.sub}</div>
+    </div>`;
+  });
+  wrap.innerHTML=html;
+  setTimeout(()=>animateIn('#clutch-wrap .impact-bento'),50);
+}
+
+function getGrade(kills,deaths,assists,acs,won){
+  const kd=deaths?(kills/deaths):kills;
+  let score=0;
+  if(kd>=1.5)score+=3;else if(kd>=1.2)score+=2;else if(kd>=0.9)score+=1;
+  if(acs>=250)score+=3;else if(acs>=200)score+=2;else if(acs>=150)score+=1;
+  if(won)score+=2;
+  if(kills>=20)score+=2;else if(kills>=15)score+=1;
+  if(score>=9)return'S';if(score>=7)return'A';if(score>=5)return'B';if(score>=3)return'C';return'D';
+}
+
+function getMVPs(match,myTeamId){
+  const all = getPlayerList(match);
+  if(!all.length)return{matchMVP:null,teamMVP:null};
+  const getACS=p=>Math.round((p.stats?.score||0)/100);
+  const matchMVP=all.reduce((best,p)=>getACS(p)>getACS(best)?p:best,all[0]);
+  const allied=all.filter(p=>(p.team||'').toLowerCase()===myTeamId);
+  const teamMVP=allied.length?allied.reduce((best,p)=>getACS(p)>getACS(best)?p:best,allied[0]):null;
+  return{matchMVP,teamMVP};
+}
+
+function getTierRR(tierName){
+  const tierMap={'Iron 1':3,'Iron 2':4,'Iron 3':5,'Bronze 1':6,'Bronze 2':7,'Bronze 3':8,'Silver 1':9,'Silver 2':10,'Silver 3':11,'Gold 1':12,'Gold 2':13,'Gold 3':14,'Platinum 1':15,'Platinum 2':16,'Platinum 3':17,'Diamond 1':18,'Diamond 2':19,'Diamond 3':20,'Ascendant 1':21,'Ascendant 2':22,'Ascendant 3':23,'Immortal 1':24,'Immortal 2':25,'Immortal 3':26,'Radiant':27};
+  const id=tierMap[tierName];
+  if(!id)return null;
+  return(id-3)*100;
+}
+
+function getLobbyRankInfo(allPlayers, myTeamId){
+  const withRank=allPlayers.filter(p=>p.currenttier_patched&&p.currenttier_patched!=='Unranked'&&p.currenttier&&p.currenttier>0);
+  if(!withRank.length)return null;
+  const allied=withRank.filter(p=>(p.team||'').toLowerCase()===myTeamId);
+  const enemy=withRank.filter(p=>(p.team||'').toLowerCase()!==myTeamId);
+  const avgTierRR=arr=>{
+    if(!arr.length)return null;
+    const total=arr.reduce((s,p)=>{
+      const rr=getTierRR(p.currenttier_patched)||((p.currenttier||3)-3)*100;
+      return s+rr;
+    },0);
+    return Math.round(total/arr.length);
+  };
+  const allAvg=avgTierRR(withRank);
+  const allyAvg=avgTierRR(allied);
+  const enemyAvg=avgTierRR(enemy);
+  return{
+    overall: allAvg!=null?getRankFromRR(allAvg):null,
+    ally: allyAvg!=null?getRankFromRR(allyAvg):null,
+    enemy: enemyAvg!=null?getRankFromRR(enemyAvg):null,
+    allPlayers: withRank
+  };
+}
+
+function buildLobbyRankBar(allPlayers, myTeamId){
+  const info=getLobbyRankInfo(allPlayers, myTeamId);
+  if(!info||!info.overall)return'';
+  const overallImg=getRankImgUrl(info.overall.name)||'';
+  const allyImg=info.ally?getRankImgUrl(info.ally.name)||'':'';
+  const enemyImg=info.enemy?getRankImgUrl(info.enemy.name)||'':'';
+  const rankColor=r=>getRankColor(r?.name||'');
+  return`<div class="lobby-rank-bar">
+    <span class="lobby-rank-label">Lobby Avg</span>
+    <div class="lobby-avg-rank">
+      ${overallImg?`<img src="${overallImg}" onerror="this.style.display='none'">`:``}
+      <span class="lobby-avg-rank-name" style="color:${rankColor(info.overall)}">${info.overall.name}</span>
+    </div>
+    <div class="lobby-rank-divider"></div>
+    <div class="lobby-team-ranks">
+      <div class="lobby-team-block">
+        <span class="lobby-team-label ally">YOUR TEAM</span>
+        ${allyImg?`<img src="${allyImg}" style="width:18px;height:18px;object-fit:contain;" onerror="this.style.display='none'">`:``}
+        <span class="lobby-team-avg-name ally">${info.ally?.name||'—'}</span>
+      </div>
+      <div class="lobby-rank-divider"></div>
+      <div class="lobby-team-block">
+        <span class="lobby-team-label enemy">ENEMY TEAM</span>
+        ${enemyImg?`<img src="${enemyImg}" style="width:18px;height:18px;object-fit:contain;" onerror="this.style.display='none'">`:``}
+        <span class="lobby-team-avg-name enemy">${info.enemy?.name||'—'}</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildScoreboard(match,myTeamId,isRanked=true){
+  const all = getPlayerList(match);
+  if(!all.length)return'<div class="no-detail">Player data unavailable</div>';
+  const allied=all.filter(p=>(p.team||'').toLowerCase()===myTeamId).sort((a,b)=>(b.stats?.score||0)-(a.stats?.score||0));
+  const enemy=all.filter(p=>(p.team||'').toLowerCase()!==myTeamId).sort((a,b)=>(b.stats?.score||0)-(a.stats?.score||0));
+  const{matchMVP,teamMVP}=getMVPs(match,myTeamId);
+  const lobbyBar=buildLobbyRankBar(all,myTeamId);
+  const rowHTML=(p,isMe)=>{
+    const s=p.stats||{};
+    const k=s.kills||0,d=s.deaths||0,a=s.assists||0,sc=s.score||0;
+    const hs=s.headshots||0,shots=(s.headshots||0)+(s.bodyshots||0)+(s.legshots||0);
+    const hsPct=shots?Math.round((hs/shots)*100):0;
+    const kd=d?(k/d).toFixed(2):k.toFixed(2);
+    const kdPct=Math.min(parseFloat(kd)/3*100,100);
+    const acs=Math.round(sc/100);
+    const isMatchMVP=matchMVP&&p.name===matchMVP.name&&p.tag===matchMVP.tag;
+    const isTeamMVP=teamMVP&&p.name===teamMVP.name&&p.tag===teamMVP.tag&&!isMatchMVP;
+    const mvpBadge=isMatchMVP?`<span class="mvp-badge match-mvp">👑 Match MVP</span>`:isTeamMVP?`<span class="mvp-badge team-mvp">⭐ Team MVP</span>`:'';
+    const agentIcon=getAgentIconUrl(p.character||p.agent?.name||'');
+    const rankName=p.currenttier_patched||'';
+    const rankImg=rankName&&rankName!=='Unranked'?getRankImgUrl(rankName):'';
+    const rankColor=rankName?getRankColor(rankName):'var(--muted)';
+    return`<tr class="${isMe?'me':''}${isMatchMVP?' match-mvp-row':isTeamMVP?' team-mvp-row':''}">
+      <td><div style="display:flex;align-items:center;gap:7px;">
+        ${agentIcon?`<img src="${agentIcon}" style="width:26px;height:26px;object-fit:contain;border-radius:3px;background:var(--surface2);" onerror="this.style.display='none'">`:``}
+        <div><div class="sb-name">${p.name||'—'}${mvpBadge}</div><div class="sb-agent">${(p.character||'—').toUpperCase()}</div></div>
+      </div></td>
+      <td><div class="sb-rank">
+        ${rankImg?`<img class="sb-rank-img" src="${rankImg}" onerror="this.style.display='none'">`:``}
+        <span class="sb-rank-txt" style="color:${rankColor}">${rankName||'—'}</span>
+      </div></td>
+      <td><b>${k}</b></td><td>${d}</td><td>${a}</td>
+      <td><div>${kd}</div><div class="sb-kd-bar"><div class="sb-kd-fill" style="width:${kdPct}%"></div></div></td>
+      <td>${acs}</td><td>${hsPct}%</td>
+    </tr>`;
+  };
+  return`<div class="scoreboard-wrap" style="overflow-x:auto;-webkit-overflow-scrolling:touch;">${lobbyBar}<table class="scoreboard"><thead><tr><th>PLAYER</th><th>RANK</th><th>K</th><th>D</th><th>A</th><th>K/D</th><th>ACS</th><th>HS%</th></tr></thead><tbody>
+    <tr><td colspan="8" class="team-label allied">▲ YOUR TEAM</td></tr>
+    ${allied.map(p=>rowHTML(p,p.name?.toLowerCase()===PLAYER_NAME.toLowerCase()&&p.tag?.toLowerCase()===PLAYER_TAG.toLowerCase())).join('')}
+    <tr><td colspan="8" class="team-label enemy">▼ ENEMY TEAM</td></tr>
+    ${enemy.map(p=>rowHTML(p,false)).join('')}
+  </tbody></table></div>`;
+}
+
+function buildRounds(match,myTeamId){
+  const rounds=match.rounds||[];
+  if(!rounds.length)return'<div class="no-detail" style="color:var(--muted);font-size:11px;">Round timeline loads after expanding full match details ↓</div>';
+  // Resolve my puuid + teammate puuids for clutch detection
+  const allP = getPlayerList(match);
+  const meR=allP.find(p=>p.name?.toLowerCase()===PLAYER_NAME.toLowerCase()&&p.tag?.toLowerCase()===PLAYER_TAG.toLowerCase());
+  const myPuuidR=meR?.puuid||'';
+  const teammatePuuids=allP.filter(p=>(p.team||'').toLowerCase()===myTeamId&&p.puuid!==myPuuidR).map(p=>p.puuid);
+  let html='<div class="rounds-wrap">';
+  rounds.forEach((r,i)=>{
+    const myTeamWon=(r.winning_team||'').toLowerCase()===myTeamId;
+    // Detect clutch: count teammate deaths from all kill_events in this round
+    let isClutch=false;
+    if(myTeamWon && (r.player_stats||[]).length>0){
+      let tmDeaths=0;
+      (r.player_stats||[]).forEach(ps=>{
+        (ps.kill_events||[]).forEach(k=>{
+          if(teammatePuuids.includes(k.victim_puuid)) tmDeaths++;
+        });
+      });
+      // All 4 teammates died = I was last alive and we still won
+      if(tmDeaths>=teammatePuuids.length && teammatePuuids.length>0) isClutch=true;
+    }
+    html+=`<div class="round-dot ${myTeamWon?'won':'lost'}${isClutch?' clutch':''}" title="Round ${i+1}${isClutch?' · Clutch':''}">${i+1}</div>`;
+  });
+  html+=`</div><div class="round-legend">
+    <span><span class="legend-dot" style="background:rgba(62,207,142,0.4)"></span>Win</span>
+    <span><span class="legend-dot" style="background:rgba(255,87,87,0.3)"></span>Loss</span>
+    <span><span class="legend-dot" style="outline:2px solid #f5a623;display:inline-block;width:8px;height:8px;border-radius:2px;"></span>Clutch</span>
+  </div>`;
+  return html;
+}
+
+function buildClutches(match,myTeamId){
+  const rounds=match.rounds||[];
+  const clutches=[];
+  const aces=[];
+  // Resolve my puuid + teammate puuids
+  const allP = getPlayerList(match);
+  const meC = allP.find(p=>p.name?.toLowerCase()===PLAYER_NAME.toLowerCase()&&p.tag?.toLowerCase()===PLAYER_TAG.toLowerCase());
+  const myPuuidC = meC?.puuid||meC?.subject||meC?.id;
+  const teammatePuuids = allP.filter(p=>(p.team||'').toLowerCase()===myTeamId&&p.puuid!==myPuuidC).map(p=>p.puuid);
+
+  rounds.forEach((r,i)=>{
+    const myWon=(r.winning_team||'').toLowerCase()===myTeamId;
+    const playerStats = r.player_stats||[];
+
+    if(playerStats.length > 0){
+      const myPs = myPuuidC ? playerStats.find(p=>
+        (p.player_puuid||p.subject||p.puuid||p.player_id)===myPuuidC
+      ) : null;
+      // kills is a number in v3, not an array
+      const myKillEvents = myPs?.kill_events||[];
+      const myKills = typeof myPs?.kills === 'number' ? myPs.kills : myKillEvents.length;
+
+      // Count teammate deaths from ALL kill_events in this round
+      let tmDeaths=0;
+      playerStats.forEach(ps=>{
+        (ps.kill_events||[]).forEach(k=>{
+          if(teammatePuuids.includes(k.victim_puuid)) tmDeaths++;
+        });
+      });
+      // Clutch: all teammates died AND we still won the round
+      const isClutch = myWon && tmDeaths>=teammatePuuids.length && teammatePuuids.length>0;
+      const enemiesAlive = tmDeaths; // rough proxy for 1vX
+      if(isClutch) clutches.push({round:i+1, kills:myKills, vsCount:`1v${Math.min(enemiesAlive,5)}`});
+      // Ace: 5 kills
+      if(myKills>=5) aces.push({round:i+1});
+    }
+  });
+
+  const hasRoundData = rounds.some(r=>(r.player_stats||[]).length>0);
+
+  if(!hasRoundData){
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;">
+      <div style="font-size:18px">ℹ️</div>
+      <div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;margin-bottom:2px;">Clutch data requires full match details</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.5px;">Click <b style="color:var(--accent)">Load Full Details</b> below to fetch round-by-round data from the match API — clutch moments will appear here.</div>
+      </div>
+    </div>`;
+  }
+
+  if(!clutches.length && !aces.length)
+    return'<div class="no-detail">No clutch or ace moments detected this match</div>';
+
+  let html='<div class="clutch-highlight">';
+  clutches.forEach(c=>html+=`<div class="clutch-pill">🏅 ${c.vsCount} Clutch · Rnd ${c.round}${c.kills?' ('+c.kills+' kills)':''}</div>`);
+  aces.forEach(a=>html+=`<div class="clutch-pill" style="color:var(--accent);border-color:var(--accentborder)">⭐ ACE · Rnd ${a.round}</div>`);
+  html+='</div>';
+  return html;
+}
+
+async function togglePanel(idx,matchId){
+  const row=document.getElementById(`mrow-${idx}`);
+  const panel=document.getElementById(`mpanel-${idx}`);
+  const isOpen=panel.classList.contains('open');
+  document.querySelectorAll('.match-panel.open').forEach(p=>p.classList.remove('open'));
+  document.querySelectorAll('.match-row.open').forEach(r=>r.classList.remove('open'));
+  if(!isOpen){
+    row.classList.add('open');
+    panel.classList.add('open');
+    if(matchId&&!panel.dataset.detailLoaded){
+      panel.dataset.detailLoaded='1';
+      const perfEl = document.getElementById(`tabcontent-${idx}-performance`);
+      const duelsEl = document.getElementById(`tabcontent-${idx}-duels`);
+      const timeEl  = document.getElementById(`tabcontent-${idx}-timeline`);
+      if(perfEl) perfEl.innerHTML = '<div class="detail-loading">Loading performance data...</div>';
+      if(duelsEl) duelsEl.innerHTML = '<div class="detail-loading">Loading fight duels...</div>';
+      if(timeEl) timeEl.innerHTML = '<div class="detail-loading">Loading round timelines...</div>';
+      try{
+        const res=await fetch(`/api/v2/match/${matchId}`);
+        if(res.ok){
+          const data=await res.json();
+          if(data?.data) {
+            populateFullDetailTabs(data.data, idx);
+          } else {
+            const err = '<div class="no-detail">Match detail not available</div>';
+            if(perfEl) perfEl.innerHTML = err;
+            if(duelsEl) duelsEl.innerHTML = err;
+            if(timeEl) timeEl.innerHTML = err;
+          }
+        } else {
+          const err = `<div class="no-detail">Fetch error ${res.status}</div>`;
+          if(perfEl) perfEl.innerHTML = err;
+          if(duelsEl) duelsEl.innerHTML = err;
+          if(timeEl) timeEl.innerHTML = err;
+        }
+      } catch(e) {
+        const err = '<div class="no-detail">Network error — click again to retry</div>';
+        panel.dataset.detailLoaded = '';
+        if(perfEl) perfEl.innerHTML = err;
+        if(duelsEl) duelsEl.innerHTML = err;
+        if(timeEl) timeEl.innerHTML = err;
+      }
+    }
+  }
+}
+
+function switchPanelTab(idx, tabName) {
+  const panel = document.getElementById(`mpanel-${idx}`);
+  if (!panel) return;
+  panel.querySelectorAll('.panel-tab-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  panel.querySelectorAll('.panel-tab-content').forEach(content => {
+    content.classList.remove('active');
+  });
+  const activeBtn = panel.querySelector(`.panel-tab-btn[data-tab="${tabName}"]`);
+  const activeContent = document.getElementById(`tabcontent-${idx}-${tabName}`);
+  if (activeBtn) activeBtn.classList.add('active');
+  if (activeContent) activeContent.classList.add('active');
+}
+
+function populateFullDetailTabs(match, idx) {
+  const allPlayers = getPlayerList(match);
+  const rounds     = match.rounds||[];
+
+  const me = allPlayers.find(p =>
+    p.name?.toLowerCase()===PLAYER_NAME.toLowerCase() &&
+    p.tag?.toLowerCase()===PLAYER_TAG.toLowerCase()
+  );
+  if(!me) {
+    const err = '<div class="no-detail">Your player not found in match data</div>';
+    document.getElementById(`tabcontent-${idx}-performance`).innerHTML = err;
+    document.getElementById(`tabcontent-${idx}-duels`).innerHTML = err;
+    document.getElementById(`tabcontent-${idx}-timeline`).innerHTML = err;
+    return;
+  }
+
+  const myPuuid  = me.puuid;
+  const myTeamId = (me.team||'').toLowerCase();
+  const oppTeamId = myTeamId==='red'?'blue':'red';
+  const myTeammates = allPlayers.filter(p=>(p.team||'').toLowerCase()===myTeamId&&p.puuid!==myPuuid);
+  const enemies = allPlayers.filter(p=>(p.team||'').toLowerCase()!==myTeamId);
+
+  const parsedRounds = rounds.map(r=>{
+    let ps = r.player_stats||[];
+    if(typeof ps==='string'){try{ps=JSON.parse(ps);}catch(e){ps=[];}}
+    if(!Array.isArray(ps)) ps=Object.values(ps);
+    return {...r, _ps:ps};
+  });
+
+  const findPs=(ps,puuid)=>(ps||[]).find(p=>(p.player_puuid||p.subject||p.puuid)===puuid);
+  const findMyPs=ps=>findPs(ps,myPuuid);
+
+  const abilities=me.ability_casts||{};
+  const dmgMade=me.damage_made||0, dmgRcvd=me.damage_received||0;
+  const totalSpent=parsedRounds.reduce((s,r)=>s+(findMyPs(r._ps)?.economy?.spent||0),0);
+  const avgEco=parsedRounds.length?Math.round(totalSpent/parsedRounds.length):0;
+
+  const killsByRound={};
+  const clutches=[], aces=[];
+  const timeline=[];
+  const duelMatrix={};
+  enemies.forEach(e=>{duelMatrix[e.puuid]={kills:0,deaths:0,name:e.name,agent:e.character||''};});
+
+  let totalHS=0,totalBS=0,totalLS=0;
+  const weaponKills={};
+
+  parsedRounds.forEach((r,ri)=>{
+    const myPs    = findMyPs(r._ps);
+    const myKills = myPs?.kill_events||myPs?.kills||[];
+    const killCount=myKills.length;
+    const roundWon=(r.winning_team||'').toLowerCase()===myTeamId;
+
+    if(killCount>0) killsByRound[ri]={kills:myKills, won:roundWon};
+
+    myKills.forEach(k=>{
+      let isHS = typeof k.headshot === 'boolean' ? k.headshot : k.finishing_damage?.is_headshot;
+      if (!isHS) {
+        const dE = (myPs?.damage_events || []).find(de => de.receiver_puuid === (k.victim_puuid || k.victim));
+        if (dE && dE.headshots > 0) isHS = true;
+      }
+      if(isHS) totalHS++;
+      else totalBS++;
+      
+      let wpnName = k.damage_weapon_name || '';
+      if(!wpnName || wpnName.length<2) {
+        const wpnId = k.finishing_damage?.damage_item||k.damage_weapon_id||'';
+        const cached = _assetCache.weapons[wpnId.toLowerCase()];
+        if(cached) wpnName = cached.name;
+        else {
+          wpnName = wpnId.replace(/^[^/]*\//,'').replace(/TX_Hud_/i,'').replace(/_/g,' ').trim();
+          if(/^[0-9a-f]{8}-/.test(wpnName)) wpnName = 'Ability';
+        }
+      }
+      if(!wpnName) wpnName = 'Unknown';
+      weaponKills[wpnName]=(weaponKills[wpnName]||0)+1;
+      
+      const victimId=k.victim_puuid||k.victim||'';
+      if(duelMatrix[victimId]) duelMatrix[victimId].kills++;
+    });
+
+    r._ps.forEach(pStats=>{
+      const pId=pStats.player_puuid||pStats.subject||pStats.puuid;
+      const pKills=pStats.kill_events||pStats.kills||[];
+      pKills.forEach(k=>{
+        const victimId=k.victim_puuid||k.victim||'';
+        if(victimId===myPuuid && duelMatrix[pId]) duelMatrix[pId].deaths++;
+      });
+    });
+
+    let teammateDeaths=0;
+    const tmPuuids=myTeammates.map(t=>t.puuid);
+    r._ps.forEach(pStats=>{
+      const pKills=pStats.kill_events||[];
+      pKills.forEach(k=>{
+        const victimId=k.victim_puuid||k.victim||'';
+        if(tmPuuids.includes(victimId)) teammateDeaths++;
+      });
+    });
+    const isClutch=roundWon&&teammateDeaths>=tmPuuids.length&&tmPuuids.length>0;
+
+    if(isClutch) clutches.push({round:ri+1,kills:killCount});
+    if(killCount>=5) aces.push(ri+1);
+    timeline.push({won:roundWon,isClutch,kills:killCount});
+  });
+
+  const matchStats=me.stats||{};
+  const headS=matchStats.headshots||totalHS;
+  const bodyS=matchStats.bodyshots||0;
+  const legS =matchStats.legshots||0;
+  const totalShots=headS+bodyS+legS;
+  const hsPct=totalShots?Math.round(headS/totalShots*100):0;
+  const bsPct=totalShots?Math.round(bodyS/totalShots*100):0;
+  const lsPct=totalShots?Math.round(legS/totalShots*100):0;
+  const totalKills=(matchStats.kills||0);
+  const card=me.assets?.card?.wide||me.assets?.card?.large||'';
+
+  let perfHtml = '';
+  perfHtml+=`<div class="panel-section"><div class="panel-section-title">Player Profile</div>
+  <div class="detail-profile">
+    ${card?`<img src="${card}" class="detail-card" onerror="this.style.display='none'">`:``}
+    <div class="detail-profile-stats">
+      <div class="dp-stat"><div class="dpv">LVL ${me.level||'—'}</div><div class="dpl">Account Level</div></div>
+      <div class="dp-stat"><div class="dpv">${dmgMade}</div><div class="dpl">Dmg Dealt</div></div>
+      <div class="dp-stat"><div class="dpv">${dmgRcvd}</div><div class="dpl">Dmg Received</div></div>
+      <div class="dp-stat"><div class="dpv">${dmgMade&&dmgRcvd?((dmgMade/dmgRcvd).toFixed(2)):'—'}</div><div class="dpl">Dmg Ratio</div></div>
+    </div>
+  </div></div>`;
+
+  perfHtml+=`<div class="panel-section"><div class="panel-section-title">Ability Casts</div>
+  <div class="ability-grid">
+    <div class="ability-chip"><div class="ac-key">C</div><div class="ac-val">${abilities.c_cast||0}</div></div>
+    <div class="ability-chip"><div class="ac-key">Q</div><div class="ac-val">${abilities.q_cast||0}</div></div>
+    <div class="ability-chip"><div class="ac-key">E</div><div class="ac-val">${abilities.e_cast||0}</div></div>
+    <div class="ability-chip ult"><div class="ac-key">ULT</div><div class="ac-val">${abilities.x_cast||0}</div></div>
+    <div class="ability-chip eco"><div class="ac-key">Avg Eco</div><div class="ac-val">${avgEco}cr</div></div>
+    <div class="ability-chip eco"><div class="ac-key">Total Spent</div><div class="ac-val">${totalSpent}cr</div></div>
+  </div></div>`;
+
+  if(totalShots>0||headS>0){
+    perfHtml+=`<div class="panel-section"><div class="panel-section-title">Accuracy Breakdown</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:center;">
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        ${[['Head',headS,hsPct,'var(--win)'],['Body',bodyS,bsPct,'var(--muted)'],['Legs',legS,lsPct,'var(--loss)']].map(([label,hits,pct,col])=>`
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);width:34px;letter-spacing:1px;">${label}</div>
+          <div style="flex:1;height:5px;background:var(--surface3);border-radius:3px;overflow:hidden;">
+            <div style="width:${pct}%;height:100%;background:${col};border-radius:3px;transition:width 1s ease;"></div>
+          </div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;color:${col};min-width:36px;text-align:right;">${pct}%</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2);min-width:52px;text-align:right;">${hits} Hits</div>
+        </div>`).join('')}
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:42px;line-height:1;color:${hsPct>=25?'var(--win)':hsPct>=15?'var(--accent)':'var(--loss)'};">${hsPct}%</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1.5px;">HS RATE</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2);">${totalShots} total shots</div>
+      </div>
+    </div></div>`;
+  }
+
+  const ecoRounds=parsedRounds.filter(r=>findMyPs(r._ps)?.economy);
+  perfHtml+=`<div class="panel-section"><div class="panel-section-title">Economy Per Round</div>`;
+  if(!ecoRounds.length){
+    perfHtml+='<div class="no-detail">Economy data not available</div>';
+  } else {
+    perfHtml+='<div class="eco-grid">';
+    ecoRounds.forEach((r,ri)=>{
+      const ps=findMyPs(r._ps);
+      const eco=ps?.economy||{};
+      const won=(r.winning_team||'').toLowerCase()===myTeamId;
+      const weapon=eco.weapon?.name||eco.weapon||'—';
+      const armor=eco.armor?.name||eco.armor||'None';
+      perfHtml+=`<div class="eco-card ${won?'won':'lost'}"><div class="eco-rnd">R${ri+1}</div><div class="eco-weapon">${weapon}</div><div class="eco-val">${eco.loadout_value||0}cr<span class="eco-sub">LOADOUT</span></div><div class="eco-armor">${armor}</div></div>`;
+    });
+    perfHtml+='</div>';
+  }
+  perfHtml+='</div>';
+  document.getElementById(`tabcontent-${idx}-performance`).innerHTML = perfHtml;
+
+  let duelsHtml = '';
+  const duelK = me.stats?.kills || 0;
+  const duelD = me.stats?.deaths || 0;
+  const duelWin = Math.round((duelK / Math.max(duelK+duelD,1)) * 100);
+  const kd = duelD ? (duelK/duelD).toFixed(2) : duelK.toFixed(2);
+  const totalRounds = rounds.length;
+  const kpr = totalRounds ? (duelK/totalRounds).toFixed(2) : '—';
+  const dpr = totalRounds ? (duelD/totalRounds).toFixed(2) : '—';
+  const duelCol = duelWin >= 55 ? 'var(--win)' : duelWin <= 44 ? 'var(--loss)' : 'var(--accent)';
+  const kdCol   = parseFloat(kd) >= 1.2 ? 'var(--win)' : parseFloat(kd) < 0.9 ? 'var(--loss)' : 'var(--text)';
+  const hsCol   = hsPct >= 25 ? 'var(--win)' : hsPct < 15 ? 'var(--loss)' : 'var(--text)';
+  const winW = Math.round((duelK/Math.max(duelK+duelD,1))*100);
+  const lossW = 100 - winW;
+
+  let insight = '';
+  if (duelWin >= 60) insight = `<span style="color:var(--win)">Strong duel game</span> — you won ${duelWin}% of 1v1s this match.`;
+  else if (duelWin <= 42) insight = `<span style="color:var(--loss)">Rough duel game</span> — lost more gunfights than won (${duelWin}%). Check if you were peeking without info.`;
+  else insight = `<span style="color:var(--muted)">Average duel game</span> — close split between kills and deaths.`;
+  if (hsPct >= 30) insight += ` Excellent HS% (${hsPct}%) this match.`;
+  else if (hsPct < 15 && totalShots > 0) insight += ` Low HS% (${hsPct}%) — likely spraying under pressure.`;
+
+  const duelStatMini = (l, v, c) => `<div style="text-align:center;"><div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--muted2);letter-spacing:1px;text-transform:uppercase;">${l}</div><div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;color:${c}">${v}</div></div>`;
+
+  duelsHtml += `<div class="panel-section"><div class="panel-section-title">Duel Breakdown Summary</div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;">
+        ${duelStatMini('Duel Win %', duelWin+'%', duelCol)}
+        ${duelStatMini('K/D', kd, kdCol)}
+        ${duelStatMini('KPR', kpr, parseFloat(kpr)>=0.8?'var(--win)':parseFloat(kpr)<0.5?'var(--loss)':'var(--text)')}
+        ${duelStatMini('DPR', dpr, parseFloat(dpr)<=0.7?'var(--win)':parseFloat(dpr)>0.9?'var(--loss)':'var(--text)')}
+        ${duelStatMini('HS %', hsPct+'%', hsCol)}
+      </div>
+      <div style="background:var(--surface2);border-radius:4px;overflow:hidden;height:6px;display:flex;">
+        <div style="width:${winW}%;background:var(--win);transition:width 0.8s ease;"></div>
+        <div style="width:${lossW}%;background:var(--loss);transition:width 0.8s ease;"></div>
+      </div>
+      <div style="font-family:'Barlow',sans-serif;font-size:12px;color:rgba(240,240,242,0.7);line-height:1.5">${insight}</div>
+    </div>
+  </div>`;
+
+  const duelEntries=Object.values(duelMatrix).filter(d=>d.kills>0||d.deaths>0)
+    .sort((a,b)=>(b.kills-b.deaths)-(a.kills-a.deaths));
+  if(duelEntries.length){
+    duelsHtml+=`<div class="panel-section"><div class="panel-section-title">Duel Matrix</div>
+    <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:8px;">YOUR KILLS vs THEIR KILLS AGAINST YOU</div>
+    <div style="display:flex;flex-direction:column;gap:4px;">`;
+    duelEntries.forEach(d=>{
+      const icon=getAgentIconUrl(d.agent);
+      const net=d.kills-d.deaths;
+      const netCol=net>0?'var(--win)':net<0?'var(--loss)':'var(--muted)';
+      duelsHtml+=`<div style="display:flex;align-items:center;gap:8px;padding:5px 8px;background:var(--surface2);border-radius:var(--radius-sm);">
+        ${icon?`<img src="${icon}" style="width:24px;height:24px;object-fit:contain;border-radius:3px;background:var(--surface3);" onerror="this.style.display='none'">`:
+          `<div style="width:24px;height:24px;background:var(--surface3);border-radius:3px;"></div>`}
+        <div style="flex:1;min-width:0;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${d.name}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2);">${d.agent}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+          <div style="text-align:center;min-width:28px;">
+            <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:18px;color:var(--win);line-height:1;">${d.kills}</div>
+            <div style="font-family:'DM Mono',monospace;font-size:7px;color:var(--muted2);letter-spacing:1px;">KILLS</div>
+          </div>
+          <div style="width:1px;height:24px;background:var(--border);"></div>
+          <div style="text-align:center;min-width:28px;">
+            <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:18px;color:var(--loss);line-height:1;">${d.deaths}</div>
+            <div style="font-family:'DM Mono',monospace;font-size:7px;color:var(--muted2);letter-spacing:1px;">DEATHS</div>
+          </div>
+          <div style="min-width:36px;text-align:right;">
+            <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;color:${netCol};">${net>0?'+':''}${net}</span>
+          </div>
+        </div>
+      </div>`;
+    });
+    duelsHtml+='</div></div>';
+  }
+
+  duelsHtml+=`<div class="panel-section"><div class="panel-section-title">Round Kill Feed</div>`;
+  const killedRounds=Object.entries(killsByRound);
+  if(!killedRounds.length){
+    duelsHtml+='<div class="no-detail">No kill data for this match</div>';
+  } else {
+    const resolveWeapon=(k)=>{
+      if(k.damage_weapon_name && k.damage_weapon_name.length>1) return {name:k.damage_weapon_name, icon:k.damage_weapon_assets?.killfeed_icon||null};
+      const wpnId = k.damage_weapon_id||k.finishing_damage?.damage_item||'';
+      const cached = _assetCache.weapons[wpnId.toLowerCase()];
+      if(cached) return {name:cached.name, icon:cached.iconUrl||null};
+      const cleaned = wpnId.replace(/^[^/]*\//,'').replace(/TX_Hud_/i,'').replace(/_/g,' ').trim();
+      if(/^[0-9a-f]{8}-/.test(cleaned)) return {name:'Ability', icon:null};
+      return {name:cleaned||'Unknown', icon:null};
+    };
+
+    duelsHtml+='<div style="display:flex;flex-wrap:wrap;gap:6px;">';
+    killedRounds.forEach(([ri,{kills,won}])=>{
+      const rndNum=parseInt(ri)+1;
+      const badge=kills.length>=5?' · ACE':kills.length>=4?' · 4K':kills.length>=3?' · 3K':'';
+      duelsHtml+=`<div style="background:var(--surface2);border:1px solid ${won?'rgba(62,207,142,0.12)':'rgba(255,87,87,0.08)'};border-radius:var(--radius-sm);overflow:hidden;flex:1;min-width:220px;max-width:100%;">
+        <div style="display:flex;align-items:center;gap:6px;padding:6px 10px;border-bottom:1px solid var(--border);">
+          <span style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:12px;color:${won?'var(--win)':'var(--loss)'};">R${rndNum}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:8px;color:${won?'var(--win)':'var(--loss)'};letter-spacing:1px;opacity:0.7;">${won?'W':'L'}${badge}</span>
+          <span style="margin-left:auto;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;color:var(--text);">${kills.length}K</span>
+        </div>`;
+      kills.forEach(k=>{
+        const wpn=resolveWeapon(k);
+        let isHS=typeof k.headshot === 'boolean' ? k.headshot : k.finishing_damage?.is_headshot;
+        const victimId=k.victim_puuid||k.victim||'';
+        if (!isHS) {
+          const myPsInfo = findMyPs(parsedRounds[ri]?._ps);
+          if (myPsInfo?.damage_events) {
+            const dE = myPsInfo.damage_events.find(de => de.receiver_puuid === victimId);
+            if (dE && dE.headshots > 0) isHS = true;
+          }
+        }
+        isHS = isHS || false;
+        const victim=allPlayers.find(p=>p.puuid===victimId);
+        const victimName=victim?.name||'Enemy';
+        const victimAgent=victim?.character||'';
+        const victimIcon=getAgentIconUrl(victimAgent);
+        duelsHtml+=`<div style="display:flex;align-items:center;gap:6px;padding:4px 10px;border-bottom:1px solid rgba(255,255,255,0.02);">
+          ${victimIcon?`<img src="${victimIcon}" style="width:16px;height:16px;object-fit:contain;flex-shrink:0;border-radius:2px;" onerror="this.style.display='none'">`
+            :`<div style="width:16px;height:16px;background:var(--surface3);border-radius:2px;flex-shrink:0;"></div>`}
+          <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${victimName}</span>
+          ${wpn.icon?`<img src="${wpn.icon}" style="height:10px;width:auto;object-fit:contain;filter:brightness(0.8);flex-shrink:0;" onerror="this.outerHTML='<span style=\\'font-family:DM Mono,monospace;font-size:8px;color:var(--muted2)\\'>${wpn.name}</span>'">`
+            :`<span style="font-family:'DM Mono',monospace;font-size:8px;color:var(--muted2);flex-shrink:0;">${wpn.name}</span>`}
+          ${isHS?`<span style="font-family:'DM Mono',monospace;font-size:7px;font-weight:700;color:var(--accent);background:var(--accentdim);padding:1px 4px;border-radius:2px;letter-spacing:1px;flex-shrink:0;">HS</span>`:''}
+        </div>`;
+      });
+    });
+    duelsHtml+='</div>';
+  }
+  duelsHtml+='</div>';
+  const duelsEl = document.getElementById(`tabcontent-${idx}-duels`);
+  if (duelsEl) duelsEl.innerHTML = duelsHtml;
+
+  const timelineHtml = `<div class="panel-section">
+    <div class="panel-section-title">Round History Timeline</div>
+    ${buildRounds(match, myTeamId)}
+  </div>
+  <div class="panel-section">
+    <div class="panel-section-title">Clutches & Aces</div>
+    ${buildClutches(match, myTeamId)}
+  </div>`;
+  const timeEl = document.getElementById(`tabcontent-${idx}-timeline`);
+  if (timeEl) timeEl.innerHTML = timelineHtml;
+}
+
+
+function renderLiveMatch(data){
+  const sect=document.getElementById('live-section');
+  if(!data){sect.style.display='none';return;}
+  sect.style.display='block';
+  const players=data.players||[];
+  const me=players.find(p=>p.name?.toLowerCase()===PLAYER_NAME.toLowerCase());
+  const map=data.map||'Unknown';
+  const mode=data.mode||'Competitive';
+  const allied=players.filter(p=>(p.team||'').toLowerCase()===(me?.team||'').toLowerCase());
+  const enemy=players.filter(p=>(p.team||'').toLowerCase()!==(me?.team||'').toLowerCase());
+  const renderTeam=(team,label,cls)=>{
+    let t=`<div class="live-team ${cls}"><div class="live-team-title">${label}</div>`;
+    team.forEach(p=>{
+      const icon=getAgentIconUrl(p.character||p.agent||'');
+      const rankImg=getRankImgUrl(p.currenttier_patched||'');
+      t+=`<div class="live-player ${p.name?.toLowerCase()===PLAYER_NAME.toLowerCase()?'live-me':''}">
+        ${icon?`<img src="${icon}" style="width:28px;height:28px;object-fit:contain;" onerror="this.style.display='none'">`:``}
+        <div style="flex:1"><div class="live-player-name">${p.name||'?'}${p.name?.toLowerCase()===PLAYER_NAME.toLowerCase()?'<span style="color:var(--accent);font-family:\'DM Mono\',monospace;font-size:8px;margin-left:6px;letter-spacing:1px;">YOU</span>':''}</div><div class="live-player-agent-txt">${(p.character||p.agent||'').toUpperCase()}</div></div>
+        ${rankImg?`<img src="${rankImg}" style="width:22px;height:22px;object-fit:contain;" onerror="this.style.display='none'">`:``}
+        <div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--muted2)">${p.currenttier_patched||''}</div>
+      </div>`;
+    });
+    return t+'</div>';
+  };
+  sect.innerHTML=`<div class="live-banner">
+    <div class="live-header">
+      <div class="live-badge-label"><div class="live-dot"></div>Live Match Detected</div>
+      <div class="live-meta">${map.toUpperCase()} · ${mode}</div>
+    </div>
+    <div class="live-teams">
+      ${renderTeam(allied,'▲ Your Team','allied')}
+      ${renderTeam(enemy,'▼ Enemy Team','enemy')}
+    </div>
+  </div>`;
+}
+
+window._allRenderedMatches = []; // store for filtering
+window._activeFilter = 'all';
+window._activeSearch = '';
+
+function formatMatchDate(ts) {
+  if (!ts) return '';
+  const d = new Date(typeof ts === 'number' && ts < 1e12 ? ts * 1000 : ts);
+  const now = new Date();
+  const diffMs = now - d;
+  const diffH = diffMs / 3600000;
+  const diffD = diffMs / 86400000;
+  if (diffH < 1) return 'Just now';
+  if (diffH < 24) return `${Math.floor(diffH)}h ago`;
+  if (diffD < 2) return 'Yesterday';
+  if (diffD < 7) return d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+}
+
+function isToday(ts) {
+  if (!ts) return false;
+  const d = new Date(typeof ts === 'number' && ts < 1e12 ? ts * 1000 : ts);
+  const now = new Date();
+  return d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+}
+
+function setFilter(filter, btn) {
+  window._activeFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  applyFilters();
+}
+
+function applyFilters() {
+  const search = (document.getElementById('filter-search')?.value || '').toLowerCase().trim();
+  window._activeSearch = search;
+  const filter = window._activeFilter || 'all';
+  const items = document.querySelectorAll('.match-item[data-won]');
+  let visible = 0;
+  items.forEach(el => {
+    const won = el.dataset.won === 'true';
+    const agent = (el.dataset.agent || '').toLowerCase();
+    const map = (el.dataset.map || '').toLowerCase();
+    const today = el.dataset.today === 'true';
+    let show = true;
+    if (filter === 'win' && !won) show = false;
+    if (filter === 'loss' && won) show = false;
+    if (filter === 'today' && !today) show = false;
+    if (search && !agent.includes(search) && !map.includes(search)) show = false;
+    el.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+  // Hide day headers that have no visible matches
+  document.querySelectorAll('.day-group-header').forEach(header => {
+    let next = header.nextElementSibling;
+    let hasVisible = false;
+    while (next && !next.classList.contains('day-group-header')) {
+      if (next.classList.contains('match-item') && next.style.display !== 'none') hasVisible = true;
+      next = next.nextElementSibling;
+    }
+    header.style.display = hasVisible ? '' : 'none';
+  });
+  const fc = document.getElementById('filter-count');
+  if (fc) fc.textContent = visible + ' match' + (visible !== 1 ? 'es' : '');
+}
+
+function getDayKey(ts) {
+  if (!ts) return 'unknown';
+  const d = new Date(typeof ts === 'number' && ts < 1e12 ? ts * 1000 : ts);
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+}
+
+function getDayLabel(ts) {
+  if (!ts) return 'Unknown Date';
+  const d = new Date(typeof ts === 'number' && ts < 1e12 ? ts * 1000 : ts);
+  const now = new Date();
+  const diffDays = Math.floor((now - d) / 86400000);
+  if (diffDays === 0) return 'Today';
+  if (diffDays === 1) return 'Yesterday';
+  return d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+}
+
+function renderMatches(matches){
+  if(!matches.length){document.getElementById('matches-list').innerHTML='<div class="card span-12"><div class="placeholder-txt">No matches found</div></div>';return;}
+  const wrap=document.getElementById('matches-list');
+  wrap.style.display='contents';
+  const mmrH = window._mmrHistory || {};
+
+  // Group matches by day
+  const groups = [];
+  const groupMap = {};
+  matches.forEach((m, idx) => {
+    const key = getDayKey(m.gameStart);
+    if (!groupMap[key]) {
+      groupMap[key] = { label: getDayLabel(m.gameStart), matches: [], rrTotal: 0, hasRR: false, wins: 0, losses: 0 };
+      groups.push(groupMap[key]);
+    }
+    const g = groupMap[key];
+    g.matches.push({ m, idx });
+    const rr = mmrH[m.matchId];
+    if (rr !== undefined) { g.rrTotal += rr; g.hasRR = true; }
+    if (m.won) g.wins++; else g.losses++;
+  });
+
+  let html='';
+  let globalIdx = 0;
+  groups.forEach(group => {
+    // Day header
+    const rrCls = group.rrTotal > 0 ? 'pos' : group.rrTotal < 0 ? 'neg' : 'neu';
+    const rrText = group.hasRR ? `${group.rrTotal > 0 ? '+' : ''}${group.rrTotal} RR` : '';
+    const wlText = `${group.wins}W ${group.losses}L`;
+    html += `<div class="day-group-header" style="grid-column:span 12;">
+      <span class="day-group-label">${group.label}</span>
+      <div class="day-group-line"></div>
+      <span class="day-group-wl">${wlText}</span>
+      ${rrText ? `<span class="day-group-rr ${rrCls}">${rrText}</span>` : ''}
+    </div>`;
+
+    group.matches.forEach(({ m, idx }) => {
+    const wl=m.won?'win':'loss';
+    const acs=Math.round(m.score/100);
+    const hsPct=m.shots?Math.round((m.hs/m.shots)*100):0;
+    const grade=getGrade(m.kills,m.deaths,m.assists,acs,m.won);
+    const kd=m.deaths?(m.kills/m.deaths).toFixed(2):m.kills.toFixed(2);
+    const agentIcon=getAgentIconUrl(m.agentName);
+    const allPlayers = getPlayerList(m.rawMatch);
+    const getACS=p=>Math.round((p.stats?.score||0)/100);
+    const matchMVPPlayer=allPlayers.length?allPlayers.reduce((b,p)=>getACS(p)>getACS(b)?p:b,allPlayers[0]):null;
+    const alliedPlayers=allPlayers.filter(p=>(p.team||'').toLowerCase()===m.myTeamId);
+    const teamMVPPlayer=alliedPlayers.length?alliedPlayers.reduce((b,p)=>getACS(p)>getACS(b)?p:b,alliedPlayers[0]):null;
+    const isMatchMVP=matchMVPPlayer?.name?.toLowerCase()===PLAYER_NAME.toLowerCase();
+    const isTeamMVP=!isMatchMVP&&teamMVPPlayer?.name?.toLowerCase()===PLAYER_NAME.toLowerCase();
+    const mvpBadge=isMatchMVP?`<div class="mvp-header-badge match-mvp">👑 Match MVP</div>`:isTeamMVP?`<div class="mvp-header-badge team-mvp">⭐ Team MVP</div>`:'';
+    const _isRanked=(window._currentMode||'competitive')==='competitive';
+    const scoreboardHTML=buildScoreboard(m.rawMatch,m.myTeamId,_isRanked);
+
+    const matchDateStr=formatMatchDate(m.gameStart);const matchIsToday=isToday(m.gameStart);html+=`<div class="match-item" data-won="${m.won}" data-agent="${(m.agentName||'').toLowerCase()}" data-map="${(m.map||'').toLowerCase()}" data-today="${matchIsToday}" style="animation-delay:${globalIdx++*40}ms">
+      <div class="match-row" id="mrow-${idx}" onclick="togglePanel(${idx},'${m.matchId||''}')">
+        <div class="mr-result ${wl}">${m.won?'WIN':'LOSS'}</div>
+        <div class="mr-agent" style="padding:0;gap:0;overflow:hidden;">
+          ${(()=>{const mi=getMapImg(m.map||'');const mn=m.map||'';return mi?`<div class="mr-map-thumb"><img data-map="${mn}" src="${mi}" alt="${mn}" onerror="retryMapImg(this, this.dataset.map)"><div class="mr-map-thumb-label">${mn.toUpperCase()}</div></div>`:`<div class="mr-map-thumb" style="background:var(--surface2);"><div class="mr-map-thumb-label">${mn.toUpperCase()}</div></div>`;})()}
+          <div style="padding:12px 12px;">
+            ${agentIcon?`<img class="mr-agent-icon" src="${agentIcon}" onerror="this.style.display='none'">`:``}
+          </div>
+          <div style="padding:12px 0;">
+            <div class="mr-agent-name">${(m.agentName||'—').toUpperCase()}</div>
+            <div class="mr-map" style="margin-top:2px;">${(m.map||'—').toUpperCase()}</div>
+            ${matchDateStr?`<div class="mr-date">${matchDateStr}</div>`:''}
+          </div>
+        </div>
+        <div class="mr-score">${m.rounds}</div>
+        <div class="mr-lobby">
+          ${(()=>{const info=getLobbyRankInfo(allPlayers,m.myTeamId);if(!info||!info.overall)return'<span class="mr-lobby-txt">—</span>';const img=getRankImgUrl(info.overall.name)||'';return(img?`<img class="mr-lobby-img" src="${img}" onerror="this.style.display='none'">`:'')+'<span class="mr-lobby-txt" style="color:'+getRankColor(info.overall.name)+'">'+info.overall.name.replace(' ','<br>')+'</span>';})()}
+        </div>
+        <div class="mr-kda">
+          <div class="mr-kda-main">${m.kills} / ${m.deaths} / ${m.assists}</div>
+          <div class="mr-kda-sub">K / D / A</div>
+        </div>
+        <div>
+          <div class="mr-acs">${acs}</div>
+          <div class="mr-acs-sub">ACS</div>
+        </div>
+        <div>
+          <div class="mr-grade ${grade}">${grade}</div>
+          <div class="mr-grade-sub">${isMatchMVP?'MATCH MVP':isTeamMVP?'TEAM MVP':'GRADE'}</div>
+        </div>
+        <div class="mr-rr">
+          ${(()=>{
+            const rr=(window._mmrHistory||{})[m.matchId||''];
+            if(rr===undefined||rr===null)return`<div class="mr-rr-val unk">—</div><div class="mr-rr-lbl">RR</div>`;
+            const cls=rr>0?'pos':rr<0?'neg':'unk';
+            return`<div class="mr-rr-val ${cls}">${rr>0?'+':''}${rr}</div><div class="mr-rr-lbl">RR</div>`;
+          })()}
+        </div>
+        <div class="mr-chevron">▼</div>
+      </div>
+      <div class="match-panel" id="mpanel-${idx}">
+        <div class="panel-body">
+          <div class="panel-header-row">
+            <div class="panel-grade-badge ${grade}">${grade}</div>
+            <div class="panel-match-meta">
+              <div class="panel-match-title">
+                ${agentIcon?`<img src="${agentIcon}" style="width:28px;height:28px;object-fit:contain;" onerror="this.style.display='none'">`:``}
+                ${(m.agentName||'—').toUpperCase()} · ${(m.map||'—').toUpperCase()}
+              </div>
+              <div class="panel-match-sub">${m.won?'VICTORY':'DEFEAT'} · ${m.rounds} rounds</div>
+              ${mvpBadge}
+              <div class="panel-stat-row">
+                <div class="ps-item"><div class="psv">${m.kills}/${m.deaths}/${m.assists}</div><div class="psl">K / D / A</div></div>
+                <div class="ps-item"><div class="psv">${kd}</div><div class="psl">K/D</div></div>
+                <div class="ps-item"><div class="psv">${acs}</div><div class="psl">ACS</div></div>
+                <div class="ps-item"><div class="psv">${hsPct}%</div><div class="psl">HS Rate</div></div>
+                ${(()=>{const rr=(window._mmrHistory||{})[m.matchId||''];if(rr===undefined||rr===null)return'';const col=rr>0?'var(--win)':rr<0?'var(--loss)':'var(--muted)';return`<div class="ps-item"><div class="psv" style="color:${col}">${rr>0?'+':''}${rr}</div><div class="psl">RR Change</div></div>`;})()}
+                ${(()=>{const info=getLobbyRankInfo(allPlayers,m.myTeamId);if(!info||!info.overall)return'';const img=getRankImgUrl(info.overall.name)||'';return`<div class="ps-item"><div class="psv" style="display:flex;align-items:center;gap:6px;font-size:18px;">${img?`<img src="${img}" style="width:22px;height:22px;object-fit:contain;" onerror="this.style.display='none'">`:''}${info.overall.name}</div><div class="psl">Lobby Avg Rank</div></div>`;})()}
+              </div>
+            </div>
+          </div>
+
+          <!-- TABS CONTAINER -->
+          <div class="panel-tabs">
+            <button class="panel-tab-btn active" data-tab="scoreboard" onclick="switchPanelTab(${idx}, 'scoreboard')">🏆 Scoreboard</button>
+            <button class="panel-tab-btn" data-tab="performance" onclick="switchPanelTab(${idx}, 'performance')">📊 Performance</button>
+            <button class="panel-tab-btn" data-tab="duels" onclick="switchPanelTab(${idx}, 'duels')">🎯 Fights</button>
+            <button class="panel-tab-btn" data-tab="timeline" onclick="switchPanelTab(${idx}, 'timeline')">⏱️ Rounds</button>
+            <button class="panel-tab-btn" data-tab="ai" onclick="switchPanelTab(${idx}, 'ai')">🤖 AI Analysis</button>
+          </div>
+
+          <!-- TAB CONTENTS -->
+          <div class="panel-tab-content active" id="tabcontent-${idx}-scoreboard">
+            ${scoreboardHTML}
+          </div>
+          <div class="panel-tab-content" id="tabcontent-${idx}-performance">
+            <div class="detail-loading">Click match to load full details...</div>
+          </div>
+          <div class="panel-tab-content" id="tabcontent-${idx}-duels">
+            <div class="detail-loading">Click match to load full details...</div>
+          </div>
+          <div class="panel-tab-content" id="tabcontent-${idx}-timeline">
+            <div class="detail-loading">Click match to load full details...</div>
+          </div>
+          <div class="panel-tab-content" id="tabcontent-${idx}-ai">
+            <div class="match-ai-wrap" style="margin-top:0;">
+              <div class="match-ai-header">
+                <div class="match-ai-title">🤖 Match AI Analysis</div>
+                <button class="match-ai-btn" id="mai-btn-${idx}" onclick="runMatchAnalysis(${idx}, event)">⚡ Analyse This Match</button>
+              </div>
+              <div class="match-ai-loading" id="mai-loading-${idx}">
+                <div class="match-ai-spinner"></div>
+                <span id="mai-loading-txt-${idx}">ANALYSING MATCH...</span>
+              </div>
+              <div class="match-ai-body" id="mai-body-${idx}"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>`;
+    }); // end group.matches.forEach
+  }); // end groups.forEach
+  wrap.innerHTML=html;
+  window._allRenderedMatches = matches;
+  setTimeout(()=>animateIn('#matches-list .match-item'),50);
+  // update filter count
+  const fc=document.getElementById('filter-count');
+  if(fc)fc.textContent=matches.length+' match'+(matches.length!==1?'es':'');
+  // render session banner
+  renderSessionBanner(matches);
+}
+
+// ── AI ANALYSIS ──
+window._processedStats = null; // populated by processMatches
+
+function buildStatsForAI(matches) {
+  let tK=0,tD=0,tA=0,tS=0,tHS=0,tShots=0,wins=0,losses=0,n=0;
+  const agentMap={}, mapData={}, lobbyRanks=[];
+  let firstBloodEst=0, multiKillEst=0, clutchWins=0;
+
+  matches.forEach(match=>{
+    const me=findMe(match);
+    if(!me)return; n++;
+    const s=me.stats||{};
+    const k=s.kills||0,d=s.deaths||0,a=s.assists||0,sc=s.score||0;
+    const hs=s.headshots||0,shots=(s.headshots||0)+(s.bodyshots||0)+(s.legshots||0);
+    tK+=k;tD+=d;tA+=a;tS+=sc;tHS+=hs;tShots+=shots;
+    const myTeamId=(me.team||'').toLowerCase();
+    const won=match.teams?.[myTeamId]?.has_won||false;
+    if(won)wins++;else losses++;
+    const agentName=me.character||'Unknown';
+    if(!agentMap[agentName])agentMap[agentName]={matches:0,wins:0,kills:0,deaths:0,score:0};
+    const ag=agentMap[agentName];
+    ag.matches++;if(won)ag.wins++;ag.kills+=k;ag.deaths+=d;ag.score+=sc;
+    const mapName=match.metadata?.map||'Unknown';
+    if(!mapData[mapName])mapData[mapName]={matches:0,wins:0,kills:0,deaths:0,score:0};
+    const mp=mapData[mapName];
+    mp.matches++;if(won)mp.wins++;mp.kills+=k;mp.deaths+=d;mp.score+=sc;
+    // Lobby rank
+    const allP = getPlayerList(match);
+    const info=getLobbyRankInfo(allP,myTeamId);
+    if(info?.overall)lobbyRanks.push(info.overall.rr+50);
+    // Rounds for clutch
+    const rounds=match.rounds||[];
+    rounds.forEach(r=>{
+      const myAlive=r[myTeamId]?.players_alive??null;
+      if(myAlive===1&&(r.winning_team||'').toLowerCase()===myTeamId)clutchWins++;
+    });
+    firstBloodEst+=Math.round(k*0.18);
+    if(k>=3)multiKillEst++;
+  });
+
+  const kd=tD?(tK/tD):tK;
+  const wr=n?Math.round((wins/(wins+losses))*100):0;
+  const hsPct=tShots?Math.round((tHS/tShots)*100):0;
+  const avgACS=n?Math.round(tS/n/100):0;
+  const avgKills=(tK/n).toFixed(1);
+  const avgDeaths=(tD/n).toFixed(1);
+  const avgAssists=(tA/n).toFixed(1);
+
+  const topAgents=Object.entries(agentMap)
+    .sort((a,b)=>b[1].matches-a[1].matches).slice(0,5)
+    .map(([name,s])=>({name,matches:s.matches,wr:Math.round(s.wins/s.matches*100),kd:s.deaths?(s.kills/s.deaths).toFixed(2):s.kills,acs:Math.round(s.score/s.matches/100)}));
+
+  const bestMap=Object.entries(mapData).filter(([,m])=>m.matches>=2)
+    .sort((a,b)=>(b[1].wins/b[1].matches)-(a[1].wins/a[1].matches))[0];
+  const worstMap=Object.entries(mapData).filter(([,m])=>m.matches>=2)
+    .sort((a,b)=>(a[1].wins/a[1].matches)-(b[1].wins/b[1].matches))[0];
+
+  const avgLobbyRR=lobbyRanks.length?Math.round(lobbyRanks.reduce((s,v)=>s+v,0)/lobbyRanks.length):null;
+  const avgLobbyRank=avgLobbyRR?getRankFromRR(avgLobbyRR):null;
+
+  return {
+    totalMatches:n, wins, losses, wr,
+    kd:kd.toFixed(2), avgKills, avgDeaths, avgAssists,
+    avgACS, hsPct,
+    clutchWins, firstBloodEst, multiKillEst,
+    topAgents,
+    bestMap:bestMap?{name:bestMap[0],wr:Math.round(bestMap[1].wins/bestMap[1].matches*100),matches:bestMap[1].matches}:null,
+    worstMap:worstMap?{name:worstMap[0],wr:Math.round(worstMap[1].wins/worstMap[1].matches*100),matches:worstMap[1].matches}:null,
+    avgLobbyRank:avgLobbyRank?.name||null
+  };
+}
+
+function renderAIStats(stats) {
+  // Quick stat pills
+  const kdClass=parseFloat(stats.kd)>=1.2?'good':parseFloat(stats.kd)>=0.9?'warn':'bad';
+  const wrClass=stats.wr>=55?'good':stats.wr>=45?'warn':'bad';
+  const hsClass=stats.hsPct>=25?'good':stats.hsPct>=15?'warn':'bad';
+  const acsClass=stats.avgACS>=220?'good':stats.avgACS>=170?'warn':'bad';
+  const clutchRate=stats.totalMatches?((stats.clutchWins/stats.totalMatches)*100).toFixed(1):0;
+  const clutchClass=parseFloat(clutchRate)>=1.5?'good':parseFloat(clutchRate)>=0.8?'warn':'bad';
+
+  document.getElementById('ai-stats-grid').innerHTML=`
+    <div class="ai-stat-pill"><div class="ai-stat-pill-label">K/D Ratio</div><div class="ai-stat-pill-val ${kdClass}">${stats.kd}</div><div class="ai-stat-pill-sub">${stats.avgKills}K / ${stats.avgDeaths}D avg</div></div>
+    <div class="ai-stat-pill"><div class="ai-stat-pill-label">Win Rate</div><div class="ai-stat-pill-val ${wrClass}">${stats.wr}%</div><div class="ai-stat-pill-sub">${stats.wins}W · ${stats.losses}L</div></div>
+    <div class="ai-stat-pill"><div class="ai-stat-pill-label">Avg ACS</div><div class="ai-stat-pill-val ${acsClass}">${stats.avgACS}</div><div class="ai-stat-pill-sub">Combat score</div></div>
+    <div class="ai-stat-pill"><div class="ai-stat-pill-label">HS Rate</div><div class="ai-stat-pill-val ${hsClass}">${stats.hsPct}%</div><div class="ai-stat-pill-sub">Headshots</div></div>
+    <div class="ai-stat-pill"><div class="ai-stat-pill-label">Clutch Rate</div><div class="ai-stat-pill-val ${clutchClass}">${clutchRate}%</div><div class="ai-stat-pill-sub">${stats.clutchWins} clutch wins</div></div>
+    <div class="ai-stat-pill"><div class="ai-stat-pill-label">Avg Lobby</div><div class="ai-stat-pill-val" style="font-size:16px;">${stats.avgLobbyRank||'—'}</div><div class="ai-stat-pill-sub">Lobby rank avg</div></div>
+  `;
+}
+
+// ── SMART CLIENT-SIDE ANALYSIS ENGINE ──
+// Fully works offline — no API calls needed
+
+function analyseStats(stats) {
+  const kd = parseFloat(stats.kd);
+  const wr = stats.wr;
+  const hs = stats.hsPct;
+  const acs = stats.avgACS;
+  const avgK = parseFloat(stats.avgKills);
+  const avgD = parseFloat(stats.avgDeaths);
+  const avgA = parseFloat(stats.avgAssists);
+  const clutchRate = stats.totalMatches ? (stats.clutchWins / stats.totalMatches) : 0;
+  const top = stats.topAgents[0];
+  const secondAgent = stats.topAgents[1];
+
+  const strengths = [];
+  const weaknesses = [];
+  const tips = [];
+  const agentAdvice = [];
+  const mental = [];
+
+  // ── STRENGTHS ──
+  if (kd >= 1.4) strengths.push(`Excellent K/D of ${kd} — you are consistently winning gunfights and creating value for your team.`);
+  else if (kd >= 1.1) strengths.push(`Positive K/D of ${kd} — you trade favourably in most engagements.`);
+
+  if (wr >= 58) strengths.push(`Strong ${wr}% win rate over ${stats.totalMatches} games — you are clearly having a meaningful impact on match outcomes.`);
+  else if (wr >= 52) strengths.push(`Above-average ${wr}% win rate — you contribute positively to your team more often than not.`);
+
+  if (hs >= 28) strengths.push(`High ${hs}% headshot rate shows excellent crosshair placement and aim precision.`);
+  else if (hs >= 20) strengths.push(`Decent ${hs}% headshot rate — your aim fundamentals are solid.`);
+
+  if (acs >= 230) strengths.push(`High ACS of ${acs} — you are consistently involved in combat and generating impact every round.`);
+  else if (acs >= 190) strengths.push(`Respectable ACS of ${acs} shows solid combat presence across your matches.`);
+
+  if (avgA >= 5) strengths.push(`High assist count (${avgA} avg) shows strong team-play and utility usage.`);
+
+  if (clutchRate >= 0.15) strengths.push(`Good clutch performance (${stats.clutchWins} clutch wins) — you stay composed under pressure.`);
+
+  if (stats.bestMap) strengths.push(`Performing well on ${stats.bestMap.name} with ${stats.bestMap.wr}% win rate — a reliable comfort pick.`);
+
+  // Ensure at least 2 strengths
+  if (strengths.length === 0) strengths.push(`Consistent match participation with ${stats.totalMatches} games tracked — your commitment to the grind is evident.`);
+  if (strengths.length === 1) strengths.push(`You average ${avgK} kills per game — a solid foundation to build upon.`);
+
+  // ── WEAKNESSES ──
+  if (kd < 0.9) weaknesses.push(`K/D of ${kd} is below 1.0 — you are dying more than you are killing, likely taking unfavourable duels or overextending.`);
+  else if (kd < 1.05) weaknesses.push(`K/D of ${kd} is close to even — improving trade efficiency would directly boost your rank.`);
+
+  if (avgD >= 16) weaknesses.push(`Dying ${avgD} times per game is too high. Focus on repositioning after kills and not holding the same angle twice.`);
+  else if (avgD >= 13) weaknesses.push(`${avgD} deaths per game is slightly above average — tighten up your positioning to reduce unnecessary deaths.`);
+
+  if (hs < 15) weaknesses.push(`${hs}% headshot rate is low — you are winning fights with body/leg shots but missing rank-up potential. Consistent head-level crosshair placement will massively improve your duels.`);
+  else if (hs < 20) weaknesses.push(`${hs}% headshot rate has room to grow. Practise crosshair placement on aim trainers like Aimlab or in the range.`);
+
+  if (wr < 45) weaknesses.push(`${wr}% win rate means you lose more than you win — this often indicates either agent selection, communication, or decision-making issues.`);
+  else if (wr < 50) weaknesses.push(`${wr}% win rate is slightly below 50 — small improvements in clutch situations and round-closing will flip this positive.`);
+
+  if (acs < 160) weaknesses.push(`ACS of ${acs} is below average — focus on taking more first contacts, using utility aggressively, and not playing passive all game.`);
+  else if (acs < 185) weaknesses.push(`ACS of ${acs} could be higher — look for more multi-kill rounds and eco round impact.`);
+
+  if (stats.worstMap) weaknesses.push(`Struggling on ${stats.worstMap.name} (${stats.worstMap.wr}% WR) — consider studying common angles, smokes lineups, or default setups for this map.`);
+
+  if (clutchRate < 0.05 && stats.totalMatches >= 10) weaknesses.push(`Very few clutch wins — work on 1vX mindset: buy time, isolate duels, use utility wisely, trust your aim.`);
+
+  // ── ACTION TIPS ──
+  if (kd < 1.1) {
+    tips.push(`Before taking a fight, ask: "Do I have info, utility advantage, or a clear angle?" If no — don't take the duel.`);
+    tips.push(`After each death, pause for 3 seconds and think about what you would do differently. Build the habit of reviewing mistakes in real time.`);
+  } else {
+    tips.push(`You are winning gunfights — now focus on WHERE you take fights. High-value positions (site control, info gathering) multiply your individual skill.`);
+  }
+
+  if (hs < 22) tips.push(`Spend 10 minutes per day in The Range on Bots — head level ONLY, no body shots. This single habit raises HS% faster than any other drill.`);
+
+  if (avgA < 4) tips.push(`Use utility more proactively — flashes before pushing, smokes on key angles, recon before entering. Even 1 extra assist per game adds up massively over a session.`);
+
+  tips.push(`Track your "death timer" mentally — right after dying, think about whether that death was avoidable. Reducing 2-3 avoidable deaths per game is worth more than 5 extra kills.`);
+
+  if (wr < 52) tips.push(`Focus on CLOSING rounds — if you are ahead 10-4 or 10-6, play slower, default, and force opponents to make mistakes rather than forcing picks.`);
+  else tips.push(`You are winning games — maintain the habit of playing your strongest agents when you need the win and experimenting only when the session is going well.`);
+
+  if (stats.worstMap) tips.push(`Queue specific practice on ${stats.worstMap.name}: watch pro VoDs on that map, learn 2-3 new lineups, and play it in unrated first to build confidence.`);
+
+  tips.push(`Warm up for 15 minutes before ranked — Deathmatch or Spike Rush. Players who warm up consistently have measurably higher HS% and faster reaction times in their first ranked game.`);
+
+  // ── AGENT ADVICE ──
+  if (top) {
+    const topKD = parseFloat(top.kd);
+    const topWR = top.wr;
+    const role = AGENT_ROLES[top.name.toLowerCase()] || 'duelist';
+    if (topWR >= 55 && topKD >= 1.1) {
+      agentAdvice.push(`${top.name} is your best agent — ${topWR}% WR and ${top.kd} K/D. Keep spamming it in ranked, especially when you need a clutch win.`);
+    } else if (topWR < 45) {
+      agentAdvice.push(`You play ${top.name} most but only win ${topWR}% — consider if this agent fits your playstyle or if you need to study ${top.name} fundamentals more before ranking with it.`);
+    } else {
+      agentAdvice.push(`${top.name} is your main with a ${topWR}% WR — solid but not dominant. Focus on mastering their utility usage to push that win rate above 55%.`);
+    }
+
+    if (role === 'duelist') agentAdvice.push(`As a ${top.name} main (Duelist), your job is to open sites — if your ACS is below 220, you may be playing too passive. Duelists who play reactive become liabilities.`);
+    else if (role === 'controller') agentAdvice.push(`As a ${top.name} main (Controller), your utility win rate matters more than kills — track whether your smokes are winning rounds, not just your K/D.`);
+    else if (role === 'sentinel') agentAdvice.push(`As a ${top.name} main (Sentinel), focus on information plays and holding flanks — your assist count should be high, if it's low you may be playing too aggressively.`);
+    else if (role === 'initiator') agentAdvice.push(`As a ${top.name} main (Initiator), you enable your team — a low ACS is acceptable if your assists are high and your team is winning gunfights after your flashes/recon.`);
+  }
+
+  if (secondAgent && secondAgent.wr > (top ? top.wr : 0)) {
+    agentAdvice.push(`Interesting: ${secondAgent.name} has a higher win rate (${secondAgent.wr}%) than your main. Consider shifting focus to ${secondAgent.name} for a ranking streak.`);
+  }
+
+  if (stats.topAgents.length >= 3) {
+    const worst = [...stats.topAgents].sort((a,b) => a.wr - b.wr)[0];
+    if (worst.wr < 40 && worst.matches >= 3) agentAdvice.push(`Consider benching ${worst.name} for now — ${worst.wr}% WR in ${worst.matches} games is a pattern, not bad luck. Return to it after refining fundamentals.`);
+  }
+
+  // ── MENTAL GAME ──
+  if (wr < 48) {
+    mental.push(`With a sub-50% win rate, avoid playing more than 3 ranked games in a row on a losing day. Tilt compounds — taking a 30-min break resets your decision-making more than playing through it.`);
+    mental.push(`Focus on "did I play well?" not "did we win?" — a 1.5 K/D in a loss is still good data that you are improving. The wins will follow.`);
+  } else if (wr >= 55) {
+    mental.push(`You are winning consistently — protect your mental by dodging lobbies with clear toxicity early. One rage-quit or tilted game can derail a +5 session.`);
+    mental.push(`Set a session goal (e.g. +2 RR or 3 wins) and log off when you hit it. Greedy sessions after hot streaks are where rank decay happens.`);
+  } else {
+    mental.push(`Your win rate is stable — use loss streaks (2 in a row) as a signal to switch to unrated and cool down, not as motivation to "fix it" in ranked.`);
+    mental.push(`Mute toxic teammates immediately and without guilt. Research consistently shows that muting does not hurt coordination and dramatically reduces in-game errors from stress.`);
+  }
+
+  mental.push(`After a loss, type one thing you would do differently in a notes app before queuing again. This 30-second habit accelerates improvement faster than hours of aimtraining.`);
+
+  // ── SUMMARY ──
+  let summary = '';
+  const performanceLevel = kd >= 1.3 && wr >= 52 ? 'strong' : kd >= 1.0 && wr >= 48 ? 'average' : 'below average';
+  if (performanceLevel === 'strong') summary = `You are performing at a <strong>strong level</strong> with a ${kd} K/D and ${wr}% win rate — ranked progress is a matter of consistency and closing bad habits.`;
+  else if (performanceLevel === 'average') summary = `You are performing at an <strong>average level</strong> — the fundamentals are there, but small inefficiencies (positioning, utility, tilt) are holding back your rank.`;
+  else summary = `Your stats show room to grow — fixing core habits like crosshair placement, death reduction, and agent consistency will have an immediate impact on your rank.`;
+
+  // ── VERDICT ──
+  const topIssue = kd < 1.0 ? 'reducing avoidable deaths' : hs < 18 ? 'improving headshot rate' : wr < 48 ? 'closing out winning rounds' : acs < 180 ? 'increasing combat impact' : 'agent mastery and consistency';
+  const verdict = `Based on ${stats.totalMatches} matches, your biggest lever for rank improvement is <strong>${topIssue}</strong>. ${
+    kd < 1.0 ? `You are currently dying ${avgD} times per game — cutting that by even 2-3 deaths shifts your K/D positive and directly increases win probability.` :
+    hs < 18 ? `Your ${hs}% HS rate means you are winning fights with body shots, which fails against higher-ranked opponents with better aim. Daily headshot-only range drills will fix this within 2 weeks.` :
+    wr < 48 ? `You often have good individual stats in losses — this points to round-closing issues. Study winning team compositions and late-round decision making.` :
+    acs < 180 ? `Higher ACS comes from taking more first contacts and using utility to create impact, not just reacting to enemies.` :
+    `Stick to 2 agents maximum and master their utility fully before adding more to your pool.`
+  } Focus on one area at a time — trying to fix everything at once fixes nothing.`;
+
+  return { summary, strengths, weaknesses, tips, agentAdvice, mental, verdict };
+}
+
+function renderAnalysis(result, stats) {
+  document.getElementById('ai-summary').innerHTML = result.summary;
+
+  const sg = document.getElementById('ai-sections-grid');
+  sg.innerHTML = '';
+
+  const sections = [
+    { items: result.strengths,   title:'Strengths',         emoji:'💪', cls:'strengths', bullet:'green'  },
+    { items: result.weaknesses,  title:'Areas to Improve',  emoji:'⚠️', cls:'weaknesses', bullet:'red'   },
+    { items: result.tips,        title:'Action Tips',        emoji:'⚡', cls:'tips',      bullet:'yellow', full:true },
+    { items: result.agentAdvice, title:'Agent Advice',       emoji:'🎭', cls:'agents',    bullet:'blue'  },
+    { items: result.mental,      title:'Mental Game',        emoji:'🧠', cls:'mental',    bullet:'purple' },
+  ];
+
+  sections.forEach(sec => {
+    if (!sec.items?.length) return;
+    const div = document.createElement('div');
+    div.className = 'ai-tip-block' + (sec.full ? ' full' : '');
+    div.innerHTML = `
+      <div class="ai-tip-header">
+        <span class="ai-tip-emoji">${sec.emoji}</span>
+        <span class="ai-tip-title ${sec.cls}">${sec.title}</span>
+      </div>
+      <div class="ai-tip-list">
+        ${sec.items.map(item => `<div class="ai-tip-item"><div class="ai-tip-bullet ${sec.bullet}"></div><div>${item}</div></div>`).join('')}
+      </div>`;
+    sg.appendChild(div);
+  });
+
+  document.getElementById('ai-verdict-txt').innerHTML = result.verdict;
+  document.getElementById('ai-verdict').style.display = 'block';
+  document.getElementById('ai-results').classList.add('active');
+}
+
+async function runAnalysis() {
+  const btn = document.getElementById('ai-btn');
+  const loading = document.getElementById('ai-loading');
+  const placeholder = document.getElementById('ai-placeholder');
+  const results = document.getElementById('ai-results');
+  const errorEl = document.getElementById('ai-error');
+
+  let matches = [];
+  try { matches = await loadAllMatches(); } catch(e) {}
+
+  if (!matches.length) {
+    errorEl.textContent = 'No match data found — fetch your stats first then hit Analyse.';
+    errorEl.classList.add('active');
+    return;
+  }
+
+  btn.disabled = true;
+  placeholder.style.display = 'none';
+  results.classList.remove('active');
+  errorEl.classList.remove('active');
+  document.getElementById('ai-verdict').style.display = 'none';
+  loading.classList.add('active');
+
+  const msgs = ['CRUNCHING MATCH DATA...','ANALYSING COMBAT PATTERNS...','IDENTIFYING WEAKNESSES...','BUILDING RECOMMENDATIONS...','FINALISING REPORT...'];
+  let mi = 0;
+  const iv = setInterval(() => { document.getElementById('ai-loading-txt').textContent = msgs[++mi % msgs.length]; }, 900);
+
+  // Small delay so the loading animation is visible
+  await new Promise(r => setTimeout(r, 1800));
+
+  try {
+    const stats = buildStatsForAI(matches);
+    renderAIStats(stats);
+    const result = analyseStats(stats);
+    renderAnalysis(result, stats);
+    document.getElementById('ai-section').classList.add('visible');
+    showToast('Analysis complete ✓');
+  } catch(e) {
+    console.error('Analysis error:', e);
+    errorEl.textContent = 'Analysis failed: ' + e.message;
+    errorEl.classList.add('active');
+  } finally {
+    clearInterval(iv);
+    loading.classList.remove('active');
+    btn.disabled = false;
+    btn.innerHTML = '<span class="btn-icon">🔄</span> Re-analyse';
+  }
+}
+
+// ── PER-MATCH AI ANALYSIS ──
+// Cache so re-opening a panel doesn't re-run
+const _matchAnalysisCache = {};
+
+async function runMatchAnalysis(idx, e) {
+  e.stopPropagation(); // don't close the panel
+
+  if (_matchAnalysisCache[idx]) {
+    // Already done — just re-show
+    document.getElementById(`mai-body-${idx}`).innerHTML = _matchAnalysisCache[idx];
+    document.getElementById(`mai-body-${idx}`).classList.add('active');
+    return;
+  }
+
+  const btn     = document.getElementById(`mai-btn-${idx}`);
+  const loading = document.getElementById(`mai-loading-${idx}`);
+  const body    = document.getElementById(`mai-body-${idx}`);
+
+  btn.disabled = true;
+  loading.classList.add('active');
+  body.classList.remove('active');
+
+  const loadingMsgs = ['ANALYSING MATCH...','READING COMBAT DATA...','BUILDING REPORT...'];
+  let mi = 0;
+  const iv = setInterval(() => {
+    document.getElementById(`mai-loading-txt-${idx}`).textContent = loadingMsgs[++mi % loadingMsgs.length];
+  }, 700);
+
+  await new Promise(r => setTimeout(r, 600));
+
+  try {
+    // Pull the raw match from stored data by index
+    const allMatches = await loadAllMatches();
+    const match = allMatches[idx];
+    if (!match) throw new Error('Match not found in storage');
+
+    const html = buildMatchAnalysis(match);
+    _matchAnalysisCache[idx] = html;
+    body.innerHTML = html;
+    body.classList.add('active');
+    btn.innerHTML = '🔄 Re-analyse';
+  } catch(e) {
+    body.innerHTML = `<div class="no-detail" style="color:var(--loss)">Analysis error: ${e.message}</div>`;
+    body.classList.add('active');
+  } finally {
+    clearInterval(iv);
+    loading.classList.remove('active');
+    btn.disabled = false;
+  }
+}
+
+function buildMatchAnalysis(match) {
+  const allPlayers = getPlayerList(match);
+  const rounds     = match.rounds || [];
+  const me = allPlayers.find(p =>
+    p.name?.toLowerCase() === PLAYER_NAME.toLowerCase() &&
+    p.tag?.toLowerCase()  === PLAYER_TAG.toLowerCase()
+  );
+  if (!me) return '<div class="no-detail">Player not found in match data</div>';
+
+  const myTeamId  = (me.team || '').toLowerCase();
+  const s         = me.stats || {};
+  const kills     = s.kills   || 0;
+  const deaths    = s.deaths  || 0;
+  const assists   = s.assists || 0;
+  const score     = s.score   || 0;
+  const hs        = s.headshots || 0;
+  const body_s    = s.bodyshots || 0;
+  const legs      = s.legshots  || 0;
+  const totalShots = hs + body_s + legs;
+  const hsPct     = totalShots ? Math.round((hs / totalShots) * 100) : 0;
+  const acs       = Math.round(score / 100);
+  const kd        = deaths ? (kills / deaths) : kills;
+  const myTeam    = match.teams?.[myTeamId];
+  const won       = myTeam?.has_won || false;
+  const agentName = me.character || 'Unknown';
+  const role      = getRoleClass(agentName);
+  const mapName   = match.metadata?.map || 'Unknown';
+  const myRounds  = myTeam?.rounds_won ?? 0;
+  const oppId     = myTeamId === 'red' ? 'blue' : 'red';
+  const oppRounds = match.teams?.[oppId]?.rounds_won ?? 0;
+  const totalRounds = myRounds + oppRounds;
+
+  // Damage (from v2 detail if available, else from stats)
+  const dmgDealt    = me.damage_made     || 0;
+  const dmgReceived = me.damage_received || 0;
+  const dmgRatio    = dmgReceived ? (dmgDealt / dmgReceived).toFixed(2) : dmgDealt;
+
+  // Abilities
+  const ab = me.ability_casts || {};
+
+  // Round-by-round analysis
+  const myPuuid = me.puuid;
+  let clutchWins = 0, clutchAttempts = 0;
+  let killsInWonRounds = 0, killsInLostRounds = 0;
+  let firstHalfKills = 0, secondHalfKills = 0;
+  let multiKillRounds = 0;
+
+  rounds.forEach((r, ri) => {
+    const ps = (r.player_stats || []).find(p => p.player_puuid === myPuuid);
+    const rKills = ps?.kills?.length || 0;
+    const myAlive = r[myTeamId]?.players_alive ?? null;
+    const rWon = (r.winning_team || '').toLowerCase() === myTeamId;
+    if (rKills > 0) {
+      if (rWon) killsInWonRounds += rKills; else killsInLostRounds += rKills;
+      if (ri < Math.floor(totalRounds / 2)) firstHalfKills += rKills;
+      else secondHalfKills += rKills;
+      if (rKills >= 3) multiKillRounds++;
+    }
+    if (myAlive === 1) {
+      clutchAttempts++;
+      if (rWon) clutchWins++;
+    }
+  });
+
+  // Lobby rank context
+  const lobbyInfo = getLobbyRankInfo(allPlayers, myTeamId);
+
+  // Allied team stats for comparison
+  const allied = allPlayers.filter(p => (p.team || '').toLowerCase() === myTeamId);
+  const teamAvgACS = allied.length
+    ? Math.round(allied.reduce((s, p) => s + (p.stats?.score || 0), 0) / allied.length / 100)
+    : 0;
+  const myRankInTeam = [...allied]
+    .sort((a, b) => (b.stats?.score || 0) - (a.stats?.score || 0))
+    .findIndex(p => p.name?.toLowerCase() === PLAYER_NAME.toLowerCase()) + 1;
+
+  // ── GENERATE ANALYSIS ──
+  const strengths = [];
+  const improvements = [];
+  const tips = [];
+
+  // KD assessment
+  if (kd >= 1.8)       strengths.push(`Dominant K/D of ${kd.toFixed(2)} — you won almost every duel this game.`);
+  else if (kd >= 1.2)  strengths.push(`Positive K/D of ${kd.toFixed(2)} — you traded favourably and created value for your team.`);
+  else if (kd < 0.8)   improvements.push(`K/D of ${kd.toFixed(2)} is poor for this match — you died ${deaths} times, likely taking unfavourable duels or misreading angles.`);
+  else                  improvements.push(`K/D of ${kd.toFixed(2)} is close to even — ${deaths} deaths limited your impact. Focus on only taking fights with clear angle or utility advantage.`);
+
+  // ACS vs team avg
+  if (acs >= teamAvgACS + 30) strengths.push(`ACS of ${acs} was the highest (or near-highest) on your team (team avg: ${teamAvgACS}) — you led from the front.`);
+  else if (acs >= teamAvgACS) strengths.push(`ACS of ${acs} was above your team average (${teamAvgACS}) — solid contribution.`);
+  else improvements.push(`ACS of ${acs} was below your team average (${teamAvgACS}) — you were ranked #${myRankInTeam} on your team for combat score. Look for more proactive engagements.`);
+
+  // Headshots
+  if (hsPct >= 30)     strengths.push(`${hsPct}% headshot rate this match — exceptional aim precision, you punished enemies efficiently.`);
+  else if (hsPct >= 20) strengths.push(`${hsPct}% headshot rate is solid — your crosshair placement was consistent.`);
+  else if (hsPct < 12) improvements.push(`${hsPct}% headshot rate is very low — you relied heavily on body/leg shots. Against better-ranked opponents this is punished hard. Work on head-level crosshair placement.`);
+  else                  improvements.push(`${hsPct}% headshot rate has room to grow. You hit ${hs} headshots out of ${totalShots} total shots — aim for 20%+ by keeping crosshair at head height at all times.`);
+
+  // Damage ratio
+  if (dmgDealt > 0) {
+    if (parseFloat(dmgRatio) >= 1.4) strengths.push(`Damage ratio of ${dmgRatio} (${dmgDealt} dealt vs ${dmgReceived} received) — you are hitting enemies more than they hit you.`);
+    else if (parseFloat(dmgRatio) < 0.7) improvements.push(`Damage ratio of ${dmgRatio} (dealt ${dmgDealt} vs received ${dmgReceived}) — you took significantly more damage than you dealt. This suggests getting caught in crossfire or holding weak positions.`);
+  }
+
+  // Assists & utility
+  if (assists >= 8)    strengths.push(`${assists} assists shows strong utility usage and team support — your ${agentName} abilities opened up kills for teammates.`);
+  else if (assists >= 5) strengths.push(`${assists} assists — decent utility contribution from your ${agentName}.`);
+  else if (assists <= 2 && (role === 'initiator' || role === 'controller'))
+    improvements.push(`Only ${assists} assists as a ${role} (${agentName}) — ${role === 'initiator' ? 'your flashes and recon should be generating more assist value for teammates' : 'your smokes and utility should be enabling more team plays'}.`);
+
+  // Clutch performance
+  if (clutchAttempts > 0) {
+    const clutchPct = Math.round((clutchWins / clutchAttempts) * 100);
+    if (clutchWins >= 2) strengths.push(`Won ${clutchWins}/${clutchAttempts} clutch situations (${clutchPct}%) — you perform under pressure.`);
+    else if (clutchAttempts >= 2 && clutchWins === 0) improvements.push(`0/${clutchAttempts} clutch situations converted — when left as last alive, focus on isolating duels one at a time instead of panicking.`);
+  }
+
+  // Multi-kill rounds
+  if (multiKillRounds >= 3) strengths.push(`${multiKillRounds} rounds with 3+ kills — you had multiple high-impact rounds that swung momentum.`);
+
+  // First/second half consistency
+  if (firstHalfKills > 0 && secondHalfKills > 0) {
+    const ratio = firstHalfKills / (firstHalfKills + secondHalfKills);
+    if (ratio > 0.65) improvements.push(`You got ${firstHalfKills} kills in the first half but only ${secondHalfKills} in the second — your impact dropped significantly. This can indicate tilt, fatigue, or opponents adapting to your playstyle.`);
+    else if (ratio < 0.35) strengths.push(`You improved in the second half (${secondHalfKills} kills vs ${firstHalfKills} first half) — good adaptation mid-game.`);
+  }
+
+  // Role-specific tips
+  if (role === 'duelist') {
+    tips.push(`As ${agentName} (Duelist): your job is to OPEN sites, not follow teammates in. If your kills are happening after teammates die, you are playing too reactive.`);
+    if (kd < 1.0) tips.push(`Duelist with sub-1.0 K/D means you are not winning your expected duels. Use your mobility/flash to gain angle advantage BEFORE committing — never peek without an ability ready.`);
+  } else if (role === 'initiator') {
+    tips.push(`As ${agentName} (Initiator): use recon/flashes BEFORE your duelists push, not after. Your value is the information and opening, not kills.`);
+    if (assists < 5) tips.push(`Low assists for an initiator — flash before every teammate push, even in default rounds. Each flash assist is worth more than a kill when it enables site takes.`);
+  } else if (role === 'controller') {
+    tips.push(`As ${agentName} (Controller): prioritise smoking default positions and chokepoints at round start, not just on site takes. Early smokes prevent info and force enemies to reposition.`);
+    if (assists < 4) tips.push(`Low assist count for a controller — your utility should be generating team kills constantly. Coordinate smoke timings verbally or in chat with your duelists.`);
+  } else if (role === 'sentinel') {
+    tips.push(`As ${agentName} (Sentinel): flank-watching and anchor plays are your contribution. If you died to flanks repeatedly this game, your trip/cam placement needs adjusting.`);
+  }
+
+  // Map-specific tip
+  tips.push(`On ${mapName}: identify 1-2 positions where you died most this game and make a mental note to either avoid or approach them differently next time.`);
+
+  // Death count tip
+  if (deaths >= 18) tips.push(`${deaths} deaths is very high — the main fix is not trading aggression for passivity, but taking better-prepared duels. Always have an exit/reposition route ready before engaging.`);
+  else if (deaths >= 14) tips.push(`${deaths} deaths — review when you died: were you rotating late, holding a lonely site, or taking 50/50 duels you didn't need? Eliminating 3-4 of those deaths wins rounds.`);
+
+  // HS tip
+  if (hsPct < 18) tips.push(`To raise HS% on ${agentName}: in deathmatch, only allow yourself to shoot if your crosshair is at head height first. Refuse body shots — it builds the muscle memory quickly.`);
+
+  // Ability tip
+  const totalAbCasts = (ab.c_cast||0) + (ab.q_cast||0) + (ab.e_cast||0) + (ab.x_cast||0);
+  if (totalAbCasts < totalRounds * 1.5 && totalRounds > 10) tips.push(`You cast ${totalAbCasts} abilities across ${totalRounds} rounds — that's less than 1.5 per round. Buy and use abilities every round, even on eco rounds. Free information and chip damage win rounds.`);
+
+  // Verdict
+  const outcome = won ? 'a win' : 'a loss';
+  let verdict = `This was ${outcome} on ${mapName} with ${kills}/${deaths}/${assists} as ${agentName}. `;
+  const biggestIssue = kd < 0.9 ? `reducing your death count (${deaths} this game)` : hsPct < 15 ? `improving your headshot rate (${hsPct}% this game)` : acs < teamAvgACS ? `increasing your ACS above the team average (yours: ${acs}, team: ${teamAvgACS})` : clutchAttempts > 1 && clutchWins === 0 ? 'converting clutch situations' : 'maintaining this performance consistently';
+  verdict += `Your main focus for the next game should be <strong>${biggestIssue}</strong>. `;
+  verdict += won
+    ? `Good result — analyse what worked this game and replicate it.`
+    : `Despite the loss, extract the positives and identify the 1-2 rounds that swung the game to learn from them.`;
+
+  // ── PILL DATA ──
+  const kdClass  = kd >= 1.2 ? 'good' : kd >= 0.9 ? 'warn' : 'bad';
+  const hsClass  = hsPct >= 22 ? 'good' : hsPct >= 14 ? 'warn' : 'bad';
+  const acsClass = acs >= teamAvgACS + 20 ? 'good' : acs >= teamAvgACS - 10 ? 'warn' : 'bad';
+
+  // Summary line
+  const perfLevel = kd >= 1.3 && acs >= teamAvgACS ? 'a <strong>strong individual performance</strong>' : kd >= 1.0 && acs >= teamAvgACS - 15 ? 'a <strong>solid performance</strong>' : 'a <strong>below-par performance</strong>';
+  const summary = `${won ? '✅ Victory' : '❌ Defeat'} · ${agentName} on ${mapName} — ${perfLevel} with ${kills}/${deaths}/${assists} and ${acs} ACS${lobbyInfo?.overall ? ` in a <strong>${lobbyInfo.overall.name}</strong> avg lobby` : ''}.`;
+
+  // Build sections HTML
+  const renderBlock = (title, emoji, cls, dotCls, items, full=false) => {
+    if (!items.length) return '';
+    return `<div class="match-ai-block${full?' full':''}">
+      <div class="match-ai-block-header"><span>${emoji}</span><span class="match-ai-block-title ${cls}">${title}</span></div>
+      <div class="match-ai-items">${items.map(i=>`<div class="match-ai-item"><div class="match-ai-dot ${dotCls}"></div><div>${i}</div></div>`).join('')}</div>
+    </div>`;
+  };
+
+  return `
+    <div class="match-ai-summary">${summary}</div>
+    <div class="match-ai-grid">
+      <div class="match-ai-pill"><div class="match-ai-pill-label">K/D</div><div class="match-ai-pill-val ${kdClass}">${kd.toFixed(2)}</div><div class="match-ai-pill-sub">${kills}K / ${deaths}D</div></div>
+      <div class="match-ai-pill"><div class="match-ai-pill-label">ACS</div><div class="match-ai-pill-val ${acsClass}">${acs}</div><div class="match-ai-pill-sub">Team avg: ${teamAvgACS}</div></div>
+      <div class="match-ai-pill"><div class="match-ai-pill-label">HS Rate</div><div class="match-ai-pill-val ${hsClass}">${hsPct}%</div><div class="match-ai-pill-sub">${hs} headshots</div></div>
+      ${dmgDealt ? `<div class="match-ai-pill"><div class="match-ai-pill-label">Dmg Ratio</div><div class="match-ai-pill-val ${parseFloat(dmgRatio)>=1.2?'good':parseFloat(dmgRatio)>=0.8?'warn':'bad'}">${dmgRatio}</div><div class="match-ai-pill-sub">${dmgDealt} dealt</div></div>` : ''}
+      <div class="match-ai-pill"><div class="match-ai-pill-label">Clutches</div><div class="match-ai-pill-val ${clutchWins>0?'good':'warn'}">${clutchWins}/${clutchAttempts||0}</div><div class="match-ai-pill-sub">Converted</div></div>
+      <div class="match-ai-pill"><div class="match-ai-pill-label">Multi-kills</div><div class="match-ai-pill-val ${multiKillRounds>=2?'good':multiKillRounds>=1?'warn':'bad'}">${multiKillRounds}</div><div class="match-ai-pill-sub">3K+ rounds</div></div>
+    </div>
+    <div class="match-ai-sections">
+      ${renderBlock('What You Did Well', '💪', 'good', 'green', strengths)}
+      ${renderBlock('Needs Improvement', '⚠️', 'warn', 'red', improvements)}
+      ${renderBlock('Action Tips For Next Game', '⚡', 'tip', 'yellow', tips, true)}
+    </div>
+    <div class="match-ai-verdict">
+      <div class="match-ai-verdict-label">⚡ Match Verdict</div>
+      ${verdict}
+    </div>`;
+}
+// ── STREAK TRACKER ──
+function computeStreak(matches) {
+  if (!matches.length) return { count: 0, type: null };
+  // matches[0] is most recent
+  const first = matches[0];
+  const me0 = findMe(first);
+  if (!me0) return { count: 0, type: null };
+  const firstWon = first.teams?.[(me0.team||'').toLowerCase()]?.has_won || false;
+  let count = 1;
+  for (let i = 1; i < matches.length; i++) {
+    const me = findMe(matches[i]);
+    if (!me) break;
+    const won = matches[i].teams?.[(me.team||'').toLowerCase()]?.has_won || false;
+    if (won === firstWon) count++;
+    else break;
+  }
+  return { count, type: firstWon ? 'win' : 'loss' };
+}
+
+function renderStreak(matches) {
+  const streak = computeStreak(matches);
+  const block = document.getElementById('streak-block');
+  const icon = document.getElementById('streak-icon');
+  const val = document.getElementById('streak-val');
+  if (!block) return;
+  if (streak.count < 2) { block.style.display = 'none'; return; }
+  block.style.display = 'flex';
+  if (streak.type === 'win') {
+    icon.textContent = streak.count >= 5 ? '🔥' : '✅';
+    val.className = 'streak-val win-streak';
+    val.textContent = `${streak.count}W Streak`;
+  } else {
+    icon.textContent = streak.count >= 5 ? '💀' : '❌';
+    val.className = 'streak-val loss-streak';
+    val.textContent = `${streak.count}L Streak`;
+  }
+}
+
+// ── SESSION BANNER ──
+function renderSessionBanner(matches) {
+  const banner = document.getElementById('session-banner');
+  if (!banner) return;
+  const todayMatches = matches.filter(m => isToday(m.gameStart));
+  if (!todayMatches.length) { banner.classList.remove('active'); return; }
+
+  const wins = todayMatches.filter(m => m.won).length;
+  const losses = todayMatches.length - wins;
+  const mmrH = window._mmrHistory || {};
+  let sessionRR = 0, hasRR = false;
+  todayMatches.forEach(m => {
+    const rr = mmrH[m.matchId];
+    if (rr !== undefined) { sessionRR += rr; hasRR = true; }
+  });
+  const kills = todayMatches.reduce((s,m)=>s+m.kills,0);
+  const deaths = todayMatches.reduce((s,m)=>s+m.deaths,0);
+  const sessionKD = deaths ? (kills/deaths).toFixed(2) : kills.toFixed(2);
+  const rrClass = sessionRR > 0 ? 'pos' : sessionRR < 0 ? 'neg' : 'neu';
+  const rrText = hasRR ? `${sessionRR > 0 ? '+' : ''}${sessionRR}` : '—';
+
+  banner.innerHTML = `
+    <div>
+      <div class="session-label">Today's Session</div>
+      <div class="session-badge">${todayMatches.length} match${todayMatches.length!==1?'es':''} played</div>
+    </div>
+    <div class="session-stats">
+      <div class="session-stat">
+        <div class="session-stat-val ${wins>losses?'pos':wins<losses?'neg':'neu'}">${wins}W / ${losses}L</div>
+        <div class="session-stat-lbl">Record</div>
+      </div>
+      <div class="session-divider"></div>
+      ${hasRR ? `<div class="session-stat">
+        <div class="session-stat-val ${rrClass}">${rrText}</div>
+        <div class="session-stat-lbl">RR Delta</div>
+      </div><div class="session-divider"></div>` : ''}
+      <div class="session-stat">
+        <div class="session-stat-val ${parseFloat(sessionKD)>=1.2?'pos':parseFloat(sessionKD)>=0.9?'neu':'neg'}">${sessionKD}</div>
+        <div class="session-stat-lbl">Session K/D</div>
+      </div>
+    </div>`;
+  banner.classList.add('active');
+}
+
+// ── AGENT WINRATE TREND ──
+function getAgentTrend(agentName, matches) {
+  // Last 5 matches with this agent, chronological order (newest first in array)
+  const agentMatches = matches.filter(m => {
+    const me = findMe(m);
+    return me && (me.character || '').toLowerCase() === agentName.toLowerCase();
+  }).slice(0, 5);
+  return agentMatches.map(m => {
+    const me = findMe(m);
+    const won = m.teams?.[(me?.team||'').toLowerCase()]?.has_won || false;
+    return won ? 'w' : 'l';
+  });
+}
+
+// ── RR GRAPH ANNOTATIONS ──
+function addRRAnnotations(chart, rankLabels) {
+  // Find rank-up/rank-down moments
+  const annotations = [];
+  for (let i = 1; i < rankLabels.length; i++) {
+    const prev = rankLabels[i-1];
+    const curr = rankLabels[i];
+    if (!prev || !curr) continue;
+    const prevTier = prev.rank?.split(' ')[0];
+    const currTier = curr.rank?.split(' ')[0];
+    if (prevTier && currTier && prevTier !== currTier) {
+      const isUp = rankLabels[i].rr > rankLabels[i-1].rr;
+      annotations.push({ x: i, label: isUp ? `▲ ${curr.rank}` : `▼ ${curr.rank}`, up: isUp });
+    }
+  }
+  return annotations;
+}
+
+// ── SKELETON SHOW/HIDE ──
+function showSkeletons() {
+  // Just show the shimmer on the one card that has it - don't hide real values
+  const sk = document.getElementById('v-kd-sk');
+  if (sk) sk.style.display = 'block';
+}
+function hideSkeletons() {
+  document.querySelectorAll('.skeleton-val').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.card .card-val').forEach(el => el.style.opacity = '1');
+}
+
+// ── EXPORT STATS CARD ──
+async function exportStatsCard() {
+  const matches = window._allRenderedMatches || [];
+  if (!matches.length) { showToast('Fetch your stats first'); return; }
+
+  const mmrH  = window._mmrHistory || {};
+  const wins   = matches.filter(m => m.won).length;
+  const losses = matches.length - wins;
+  const wr     = Math.round((wins / matches.length) * 100);
+  const totalK = matches.reduce((s, m) => s + m.kills, 0);
+  const totalD = matches.reduce((s, m) => s + m.deaths, 0);
+  const totalA = matches.reduce((s, m) => s + m.assists, 0);
+  const kd     = totalD ? (totalK / totalD).toFixed(2) : totalK.toString();
+  const avgACS = Math.round(matches.reduce((s, m) => s + (m.acs || 0), 0) / matches.length);
+  const avgHS  = Math.round(matches.reduce((s, m) => s + (m.hs || 0), 0) / Math.max(1, totalK) * 100);
+  const rank   = document.getElementById('rank-display')?.textContent?.trim() || '—';
+  const rrTxt  = document.getElementById('rank-rr-txt')?.textContent?.trim() || '';
+  const playerName = document.getElementById('player-name-input')?.value.trim() || '—';
+  const playerTag  = document.getElementById('player-tag-input')?.value.trim().replace(/^#/, '') || '—';
+  const region     = (document.getElementById('region-select')?.value || 'ap').toUpperCase();
+
+  // Agent most played
+  const agentCount = {};
+  matches.forEach(m => { agentCount[m.agentName] = (agentCount[m.agentName] || 0) + 1; });
+  const topAgent = Object.entries(agentCount).sort((a, b) => b[1] - a[1])[0]?.[0] || '—';
+
+  const now = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+  // Dynamic font size for player name — shrink if long
+  const nameLen = playerName.length;
+  const nameFontSize = nameLen > 20 ? 22 : nameLen > 14 ? 28 : nameLen > 10 ? 34 : 40;
+
+  // Card dimensions — taller to give everything room
+  const W = 700, H = 380;
+
+  // Layout y-anchors
+  const Y = {
+    brandTxt:   20,   // "VALTRACKER.GG"
+    accentLine: 28,   // horizontal accent line under brand
+    nameBase:   80,   // player name baseline
+    tagBase:    104,  // #tag · rank line
+    divider1:   124,  // horizontal divider
+    statLabel:  158,  // stat category label
+    statVal:    194,  // stat big number
+    statSub:    212,  // stat sub-line (e.g. 4W/5L)
+    divider2:   232,  // horizontal divider
+    formLabel:  254,  // "RECENT FORM" label
+    formBox:    264,  // form boxes top
+    footer:     366,  // footer text
+  };
+
+  const COL = [32, 170, 300, 430, 560]; // 5 stat columns
+
+  // Recent form — up to 10 most recent
+  const formMatches = matches.slice(0, 10);
+  const boxW = 54, boxH = 52, boxGap = 4;
+  const formStartX = 32;
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0d0d0f"/>
+      <stop offset="100%" stop-color="#181820"/>
+    </linearGradient>
+    <linearGradient id="acl" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#e8ff47"/>
+      <stop offset="100%" stop-color="#e8ff4700"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="${W}" height="${H}" rx="16" fill="url(#bg)"/>
+  <rect width="${W}" height="${H}" rx="16" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+  <!-- Left accent bar -->
+  <rect x="0" y="0" width="5" height="${H}" rx="2" fill="#e8ff47"/>
+  <!-- Brand -->
+  <text x="32" y="${Y.brandTxt}" font-family="monospace" font-size="10" fill="#e8ff47" letter-spacing="4" font-weight="700">VALTRACKER.GG</text>
+  <rect x="32" y="${Y.accentLine}" width="180" height="1.5" fill="url(#acl)"/>
+  <!-- Player Name -->
+  <text x="32" y="${Y.nameBase}" font-family="Arial Black, sans-serif" font-size="${nameFontSize}" fill="#f0f0f2" font-weight="900">${playerName}</text>
+  <text x="32" y="${Y.tagBase}" font-family="monospace" font-size="11" fill="#6e6e7a" letter-spacing="1">#${playerTag}  ·  ${rank}  ·  ${rrTxt}</text>
+  <!-- Divider 1 -->
+  <rect x="32" y="${Y.divider1}" width="${W - 64}" height="1" fill="rgba(255,255,255,0.07)"/>
+  <!-- K/D -->
+  <text x="${COL[0]}" y="${Y.statLabel}" font-family="monospace" font-size="9" fill="#6e6e7a" letter-spacing="2">K / D</text>
+  <text x="${COL[0]}" y="${Y.statVal}" font-family="Arial Black, sans-serif" font-size="38" fill="#e8ff47" font-weight="900">${kd}</text>
+  <!-- WIN RATE -->
+  <text x="${COL[1]}" y="${Y.statLabel}" font-family="monospace" font-size="9" fill="#6e6e7a" letter-spacing="2">WIN RATE</text>
+  <text x="${COL[1]}" y="${Y.statVal}" font-family="Arial Black, sans-serif" font-size="38" fill="${wr >= 50 ? '#3ecf8e' : '#ff5757'}" font-weight="900">${wr}%</text>
+  <text x="${COL[1]}" y="${Y.statSub}" font-family="monospace" font-size="9" fill="#4a4a54">${wins}W / ${losses}L</text>
+  <!-- AVG ACS -->
+  <text x="${COL[2]}" y="${Y.statLabel}" font-family="monospace" font-size="9" fill="#6e6e7a" letter-spacing="2">AVG ACS</text>
+  <text x="${COL[2]}" y="${Y.statVal}" font-family="Arial Black, sans-serif" font-size="38" fill="#f0f0f2" font-weight="900">${avgACS}</text>
+  <!-- HS% -->
+  <text x="${COL[3]}" y="${Y.statLabel}" font-family="monospace" font-size="9" fill="#6e6e7a" letter-spacing="2">HS%</text>
+  <text x="${COL[3]}" y="${Y.statVal}" font-family="Arial Black, sans-serif" font-size="38" fill="${avgHS >= 25 ? '#3ecf8e' : avgHS >= 15 ? '#e8ff47' : '#ff5757'}" font-weight="900">${avgHS}%</text>
+  <!-- TOP AGENT -->
+  <text x="${COL[4]}" y="${Y.statLabel}" font-family="monospace" font-size="9" fill="#6e6e7a" letter-spacing="2">TOP AGENT</text>
+  <text x="${COL[4]}" y="${Y.statVal}" font-family="Arial Black, sans-serif" font-size="${topAgent.length > 8 ? 22 : 28}" fill="#f0f0f2" font-weight="900">${topAgent.toUpperCase()}</text>
+  <text x="${COL[4]}" y="${Y.statSub}" font-family="monospace" font-size="9" fill="#4a4a54">${agentCount[topAgent]} matches</text>
+  <!-- Divider 2 -->
+  <rect x="32" y="${Y.divider2}" width="${W - 64}" height="1" fill="rgba(255,255,255,0.07)"/>
+  <!-- Recent Form -->
+  <text x="32" y="${Y.formLabel}" font-family="monospace" font-size="9" fill="#6e6e7a" letter-spacing="2">RECENT FORM  (${formMatches.length} MATCHES)</text>
+  ${formMatches.map((m, i) => {
+    const bx = formStartX + i * (boxW + boxGap);
+    const rr = mmrH[m.matchId];
+    const rrTx = rr !== undefined ? `<text x="${bx + boxW/2}" y="${Y.formBox + boxH - 6}" text-anchor="middle" font-family="monospace" font-size="8" fill="${rr > 0 ? '#3ecf8e' : '#ff5757'}">${rr > 0 ? '+' : ''}${rr}</text>` : '';
+    return `<rect x="${bx}" y="${Y.formBox}" width="${boxW}" height="${boxH}" rx="6" fill="${m.won ? 'rgba(62,207,142,0.09)' : 'rgba(255,87,87,0.08)'}" stroke="${m.won ? 'rgba(62,207,142,0.28)' : 'rgba(255,87,87,0.22)'}" stroke-width="1"/>
+    <text x="${bx + boxW/2}" y="${Y.formBox + 20}" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="13" font-weight="900" fill="${m.won ? '#3ecf8e' : '#ff5757'}">${m.won ? 'W' : 'L'}</text>
+    <text x="${bx + boxW/2}" y="${Y.formBox + 34}" text-anchor="middle" font-family="monospace" font-size="7" fill="#4a4a54">${(m.agentName || '').substring(0, 4).toUpperCase()}</text>
+    ${rrTx}`;
+  }).join('')}
+  <!-- Footer -->
+  <text x="32" y="${Y.footer}" font-family="monospace" font-size="9" fill="#2e2e38" letter-spacing="1">Generated by ValTracker.gg  ·  ${now}</text>
+  <text x="${W - 32}" y="${Y.footer}" text-anchor="end" font-family="monospace" font-size="9" fill="#2e2e38" letter-spacing="1">${region} Region  ·  ${matches.length} matches tracked</text>
+</svg>`;
+
+  const blob = new Blob([svg], { type: 'image/svg+xml' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = 'valtracker-card.svg';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Stats card exported! ✓');
+}
+
+
+// ══════════════════════════════════════════
+//   DEEP ANALYSIS ENGINE
+// ══════════════════════════════════════════
+
+async function runDeepAnalysis() {
+  const btn     = document.getElementById('deep-btn');
+  const loading = document.getElementById('deep-loading');
+  const results = document.getElementById('deep-results');
+
+  let matches = [];
+  try { matches = await loadAllMatches(); } catch(e) {}
+  if (!matches.length) { showToast('Fetch your stats first'); return; }
+
+  btn.disabled = true;
+  loading.classList.add('active');
+  results.classList.remove('active');
+  results.innerHTML = '';
+
+  const msgs = ['PROCESSING MATCHES...','ANALYSING MAP DATA...','CALCULATING ATTACK/DEFENCE...','DETECTING PATTERNS...','BUILDING REPORT...'];
+  let mi = 0;
+  const iv = setInterval(() => {
+    document.getElementById('deep-loading-txt').textContent = msgs[++mi % msgs.length];
+  }, 700);
+
+  await new Promise(r => setTimeout(r, 800));
+
+  try {
+    const html = buildDeepAnalysis(matches);
+    results.innerHTML = html;
+    results.classList.add('active');
+    showToast('Deep analysis complete ✓');
+  } catch(e) {
+    results.innerHTML = `<div class="no-detail" style="color:var(--loss);padding:16px">Analysis error: ${e.message}</div>`;
+    results.classList.add('active');
+    console.error(e);
+  } finally {
+    clearInterval(iv);
+    loading.classList.remove('active');
+    btn.disabled = false;
+    btn.innerHTML = '🔄 Re-analyse';
+  }
+}
+
+function buildDeepAnalysis(matches) {
+  const mmrH = window._mmrHistory || {};
+
+  // ── Collect rich per-match data ──
+  const data = [];
+  matches.forEach(match => {
+    const me = findMe(match);
+    if (!me) return;
+    const s = me.stats || {};
+    const k = s.kills||0, d = s.deaths||0, a = s.assists||0, sc = s.score||0;
+    const hs = s.headshots||0, shots = (s.headshots||0)+(s.bodyshots||0)+(s.legshots||0);
+    const myTeamId = (me.team||'').toLowerCase();
+    const _mt = match.teams?.[myTeamId], _ot = match.teams?.[myTeamId==='red'?'blue':'red'];
+    const won = _mt?.has_won != null
+      ? (_mt.has_won === true || _mt.has_won === 'true')
+      : (_mt?.rounds_won != null && _ot?.rounds_won != null)
+        ? _mt.rounds_won > _ot.rounds_won : false;
+    const agent = me.character || 'Unknown';
+    const map = match.metadata?.map || 'Unknown';
+    const matchId = match.metadata?.matchid || match.metadata?.match_id || '';
+    const rr = mmrH[matchId];
+    const rounds = match.rounds || [];
+    const myTeam = match.teams?.[myTeamId] || {};
+    const oppId = myTeamId==='red'?'blue':'red';
+    const oppTeam = match.teams?.[oppId] || {};
+    const myRoundsWon = myTeam.rounds_won ?? 0;
+    const oppRoundsWon = oppTeam.rounds_won ?? 0;
+    const acs = Math.round(sc / 100);
+    const hsPct = shots ? Math.round((hs/shots)*100) : 0;
+    const role = getRoleClass(agent);
+    const gameStart = match.metadata?.game_start || null;
+
+    // Attack vs defence — estimated from score + team data
+    // v3 API doesn't have per-round player kills, so we derive from round wins
+    // Valorant: first 12 rounds one side attacks, second 12 the other (then OT)
+    const totalRounds = myRoundsWon + oppRoundsWon;
+    let atkWins = 0, defWins = 0, atkRoundsPlayed = 0, defRoundsPlayed = 0;
+
+    // Determine which half my team attacked
+    // v3 API: teams.red attacks first rounds 1-12, blue defends
+    const myTeamAttacksFirst = myTeamId === 'red';
+    const regularRounds = Math.min(totalRounds, 24);
+    const half = Math.min(12, regularRounds);
+    const secondHalf = Math.max(0, regularRounds - 12);
+
+    // First half
+    const firstHalfAtk = myTeamAttacksFirst;
+    // We don't have per-round data, so split wins proportionally by half
+    // Use team round wins from each half if available, else split evenly
+    const myTeamData = match.teams?.[myTeamId] || {};
+    const oppTeamData = match.teams?.[oppId] || {};
+
+    // Try to get per-half data from v3 (some versions expose rounds_won_in_regulation)
+    // Fallback: assume kills split proportionally between halves
+    // Attack half round wins ≈ total rounds * WR on that side
+    // Best we can do without per-round data: proportional split
+    const totalKills = k; // total kills this match
+
+    if (firstHalfAtk) {
+      atkRoundsPlayed = half;
+      defRoundsPlayed = secondHalf;
+    } else {
+      defRoundsPlayed = half;
+      atkRoundsPlayed = secondHalf;
+    }
+
+    // Estimate round wins per half from total round wins
+    // rough: split round wins proportionally by rounds played each half
+    if (totalRounds > 0) {
+      const atkFrac = atkRoundsPlayed / totalRounds;
+      const defFrac = defRoundsPlayed / totalRounds;
+      atkWins = Math.round(myRoundsWon * atkFrac);
+      defWins = myRoundsWon - atkWins;
+      // Kills: split proportionally too
+    }
+
+    // Kills per side: split total kills by round proportion
+    const atkKills = atkRoundsPlayed > 0 ? Math.round(totalKills * (atkRoundsPlayed / Math.max(totalRounds,1))) : 0;
+    const defKills = totalKills - atkKills;
+
+    data.push({ k, d, a, sc, hs, shots, acs, hsPct, won, agent, map, matchId, rr, role,
+                atkKills, defKills, atkRoundsPlayed, defRoundsPlayed, atkWins, defWins,
+                myRoundsWon, oppRoundsWon, gameStart, myTeamId });
+  });
+
+  if (!data.length) return '<div class="no-detail">Not enough data</div>';
+
+  const n = data.length;
+  const mmSep = 1; // chapter separator helper
+  let html = '';
+
+  // ════════════════════════════════
+  // CHAPTER 1 — MAP DEEP DIVE
+  // ════════════════════════════════
+  html += chapter('🗺️', 'Map Performance Deep Dive');
+
+  const mapStats = {};
+  data.forEach(d => {
+    if (!mapStats[d.map]) mapStats[d.map] = { m:0,w:0,k:0,de:0,sc:0,hs:0,sh:0,atkK:0,defK:0,atkW:0,defW:0,atkR:0,defR:0,rr:0,hasRR:false };
+    const ms = mapStats[d.map];
+    ms.m++; if(d.won)ms.w++; ms.k+=d.k; ms.de+=d.d; ms.sc+=d.sc;
+    ms.hs+=d.hs; ms.sh+=d.shots; ms.atkK+=d.atkKills; ms.defK+=d.defKills;
+    ms.atkW+=d.atkWins; ms.defW+=d.defWins; ms.atkR+=d.atkRoundsPlayed; ms.defR+=d.defRoundsPlayed;
+    if (d.rr !== undefined) { ms.rr += d.rr; ms.hasRR = true; }
+  });
+
+  const mapRows = Object.entries(mapStats)
+    .filter(([,ms]) => ms.m >= 1)
+    .sort((a,b) => b[1].m - a[1].m);
+
+  // Map table
+  html += `<div class="deep-card span3" style="grid-column:span 3;"><div class="deep-card-label">All Maps — Performance Breakdown</div>
+  <table class="deep-map-table">
+    <thead><tr>
+      <th>Map</th><th>W/L</th><th>WR%</th><th>K/D</th><th>ACS</th><th>HS%</th><th>Atk WR%</th><th>Def WR%</th>${mapRows.some(([,ms])=>ms.hasRR)?'<th>RR</th>':''}
+    </tr></thead><tbody>`;
+
+  mapRows.forEach(([mapName, ms]) => {
+    const wr = Math.round((ms.w/ms.m)*100);
+    const kd = ms.de ? (ms.k/ms.de).toFixed(2) : ms.k;
+    const acs = Math.round(ms.sc/ms.m/100);
+    const hsPct = ms.sh ? Math.round((ms.hs/ms.sh)*100) : 0;
+    const atkWR = ms.atkR ? Math.round((ms.atkW/ms.atkR)*100) : null;
+    const defWR = ms.defR ? Math.round((ms.defW/ms.defR)*100) : null;
+    const verdict = wr >= 55 ? 'strong' : wr >= 45 ? 'avg' : 'weak';
+    const verdictTxt = wr >= 55 ? 'Strong' : wr >= 45 ? 'Average' : 'Weak';
+    const wrCol = wr >= 55 ? 'color:var(--win)' : wr < 45 ? 'color:var(--loss)' : 'color:#f5a623';
+    const kdCol = parseFloat(kd) >= 1.2 ? 'color:var(--win)' : parseFloat(kd) < 0.9 ? 'color:var(--loss)' : '';
+    const rrTxt = ms.hasRR ? `<span style="${ms.rr>0?'color:var(--win)':ms.rr<0?'color:var(--loss)':''}">${ms.rr>0?'+':''}${ms.rr}</span>` : '';
+    html += `<tr>
+      <td><span class="deep-map-row-name">${mapName}</span><span class="deep-map-verdict ${verdict}">${verdictTxt}</span></td>
+      <td>${ms.w}W / ${ms.m-ms.w}L</td>
+      <td style="${wrCol};font-weight:800">${wr}%</td>
+      <td style="${kdCol}">${kd}</td>
+      <td>${acs}</td>
+      <td style="${hsPct<15?'color:var(--loss)':hsPct>=25?'color:var(--win)':''}">${hsPct}%</td>
+      <td style="${atkWR!==null&&atkWR<45?'color:var(--loss)':atkWR>=55?'color:var(--win)':''}">${atkWR !== null ? atkWR+'%' : '—'}</td>
+      <td style="${defWR!==null&&defWR<45?'color:var(--loss)':defWR>=55?'color:var(--win)':''}">${defWR !== null ? defWR+'%' : '—'}</td>
+      ${mapRows.some(([,ms])=>ms.hasRR) ? `<td>${rrTxt||'—'}</td>` : ''}
+    </tr>`;
+  });
+  html += `</tbody></table></div>`;
+
+  // Best/worst map insight cards
+  const sorted = [...mapRows].sort((a,b) => (b[1].w/b[1].m) - (a[1].w/a[1].m));
+  const bestMap = sorted[0], worstMap = sorted[sorted.length-1];
+  if (bestMap) {
+    const [bName, bMs] = bestMap;
+    const bWR = Math.round((bMs.w/bMs.m)*100);
+    html += `<div class="deep-insight-grid cols2">`;
+    html += deepCard('Best Map', bName.toUpperCase(), `${bWR}% WR · ${bMs.m} games`, 'good', 'accent-green');
+    if (worstMap && worstMap[0] !== bName) {
+      const [wName, wMs] = worstMap;
+      const wWR = Math.round((wMs.w/wMs.m)*100);
+      const atkIssue = wMs.atkR > 0 && Math.round((wMs.atkW/wMs.atkR)*100) < 40;
+      const defIssue = wMs.defR > 0 && Math.round((wMs.defW/wMs.defR)*100) < 40;
+      const issue = atkIssue && defIssue ? 'Both sides' : atkIssue ? 'Attack side' : defIssue ? 'Defence side' : 'Win rate';
+      html += deepCard('Worst Map', wName.toUpperCase(), `${wWR}% WR · ${issue} is the issue`, 'bad', 'accent-red');
+    }
+    html += `</div>`;
+  }
+
+  // ════════════════════════════════
+  // CHAPTER 2 — ATTACK vs DEFENCE
+  // ════════════════════════════════
+  html += chapter('⚔️', 'Attack vs Defence');
+
+  let totAtkK=0,totDefK=0,totAtkW=0,totDefW=0,totAtkR=0,totDefR=0;
+  data.forEach(d=>{totAtkK+=d.atkKills;totDefK+=d.defKills;totAtkW+=d.atkWins;totDefW+=d.defWins;totAtkR+=d.atkRoundsPlayed;totDefR+=d.defRoundsPlayed;});
+  const atkWR = totAtkR ? Math.round((totAtkW/totAtkR)*100) : 0;
+  const defWR = totDefR ? Math.round((totDefW/totDefR)*100) : 0;
+  const atkKPR = totAtkR ? (totAtkK/totAtkR).toFixed(2) : 0;
+  const defKPR = totDefR ? (totDefK/totDefR).toFixed(2) : 0;
+  const atkStronger = atkWR >= defWR;
+  const gap = Math.abs(atkWR - defWR);
+
+  html += `<div class="deep-insight-grid cols4">`;
+  html += deepCard('Attack WR', atkWR+'%', `${totAtkW}W / ${totAtkR-totAtkW}L · ${atkKPR} KPR`, atkWR>=50?'good':atkWR>=42?'warn':'bad', atkStronger?'accent-green':'');
+  html += deepCard('Defence WR', defWR+'%', `${totDefW}W / ${totDefR-totDefW}L · ${defKPR} KPR`, defWR>=50?'good':defWR>=42?'warn':'bad', !atkStronger?'accent-green':'');
+  html += deepCard('Avg Kills Atk Half', (totAtkK/Math.max(data.length,1)).toFixed(1), `${atkKPR} est. KPR`, parseFloat(atkKPR)>=0.7?'good':parseFloat(atkKPR)>=0.5?'warn':'bad', '');
+  html += deepCard('Avg Kills Def Half', (totDefK/Math.max(data.length,1)).toFixed(1), `${defKPR} est. KPR`, parseFloat(defKPR)>=0.7?'good':parseFloat(defKPR)>=0.5?'warn':'bad', '');
+  html += `</div>`;
+  html += `<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2);letter-spacing:1px;padding:2px 0 6px;">* Kill split estimated from match totals — expand matches and load full details for exact per-round data</div>`;
+
+  // Pattern insights
+  const atkDefPatterns = [];
+  if (gap >= 15) {
+    const weak = atkStronger ? 'defence' : 'attack';
+    const strong = atkStronger ? 'attack' : 'defence';
+    atkDefPatterns.push({ dot:'r', text: `Your ${weak} side is significantly weaker (${atkStronger?defWR:atkWR}% WR vs ${atkStronger?atkWR:defWR}% on ${strong}). This is your biggest macro problem — ${weak === 'defence' ? 'you likely over-rotate or hold passive angles that get walked onto' : 'you likely play default too slow or fail to execute site takes'}.` });
+  } else if (gap < 8) {
+    atkDefPatterns.push({ dot:'g', text: `Your attack and defence win rates are balanced (${atkWR}% atk / ${defWR}% def) — you adapt well to both halves.` });
+  }
+  if (parseFloat(atkKPR) < 0.55) atkDefPatterns.push({ dot:'r', text:`Low attack KPR (${atkKPR}) — you struggle to find entry kills. Try to take space with utility first, then duel. Duelists who wait for info on attack become anchors.` });
+  if (parseFloat(defKPR) < 0.55) atkDefPatterns.push({ dot:'r', text:`Low defence KPR (${defKPR}) — you might be overaggressing on defence and dying before enemies even take site, or holding exposed angles that get flashed.` });
+  if (atkDefPatterns.length) html += patternCard(atkDefPatterns);
+
+  // ════════════════════════════════
+  // CHAPTER 3 — AGENT-MAP FIT
+  // ════════════════════════════════
+  html += chapter('🎭', 'Agent-Map Mismatch Analysis');
+
+  // Build agent × map win rates
+  const agentMapMatrix = {};
+  data.forEach(d => {
+    const key = `${d.agent}|${d.map}`;
+    if (!agentMapMatrix[key]) agentMapMatrix[key] = { agent:d.agent, map:d.map, m:0, w:0, k:0, de:0, sc:0, role:d.role };
+    const e = agentMapMatrix[key];
+    e.m++; if(d.won)e.w++; e.k+=d.k; e.de+=d.d; e.sc+=d.sc;
+  });
+
+  // Find mismatches (played 2+ times, WR < 40%) and good fits (WR >= 60%)
+  const mismatches = [], goodFits = [];
+  Object.values(agentMapMatrix).forEach(e => {
+    if (e.m < 2) return;
+    const wr = Math.round((e.w/e.m)*100);
+    const kd = e.de ? (e.k/e.de).toFixed(2) : e.k;
+    const acs = Math.round(e.sc/e.m/100);
+    if (wr <= 35) mismatches.push({ ...e, wr, kd, acs });
+    else if (wr >= 65) goodFits.push({ ...e, wr, kd, acs });
+  });
+  mismatches.sort((a,b) => a.wr - b.wr);
+  goodFits.sort((a,b) => b.wr - a.wr);
+
+  const mismatchTips = {
+    duelist:   map => `${map} may not suit your aggressive style on this agent — study common entry paths, or swap to a more utility-heavy duelist.`,
+    initiator: map => `Initiator value depends on coordinated execute — on ${map}, ensure you use recon/flashes before every push, not reactively.`,
+    controller:map => `Your smoke lineup knowledge on ${map} may be lacking — learn 2-3 key smokes for default plant and site execute.`,
+    sentinel:  map => `Sentinel anchoring on ${map} requires specific trip/cam placements — study pro setups for this map with your agent.`,
+  };
+
+  html += `<div class="deep-card span3" style="grid-column:span 3;"><div class="deep-card-label">⚠️ Problem Combinations (≥2 games, ≤35% WR)</div>`;
+  if (!mismatches.length) {
+    html += `<div style="color:var(--win);font-family:'DM Mono',monospace;font-size:11px;padding:8px 0;">No significant mismatches found — nice!</div>`;
+  } else {
+    mismatches.slice(0,5).forEach(e => {
+      const tip = mismatchTips[e.role] ? mismatchTips[e.role](e.map) : `Consider a different agent on ${e.map}.`;
+      html += `<div class="deep-mismatch-row">
+        <span class="deep-mismatch-agent">${e.agent}</span>
+        <span class="deep-mismatch-on">on ${e.map.toUpperCase()}</span>
+        <span class="deep-mismatch-stat" style="color:var(--loss)">${e.wr}% WR</span>
+        <span class="deep-mismatch-stat">${e.kd} K/D</span>
+        <span class="deep-mismatch-tag bad">${e.m} games</span>
+        <span class="deep-mismatch-tip">${tip}</span>
+      </div>`;
+    });
+  }
+  html += `</div>`;
+
+  html += `<div class="deep-card span3" style="grid-column:span 3;"><div class="deep-card-label">✅ Strong Combinations (≥2 games, ≥65% WR)</div>`;
+  if (!goodFits.length) {
+    html += `<div style="color:var(--muted);font-family:'DM Mono',monospace;font-size:11px;padding:8px 0;">Not enough data yet — play more matches with the same agent on the same map.</div>`;
+  } else {
+    goodFits.slice(0,4).forEach(e => {
+      html += `<div class="deep-mismatch-row">
+        <span class="deep-mismatch-agent">${e.agent}</span>
+        <span class="deep-mismatch-on">on ${e.map.toUpperCase()}</span>
+        <span class="deep-mismatch-stat" style="color:var(--win)">${e.wr}% WR</span>
+        <span class="deep-mismatch-stat">${e.kd} K/D</span>
+        <span class="deep-mismatch-tag ok">${e.m} games</span>
+        <span class="deep-mismatch-tip">This is a comfort combination — prioritise queueing this when you need RR.</span>
+      </div>`;
+    });
+  }
+  html += `</div>`;
+
+  // ════════════════════════════════
+  // CHAPTER 4 — IMPROVEMENT TREND
+  // ════════════════════════════════
+  html += chapter('📈', 'Improvement Over Time');
+
+  // Split into thirds and compare
+  const third = Math.floor(n/3)||1;
+  const early = data.slice(n-third, n); // oldest
+  const recent = data.slice(0, third);  // newest
+
+  const avg = (arr, fn) => arr.length ? arr.reduce((s,x)=>s+fn(x),0)/arr.length : 0;
+  const eKD  = avg(early,  d => d.d?(d.k/d.d):d.k);
+  const rKD  = avg(recent, d => d.d?(d.k/d.d):d.k);
+  const eWR  = avg(early,  d => d.won?1:0)*100;
+  const rWR  = avg(recent, d => d.won?1:0)*100;
+  const eACS = avg(early,  d => d.acs);
+  const rACS = avg(recent, d => d.acs);
+  const eHS  = avg(early,  d => d.hsPct);
+  const rHS  = avg(recent, d => d.hsPct);
+
+  const delta = (r,e) => { const d=r-e; return d>0?`▲ +${d.toFixed(1)}`:`▼ ${d.toFixed(1)}`; };
+  const dCls  = (r,e) => r > e ? 'good' : r < e ? 'bad' : 'warn';
+
+  html += `<div class="deep-insight-grid cols4">`;
+  html += trendCard('K/D Trend', eKD.toFixed(2), rKD.toFixed(2), delta(rKD,eKD), dCls(rKD,eKD));
+  html += trendCard('Win Rate Trend', Math.round(eWR)+'%', Math.round(rWR)+'%', delta(rWR,eWR), dCls(rWR,eWR));
+  html += trendCard('ACS Trend', Math.round(eACS), Math.round(rACS), delta(rACS,eACS), dCls(rACS,eACS));
+  html += trendCard('HS% Trend', Math.round(eHS)+'%', Math.round(rHS)+'%', delta(rHS,eHS), dCls(rHS,eHS));
+  html += `</div>`;
+
+  // Trend pattern insights
+  const trendPatterns = [];
+  if (rKD - eKD > 0.15) trendPatterns.push({dot:'g', text:`Your K/D has improved by ${(rKD-eKD).toFixed(2)} — you are winning duels more consistently than before. Keep the habits that changed.`});
+  else if (eKD - rKD > 0.15) trendPatterns.push({dot:'r', text:`Your K/D has dropped by ${(eKD-rKD).toFixed(2)} recently — this could indicate tilt, bad agent choices, or opponents adapting to your style. Review your last 5 losses.`});
+  if (rWR - eWR > 8) trendPatterns.push({dot:'g', text:`Win rate up ${(rWR-eWR).toFixed(0)}% — your game sense and macro decisions are improving. You are closing out rounds better.`});
+  else if (eWR - rWR > 8) trendPatterns.push({dot:'r', text:`Win rate down ${(eWR-rWR).toFixed(0)}% recently — could be a rank correction or tilt spiral. Take a break if you have lost 3+ in a row today.`});
+  if (rHS - eHS > 5) trendPatterns.push({dot:'g', text:`Headshot rate improving (${Math.round(eHS)}% → ${Math.round(rHS)}%) — your crosshair placement is getting better. This directly improves your duel win rate.`});
+  else if (eHS - rHS > 5) trendPatterns.push({dot:'r', text:`Headshot rate dropping (${Math.round(eHS)}% → ${Math.round(rHS)}%) — you may be spraying more under pressure. Focus on tap-firing first shot.`});
+  if (!trendPatterns.length) trendPatterns.push({dot:'y', text:`Your performance is relatively stable across the tracked period. Consistency is good, but look for specific areas to push improvement.`});
+  html += patternCard(trendPatterns);
+
+  // ════════════════════════════════
+  // CHAPTER 5 — DEATH PATTERN
+  // ════════════════════════════════
+  html += chapter('💀', 'Death Pattern Analysis');
+
+  const totalDeaths = data.reduce((s,d)=>s+d.d,0);
+  const avgDeaths = (totalDeaths/n).toFixed(1);
+  const highDeathGames = data.filter(d=>d.d>=16).length;
+  const lowDeathGames  = data.filter(d=>d.d<=9).length;
+  const highDeathWR    = data.filter(d=>d.d>=16).filter(d=>d.won).length;
+  const lowDeathWR     = data.filter(d=>d.d<=9).filter(d=>d.won).length;
+  const winRateHighD   = highDeathGames ? Math.round((highDeathWR/highDeathGames)*100) : 0;
+  const winRateLowD    = lowDeathGames  ? Math.round((lowDeathWR /lowDeathGames )*100) : 0;
+
+  html += `<div class="deep-insight-grid cols3">`;
+  html += deepCard('Avg Deaths/Game', avgDeaths, parseFloat(avgDeaths)<=10?'Elite':parseFloat(avgDeaths)<=13?'Good':parseFloat(avgDeaths)<=16?'Average':'High',
+    parseFloat(avgDeaths)<=10?'good':parseFloat(avgDeaths)<=13?'good':parseFloat(avgDeaths)<=16?'warn':'bad', '');
+  html += deepCard('High Death Games', `${highDeathGames}/${n}`, `WR when dying 16+: ${winRateHighD}%`,
+    winRateHighD < 35 ? 'bad' : 'warn', highDeathGames > n*0.3 ? 'accent-red' : '');
+  html += deepCard('Low Death Games', `${lowDeathGames}/${n}`, `WR when dying ≤9: ${winRateLowD}%`,
+    winRateLowD >= 65 ? 'good' : 'warn', '');
+  html += `</div>`;
+
+  const deathPatterns = [];
+  if (winRateLowD - winRateHighD > 25) deathPatterns.push({dot:'y', text:`You win ${winRateLowD-winRateHighD}% more often in low-death games — death count is your strongest win predictor. Every death you prevent is worth more than an extra kill.`});
+  if (parseFloat(avgDeaths) >= 15) deathPatterns.push({dot:'r', text:`Averaging ${avgDeaths} deaths/game is high for ranked. The #1 fix: before every duel, ask "do I have angle advantage, utility advantage, or intel?" If no — don't peek.`});
+  if (highDeathGames > n * 0.35) deathPatterns.push({dot:'r', text:`${Math.round((highDeathGames/n)*100)}% of your games have 16+ deaths — these are probably tilt games or agent mismatches. Add a "3 deaths in 5 rounds = refocus" rule.`});
+  if (deathPatterns.length) html += patternCard(deathPatterns);
+
+  // ════════════════════════════════
+  // CHAPTER 6 — TOP PRIORITIES
+  // ════════════════════════════════
+  html += chapter('🎯', 'Your Top Improvement Priorities');
+
+  const priorities = [];
+
+  // Score each issue
+  const overallKD = data.reduce((s,d)=>s+d.d?(d.k/d.d):d.k,0)/n;
+  const overallWR = data.filter(d=>d.won).length/n*100;
+  const overallHS = data.reduce((s,d)=>s+d.hsPct,0)/n;
+  const overallACS = data.reduce((s,d)=>s+d.acs,0)/n;
+  const atkDefGap = Math.abs(atkWR - defWR);
+
+  if (overallHS < 16) priorities.push({
+    title: 'Headshot Rate',
+    desc: `${Math.round(overallHS)}% HS rate is below the Silver/Gold threshold (~20%). This is the fastest stat to improve: spend 10 min daily in Aimlab on Microshot (head-only mode). Stop spraying — one tap, check if head level, then shoot.`,
+    score: 3
+  });
+  if (parseFloat(avgDeaths) >= 15) priorities.push({
+    title: 'Death Reduction',
+    desc: `${avgDeaths} avg deaths is costing you rounds and ACS. Identify the 2-3 angles where you die most per session and either avoid them or approach with utility. Fewer deaths = more rounds alive = more wins.`,
+    score: 3
+  });
+  if (atkDefGap >= 15) priorities.push({
+    title: `${atkStronger?'Defence':'Attack'} Side Mechanics`,
+    desc: `${atkStronger?defWR:atkWR}% WR on ${atkStronger?'defence':'attack'} vs ${atkStronger?atkWR:defWR}% on the other side — a 15%+ gap means one half is losing games for you. Watch 2 VoDs specifically of your worst half and identify the pattern.`,
+    score: 2
+  });
+  if (mismatches.length >= 2) priorities.push({
+    title: 'Agent-Map Pool Optimisation',
+    desc: `You have ${mismatches.length} agent-map combos with ≤35% WR. Either learn the correct utility lineups for those maps, or ban/avoid them. Your strongest combo is ${goodFits[0]?.agent||'—'} on ${goodFits[0]?.map||'—'} (${goodFits[0]?.wr||'—'}% WR) — queue that more.`,
+    score: 2
+  });
+  if (overallWR < 47) priorities.push({
+    title: 'Round Closing',
+    desc: `${Math.round(overallWR)}% win rate means you're losing more than you win. Individual stats are secondary — focus on not forcing when ahead, playing for post-plant, and not giving up eco rounds.`,
+    score: 2
+  });
+  if (rKD < eKD - 0.1) priorities.push({
+    title: 'Tilt & Consistency Management',
+    desc: `Your K/D has dropped recently. Play max 2 ranked games per session until the trend reverses. Unranked/deathmatch in between ranked games to stay warm.`,
+    score: 1
+  });
+
+  // Always add a VoD priority
+  priorities.push({
+    title: 'VoD Review Habit',
+    desc: `Record your games with OBS. After every loss, watch only the rounds you died in — from the enemy perspective if possible. Even 10 minutes of VoD review per session accelerates improvement faster than playing 3 extra games.`,
+    score: 1
+  });
+
+  priorities.sort((a,b) => b.score - a.score);
+
+  html += `<div class="deep-priority"><div class="deep-priority-label">⚡ Do These In Order</div><div class="deep-priority-list">`;
+  priorities.slice(0, 5).forEach((p, i) => {
+    html += `<div class="deep-priority-item">
+      <div class="deep-priority-num">${i+1}</div>
+      <div class="deep-priority-text">
+        <div class="deep-priority-title">${p.title}</div>
+        <div class="deep-priority-desc">${p.desc}</div>
+      </div>
+    </div>`;
+  });
+  html += `</div></div>`;
+
+  return html;
+}
+
+// ── RENDER HELPERS ──
+function chapter(icon, title) {
+  return `<div class="deep-chapter"><span class="deep-chapter-icon">${icon}</span><span class="deep-chapter-title">${title}</span><div class="deep-chapter-line"></div></div>`;
+}
+
+function deepCard(label, val, sub, valCls, accentCls) {
+  return `<div class="deep-card ${accentCls||''}">
+    <div class="deep-card-label">${label}</div>
+    <div class="deep-card-val ${valCls||''}">${val}</div>
+    <div class="deep-card-sub">${sub}</div>
+  </div>`;
+}
+
+function trendCard(label, oldVal, newVal, delta, deltaCls) {
+  const isUp = delta.includes('▲');
+  return `<div class="deep-card">
+    <div class="deep-card-label">${label}</div>
+    <div style="display:flex;align-items:flex-end;gap:8px;margin-top:4px;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:30px;line-height:1;">${newVal}</div>
+      <div style="margin-bottom:4px;">
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:${isUp?'var(--win)':'var(--loss)'};">${delta}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2);">was ${oldVal}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function patternCard(patterns) {
+  return `<div class="deep-card span3" style="grid-column:span 3;">
+    <div class="deep-pattern-list">
+      ${patterns.map(p=>`<div class="deep-pattern-item"><div class="deep-pattern-dot ${p.dot}"></div><div>${p.text}</div></div>`).join('')}
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════
+//   STAT TREND MODAL
+// ══════════════════════════════════════════
+
+let _statChartInstance = null;
+
+const STAT_CONFIG = {
+  kd:     { label: 'K/D Ratio',    color: '#e8ff47', fn: m => m.deaths ? +(m.kills/m.deaths).toFixed(2) : m.kills, fmt: v => v.toFixed(2), good: v => v >= 1.0 },
+  kills:  { label: 'Kills',        color: '#3ecf8e', fn: m => m.kills,                                              fmt: v => v,            good: v => v >= 15  },
+  deaths: { label: 'Deaths',       color: '#ff5757', fn: m => m.deaths,                                             fmt: v => v,            good: v => v <= 12  },
+  assists:{ label: 'Assists',      color: '#60a5fa', fn: m => m.assists,                                            fmt: v => v,            good: v => v >= 4   },
+  acs:    { label: 'ACS',          color: '#a78bfa', fn: m => Math.round((m.score||0)/100),                        fmt: v => v,            good: v => v >= 200 },
+  hs:     { label: 'HS %',         color: '#fb923c', fn: m => m.shots ? Math.round((m.hs/m.shots)*100) : 0,        fmt: v => v+'%',        good: v => v >= 20  },
+};
+
+function openStatModal(statKey) {
+  const cfg = STAT_CONFIG[statKey];
+  const matches = window._recentMatchStats || [];
+  if (!matches.length) { showToast('Fetch stats first'); return; }
+
+  const values = matches.map(cfg.fn);
+  const avg = values.reduce((s,v)=>s+v,0) / values.length;
+  const max = Math.max(...values);
+  const min = Math.min(...values);
+  const last5avg = values.slice(-5).reduce((s,v)=>s+v,0) / Math.min(5, values.length);
+  const trend = last5avg > avg ? '▲ Improving' : last5avg < avg - (avg*0.05) ? '▼ Declining' : '→ Stable';
+  const trendCol = last5avg > avg ? 'var(--win)' : last5avg < avg - (avg*0.05) ? 'var(--loss)' : 'var(--muted)';
+
+  document.getElementById('stat-modal-title').textContent = cfg.label + ' — Per Match Trend';
+  document.getElementById('stat-modal-count').textContent = matches.length;
+  document.getElementById('stat-modal-avgs').innerHTML = `
+    <div class="stat-modal-avg">AVG <span>${cfg.fmt(+avg.toFixed(2))}</span></div>
+    <div class="stat-modal-avg">BEST <span style="color:var(--win)">${cfg.fmt(max)}</span></div>
+    <div class="stat-modal-avg">WORST <span style="color:var(--loss)">${cfg.fmt(min)}</span></div>
+    <div class="stat-modal-avg">LAST 5 AVG <span>${cfg.fmt(+last5avg.toFixed(2))}</span></div>
+    <div class="stat-modal-avg">TREND <span style="color:${trendCol}">${trend}</span></div>
+  `;
+
+  // Labels: match number + agent abbrev
+  const labels = matches.map((m, i) => {
+    const ag = (m.agentName||'').substring(0,3).toUpperCase();
+    return `#${i+1} ${ag}`;
+  });
+
+  // Bar colors: green if good, red if bad, accent if neutral
+  const barColors = values.map(v =>
+    cfg.good(v) ? 'rgba(62,207,142,0.75)' : 'rgba(255,87,87,0.65)'
+  );
+  // Highlight last 5
+  const borderColors = values.map((v, i) =>
+    i >= values.length - 5 ? cfg.color : 'transparent'
+  );
+
+  document.getElementById('stat-modal-overlay').classList.add('open');
+
+  // Destroy previous chart
+  if (_statChartInstance) { _statChartInstance.destroy(); _statChartInstance = null; }
+
+  const ctx = document.getElementById('stat-chart-canvas').getContext('2d');
+
+  _statChartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: cfg.label,
+          data: values,
+          backgroundColor: barColors,
+          borderColor: borderColors,
+          borderWidth: 2,
+          borderRadius: 3,
+          borderSkipped: false,
+        },
+        {
+          label: 'Average',
+          data: values.map(() => +avg.toFixed(2)),
+          type: 'line',
+          borderColor: cfg.color,
+          borderWidth: 1.5,
+          borderDash: [4, 3],
+          pointRadius: 0,
+          fill: false,
+          tension: 0,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 400 },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1a1a1f',
+          borderColor: '#2a2a2f',
+          borderWidth: 1,
+          titleColor: '#888',
+          bodyColor: '#f0f0f2',
+          titleFont: { family: 'DM Mono', size: 9 },
+          bodyFont: { family: 'Barlow Condensed', size: 15, weight: '700' },
+          padding: 10,
+          callbacks: {
+            title: (items) => {
+              const m = matches[items[0].dataIndex];
+              return `${m.agentName} on ${m.map} · ${m.won?'WIN':'LOSS'}`;
+            },
+            label: (item) => {
+              if (item.datasetIndex === 1) return `Avg: ${cfg.fmt(item.raw)}`;
+              const m = matches[item.dataIndex];
+              return `${cfg.label}: ${cfg.fmt(item.raw)}  |  K/D/A: ${m.kills}/${m.deaths}/${m.assists}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(255,255,255,0.04)' },
+          ticks: {
+            color: '#555',
+            font: { family: 'DM Mono', size: 8 },
+            maxRotation: 45,
+            autoSkip: true,
+            maxTicksLimit: 20
+          }
+        },
+        y: {
+          grid: { color: 'rgba(255,255,255,0.06)' },
+          ticks: {
+            color: '#666',
+            font: { family: 'DM Mono', size: 9 },
+            callback: v => cfg.fmt(v)
+          },
+          min: statKey === 'kd' ? 0 : undefined,
+        }
+      }
+    }
+  });
+}
+
+function closeStatModal() {
+  document.getElementById('stat-modal-overlay').classList.remove('open');
+  if (_statChartInstance) { _statChartInstance.destroy(); _statChartInstance = null; }
+}
+
+// Close on Escape
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeStatModal(); });
+
+
+// ══════════════════════════════════════════
+//   PERFORMANCE LAB — SECTION 09
+// ══════════════════════════════════════════
+
+// Rank benchmarks: [kd, wr%, acs, hs%]
+const RANK_BENCHMARKS = {
+  'Iron':       { kd:0.75, wr:44, acs:110, hs:12, label:'Iron' },
+  'Bronze':     { kd:0.88, wr:46, acs:135, hs:14, label:'Bronze' },
+  'Silver':     { kd:1.00, wr:48, acs:155, hs:17, label:'Silver' },
+  'Gold':       { kd:1.12, wr:50, acs:175, hs:20, label:'Gold' },
+  'Platinum':   { kd:1.22, wr:51, acs:195, hs:22, label:'Platinum' },
+  'Diamond':    { kd:1.35, wr:52, acs:215, hs:24, label:'Diamond' },
+  'Ascendant':  { kd:1.50, wr:53, acs:240, hs:26, label:'Ascendant' },
+  'Immortal':   { kd:1.65, wr:54, acs:265, hs:28, label:'Immortal' },
+  'Radiant':    { kd:1.85, wr:56, acs:290, hs:30, label:'Radiant' },
+};
+const RANK_ORDER = ['Iron','Bronze','Silver','Gold','Platinum','Diamond','Ascendant','Immortal','Radiant'];
+
+function getRankTier(rankName) {
+  if (!rankName) return 'Silver';
+  return RANK_ORDER.find(r => rankName.startsWith(r)) || 'Silver';
+}
+function getNextRank(tier) {
+  const idx = RANK_ORDER.indexOf(tier);
+  return idx < RANK_ORDER.length-1 ? RANK_ORDER[idx+1] : null;
+}
+
+async function runPerfLab() {
+  const btn = document.getElementById('plab-btn');
+  const loading = document.getElementById('plab-loading');
+  const results = document.getElementById('plab-results');
+  let matches = [];
+  try { matches = await loadAllMatches(); } catch(e) {}
+  if (!matches.length) { showToast('Fetch your stats first'); return; }
+
+  btn.disabled = true;
+  loading.classList.add('active');
+  results.classList.remove('active');
+  results.innerHTML = '';
+
+  const msgs = ['ANALYSING DUELS...','READING ECONOMY...','DETECTING TILT...','MAPPING TIME PATTERNS...','BENCHMARKING VS RANK...','BUILDING PREDICTIONS...'];
+  let mi = 0;
+  const iv = setInterval(() => { document.getElementById('plab-loading-txt').textContent = msgs[++mi % msgs.length]; }, 600);
+
+  await new Promise(r => setTimeout(r, 700));
+
+  try {
+    results.innerHTML = buildPerfLab(matches);
+    results.classList.add('active');
+    showToast('Performance Lab complete ✓');
+  } catch(e) {
+    results.innerHTML = `<div style="padding:16px;color:var(--loss);font-family:'DM Mono',monospace;font-size:11px;">Error: ${e.message}</div>`;
+    results.classList.add('active');
+    console.error(e);
+  } finally {
+    clearInterval(iv);
+    loading.classList.remove('active');
+    btn.disabled = false;
+    btn.innerHTML = '🔄 Re-run';
+  }
+}
+
+function buildPerfLab(matches) {
+  // ── Build per-match stats ──
+  const data = [];
+  matches.forEach(match => {
+    const me = findMe(match);
+    if (!me) return;
+    const s = me.stats || {};
+    const k = s.kills||0, d = s.deaths||0, a = s.assists||0, sc = s.score||0;
+    const hs = s.headshots||0, shots = (s.headshots||0)+(s.bodyshots||0)+(s.legshots||0);
+    const myTeamId = (me.team||'').toLowerCase();
+    const _mt = match.teams?.[myTeamId], _ot = match.teams?.[myTeamId==='red'?'blue':'red'];
+    const won = _mt?.has_won != null
+      ? (_mt.has_won === true || _mt.has_won === 'true')
+      : (_mt?.rounds_won != null && _ot?.rounds_won != null)
+        ? _mt.rounds_won > _ot.rounds_won : false;
+    const myTeam = match.teams?.[myTeamId] || {};
+    const oppTeam = match.teams?.[myTeamId==='red'?'blue':'red'] || {};
+    const myRounds = myTeam.rounds_won || 0;
+    const oppRounds = oppTeam.rounds_won || 0;
+    const totalRounds = myRounds + oppRounds;
+    const agent = me.character || 'Unknown';
+    const map = match.metadata?.map || 'Unknown';
+    const matchId = match.metadata?.matchid || match.metadata?.match_id || '';
+    const gameStart = match.metadata?.game_start || null;
+    const acs = totalRounds ? Math.round(sc / totalRounds) : Math.round(sc/100);
+    const hsPct = shots ? Math.round((hs/shots)*100) : 0;
+    const kd = d ? k/d : k;
+    const rr = (window._mmrHistory||{})[matchId];
+    const allPlayers = getPlayerList(match);
+    // Economy: look at all players for rough economy type hints
+    // We approximate: if score < 120 avg per round = likely eco/force
+    const roundsArr = match.rounds || [];
+    data.push({ k, d, a, sc, hs, shots, acs, hsPct, kd, won, agent, map, matchId, gameStart, rr,
+                myRounds, oppRounds, totalRounds, allPlayers, rounds: roundsArr, myTeamId, me });
+  });
+
+  if (!data.length) return '<div class="no-detail">Not enough data</div>';
+  const n = data.length;
+  let html = '';
+
+  // ────────────────────────────────────────
+  // 1. TILT DETECTION  (runs first — most urgent)
+  // ────────────────────────────────────────
+  const mmrH = window._mmrHistory || {};
+  const recentRR = data.slice(0, 5).map(d => d.rr).filter(r => r !== undefined);
+  const recentWins = data.slice(0, 5).filter(d => d.won).length;
+  const recentLosses = 5 - recentWins;
+  const rrLast5 = recentRR.reduce((s,v)=>s+v,0);
+  const currentStreak = (() => {
+    let count = 0, type = data[0]?.won ? 'win' : 'loss';
+    for (const m of data) { if (m.won === (type==='win')) count++; else break; }
+    return { count, type };
+  })();
+  const sessionMatches = data.filter(d => d.gameStart && isToday(d.gameStart));
+  const sessionLosses = sessionMatches.filter(d => !d.won).length;
+
+  // Show tilt alert if: 3+ loss streak OR 4+ losses today OR -80 RR in last 5
+  const tiltLevel = currentStreak.type === 'loss' && currentStreak.count >= 3 ? 'high'
+    : sessionLosses >= 3 ? 'medium'
+    : rrLast5 < -60 ? 'medium'
+    : null;
+
+  html += plabChapter('🧠', 'Mental Game & Tilt Detection');
+  if (tiltLevel) {
+    const tiltMsg = tiltLevel === 'high'
+      ? `You're on a ${currentStreak.count}-game loss streak right now. This is the #1 ranked improvement tip: stop playing. Every loss after 3 in a row is statistically more likely to continue. Take 30 min, do something else, come back fresh.`
+      : sessionLosses >= 3
+      ? `${sessionLosses} losses in today's session. Your win rate drops significantly after the 3rd loss of a session — your mental model of the game degrades and you start forcing plays.`
+      : `You've lost ${Math.abs(rrLast5)} RR in your last 5 games. This kind of downswing is a tilt signal even if individual games felt close.`;
+    html += `<div class="plab-tilt-alert">
+      <div class="plab-tilt-icon">${tiltLevel==='high'?'🚨':'⚠️'}</div>
+      <div>
+        <div class="plab-tilt-title">${tiltLevel==='high'?'STOP PLAYING NOW':'TILT WARNING'}</div>
+        <div class="plab-tilt-desc">${tiltMsg}</div>
+      </div>
+    </div>`;
+  } else {
+    html += `<div class="plab-card good"><div class="plab-card-label">Mental State</div><div class="plab-card-val good">✓ Clear</div><div class="plab-card-sub">No tilt signals detected — good headspace to keep playing</div></div>`;
+  }
+
+  // Session stats
+  const sessionKD = sessionMatches.length ? (sessionMatches.reduce((s,d)=>s+d.k,0)/Math.max(sessionMatches.reduce((s,d)=>s+d.d,0),1)).toFixed(2) : null;
+  const sessionRR = sessionMatches.reduce((s,d)=>s+(d.rr||0),0);
+  if (sessionMatches.length) {
+    html += `<div class="plab-grid">`;
+    html += plabCard('Today\'s Matches', sessionMatches.length, `${sessionMatches.filter(d=>d.won).length}W / ${sessionLosses}L`, sessionMatches.filter(d=>d.won).length >= sessionLosses ? 'good' : 'bad', '');
+    html += plabCard('Session RR', (sessionRR > 0 ? '+' : '') + sessionRR, 'Today\'s net RR', sessionRR >= 0 ? 'good' : 'bad', '');
+    if (sessionKD) html += plabCard('Session K/D', sessionKD, 'Today only', parseFloat(sessionKD) >= 1 ? 'good' : 'bad', '');
+    html += plabCard('Current Streak', currentStreak.count + (currentStreak.type==='win'?' W':'L'), currentStreak.type==='win'?'Keep it going':'Take a break?', currentStreak.type==='win'?'good':'bad', '');
+    html += `</div>`;
+  }
+
+  // ────────────────────────────────────────
+  // 2. TIME OF DAY ANALYSIS
+  // ────────────────────────────────────────
+  html += plabChapter('🕐', 'Time of Day Performance');
+  const hourBuckets = Array(24).fill(null).map(() => ({ m:0, w:0, rr:0 }));
+  data.forEach(d => {
+    if (!d.gameStart) return;
+    const h = new Date(d.gameStart * 1000).getHours();
+    hourBuckets[h].m++;
+    if (d.won) hourBuckets[h].w++;
+    if (d.rr !== undefined) hourBuckets[h].rr += d.rr;
+  });
+  const playedHours = hourBuckets.filter(b => b.m > 0);
+  const maxGames = Math.max(...hourBuckets.map(b=>b.m), 1);
+  const bestHour = hourBuckets.reduce((best,b,i) => b.m>=2 && (b.w/b.m) > (best.wr) ? {h:i, wr:b.w/b.m, m:b.m} : best, {h:-1,wr:0,m:0});
+  const worstHour = hourBuckets.reduce((worst,b,i) => b.m>=2 && (b.w/b.m) < (worst.wr) ? {h:i, wr:b.w/b.m, m:b.m} : worst, {h:-1,wr:1,m:0});
+
+  if (playedHours.length < 2) {
+    html += `<div class="plab-card span4"><div class="plab-card-label">Time Data</div><div class="plab-card-sub" style="padding:8px 0">Not enough matches with timestamps yet — play more games and data will appear here.</div></div>`;
+  } else {
+    html += `<div class="plab-card span4"><div class="plab-card-label">Games & Win Rate by Hour (hover for details)</div>
+    <div class="plab-heatmap" id="plab-heatmap">`;
+    hourBuckets.forEach((b, h) => {
+      const wr = b.m ? b.w/b.m : 0;
+      const intensity = b.m / maxGames;
+      const col = b.m === 0 ? 'var(--surface3)'
+        : wr >= 0.6 ? `rgba(62,207,142,${0.15 + intensity*0.7})`
+        : wr >= 0.45 ? `rgba(232,255,71,${0.1 + intensity*0.5})`
+        : `rgba(255,87,87,${0.15 + intensity*0.6})`;
+      const tt = b.m ? `${h}:00 — ${b.m} games, ${Math.round(wr*100)}% WR` : `${h}:00 — no games`;
+      html += `<div class="plab-heat-cell" style="background:${col}" title="${tt}"></div>`;
+    });
+    html += `</div><div class="plab-heat-labels">`;
+    hourBuckets.forEach((b,h) => {
+      html += `<div class="plab-heat-label">${h%6===0?h:''}</div>`;
+    });
+    html += `</div></div>`;
+
+    html += `<div class="plab-grid">`;
+    if (bestHour.h >= 0) html += plabCard('Best Hour', `${bestHour.h}:00`, `${Math.round(bestHour.wr*100)}% WR · ${bestHour.m} games`, 'good', 'good');
+    if (worstHour.h >= 0) html += plabCard('Worst Hour', `${worstHour.h}:00`, `${Math.round(worstHour.wr*100)}% WR · ${worstHour.m} games`, 'bad', 'bad');
+    // Session length analysis
+    const sessionGroups = {};
+    data.forEach(d => {
+      if (!d.gameStart) return;
+      const dayKey = new Date(d.gameStart*1000).toDateString();
+      if (!sessionGroups[dayKey]) sessionGroups[dayKey] = [];
+      sessionGroups[dayKey].push(d);
+    });
+    const sessionLengths = Object.values(sessionGroups).filter(s => s.length >= 2);
+    if (sessionLengths.length >= 2) {
+      const earlyWR = sessionLengths.flatMap(s => s.slice(0,2)).filter(d=>d.won).length / Math.max(sessionLengths.flatMap(s=>s.slice(0,2)).length, 1);
+      const lateWR  = sessionLengths.flatMap(s => s.slice(2)).filter(d=>d.won).length / Math.max(sessionLengths.flatMap(s=>s.slice(2)).length, 1);
+      const fatigueDrop = earlyWR - lateWR;
+      html += plabCard('Early Session WR', Math.round(earlyWR*100)+'%', 'Games 1-2 of session', earlyWR>=0.5?'good':'bad', '');
+      html += plabCard('Late Session WR', Math.round(lateWR*100)+'%', fatigueDrop>0.1?'Drops after 2 games ⚠️':'Stays consistent', lateWR>=0.5?'good':fatigueDrop>0.1?'bad':'warn', fatigueDrop>0.1?'bad':'');
+    }
+    html += `</div>`;
+
+    if (bestHour.h >= 0 || worstHour.h >= 0) {
+      html += `<div class="plab-card span4"><div class="plab-patterns">`;
+      if (bestHour.h >= 0) html += `<div class="plab-pattern"><div class="plab-dot g"></div><div>You perform best around <b>${bestHour.h}:00</b> — ${Math.round(bestHour.wr*100)}% WR in ${bestHour.m} games. Prioritise ranked at this time.</div></div>`;
+      if (worstHour.h >= 0 && worstHour.h !== bestHour.h) html += `<div class="plab-pattern"><div class="plab-dot r"></div><div>You struggle around <b>${worstHour.h}:00</b> — ${Math.round(worstHour.wr*100)}% WR. Consider avoiding ranked at this time or only playing unranked.</div></div>`;
+      html += `</div></div>`;
+    }
+  }
+
+  // ────────────────────────────────────────
+  // 3. DUEL ANALYSIS (estimated from available data)
+  // ────────────────────────────────────────
+  html += plabChapter('⚔️', 'Duel Analysis');
+
+  const totalK = data.reduce((s,d)=>s+d.k,0);
+  const totalD = data.reduce((s,d)=>s+d.d,0);
+  const totalR = data.reduce((s,d)=>s+d.totalRounds,0);
+  const avgKPR = totalR ? (totalK/totalR).toFixed(2) : 0;
+  const avgDPR = totalR ? (totalD/totalR).toFixed(2) : 0;
+  // Duel win %: rough model — kills/(kills+deaths)
+  const duelWinPct = Math.round((totalK/(totalK+totalD))*100);
+  // First blood proxy: matches where kills > 0 and kills in round 1
+  // We estimate: high K games (20+) with wins = good opening duels
+  const highKWins = data.filter(d=>d.k>=18&&d.won).length;
+  const highKGames = data.filter(d=>d.k>=18).length;
+  const openingWR = highKGames ? Math.round((highKWins/highKGames)*100) : null;
+  // Trade ratio proxy: deaths that resulted in win (teammate traded) vs total deaths
+  const tradedDeaths = data.filter(d=>!d.won).reduce((s,d)=>s+Math.floor(d.d*0.35),0); // rough estimate
+  const multiKillGames = data.filter(d=>d.k>=4).length; // proxy for multi-kill rounds
+
+  html += `<div class="plab-grid">`;
+  html += plabCard('Duel Win %', duelWinPct+'%', `${totalK} kills vs ${totalD} deaths`, duelWinPct>=55?'good':duelWinPct>=45?'warn':'bad', duelWinPct>=55?'good':duelWinPct>=45?'warn':'bad');
+  html += plabCard('Avg KPR', avgKPR, 'Kills per round', parseFloat(avgKPR)>=0.8?'good':parseFloat(avgKPR)>=0.6?'warn':'bad', '');
+  html += plabCard('Avg DPR', avgDPR, 'Deaths per round', parseFloat(avgDPR)<=0.7?'good':parseFloat(avgDPR)<=0.85?'warn':'bad', '');
+  html += plabCard('High Kill Games', `${highKGames}/${n}`, `${Math.round(highKGames/n*100)}% of matches · ${openingWR||'—'}% WR`, highKGames/n>=0.3?'good':'warn', '');
+  html += `</div>`;
+
+  const duelPatterns = [];
+  if (duelWinPct >= 58) duelPatterns.push({c:'g', t:`Strong duel win rate (${duelWinPct}%) — you win more than you lose in direct combat. Your gunfight mechanics are a strength.`});
+  else if (duelWinPct <= 46) duelPatterns.push({c:'r', t:`Low duel win rate (${duelWinPct}%) — you lose more 1v1s than you win. Focus on crosshair placement (aim at head level before peeking) and counter-strafing before shooting.`});
+  if (parseFloat(avgKPR) < 0.6) duelPatterns.push({c:'r', t:`Low KPR (${avgKPR}) — you're not finding enough kills per round. Either you're playing too passive or getting caught in bad positions before you can shoot.`});
+  if (parseFloat(avgDPR) > 0.9) duelPatterns.push({c:'r', t:`High DPR (${avgDPR}) — you die almost every round. This suggests over-aggression, holding exposed angles, or poor utility usage before dueling.`});
+  if (openingWR && openingWR >= 65) duelPatterns.push({c:'g', t:`When you get kills (18+ game), your team wins ${openingWR}% of the time — you're a strong carry when fragging. Consistency is the key gap.`});
+  if (duelPatterns.length) html += patternBlock(duelPatterns);
+
+  // ────────────────────────────────────────
+  // 4. ECONOMY INTELLIGENCE
+  // ────────────────────────────────────────
+  html += plabChapter('💰', 'Economy Intelligence');
+
+  // Estimate round types from score-based proxy
+  // Full buy rounds: player ACS tends higher, eco rounds lower
+  // We use per-match ACS vs avg to classify matches roughly
+  const avgACS = data.reduce((s,d)=>s+d.acs,0)/n;
+  const fullBuyMatches  = data.filter(d => d.acs >= avgACS * 0.95);
+  const ecoBuyMatches   = data.filter(d => d.acs < avgACS * 0.75);
+  const forceBuyMatches = data.filter(d => d.acs >= avgACS * 0.75 && d.acs < avgACS * 0.95);
+
+  const fWR = fullBuyMatches.length  ? Math.round(fullBuyMatches.filter(d=>d.won).length/fullBuyMatches.length*100)   : 0;
+  const eWR = ecoBuyMatches.length   ? Math.round(ecoBuyMatches.filter(d=>d.won).length/ecoBuyMatches.length*100)     : 0;
+  const foWR = forceBuyMatches.length ? Math.round(forceBuyMatches.filter(d=>d.won).length/forceBuyMatches.length*100) : 0;
+
+  html += `<div class="plab-card span4"><div class="plab-card-label">Win Rate by Economy Type (estimated from ACS patterns)</div>
+  <table class="plab-eco-table"><thead><tr>
+    <th>Type</th><th>Games</th><th>Win Rate</th><th>Avg ACS</th><th>Assessment</th>
+  </tr></thead><tbody>
+  <tr><td><span class="plab-eco-type" style="color:var(--win)">Full Buy</span></td>
+    <td>${fullBuyMatches.length}</td>
+    <td style="color:${fWR>=50?'var(--win)':'var(--loss)'};font-weight:800">${fWR}%</td>
+    <td>${Math.round(fullBuyMatches.reduce((s,d)=>s+d.acs,0)/Math.max(fullBuyMatches.length,1))}</td>
+    <td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${fWR>=55?'Strong ✓':fWR>=45?'Average':'Underperforming ⚠️'}</td></tr>
+  <tr><td><span class="plab-eco-type" style="color:#f5a623">Force Buy</span></td>
+    <td>${forceBuyMatches.length}</td>
+    <td style="color:${foWR>=50?'var(--win)':'var(--loss)'};font-weight:800">${foWR}%</td>
+    <td>${Math.round(forceBuyMatches.reduce((s,d)=>s+d.acs,0)/Math.max(forceBuyMatches.length,1))}</td>
+    <td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${foWR>=45?'Holding well':foWR>=35?'Average':'Struggling'}</td></tr>
+  <tr><td><span class="plab-eco-type" style="color:var(--loss)">Eco</span></td>
+    <td>${ecoBuyMatches.length}</td>
+    <td style="color:${eWR>=40?'var(--win)':'var(--loss)'};font-weight:800">${eWR}%</td>
+    <td>${Math.round(ecoBuyMatches.reduce((s,d)=>s+d.acs,0)/Math.max(ecoBuyMatches.length,1))}</td>
+    <td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${eWR>=35?'Good eco steals':eWR>=25?'Expected':'Very low'}</td></tr>
+  </tbody></table></div>`;
+
+  const ecoPatterns = [];
+  if (fWR < 48) ecoPatterns.push({c:'r', t:`Your full-buy win rate (${fWR}%) is below 50% — when you have the best equipment you should be winning more. This suggests a tactical or coordination issue rather than an aim issue.`});
+  if (eWR >= 35) ecoPatterns.push({c:'g', t:`Strong eco performance (${eWR}% WR) — you steal rounds on pistol/shotgun better than most players at your rank. Keep aggressive eco plays.`});
+  if (foWR < 38) ecoPatterns.push({c:'y', t:`Force buy win rate is low (${foWR}%) — consider saving more often instead of forcing. A full save preserves credits for a proper full buy next round.`});
+  if (ecoPatterns.length) html += patternBlock(ecoPatterns);
+
+  // ────────────────────────────────────────
+  // 5. RANK BENCHMARKS & GAP ANALYSIS
+  // ────────────────────────────────────────
+  html += plabChapter('🏆', 'Rank Benchmark & Gap Analysis');
+
+  const currentRankName = document.getElementById('rank-display')?.textContent || 'Silver 2';
+  const currentTier = getRankTier(currentRankName);
+  const nextTier = getNextRank(currentTier);
+  const currentBench = RANK_BENCHMARKS[currentTier] || RANK_BENCHMARKS['Silver'];
+  const nextBench = nextTier ? RANK_BENCHMARKS[nextTier] : null;
+
+  const myKD  = parseFloat((data.reduce((s,d)=>s+d.kd,0)/n).toFixed(2));
+  const myWR  = Math.round(data.filter(d=>d.won).length/n*100);
+  const myACS = Math.round(data.reduce((s,d)=>s+d.acs,0)/n);
+  const myHS  = Math.round(data.reduce((s,d)=>s+d.hsPct,0)/n);
+
+  html += `<div class="plab-grid g2">`;
+  // Current rank vs you
+  html += `<div class="plab-card span2"><div class="plab-card-label">You vs ${currentTier} Average</div>
+    <div class="plab-rankgap">
+    ${rankGapRow('K/D',    myKD,  currentBench.kd,  nextBench?.kd,  myKD >= currentBench.kd)}
+    ${rankGapRow('Win Rate', myWR+'%', currentBench.wr+'%', nextBench?.wr+'%', myWR >= currentBench.wr)}
+    ${rankGapRow('ACS',    myACS, currentBench.acs, nextBench?.acs, myACS >= currentBench.acs)}
+    ${rankGapRow('HS%',    myHS+'%', currentBench.hs+'%', nextBench?.hs+'%', myHS >= currentBench.hs)}
+    </div></div>`;
+
+  // What to hit for next rank
+  if (nextBench) {
+    html += `<div class="plab-card span2"><div class="plab-card-label">What You Need for ${nextTier}</div>
+      <div class="plab-rankgap">
+      ${nextGapRow('K/D',    myKD,  nextBench.kd,  myKD >= nextBench.kd)}
+      ${nextGapRow('Win Rate', myWR,  nextBench.wr,  myWR >= nextBench.wr)}
+      ${nextGapRow('ACS',    myACS, nextBench.acs, myACS >= nextBench.acs)}
+      ${nextGapRow('HS%',    myHS,  nextBench.hs,  myHS >= nextBench.hs)}
+      </div></div>`;
+  }
+  html += `</div>`;
+
+  // ────────────────────────────────────────
+  // 6. WIN PROBABILITY PREDICTOR
+  // ────────────────────────────────────────
+  html += plabChapter('🎯', 'Win Probability Predictor');
+
+  // Build agent × map win rates
+  const agentMapWR = {};
+  data.forEach(d => {
+    const k = `${d.agent}|${d.map}`;
+    if (!agentMapWR[k]) agentMapWR[k] = {m:0,w:0};
+    agentMapWR[k].m++; if(d.won) agentMapWR[k].w++;
+  });
+  const agentWR = {};
+  data.forEach(d => {
+    if (!agentWR[d.agent]) agentWR[d.agent] = {m:0,w:0};
+    agentWR[d.agent].m++; if(d.won) agentWR[d.agent].w++;
+  });
+  const mapWR = {};
+  data.forEach(d => {
+    if (!mapWR[d.map]) mapWR[d.map] = {m:0,w:0};
+    mapWR[d.map].m++; if(d.won) mapWR[d.map].w++;
+  });
+
+  // Factors
+  const baseWR = myWR / 100;
+  const recentForm = data.slice(0,5).filter(d=>d.won).length / 5;
+  const streakBonus = currentStreak.type==='win' ? Math.min(currentStreak.count*0.04, 0.12) : -Math.min(currentStreak.count*0.04, 0.12);
+
+  // Best combo predictor
+  const combos = Object.entries(agentMapWR)
+    .filter(([,v]) => v.m >= 2)
+    .map(([k,v]) => { const [agent,map]=k.split('|'); return {agent,map,wr:v.w/v.m,m:v.m}; })
+    .sort((a,b) => b.wr-a.wr);
+
+  const topCombo = combos[0];
+  const worstCombo = [...combos].sort((a,b)=>a.wr-b.wr)[0];
+
+  // Overall next-game prediction
+  const nextGameProb = Math.max(25, Math.min(75, Math.round((baseWR*0.5 + recentForm*0.35 + 0.5*0.15 + streakBonus) * 100)));
+  const probCol = nextGameProb >= 55 ? 'var(--win)' : nextGameProb <= 44 ? 'var(--loss)' : 'var(--accent)';
+
+  html += `<div class="plab-grid">`;
+  html += `<div class="plab-card"><div class="plab-card-label">Next Game Win Prob</div>
+    <div class="plab-card-val" style="color:${probCol}">${nextGameProb}%</div>
+    <div class="plab-card-sub">Based on form, WR & streak</div>
+    <div class="plab-bench" style="margin-top:10px">
+      <div class="plab-bench-track">
+        <div class="plab-bench-fill" style="width:${nextGameProb}%;background:${probCol}"></div>
+      </div>
+    </div></div>`;
+
+  html += `<div class="plab-card"><div class="plab-card-label">Recent Form (Last 5)</div>
+    <div class="plab-card-val ${recentForm>=0.6?'good':recentForm<=0.3?'bad':'warn'}">${Math.round(recentForm*100)}%</div>
+    <div class="plab-card-sub">${data.slice(0,5).map(d=>d.won?'✓':'✗').join(' ')}</div></div>`;
+
+  if (topCombo) html += `<div class="plab-card good"><div class="plab-card-label">Best Pick Combo</div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:18px;color:var(--win);line-height:1.2">${topCombo.agent}<br><span style="font-size:13px;color:var(--muted)">on ${topCombo.map}</span></div>
+    <div class="plab-card-sub">${Math.round(topCombo.wr*100)}% WR · ${topCombo.m} games</div></div>`;
+
+  if (worstCombo && worstCombo.agent !== topCombo?.agent) html += `<div class="plab-card bad"><div class="plab-card-label">Avoid This Combo</div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:18px;color:var(--loss);line-height:1.2">${worstCombo.agent}<br><span style="font-size:13px;color:var(--muted)">on ${worstCombo.map}</span></div>
+    <div class="plab-card-sub">${Math.round(worstCombo.wr*100)}% WR · ${worstCombo.m} games</div></div>`;
+
+  html += `</div>`;
+
+  // Per-agent probability bars
+  const topAgents = Object.entries(agentWR).filter(([,v])=>v.m>=2).sort((a,b)=>b[1].w/b[1].m - a[1].w/a[1].m).slice(0,6);
+  if (topAgents.length) {
+    html += `<div class="plab-winprob"><div class="plab-card-label" style="margin-bottom:4px">Win Probability by Agent Pick</div>`;
+    topAgents.forEach(([agent, v]) => {
+      const pct = Math.round(v.w/v.m*100);
+      const col = pct>=55?'var(--win)':pct<=40?'var(--loss)':'var(--accent)';
+      html += `<div class="plab-prob-row">
+        <div class="plab-prob-label">${agent} <span style="color:var(--muted2);font-size:9px">(${v.m}g)</span></div>
+        <div class="plab-prob-bar-wrap"><div class="plab-prob-bar" style="width:${pct}%;background:${col}"></div></div>
+        <div class="plab-prob-pct" style="color:${col}">${pct}%</div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  // ────────────────────────────────────────
+  // 7. PERSONALISED ACTION PLAN
+  // ────────────────────────────────────────
+  html += plabChapter('📋', 'Personalised Action Plan');
+
+  const actions = [];
+  if (duelWinPct < 50) actions.push({ priority:'HIGH', title:'Fix Crosshair Placement', desc:`Your ${duelWinPct}% duel win rate means you're losing more gunfights than you win. Drill: 15 min Aimlab "Microshot" daily, focus on pre-aiming head level at every corner before you push.` });
+  if (myHS < (currentBench.hs - 3)) actions.push({ priority:'HIGH', title:'Improve Headshot Rate', desc:`You're at ${myHS}% HS rate vs ${currentBench.hs}% for your rank. Stop burst-firing — one tap, check if enemy is dead, then tap again. The extra kills come from cleaner first shots.` });
+  if (tiltLevel) actions.push({ priority:'HIGH', title:'Mental Reset Protocol', desc:`Set a hard rule: max 2 ranked games per session until your last-5 WR improves. Play deathmatch or unranked between ranked games to stay warm without the pressure.` });
+  if (myWR < currentBench.wr) actions.push({ priority:'MED', title:'Round Economy Awareness', desc:`At ${myWR}% WR vs ${currentBench.wr}% for your rank, you're losing rounds you should win. After every loss, check: did you save when you should have? Did you call out the right site?` });
+  if (bestHour.h >= 0 && worstHour.h >= 0 && bestHour.h !== worstHour.h) actions.push({ priority:'MED', title:`Play at ${bestHour.h}:00, Avoid ${worstHour.h}:00`, desc:`Your data shows a ${Math.round((bestHour.wr - worstHour.wr)*100)}% WR swing between your best and worst hours. Scheduling your ranked sessions deliberately is free RR.` });
+  if (topCombo) actions.push({ priority:'MED', title:`Queue ${topCombo.agent} on ${topCombo.map}`, desc:`${Math.round(topCombo.wr*100)}% WR in ${topCombo.m} games is your best combo. When you see ${topCombo.map} in rotation, lock ${topCombo.agent} and play with confidence.` });
+  if (nextBench && myACS < nextBench.acs) actions.push({ priority:'LOW', title:`Hit ${nextBench.acs} ACS for ${nextTier}`, desc:`You need +${nextBench.acs-myACS} more ACS per round on average. Focus on being proactive in rounds — don't wait for enemies to come to you, create picks in mid or on flanks.` });
+  actions.push({ priority:'LOW', title:'VoD Review — Deaths Only', desc:`Record every session with OBS. Watch only the rounds you died in. Ask: was I peeking without info? Did I have angle disadvantage? 3 VoD sessions will teach you more than 10 extra games.` });
+
+  html += `<div class="plab-card span4">`;
+  const priorityOrder = ['HIGH','MED','LOW'];
+  const pColors = {HIGH:'var(--loss)',MED:'#f5a623',LOW:'var(--accent)'};
+  actions.forEach((a,i) => {
+    html += `<div style="display:flex;align-items:flex-start;gap:14px;padding:${i>0?'12px 0 0':0};${i>0?'border-top:1px solid var(--border);margin-top:12px':''}">
+      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;padding:3px 8px;border-radius:4px;background:rgba(255,255,255,0.05);color:${pColors[a.priority]};border:1px solid ${pColors[a.priority]}33;flex-shrink:0;margin-top:2px">${a.priority}</div>
+      <div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;text-transform:uppercase;letter-spacing:0.5px">${a.title}</div>
+        <div style="font-family:'Barlow',sans-serif;font-size:12px;color:rgba(240,240,242,0.7);margin-top:3px;line-height:1.55">${a.desc}</div>
+      </div>
+    </div>`;
+  });
+  html += `</div>`;
+
+  return html;
+}
+
+// ── RENDER HELPERS ──
+function plabChapter(icon, title) {
+  return `<div class="plab-chapter"><span class="plab-chapter-icon">${icon}</span><span class="plab-chapter-title">${title}</span><div class="plab-chapter-line"></div></div>`;
+}
+function plabCard(label, val, sub, valCls, cardCls) {
+  return `<div class="plab-card ${cardCls||''}"><div class="plab-card-label">${label}</div><div class="plab-card-val ${valCls||''}">${val}</div><div class="plab-card-sub">${sub}</div></div>`;
+}
+function patternBlock(patterns) {
+  return `<div class="plab-card span4"><div class="plab-patterns">${patterns.map(p=>`<div class="plab-pattern"><div class="plab-dot ${p.c}"></div><div>${p.t}</div></div>`).join('')}</div></div>`;
+}
+function rankGapRow(stat, you, avg, next, passing) {
+  return `<div class="plab-rankgap-row">
+    <div class="plab-rankgap-stat">${stat}</div>
+    <div class="plab-rankgap-you" style="color:${passing?'var(--win)':'var(--loss)'}">${you}</div>
+    <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2);min-width:30px">avg</div>
+    <div class="plab-rankgap-target">${avg}</div>
+    ${next?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2);min-width:30px">next</div><div class="plab-rankgap-target" style="color:var(--accent)">${next}</div>`:''}
+    <div style="font-family:'DM Mono',monospace;font-size:10px;margin-left:auto;color:${passing?'var(--win)':'var(--loss)'}">${passing?'✓ Above avg':'↑ Needs work'}</div>
+  </div>`;
+}
+function nextGapRow(stat, you, target, passing) {
+  const youNum = parseFloat(String(you));
+  const targetNum = parseFloat(String(target));
+  const pct = passing ? 100 : Math.min(99, Math.round((youNum/targetNum)*100));
+  const gap = passing ? '✓ Ready' : `Need +${(targetNum-youNum).toFixed(stat==='K/D'?2:0)}`;
+  return `<div class="plab-rankgap-row">
+    <div class="plab-rankgap-stat">${stat}</div>
+    <div class="plab-rankgap-you" style="color:${passing?'var(--win)':'rgba(240,240,242,0.7)'}">${you}</div>
+    <div class="plab-rankgap-bar-wrap" style="margin:0 12px">
+      <div class="plab-rankgap-bar" style="width:${pct}%;background:${passing?'var(--win)':'var(--accent)'}"></div>
+    </div>
+    <div class="plab-rankgap-target">${target}</div>
+    <div style="font-family:'DM Mono',monospace;font-size:9px;color:${passing?'var(--win)':'var(--muted)'};margin-left:8px;white-space:nowrap">${gap}</div>
+  </div>`;
+}
+
+
+// ── Dynamic hero + player search ──
+function updateHeroName() {
+  const name = PLAYER_NAME;
+  const tag  = PLAYER_TAG;
+  const mode = document.getElementById('mode-select')?.value || 'competitive';
+  const modeLabel = { competitive:'Competitive', unrated:'Unrated', deathmatch:'Deathmatch',
+    teamdeathmatch:'Team Deathmatch', swiftplay:'Swiftplay', spikerush:'Spike Rush' }[mode] || mode;
+
+  // Split name into base + unicode/special suffix for styling
+  const match = name.match(/^([A-Za-z0-9_\-]+)(.*)$/);
+  const base = match ? match[1] : name;
+  const suffix = match ? match[2] : '';
+  const titleEl = document.getElementById('hero-title');
+  if (titleEl) titleEl.innerHTML = base + (suffix ? `<span class="dim">${suffix}</span>` : '');
+  const subEl = document.getElementById('hero-sub');
+  if (subEl) subEl.innerHTML = `#${tag} · <span id="player-level"></span>`;
+  const eyebrowEl = document.getElementById('hero-eyebrow');
+  if (eyebrowEl) eyebrowEl.textContent = `${modeLabel} Tracker · Henrik API`;
+  const bannerNameEl = document.getElementById('banner-name');
+  if (bannerNameEl) bannerNameEl.textContent = name;
+  const bannerTagEl = document.getElementById('banner-tag');
+  if (bannerTagEl) bannerTagEl.textContent = '#' + tag;
+  const tagDisplayEl = document.getElementById('player-tag-display');
+  if (tagDisplayEl) tagDisplayEl.textContent = name + ' #' + tag;
+}
+
+// Enter key triggers fetch
+
+
+
+// ── PER-MATCH DUEL BREAKDOWN ──
+function buildMatchDuels(m) {
+  const k = m.kills, d = m.deaths, a = m.assists;
+  const shots = m.shots || 0;
+  const hs = m.hs || 0;
+  const hsPct = shots ? Math.round((hs/shots)*100) : 0;
+  const duelWin = Math.round((k / Math.max(k+d,1)) * 100);
+  const kd = d ? (k/d).toFixed(2) : k.toFixed(2);
+  const acs = Math.round((m.score||0)/100);
+  const totalRounds = (() => {
+    const r = m.rounds || '0-0';
+    const parts = r.split('-').map(Number);
+    return (parts[0]||0) + (parts[1]||0);
+  })();
+  const kpr = totalRounds ? (k/totalRounds).toFixed(2) : '—';
+  const dpr = totalRounds ? (d/totalRounds).toFixed(2) : '—';
+
+  const duelCol = duelWin >= 55 ? 'var(--win)' : duelWin <= 44 ? 'var(--loss)' : 'var(--accent)';
+  const kdCol   = parseFloat(kd) >= 1.2 ? 'var(--win)' : parseFloat(kd) < 0.9 ? 'var(--loss)' : 'var(--text)';
+  const hsCol   = hsPct >= 25 ? 'var(--win)' : hsPct < 15 ? 'var(--loss)' : 'var(--text)';
+
+  // Duel bar
+  const winW = Math.round((k/Math.max(k+d,1))*100);
+  const lossW = 100 - winW;
+
+  let insight = '';
+  if (duelWin >= 60) insight = `<span style="color:var(--win)">Strong duel game</span> — you won ${duelWin}% of 1v1s this match.`;
+  else if (duelWin <= 42) insight = `<span style="color:var(--loss)">Rough duel game</span> — lost more gunfights than won (${duelWin}%). Check if you were peeking without info.`;
+  else insight = `<span style="color:var(--muted)">Average duel game</span> — close split between kills and deaths.`;
+  if (hsPct >= 30) insight += ` Excellent HS% (${hsPct}%) this match.`;
+  else if (hsPct < 15 && shots > 0) insight += ` Low HS% (${hsPct}%) — likely spraying under pressure.`;
+
+  return `<div style="display:flex;flex-direction:column;gap:10px;">
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;">
+      ${duelStatMini('Duel Win %', duelWin+'%', duelCol)}
+      ${duelStatMini('K/D', kd, kdCol)}
+      ${duelStatMini('KPR', kpr, parseFloat(kpr)>=0.8?'var(--win)':parseFloat(kpr)<0.5?'var(--loss)':'var(--text)')}
+      ${duelStatMini('DPR', dpr, parseFloat(dpr)<=0.7?'var(--win)':parseFloat(dpr)>0.9?'var(--loss)':'var(--text)')}
+      ${duelStatMini('HS %', hsPct+'%', hsCol)}
+    </div>
+    <div style="background:var(--surface2);border-radius:4px;overflow:hidden;height:6px;display:flex;">
+      <div style="width:${winW}%;background:var(--win);transition:width 0.8s ease;"></div>
+      <div style="width:${lossW}%;background:var(--loss);transition:width 0.8s ease;"></div>
+    </div>
+    <div style="font-family:'Barlow',sans-serif;font-size:12px;color:rgba(240,240,242,0.7);line-height:1.5">${insight}</div>
+  </div>`;
+}
+
+function duelStatMini(label, val, col) {
+  return `<div style="background:var(--surface2);border-radius:6px;padding:10px 12px;">
+    <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px">${label}</div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;color:${col}">${val}</div>
+  </div>`;
+}
+
+
+// ── MODE-AWARE UI ──
+function applyModeUI() {
+  const mode = document.getElementById('mode-select')?.value || 'competitive';
+  const isRanked = mode === 'competitive';
+  // Hide rank block for non-ranked modes
+  const rankBlock = document.querySelector('.hero-rank-block');
+  if (rankBlock) rankBlock.style.display = isRanked ? '' : 'none';
+  // Hide RR graph section for non-ranked
+  const rrCard = document.getElementById('rr-graph-card');
+  if (rrCard) rrCard.style.display = isRanked ? '' : 'none';
+  // Update eyebrow
+  updateHeroName();
+}
+
+// Patch fetchAll to call applyModeUI after fetch
+const _origFetchAll = fetchAll;
+
+
+// ══ LANDING PAGE ══
+function landingQuick(name, tag, region, mode) {
+  document.getElementById('l-name').value = name;
+  document.getElementById('l-tag').value  = tag;
+  document.getElementById('l-region').value = region;
+  document.getElementById('l-mode').value   = mode;
+  landingFetch();
+}
+
+async function landingFetch() {
+  const name   = document.getElementById('l-name').value.trim();
+  const tag    = document.getElementById('l-tag').value.trim().replace(/^#/,'');
+  const region = document.getElementById('l-region').value;
+  const mode   = document.getElementById('l-mode').value;
+  const errEl  = document.getElementById('l-error');
+  const btn    = document.getElementById('l-btn');
+
+  if (!name || !tag) { errEl.textContent = 'Enter a name and tag first'; return; }
+  errEl.textContent = '';
+  btn.disabled = true;
+  btn.textContent = 'Loading...';
+
+  // Sync inputs to topbar
+  document.getElementById('player-name-input').value = name;
+  document.getElementById('player-tag-input').value  = tag;
+  document.getElementById('region-select').value     = region;
+  document.getElementById('mode-select').value       = mode;
+
+  // Update globals
+  PLAYER_NAME = name;
+  PLAYER_TAG  = tag;
+  window._currentMode = mode;
+
+  // Dismiss landing
+  dismissLanding();
+
+  // Trigger fetch
+  await fetchAll();
+}
+
+function dismissLanding() {
+  const el = document.getElementById('landing');
+  if (el) {
+    el.classList.add('hidden');
+    el.style.display = 'none';
+  }
+  const tv = document.getElementById('tracker-view');
+  if (tv) tv.style.display = 'block';
+  const psw = document.querySelector('.player-search-wrap');
+  if (psw) psw.style.display = 'flex';
+  const fb = document.getElementById('fetch-btn');
+  if (fb) fb.style.display = 'inline-block';
+}
+
+// Enter key on landing inputs
+
+
+
+// ══ PERSONAL PROFILE (localStorage) ══
+const PROFILE_KEY = 'valstats_my_profile';
+
+function loadMyProfile() {
+  try { return JSON.parse(localStorage.getItem(PROFILE_KEY)); } catch(e) { return null; }
+}
+
+function saveMyProfile(name, tag, region, mode) {
+  localStorage.setItem(PROFILE_KEY, JSON.stringify({ name, tag, region, mode }));
+}
+
+function setMyProfile() {
+  const name   = document.getElementById('l-name').value.trim();
+  const tag    = document.getElementById('l-tag').value.trim().replace(/^#/,'');
+  const region = document.getElementById('l-region').value;
+  const mode   = document.getElementById('l-mode').value;
+  if (!name || !tag) { alert('Enter your name and tag first'); return; }
+  saveMyProfile(name, tag, region, mode);
+  renderLandingProfile();
+  showToast('Profile saved ✓');
+}
+
+function renderLandingProfile() {
+  const wrap = document.getElementById('landing-profile-wrap');
+  if (!wrap) return;
+  const p = loadMyProfile();
+  if (!p) {
+    wrap.innerHTML = `<div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted2);letter-spacing:1px;padding:8px 0">
+      No profile saved yet — enter your details above and click SET AS MY PROFILE
+    </div>`;
+    return;
+  }
+  wrap.innerHTML = `<button class="landing-quick-btn" onclick="landingQuick('${p.name.replace(/'/g,"\'")}','${p.tag}','${p.region}','${p.mode}')">
+    <div class="landing-quick-dot"></div>
+    <div>
+      <span style="font-size:15px">${p.name}</span>
+      <span style="color:var(--muted);font-size:12px;margin-left:4px">#${p.tag}</span>
+    </div>
+    <div style="margin-left:auto;font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2);letter-spacing:1px">${p.region.toUpperCase()} · ${p.mode}</div>
+  </button>`;
+}
+
+// renderLandingProfile called from main DOMContentLoaded
+
+
+// ════════════════════════════════
+//  ACCURACY + ROLES + WEAPONS
+// ════════════════════════════════
+
+function renderAccuracyAndRoles(matches) {
+  // ── Aggregate shot data ──
+  let totHS=0, totBS=0, totLS=0, totShots=0;
+  const roleStats={}; // role -> {m,w,k,d,a}
+
+  matches.forEach(match=>{
+    const me=findMe(match);
+    if(!me)return;
+    const s=me.stats||{};
+    const hs=s.headshots||0, bs=s.bodyshots||0, ls=s.legshots||0;
+    totHS+=hs; totBS+=bs; totLS+=ls;
+    totShots+=hs+bs+ls;
+
+    const agentName=me.character||'Unknown';
+    const role=getRoleClass(agentName);
+    const myTeamId=(me.team||'').toLowerCase();
+    const myTeam=match.teams?.[myTeamId];
+    const oppTeam=match.teams?.[myTeamId==='red'?'blue':'red'];
+    let won=false;
+    if(myTeam?.has_won===true) won=true;
+    else if(myTeam?.rounds_won!=null&&oppTeam?.rounds_won!=null) won=myTeam.rounds_won>oppTeam.rounds_won;
+
+    if(!roleStats[role]) roleStats[role]={m:0,w:0,k:0,d:0,a:0};
+    const r=roleStats[role];
+    r.m++; if(won)r.w++;
+    r.k+=s.kills||0; r.d+=s.deaths||0; r.a+=s.assists||0;
+  });
+
+  // ── Render Accuracy ──
+  const hsPct = totShots?Math.round(totHS/totShots*100):0;
+  const bsPct = totShots?Math.round(totBS/totShots*100):0;
+  const lsPct = totShots?Math.round(totLS/totShots*100):0;
+
+  const accWrap = document.getElementById('acc-body-row');
+  if(accWrap && totShots>0){
+    accWrap.innerHTML = `
+      <!-- Body SVG -->
+      <svg class="acc-figure" width="56" height="110" viewBox="0 0 56 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Head -->
+        <circle cx="28" cy="13" r="10" fill="${hsPct>=25?'rgba(62,207,142,0.7)':hsPct>=15?'rgba(232,255,71,0.6)':'rgba(255,87,87,0.6)'}" stroke="${hsPct>=25?'var(--win)':hsPct>=15?'var(--accent)':'var(--loss)'}" stroke-width="1.5"/>
+        <text x="28" y="17" text-anchor="middle" font-family="DM Mono" font-size="7" fill="white" font-weight="600">${hsPct}%</text>
+        <!-- Body -->
+        <rect x="14" y="27" width="28" height="44" rx="4" fill="${bsPct>=60?'rgba(255,87,87,0.5)':'rgba(255,255,255,0.08)'}" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+        <text x="28" y="53" text-anchor="middle" font-family="DM Mono" font-size="7" fill="rgba(255,255,255,0.7)" font-weight="600">${bsPct}%</text>
+        <!-- Legs -->
+        <rect x="14" y="74" width="12" height="32" rx="3" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+        <rect x="30" y="74" width="12" height="32" rx="3" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+        <text x="28" y="95" text-anchor="middle" font-family="DM Mono" font-size="7" fill="rgba(255,255,255,0.4)" font-weight="600">${lsPct}%</text>
+      </svg>
+      <!-- Bars -->
+      <div class="acc-bars">
+        ${[['HEAD', totHS, hsPct, hsPct>=25?'var(--win)':hsPct>=15?'var(--accent)':'var(--loss)'],
+           ['BODY', totBS, bsPct, 'rgba(255,255,255,0.5)'],
+           ['LEGS', totLS, lsPct, 'var(--loss)']].map(([lbl,hits,pct,col])=>`
+          <div class="acc-row">
+            <span class="acc-lbl">${lbl}</span>
+            <div class="acc-track"><div class="acc-fill" style="width:${pct}%;background:${col};"></div></div>
+            <span class="acc-pct" style="color:${col}">${pct}%</span>
+            <span class="acc-hits">${hits.toLocaleString()} hits</span>
+          </div>`).join('')}
+        <div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;">AVG HS%</span>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:24px;color:${hsPct>=25?'var(--win)':hsPct>=15?'var(--accent)':'var(--loss)'};">${hsPct}%</span>
+        </div>
+      </div>`;
+  }
+
+  // ── Render Roles ──
+  const roleConfig = {
+    duelist:    { icon:'⚔️', color:'#ff7b7b', label:'Duelist' },
+    initiator:  { icon:'🔍', color:'#f5a623', label:'Initiator' },
+    controller: { icon:'💨', color:'var(--win)', label:'Controller' },
+    sentinel:   { icon:'🛡️', color:'#7ab8ff', label:'Sentinel' },
+  };
+  const rolesWrap = document.getElementById('roles-breakdown-wrap');
+  const roleEntries = Object.entries(roleStats).filter(([,v])=>v.m>0)
+    .sort((a,b)=>b[1].m-a[1].m);
+
+  if(rolesWrap && roleEntries.length){
+    rolesWrap.innerHTML = roleEntries.map(([role,v])=>{
+      const cfg = roleConfig[role]||{icon:'🎮',color:'var(--muted)',label:role};
+      const wr  = Math.round(v.w/v.m*100);
+      const kda = v.d ? ((v.k+v.a*0.5)/v.d).toFixed(2) : v.k.toFixed(2);
+      const wrCol = wr>=55?'var(--win)':wr<=44?'var(--loss)':'var(--accent)';
+      return `<div class="role-row">
+        <div class="role-icon-wrap" style="background:${cfg.color}22;border:1px solid ${cfg.color}33;">
+          <span style="font-size:17px">${cfg.icon}</span>
+        </div>
+        <div class="role-name-col">
+          <div class="role-title" style="color:${cfg.color}">${cfg.label}</div>
+          <div class="role-wl">${v.w}W · ${v.m-v.w}L · ${v.m} games</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="role-wr" style="color:${wrCol}">${wr}%</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2)">WR</div>
+        </div>
+        <div style="text-align:right;min-width:44px;">
+          <div class="role-kda" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px">${kda}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2)">KDA</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
+
+function renderTopWeapons(matches) {
+  // Aggregate weapon stats from match-level data (headshots per match)
+  // We use agent names as proxy for weapon preference since we don't have
+  // per-weapon data in v3 — but we DO store rawMatch which has stats
+  const weaponData = {};
+
+  // Weapon image URLs from valorant-api CDN (display names as keys)
+  const WEAPON_IMGS = {
+    'Vandal':   'https://media.valorant-api.com/weapons/9c82e19d-4575-0200-1a81-3eacf00cf872/displayicon.png',
+    'Phantom':  'https://media.valorant-api.com/weapons/ee8d8960-4240-a65e-4d1c-5d03a2c64daf/displayicon.png',
+    'Operator': 'https://media.valorant-api.com/weapons/a03b24d3-4319-996d-0f8c-94bbfba1dfc7/displayicon.png',
+    'Sheriff':  'https://media.valorant-api.com/weapons/1baa85b4-4c70-1284-64bb-8481d23f0538/displayicon.png',
+    'Ghost':    'https://media.valorant-api.com/weapons/29a0cfab-485b-f5d5-779a-b59f85e204a8/displayicon.png',
+    'Spectre':  'https://media.valorant-api.com/weapons/462080d1-4035-2937-7c09-27aa2a5c27a7/displayicon.png',
+    'Bulldog':  'https://media.valorant-api.com/weapons/ae3de142-4d85-2547-dd26-4e90bed35cf7/displayicon.png',
+    'Guardian': 'https://media.valorant-api.com/weapons/4ade7faa-4cf1-8376-95ef-39884480959b/displayicon.png',
+    'Frenzy':   'https://media.valorant-api.com/weapons/44d4e95c-4157-0037-81b2-17841bf2e8e3/displayicon.png',
+    'Marshal':  'https://media.valorant-api.com/weapons/c4883e50-4494-202c-3ec3-6b8a9284f00b/displayicon.png',
+    'Stinger':  'https://media.valorant-api.com/weapons/f7e1b454-4ad4-1063-ec0a-159e56b58941/displayicon.png',
+    'Bucky':    'https://media.valorant-api.com/weapons/910be174-449b-c412-ab22-d0873436b21b/displayicon.png',
+    'Judge':    'https://media.valorant-api.com/weapons/ec845bf4-4f79-ddda-a3da-0db3d5af23b5/displayicon.png',
+    'Ares':     'https://media.valorant-api.com/weapons/55d8a0f4-4274-ca67-fe2c-06ab45efdf58/displayicon.png',
+    'Odin':     'https://media.valorant-api.com/weapons/63e6c2b6-4a8e-869c-3d4c-e38355226584/displayicon.png',
+    'Classic':  'https://media.valorant-api.com/weapons/29a0cfab-485b-f5d5-779a-b59f85e204a8/displayicon.png',
+  };
+  const WEAPON_TYPES = {
+    'Vandal':'Assault Rifle','Phantom':'Assault Rifle','Bulldog':'Assault Rifle','Guardian':'Assault Rifle',
+    'Operator':'Sniper','Marshal':'Sniper',
+    'Sheriff':'Sidearm','Ghost':'Sidearm','Frenzy':'Sidearm','Classic':'Sidearm',
+    'Spectre':'SMG','Stinger':'SMG',
+    'Bucky':'Shotgun','Judge':'Shotgun',
+    'Ares':'LMG','Odin':'LMG',
+  };
+
+  // We need to scan all stored v3 match data and extract weapon from kill events if available
+  // For v3 (no kill_events), we approximate based on agent playstyle
+  // Best we can do without v2 data: track total kills/hs% per match, group by common weapons
+  // Since v3 doesn't have weapon data, we show a note and use demo data format
+  // Actually — we DO have kill_events in v2 stored if detail was loaded. 
+  // For now aggregate from rawMatch if has round data
+  matches.forEach(match=>{
+    const me=findMe(match);
+    if(!me)return;
+    const rounds=match.rounds||[];
+    rounds.forEach(r=>{
+      let ps=r.player_stats||[];
+      if(typeof ps==='string'){try{ps=JSON.parse(ps);}catch(e){ps=[];}}
+      if(!Array.isArray(ps)) ps=Object.values(ps);
+      const myPs=ps.find(p=>(p.player_puuid||p.subject||p.puuid)===me.puuid);
+      if(!myPs)return;
+      const kills=myPs.kill_events||myPs.kills||[];
+      kills.forEach(k=>{
+        const raw=k.damage_weapon_name||k.finishing_damage?.damage_item||k.damage_weapon_id||'';
+        const cachedWpn = _assetCache.weapons[raw.toLowerCase()];
+        let wpn = cachedWpn ? cachedWpn.name : raw.replace(/^[^/]*\//,'').replace(/TX_Hud_/i,'').replace(/_/g,' ').trim();
+        if(/^[0-9a-f]{8}-/.test(wpn)) wpn = 'Ability'; // filter raw UUIDs
+        if(!wpn||wpn.length<2) return;
+        if(!weaponData[wpn]) weaponData[wpn]={kills:0,hs:0,shots:0};
+        weaponData[wpn].kills++;
+        let isHS = typeof k.headshot === 'boolean' ? k.headshot : k.finishing_damage?.is_headshot;
+        if (!isHS && myPs.damage_events) {
+          const dE = myPs.damage_events.find(de => de.receiver_puuid === (k.victim_puuid || k.victim));
+          if (dE && dE.headshots > 0) isHS = true;
+        }
+        if (isHS) weaponData[wpn].hs++;
+      });
+    });
+  });
+
+  const wrap = document.getElementById('weapons-grid-wrap');
+  if(!wrap) return;
+
+  const entries=Object.entries(weaponData).filter(([,v])=>v.kills>=1)
+    .sort((a,b)=>b[1].kills-a[1].kills).slice(0,6);
+
+  if(!entries.length){
+    wrap.innerHTML='<div class="placeholder-txt" style="padding:16px 0">Weapon data loads from full match details — expand matches and click Load Full Details on a few games, then re-fetch.</div>';
+    return;
+  }
+
+  wrap.innerHTML = `<div class="weapons-grid">${entries.map(([wpn,v])=>{
+    const hsPct=v.kills?Math.round(v.hs/v.kills*100):0;
+    const cachedWpn = _assetCache.weapons[wpn.toLowerCase()];
+    const imgUrl = cachedWpn ? cachedWpn.iconUrl : (WEAPON_IMGS[wpn] || null);
+    const type=WEAPON_TYPES[wpn]||'Weapon';
+    const hsPctCol=hsPct>=30?'var(--win)':hsPct>=20?'var(--accent)':'var(--loss)';
+    return `<div class="weapon-card">
+      <div class="weapon-img-wrap">
+        ${imgUrl
+          ?`<img class="weapon-img" src="${imgUrl}" alt="${wpn}" onerror="this.parentElement.innerHTML='<div class=weapon-img-fallback>${wpn}</div>'">`
+          :`<div class="weapon-img-fallback">${wpn}</div>`}
+      </div>
+      <div class="weapon-info">
+        <div class="weapon-name">${wpn}</div>
+        <div class="weapon-type">${type}</div>
+        <div class="weapon-stats">
+          <div class="weapon-stat"><div class="wsv">${v.kills}</div><div class="wsl">Kills</div></div>
+          <div class="weapon-stat"><div class="wsv" style="color:${hsPctCol}">${hsPct}%</div><div class="wsl">HS%</div></div>
+        </div>
+      </div>
+      <div class="weapon-acc-col">
+        <div class="weapon-acc-row">
+          <div class="war-dot" style="background:var(--win)"></div>
+          <span class="war-lbl">HS</span>
+          <div class="war-bar-wrap"><div class="war-bar-fill" style="width:${hsPct}%;background:var(--win);"></div></div>
+          <span class="war-pct" style="color:var(--win)">${hsPct}%</span>
+        </div>
+        <div class="weapon-acc-row">
+          <div class="war-dot" style="background:var(--muted2)"></div>
+          <span class="war-lbl">BD</span>
+          <div class="war-bar-wrap"><div class="war-bar-fill" style="width:${100-hsPct}%;background:var(--muted2);"></div></div>
+          <span class="war-pct" style="color:var(--muted2)">${100-hsPct}%</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+/* ── CORE FEATURES LOGIC ── */
+
+// 1. Rank Prediction
+function updateRankPrediction(matches, currentRR) {
+  const el = document.getElementById('rank-prediction');
+  if (!el || !matches || matches.length === 0 || currentRR === undefined || currentRR === null) {
+    if (el) el.style.display = 'none';
+    return;
+  }
+  
+  let rrGains = 0, rrLosses = 0;
+  let gainCount = 0, lossCount = 0;
+  
+  matches.slice(0, 10).forEach(m => {
+    const rr = window._mmrHistory && window._mmrHistory[m.metadata?.matchid];
+    if (rr > 0) { rrGains += rr; gainCount++; }
+    else if (rr < 0) { rrLosses += Math.abs(rr); lossCount++; }
+  });
+  
+  const avgGain = gainCount > 0 ? rrGains / gainCount : 18;
+  const avgLoss = lossCount > 0 ? rrLosses / lossCount : 15;
+  
+  const totalWins = matches.filter(m => {
+      const me = findMe(m);
+      if (!me) return false;
+      const myTeamId = (me.team||'').toLowerCase();
+      const myTeam = m.teams && m.teams[myTeamId];
+      return myTeam && (myTeam.has_won === true || myTeam.rounds_won > (m.teams[myTeamId==='red'?'blue':'red']?.rounds_won||0));
+    }).length;
+    
+    // Smooth out win rate using all available matches (up to 25) to prevent extreme volatility
+    const wr = matches.length > 5 ? (totalWins / matches.length) : 0.5;
+    const netGainPerMatch = (wr * avgGain) - ((1 - wr) * avgLoss);
+    
+    if (netGainPerMatch > 2.5) {
+      const rrNeeded = 100 - (currentRR % 100);
+      const matchesNeeded = Math.ceil(rrNeeded / netGainPerMatch);
+      el.innerHTML = `At your current pace, you'll hit the <b>Next Rank</b> in ~${matchesNeeded} games.`;
+      el.style.display = 'block';
+    } else if (netGainPerMatch > 0) {
+      el.innerHTML = `You are climbing very slowly. Improve your win rate to rank up faster!`;
+      el.style.display = 'block';
+    } else {
+      el.innerHTML = `Trend is negative. Focus on improvement to rank up!`;
+      el.style.display = 'block';
+    }
+  }
+  
+  // Hook into the fetch pipeline for Rank Prediction
+const originalProcessMatches = processMatches;
+processMatches = function(matches) {
+  originalProcessMatches(matches);
+  if (window._currentMode === 'competitive') {
+    updateRankPrediction(matches, window._currentRankRR);
+  } else {
+    const el = document.getElementById('rank-prediction');
+    if (el) el.style.display = 'none';
+  }
+  
+  // Track matches for active session
+  if (sessionActive && matches.length > 0) {
+    const newMatches = matches.filter(m => m.metadata?.game_start * 1000 > sessionStartTime.getTime());
+    sessionMatches = newMatches;
+  }
+};
+
+// 2. Session Tracker
+let sessionActive = false;
+let sessionStartTime = null;
+let sessionStartRR = null;
+let sessionMatches = [];
+
+function toggleSession() {
+  const btn = document.getElementById('session-btn');
+  const sumBtn = document.getElementById('session-summary-btn');
+  if (!sessionActive) {
+    sessionActive = true;
+    sessionStartTime = new Date();
+    sessionStartRR = window._currentRankRR || 0;
+    sessionMatches = [];
+    btn.innerHTML = '⏹ End Session';
+    btn.style.background = 'rgba(255,87,87,0.15)';
+    btn.style.color = 'var(--loss)';
+    btn.style.borderColor = 'rgba(255,87,87,0.3)';
+    sumBtn.style.display = 'none';
+    showToast('Session Started');
+  } else {
+    sessionActive = false;
+    btn.innerHTML = '▶ Start Session';
+    btn.style.background = 'rgba(77,159,255,0.15)';
+    btn.style.color = 'var(--blue)';
+    btn.style.borderColor = 'rgba(77,159,255,0.3)';
+    sumBtn.style.display = 'inline-block';
+    showToast('Session Ended');
+    showSessionSummary();
+  }
+}
+
+function showSessionSummary() {
+  const modal = document.getElementById('session-modal');
+  const content = document.getElementById('session-content');
+  
+  const matchesToUse = sessionMatches.length > 0 ? sessionMatches : _lastAllMatches.slice(0, 5);
+  
+  if (!matchesToUse || matchesToUse.length === 0) {
+    content.innerHTML = `<div style="text-align:center; color:var(--muted); padding:20px;">No matches found.</div>`;
+    modal.style.display = 'flex';
+    return;
+  }
+  
+  let wins = 0, losses = 0;
+  let totalKills = 0, totalDeaths = 0;
+  let agents = {};
+  
+  matchesToUse.forEach(m => {
+    const me = findMe(m);
+    if(!me) return;
+    const myTeamId = (me.team||'').toLowerCase();
+    const myTeam = m.teams && m.teams[myTeamId];
+    let won = false;
+    if (myTeam?.has_won === true) { won = true; } 
+    else if (myTeam?.rounds_won != null) {
+      const oppId = myTeamId === 'red' ? 'blue' : 'red';
+      won = myTeam.rounds_won > (m.teams[oppId]?.rounds_won||0);
+    }
+    if (won) wins++; else losses++;
+    
+    totalKills += me.stats?.kills || 0;
+    totalDeaths += me.stats?.deaths || 0;
+    
+    const ag = me.character || 'Unknown';
+    agents[ag] = (agents[ag] || 0) + 1;
+  });
+  
+  const bestAgent = Object.keys(agents).sort((a,b) => agents[b] - agents[a])[0] || 'N/A';
+  const kd = totalDeaths > 0 ? (totalKills/totalDeaths).toFixed(2) : totalKills;
+  const currentRR = window._currentRankRR || 0;
+  const rrChange = sessionStartRR !== null ? (currentRR - sessionStartRR) : 'N/A';
+  
+  content.innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:center; background:var(--surface2); padding:16px; border-radius:var(--radius-sm);">
+      <div>
+        <div style="font-family:'DM Mono', monospace; font-size:11px; color:var(--muted); letter-spacing:1px;">RECORD</div>
+        <div style="font-family:'Barlow Condensed', sans-serif; font-weight:800; font-size:28px;">
+          <span style="color:var(--win)">${wins}W</span> - <span style="color:var(--loss)">${losses}L</span>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-family:'DM Mono', monospace; font-size:11px; color:var(--muted); letter-spacing:1px;">RR CHANGE</div>
+        <div style="font-family:'Barlow Condensed', sans-serif; font-weight:800; font-size:28px; color:${rrChange > 0 ? 'var(--win)' : (rrChange < 0 ? 'var(--loss)' : 'var(--text)')}">
+          ${rrChange > 0 ? '+'+rrChange : rrChange}
+        </div>
+      </div>
+    </div>
+    
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+      <div style="background:var(--surface2); padding:12px; border-radius:var(--radius-sm); text-align:center;">
+        <div style="font-family:'DM Mono', monospace; font-size:10px; color:var(--muted);">BEST AGENT</div>
+        <div style="font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:20px; color:var(--accent);">${bestAgent}</div>
+      </div>
+      <div style="background:var(--surface2); padding:12px; border-radius:var(--radius-sm); text-align:center;">
+        <div style="font-family:'DM Mono', monospace; font-size:10px; color:var(--muted);">OVERALL K/D</div>
+        <div style="font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:20px;">${kd}</div>
+      </div>
+    </div>
+  `;
+  modal.style.display = 'flex';
+}
+
+async function exportSessionCard() {
+  if (typeof html2canvas === 'undefined') {
+    showToast('Export library not loaded.');
+    return;
+  }
+  const el = document.getElementById('session-card-export');
+  const canvas = await html2canvas(el, { backgroundColor: '#0a0a0c', scale: 2 });
+  const a = document.createElement('a');
+  a.href = canvas.toDataURL('image/png');
+  a.download = `valtracker_session_${new Date().getTime()}.png`;
+  a.click();
+}
+
+
+// 3. Live Match Overlay
+function toTitleCase(str) {
+  if (!str) return '';
+  return str.trim().toLowerCase().split(/\s+/).map(word => {
+    return word.charAt(0).toUpperCase() + word.slice(1);
+  }).join(' ');
+}
+
+function getTitleCasedRank(rankStr) {
+  if (!rankStr || rankStr === '—' || rankStr.toLowerCase() === 'unranked') {
+    return 'Diamond 2';
+  }
+  return toTitleCase(rankStr);
+}
+
+function getPlayerIdentityInfo() {
+  const myName = PLAYER_NAME || 'Pratham';
+  const myTag = PLAYER_TAG || 'Lobby';
+  
+  // Rank
+  let myRank = 'Diamond 2';
+  const rankEl = document.getElementById('rank-display');
+  if (rankEl && rankEl.textContent && rankEl.textContent.trim() !== '—') {
+    myRank = rankEl.textContent.trim();
+  }
+  
+  // Level
+  let myLevel = 89;
+  const lvlEl = document.getElementById('player-level') || document.getElementById('hero-level-badge');
+  if (lvlEl && lvlEl.textContent && lvlEl.textContent.trim() !== '') {
+    const matched = lvlEl.textContent.match(/\d+/);
+    if (matched) {
+      myLevel = parseInt(matched[0], 10);
+    }
+  }
+  
+  // Preferred agent
+  let myAgent = 'Cypher';
+  const matches = window._allRenderedMatches || window._recentMatchStats || [];
+  if (matches.length > 0) {
+    const counts = {};
+    matches.forEach(m => {
+      const me = findMe(m);
+      if (me && me.character) {
+        counts[me.character] = (counts[me.character] || 0) + 1;
+      }
+    });
+    const sorted = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+    if (sorted.length > 0) {
+      myAgent = sorted[0];
+    }
+  }
+  
+  return { name: myName, tag: myTag, rank: myRank, level: myLevel, agent: myAgent };
+}
+
+function getDemoRankScale(userRank) {
+  const matched = userRank.match(/([a-zA-Z\s]+)\s*(\d+)?/);
+  if (!matched) return ['Diamond 1', 'Diamond 2', 'Diamond 3', 'Platinum 3', 'Diamond 2'];
+  const rankGroup = matched[1].trim();
+  const rankNum = matched[2] ? parseInt(matched[2], 10) : 2;
+  
+  const rankGroups = ['Iron', 'Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Ascendant', 'Immortal', 'Radiant'];
+  const groupIdx = rankGroups.indexOf(rankGroup);
+  if (groupIdx === -1) return ['Diamond 1', 'Diamond 2', 'Diamond 3', 'Platinum 3', 'Diamond 2'];
+  
+  const getRankName = (gIdx, num) => {
+    const group = rankGroups[Math.max(0, Math.min(8, gIdx))];
+    if (group === 'Radiant') return 'Radiant';
+    return `${group} ${Math.max(1, Math.min(3, num))}`;
+  };
+  
+  return [
+    getRankName(groupIdx, rankNum - 1),
+    getRankName(groupIdx, rankNum),
+    getRankName(groupIdx, rankNum + 1),
+    getRankName(groupIdx - 1, 3),
+    getRankName(groupIdx + 1, 1)
+  ];
+}
+
+function generateLiveTacticalTips(enemyPlayers) {
+  const tips = [];
+  const enemyAgents = enemyPlayers.map(p => p.character).filter(Boolean);
+  
+  if (enemyAgents.length === 0) {
+    return [
+      "No enemy agents picked yet. Maintain default positioning and communicate early crosshair levels.",
+      "Stay grouped and call out utility usage as soon as agent selection finishes."
+    ];
+  }
+  
+  const agentTipsMap = {
+    'Reyna': "Aggressive Reyna in lobby. Avoid standard dry 1v1 duels; always call for teammate bait/trades to cancel her heal/dismiss.",
+    'Jett': "Jett picked. Expect high-velocity dash entries or early Operator angles. Use smokes early to block sight lines.",
+    'Omen': "Omen active. Listen closely for Shrouded Step sound cues and clear off-angles/back-chutes regularly.",
+    'Sage': "Sage holding. Keep a close ear on Barrier wall cracks, and rotate speed-first when main lanes are blocked.",
+    'Sova': "Sova present. Break Recon Darts instantly to deny them early site scanning.",
+    'Killjoy': "Killjoy defending. Use utility or spam angles to break her Alarmbot and Turret before scaling site.",
+    'Cypher': "Cypher setup active. Keep crosshair low to sweep knee-height Trapwires; avoid dry-pushing sites without utility clearing.",
+    'Breach': "Breach present. Avoid bundling up closely in chokepoints to mitigate heavy stun and rolling-thunder combo line-ups.",
+    'Neon': "Neon sprint-sliding. Pre-aim wider than usual to compensate for her high-velocity movement speed.",
+    'Raze': "Raze in lobby. Expect double blast-pack entries and early paint shells; play wider holding angles.",
+    'Viper': "Viper screen active. Wait out her toxic wall decay before executing; otherwise force flashes through it.",
+    'Clove': "Clove active. Watch out for post-death smoke zones and expect aggressive self-revives.",
+    'Gekko': "Gekko picked. Shoot Dizzy/Wingman instantly to deny them flashing or planting, and check for reclaimed globules.",
+    'Phoenix': "Phoenix active. Beware of curved corner flashes and look out for his Run It Back spawn-anchor point."
+  };
+  
+  enemyAgents.forEach(agent => {
+    const matchedKey = Object.keys(agentTipsMap).find(k => agent.toLowerCase().includes(k.toLowerCase()));
+    if (matchedKey && tips.length < 3) {
+      tips.push(agentTipsMap[matchedKey]);
+    }
+  });
+  
+  if (tips.length < 2) {
+    tips.push("Establish early crossfires to deny easy site entries.");
+  }
+  if (tips.length < 3) {
+    tips.push("Coordinate ultimate combos to secure critical weapon rounds.");
+  }
+  
+  return tips;
+}
+
+async function fetchLiveMatch(forceDemo = false) {
+  const modal = document.getElementById('live-modal');
+  const content = document.getElementById('live-content');
+  
+  const region = document.getElementById('region-select').value;
+  const enc = encodeURIComponent(PLAYER_NAME);
+  
+  content.innerHTML = '<div class="detail-loading" style="text-align:center;">SCANNING LIVE SESSION...</div>';
+  modal.style.display = 'flex';
+  
+  // Apply visual injection of styles
+  const existingStyles = document.getElementById('live-intel-animations');
+  if (!existingStyles) {
+    const s = document.createElement('style');
+    s.id = 'live-intel-animations';
+    s.textContent = `
+      @keyframes glowPulse {
+        0%, 100% { border-color: rgba(62,207,142,0.15); box-shadow: 0 0 5px rgba(62,207,142,0.05); }
+        50% { border-color: rgba(62,207,142,0.4); box-shadow: 0 0 15px rgba(62,207,142,0.15); }
+      }
+      @keyframes glowPulseAmber {
+        0%, 100% { border-color: rgba(245,166,35,0.15); box-shadow: 0 0 5px rgba(245,166,35,0.05); }
+        50% { border-color: rgba(245,166,35,0.4); box-shadow: 0 0 15px rgba(245,166,35,0.15); }
+      }
+      @keyframes pulseDot {
+        0%, 100% { transform: scale(1); opacity: 0.8; }
+        50% { transform: scale(1.25); opacity: 1; }
+      }
+      .intel-card-hover {
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .intel-card-hover:hover {
+        transform: translateY(-2px);
+        background: rgba(255, 255, 255, 0.03) !important;
+        border-color: rgba(255, 255, 255, 0.15) !important;
+      }
+    `;
+    document.head.appendChild(s);
+  }
+  
+  if (forceDemo) {
+    setTimeout(() => { renderDemoLiveMatch(); }, 600);
+    return;
+  }
+  
+  try {
+    const res = await fetch(`/api/v1/live-match/${region}/${enc}/${PLAYER_TAG}`);
+    if(!res.ok) throw new Error('Scanner request failed');
+    const data = await res.json();
+    
+    // Redirect immediately to demo mode if backend says simulation / demo
+    if (data.status === 'demo') {
+      renderDemoLiveMatch();
+      return;
+    }
+    
+    // -------------------------------------------------------------
+    // CASE A: REAL-TIME ACTIVE LOCAL MATCH
+    // -------------------------------------------------------------
+    if (data.status === 'active') {
+      const matchDetails = data.data || {};
+      const players = matchDetails.players || [];
+      if(players.length === 0) throw new Error('Empty active lobby data');
+      
+      const red = players.filter(p => p.team === 'Red' || p.team === 'red');
+      const blue = players.filter(p => p.team === 'Blue' || p.team === 'blue');
+      const tacticalTips = generateLiveTacticalTips(red);
+      
+      content.innerHTML = `
+        <div style="background: rgba(62,207,142,0.05); border: 1px solid rgba(62,207,142,0.15); border-radius: var(--radius); padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; animation: glowPulse 2s infinite ease-in-out;">
+          <div style="font-family:'Barlow Condensed', sans-serif; font-size: 13px; font-weight:800; color: var(--win); display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing:0.5px;">
+            <div class="live-dot" style="position:static; background:var(--win); box-shadow:0 0 6px var(--win); width:8px; height:8px; border-radius:50%; animation: pulseDot 1.5s infinite;"></div>
+            REAL-TIME CLIENT SCAN ACTIVE (${matchDetails.match_type === 'pregame' ? 'AGENT SELECTION' : 'IN-GAME SESSION'})
+          </div>
+          <button class="nav-btn" onclick="fetchLiveMatch(true)" style="background:var(--surface3); border:1px solid var(--border); font-size:10px; padding:3px 8px; cursor:pointer;">Switch to Demo Mode</button>
+        </div>
+        
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;">
+          <!-- RED TEAM (DEFENDERS / ENEMIES) -->
+          <div>
+            <div style="font-family:'Barlow Condensed', sans-serif; font-weight:900; font-size:15px; color:var(--loss); letter-spacing:1px; margin-bottom:12px; border-bottom:1px solid rgba(255,70,85,0.2); padding-bottom:6px; text-transform:uppercase;">DEFENDERS (RED TEAM)</div>
+            ${red.map(p => {
+              const icon = getAgentIconUrl(p.character || '');
+              const rankImg = getRankImgUrl(p.currenttierpatched || '');
+              const isSmurf = p.account_level < 30 && p.currenttier >= 15;
+              const formattedName = p.tag ? `${p.name} <span style="color:var(--muted); font-size:11px;">#${p.tag}</span>` : p.name;
+              return `
+              <div class="intel-card-hover" style="background:var(--surface2); padding:12px; margin-bottom:8px; border-radius:var(--radius-sm); border:1px solid rgba(255,87,87,0.15); display: flex; align-items: center; gap: 12px;">
+                ${icon ? `<img src="${icon}" style="width:36px;height:36px;object-fit:contain;border-radius:4px;border:1px solid var(--border);" onerror="this.style.display='none'">` : ''}
+                <div style="flex:1">
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:16px;">${formattedName}</div>
+                    <div style="font-family:'DM Mono', monospace; font-size:10px; color:var(--muted);">Lvl ${p.account_level || '—'}</div>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                    <div style="font-family:'DM Mono', monospace; font-size:11px; color:var(--muted2);">${p.character || 'Unknown Agent'}</div>
+                    <div style="display:flex; align-items:center; gap:4px; font-family:'DM Mono', monospace; font-size:10px; color:var(--text);">
+                      ${rankImg ? `<img src="${rankImg}" style="width:16px;height:16px;object-fit:contain;" onerror="this.style.display='none'">` : ''}
+                      ${p.currenttierpatched || 'Unranked'}
+                    </div>
+                  </div>
+                  ${isSmurf ? `<div style="margin-top:6px; font-family:'DM Mono',monospace; font-size:8px; color:var(--accent); background:rgba(255,70,85,0.1); border: 1px solid rgba(255,70,85,0.2); display:inline-block; padding:2px 6px; border-radius:3px; font-weight:bold; letter-spacing:0.5px;">⚠️ SUSPECTED SMURF</div>` : ''}
+                </div>
+              </div>
+              `;
+            }).join('')}
+            ${red.length === 0 ? '<div style="font-family:\'DM Mono\',monospace; font-size:12px; color:var(--muted); text-align:center; padding:12px;">Waiting for enemies to lock in...</div>' : ''}
+          </div>
+          
+          <!-- BLUE TEAM (ATTACKERS / ALLIES) -->
+          <div>
+            <div style="font-family:'Barlow Condensed', sans-serif; font-weight:900; font-size:15px; color:var(--blue); letter-spacing:1px; margin-bottom:12px; border-bottom:1px solid rgba(0,180,255,0.2); padding-bottom:6px; text-transform:uppercase;">ATTACKERS (BLUE TEAM)</div>
+            ${blue.map(p => {
+              const icon = getAgentIconUrl(p.character || '');
+              const rankImg = getRankImgUrl(p.currenttierpatched || '');
+              const isSmurf = p.account_level < 30 && p.currenttier >= 15;
+              const isMe = p.name?.toLowerCase() === PLAYER_NAME.toLowerCase();
+              const formattedName = p.tag ? `${p.name} <span style="color:var(--muted); font-size:11px;">#${p.tag}</span>` : p.name;
+              return `
+              <div class="intel-card-hover" style="background:var(--surface2); padding:12px; margin-bottom:8px; border-radius:var(--radius-sm); border:1px solid ${isMe ? 'rgba(62,207,142,0.3)' : 'rgba(77,159,255,0.15)'}; display: flex; align-items: center; gap: 12px; ${isMe ? 'background: rgba(62,207,142,0.03);' : ''}">
+                ${icon ? `<img src="${icon}" style="width:36px;height:36px;object-fit:contain;border-radius:4px;border:1px solid var(--border);" onerror="this.style.display='none'">` : ''}
+                <div style="flex:1">
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:16px;">
+                      ${formattedName} 
+                      ${isMe ? '<span style="color:var(--accent); font-size:9px; margin-left:4px; background:rgba(62,207,142,0.1); padding:1px 4px; border-radius:3px; font-weight:800;">YOU</span>' : ''}
+                    </div>
+                    <div style="font-family:'DM Mono', monospace; font-size:10px; color:var(--muted);">Lvl ${p.account_level || '—'}</div>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                    <div style="font-family:'DM Mono', monospace; font-size:11px; color:var(--muted2);">${p.character || 'Unknown Agent'}</div>
+                    <div style="display:flex; align-items:center; gap:4px; font-family:'DM Mono', monospace; font-size:10px; color:var(--text);">
+                      ${rankImg ? `<img src="${rankImg}" style="width:16px;height:16px;object-fit:contain;" onerror="this.style.display='none'">` : ''}
+                      ${p.currenttierpatched || 'Unranked'}
+                    </div>
+                  </div>
+                  ${isSmurf ? `<div style="margin-top:6px; font-family:'DM Mono',monospace; font-size:8px; color:var(--accent); background:rgba(255,70,85,0.1); border: 1px solid rgba(255,70,85,0.2); display:inline-block; padding:2px 6px; border-radius:3px; font-weight:bold; letter-spacing:0.5px;">⚠️ SUSPECTED SMURF</div>` : ''}
+                </div>
+              </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+        
+        <!-- DYNAMIC LIVE TACTICS BENTO CARD -->
+        <div class="card" style="border:1px solid var(--border); background:rgba(255,255,255,0.01); padding:16px;">
+          <div style="font-family:'Barlow Condensed', sans-serif; font-weight:900; font-size:15px; letter-spacing:1px; color:#fff; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+            ⚔️ TACTICAL COMBAT COUNTER-STRATEGIES
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 2fr; gap:20px; font-family:'DM Mono',monospace; font-size:11px;">
+            <div style="border-right: 1px solid var(--border); padding-right:12px;">
+              <div style="margin-bottom:8px;"><span style="color:var(--muted)">Lobby Level:</span> <span style="color:#fff;">Real Session</span></div>
+              <div style="margin-bottom:8px;"><span style="color:var(--muted)">Team Balance:</span> <span style="color:var(--win); font-weight:bold;">Analyzing...</span></div>
+              <div><span style="color:var(--muted)">Active Threat:</span> <span style="color:var(--accent); font-weight:bold;">${red.some(p => p.account_level < 30 && p.currenttier >= 15) ? 'Suspected Smurf (⚠️ Red Flag)' : 'Standard Lobby'}</span></div>
+            </div>
+            <div>
+              <div style="color:var(--muted); margin-bottom:6px; font-weight:bold; font-size:10px;">RECOMMENDED LIVE TACTICS:</div>
+              <div style="color:var(--text); line-height:1.6; font-size:11px;">
+                ${tacticalTips.map(tip => `• ${tip}`).join('<br>')}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      return;
+    }
+    
+    // -------------------------------------------------------------
+    // CASE B: RECENT POST-MATCH INTELLIGENCE FALLBACK
+    // -------------------------------------------------------------
+    if (data.status === 'recent') {
+      const matchDetails = data.data || {};
+      const players = matchDetails.players || [];
+      const red = players.filter(p => p.team === 'Red' || p.team === 'red');
+      const blue = players.filter(p => p.team === 'Blue' || p.team === 'blue');
+      
+      const blueScore = data.teams?.blue?.rounds_won ?? 0;
+      const redScore = data.teams?.red?.rounds_won ?? 0;
+      const myTeamWon = data.teams?.blue?.has_won ?? false;
+      const totalRounds = blueScore + redScore || 20;
+      
+      const me = players.find(p => p.name?.toLowerCase() === PLAYER_NAME.toLowerCase());
+      
+      // Generate AI Post-Match review text
+      let reviewHeadline = "Solid Performance!";
+      let reviewText = "You contributed consistently to your team's executes. Keep focusing on team coordination.";
+      if (me && me.stats) {
+        const kills = me.stats.kills || 0;
+        const deaths = me.stats.deaths || 0;
+        const assists = me.stats.assists || 0;
+        const kd = deaths > 0 ? (kills / deaths) : kills;
+        
+        if (kd >= 1.3) {
+          reviewHeadline = "Dominant Performance!";
+          reviewText = `Outstanding individual form with a ${kd.toFixed(2)} K/D! You successfully opened up entry duels and held your grounds. Carry this mechanical confidence directly into your next round!`;
+        } else if (kd < 0.9) {
+          reviewHeadline = "Tough Aiming Conditions";
+          reviewText = `You faced heavy mechanical resistance in this match (${kd.toFixed(2)} K/D). Lower your peeking aggression, hold supportive crossfires, and let teammate flash utility scale you in.`;
+        } else {
+          reviewHeadline = "Excellent Team Integration";
+          reviewText = `A balanced ${kd.toFixed(2)} K/D and stable performance. Your support/trade speed was fantastic. Focus on smoke/utility timing to give yourself even safer margins next game.`;
+        }
+        
+        // Agent specific review additions
+        const agent = me.character || 'Unknown';
+        const duelistGroup = ['Jett', 'Reyna', 'Neon', 'Raze', 'Phoenix', 'Iso'];
+        const sentinelGroup = ['Cypher', 'Killjoy', 'Sage', 'Deadlock', 'Vyse'];
+        const controllerGroup = ['Omen', 'Viper', 'Clove', 'Brimstone', 'Astra', 'Harbor'];
+        
+        if (duelistGroup.includes(agent)) {
+          reviewText += ` As a Duelist, double down on coordinating flash/recon initiators to clear corners before you jump-entry.`;
+        } else if (sentinelGroup.includes(agent)) {
+          reviewText += ` As a Sentinel, keep traps non-standard and prioritize staying alive to delay late post-plants.`;
+        } else if (controllerGroup.includes(agent)) {
+          reviewText += ` As a Controller, ensure your smokes completely plug the choke margins without leaking gaps.`;
+        } else {
+          reviewText += ` As an Initiator, make sure to flash or scout corners precisely for your Entry Duelists.`;
+        }
+      }
+      
+      content.innerHTML = `
+        <div style="background: rgba(245,166,35,0.05); border: 1px solid rgba(245,166,35,0.15); border-radius: var(--radius); padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; animation: glowPulseAmber 2s infinite ease-in-out;">
+          <div style="font-family:'Barlow Condensed', sans-serif; font-size: 13px; font-weight:800; color: #f5a623; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing:0.5px;">
+            ⚡ RECENT SESSION INTEL (COMPLETED ${data.time_ago_mins} MINS AGO)
+          </div>
+          <button class="nav-btn" onclick="fetchLiveMatch(true)" style="background:var(--surface3); border:1px solid var(--border); font-size:10px; padding:3px 8px; cursor:pointer;">Launch Demo Mode</button>
+        </div>
+        
+        <!-- RECENT OUTCOME OVERVIEW -->
+        <div style="background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; background-size: cover; background-position: center; position:relative; overflow:hidden;">
+          <div style="position:relative; z-index:2;">
+            <div style="font-family:'DM Mono', monospace; font-size:10px; color:var(--muted); text-transform:uppercase;">Map: ${data.map || 'Unknown Map'} · Mode: ${data.mode || 'Competitive'}</div>
+            <div style="font-family:'Barlow Condensed', sans-serif; font-size:32px; font-weight:900; color:${myTeamWon ? 'var(--win)' : 'var(--loss)'}; display:flex; align-items:center; gap:12px; margin-top:4px;">
+              <span>${myTeamWon ? 'VICTORY' : 'DEFEAT'}</span>
+              <span style="font-size:24px; color:#fff; font-family:'Barlow Condensed',sans-serif;">${blueScore} - ${redScore}</span>
+            </div>
+          </div>
+          <div style="text-align:right; position:relative; z-index:2; font-family:'DM Mono', monospace;">
+            <div style="font-size:10px; color:var(--muted);">YOUR STATS</div>
+            ${me && me.stats ? `
+              <div style="font-size:22px; font-weight:bold; color:#fff; font-family:'Barlow Condensed',sans-serif; margin-top:4px;">
+                ${me.stats.kills} <span style="font-size:12px; color:var(--muted);">K</span> / 
+                ${me.stats.deaths} <span style="font-size:12px; color:var(--muted);">D</span> / 
+                ${me.stats.assists} <span style="font-size:12px; color:var(--muted);">A</span>
+              </div>
+              <div style="font-size:10px; color:var(--muted2); margin-top:2px;">ACS: ${Math.round((me.stats.score || 0) / totalRounds)}</div>
+            ` : '<div style="color:var(--muted);">—</div>'}
+          </div>
+        </div>
+        
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;">
+          <!-- RED TEAM (DEFENDERS / ENEMIES) -->
+          <div>
+            <div style="font-family:'Barlow Condensed', sans-serif; font-weight:900; font-size:15px; color:var(--loss); letter-spacing:1px; margin-bottom:12px; border-bottom:1px solid rgba(255,70,85,0.2); padding-bottom:6px; text-transform:uppercase;">RED TEAM</div>
+            ${red.map(p => {
+              const icon = getAgentIconUrl(p.character || '');
+              const rankImg = getRankImgUrl(p.currenttierpatched || '');
+              const pACS = Math.round((p.stats?.score || 0) / totalRounds);
+              return `
+              <div class="intel-card-hover" style="background:var(--surface2); padding:10px 12px; margin-bottom:8px; border-radius:var(--radius-sm); border:1px solid rgba(255,87,87,0.12); display: flex; align-items: center; gap: 10px;">
+                ${icon ? `<img src="${icon}" style="width:30px;height:30px;object-fit:contain;border-radius:4px;border:1px solid var(--border);" onerror="this.style.display='none'">` : ''}
+                <div style="flex:1">
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:15px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:180px;">${p.name}</div>
+                    <div style="font-family:'DM Mono', monospace; font-size:11px; color:#fff; font-weight:bold;">${p.stats?.kills}/${p.stats?.deaths}/${p.stats?.assists}</div>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+                    <div style="font-family:'DM Mono', monospace; font-size:10px; color:var(--muted2);">${p.character || 'Unknown'} · ACS ${pACS}</div>
+                    <div style="display:flex; align-items:center; gap:2px; font-family:'DM Mono', monospace; font-size:9px; color:var(--text);">
+                      ${rankImg ? `<img src="${rankImg}" style="width:12px;height:12px;object-fit:contain;" onerror="this.style.display='none'">` : ''}
+                      ${p.currenttierpatched || 'Unranked'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              `;
+            }).join('')}
+          </div>
+          
+          <!-- BLUE TEAM (ATTACKERS / ALLIES) -->
+          <div>
+            <div style="font-family:'Barlow Condensed', sans-serif; font-weight:900; font-size:15px; color:var(--blue); letter-spacing:1px; margin-bottom:12px; border-bottom:1px solid rgba(0,180,255,0.2); padding-bottom:6px; text-transform:uppercase;">BLUE TEAM</div>
+            ${blue.map(p => {
+              const icon = getAgentIconUrl(p.character || '');
+              const rankImg = getRankImgUrl(p.currenttierpatched || '');
+              const isMe = p.name?.toLowerCase() === PLAYER_NAME.toLowerCase();
+              const pACS = Math.round((p.stats?.score || 0) / totalRounds);
+              return `
+              <div class="intel-card-hover" style="background:var(--surface2); padding:10px 12px; margin-bottom:8px; border-radius:var(--radius-sm); border:1px solid ${isMe ? 'rgba(62,207,142,0.3)' : 'rgba(77,159,255,0.12)'}; display: flex; align-items: center; gap: 10px; ${isMe ? 'background: rgba(62,207,142,0.03);' : ''}">
+                ${icon ? `<img src="${icon}" style="width:30px;height:30px;object-fit:contain;border-radius:4px;border:1px solid var(--border);" onerror="this.style.display='none'">` : ''}
+                <div style="flex:1">
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:15px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:180px; color:${isMe ? 'var(--win)' : '#fff'};">
+                      ${p.name}
+                      ${isMe ? '<span style="color:var(--accent); font-size:8px; margin-left:4px; font-weight:800; background:rgba(62,207,142,0.1); padding:1px 3px; border-radius:2px;">YOU</span>' : ''}
+                    </div>
+                    <div style="font-family:'DM Mono', monospace; font-size:11px; color:#fff; font-weight:bold;">${p.stats?.kills}/${p.stats?.deaths}/${p.stats?.assists}</div>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+                    <div style="font-family:'DM Mono', monospace; font-size:10px; color:var(--muted2);">${p.character || 'Unknown'} · ACS ${pACS}</div>
+                    <div style="display:flex; align-items:center; gap:2px; font-family:'DM Mono', monospace; font-size:9px; color:var(--text);">
+                      ${rankImg ? `<img src="${rankImg}" style="width:12px;height:12px;object-fit:contain;" onerror="this.style.display='none'">` : ''}
+                      ${p.currenttierpatched || 'Unranked'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+        
+        <!-- AUTOMATED AI POST-MATCH REVIEW -->
+        <div class="card" style="border:1px solid rgba(245,166,35,0.25); background:rgba(255,255,255,0.01); padding:16px;">
+          <div style="font-family:'Barlow Condensed', sans-serif; font-weight:900; font-size:15px; letter-spacing:1px; color:#f5a623; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+            🤖 AI POST-MATCH TACTICAL INTELLIGENCE
+          </div>
+          <div style="font-family:'DM Mono', monospace; font-size:11px; line-height:1.6; color:var(--text);">
+            <span style="color:#fff; font-weight:bold; font-size:12px; display:block; margin-bottom:6px;">💥 ${reviewHeadline}</span>
+            ${reviewText}
+          </div>
+        </div>
+      `;
+      return;
+    }
+    
+  } catch(e) {
+    console.error("[LIVE INTEL ERROR]", e);
+    // Safe fall-back: run the gorgeous simulator directly
+    renderDemoLiveMatch();
+  }
+}
+
+function renderDemoLiveMatch() {
+  const content = document.getElementById('live-content');
+  const identity = getPlayerIdentityInfo();
+  
+  const scaledRanks = getDemoRankScale(identity.rank);
+  
+  const mockPlayers = [
+    { name: 'ReynaGod99', account_level: 14, character: 'Reyna', currenttierpatched: scaledRanks[2], team: 'Red', isSmurf: true },
+    { name: 'ToxicJett', account_level: 182, character: 'Jett', currenttierpatched: scaledRanks[1], team: 'Red', isStreak: true },
+    { name: 'OmenShadow', account_level: 210, character: 'Omen', currenttierpatched: scaledRanks[0], team: 'Red' },
+    { name: 'SovaGod', account_level: 94, character: 'Sova', currenttierpatched: scaledRanks[1], team: 'Red' },
+    { name: 'BreachUser', account_level: 145, character: 'Breach', currenttierpatched: scaledRanks[3], team: 'Red', isOnTilt: true },
+    
+    { name: identity.name, account_level: identity.level, character: identity.agent, currenttierpatched: getTitleCasedRank(identity.rank), team: 'Blue', isMe: true },
+    { name: 'SageHealMe', account_level: 320, character: 'Sage', currenttierpatched: scaledRanks[0], team: 'Blue' },
+    { name: 'EntryNeon', account_level: 67, character: 'Neon', currenttierpatched: scaledRanks[1], team: 'Blue', isStreak: true },
+    { name: 'GekkoFriend', account_level: 112, character: 'Gekko', currenttierpatched: scaledRanks[2], team: 'Blue' },
+    { name: 'BrimDino', account_level: 154, character: 'Brimstone', currenttierpatched: scaledRanks[4], team: 'Blue' }
+  ];
+  
+  const red = mockPlayers.filter(p => p.team === 'Red');
+  const blue = mockPlayers.filter(p => p.team === 'Blue');
+  const tacticalTips = generateLiveTacticalTips(red);
+  
+  content.innerHTML = `
+    <!-- Demo Header Notice -->
+    <div style="background: rgba(245,166,35,0.05); border: 1px solid rgba(245,166,35,0.15); border-radius: var(--radius); padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; animation: glowPulseAmber 2s infinite ease-in-out;">
+      <div style="font-family:'Barlow Condensed', sans-serif; font-size: 13px; font-weight:800; color: #f5a623; display: flex; align-items: center; gap: 8px; text-transform: uppercase;">
+        🛠️ HIGH-FIDELITY LIVE INTEL SIMULATION RUNNING
+      </div>
+      <button class="nav-btn" onclick="fetchLiveMatch()" style="background:var(--surface3); border:1px solid var(--border); font-size:10px; padding:3px 8px; cursor:pointer;">Scan Real Session</button>
+    </div>
+    
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;">
+      <!-- RED TEAM -->
+      <div>
+        <div style="font-family:'Barlow Condensed', sans-serif; font-weight:900; font-size:15px; color:var(--loss); letter-spacing:1px; margin-bottom:12px; border-bottom:1px solid rgba(255,70,85,0.2); padding-bottom:6px; text-transform:uppercase;">DEFENDERS (RED TEAM)</div>
+        ${red.map(p => {
+          const icon = getAgentIconUrl(p.character);
+          const rankImg = getRankImgUrl(p.currenttierpatched);
+          return `
+          <div class="intel-card-hover" style="background:var(--surface2); padding:12px; margin-bottom:8px; border-radius:var(--radius-sm); border:1px solid rgba(255,87,87,0.15); display: flex; align-items: center; gap: 12px;">
+            ${icon ? `<img src="${icon}" style="width:36px;height:36px;object-fit:contain;border-radius:4px;border:1px solid var(--border);" onerror="this.style.display='none'">` : ''}
+            <div style="flex:1">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:16px;">${p.name}</div>
+                <div style="font-family:'DM Mono', monospace; font-size:10px; color:var(--muted);">Lvl ${p.account_level}</div>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                <div style="font-family:'DM Mono', monospace; font-size:11px; color:var(--muted2);">${p.character}</div>
+                <div style="display:flex; align-items:center; gap:4px; font-family:'DM Mono', monospace; font-size:10px; color:var(--text);">
+                  ${rankImg ? `<img src="${rankImg}" style="width:16px;height:16px;object-fit:contain;" onerror="this.style.display='none'">` : ''}
+                  ${p.currenttierpatched}
+                </div>
+              </div>
+              
+              <div style="margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;">
+                ${p.isSmurf ? `<span style="font-family:'DM Mono',monospace; font-size:8px; color:var(--accent); background:rgba(255,70,85,0.1); border: 1px solid rgba(255,70,85,0.2); padding:2px 6px; border-radius:3px; font-weight:bold;">⚠️ SUSPECTED SMURF</span>` : ''}
+                ${p.isStreak ? `<span style="font-family:'DM Mono',monospace; font-size:8px; color:var(--accent); background:rgba(255,70,85,0.1); border: 1px solid rgba(255,70,85,0.2); padding:2px 6px; border-radius:3px; font-weight:bold;">🔥 4 WIN STREAK</span>` : ''}
+                ${p.isOnTilt ? `<span style="font-family:'DM Mono',monospace; font-size:8px; color:#4facfe; background:rgba(79,172,254,0.1); border: 1px solid rgba(79,172,254,0.2); padding:2px 6px; border-radius:3px; font-weight:bold;">❄️ ON TILT (3L STREAK)</span>` : ''}
+              </div>
+            </div>
+          </div>
+          `;
+        }).join('')}
+      </div>
+      
+      <!-- BLUE TEAM -->
+      <div>
+        <div style="font-family:'Barlow Condensed', sans-serif; font-weight:900; font-size:15px; color:var(--blue); letter-spacing:1px; margin-bottom:12px; border-bottom:1px solid rgba(0,180,255,0.2); padding-bottom:6px; text-transform:uppercase;">ATTACKERS (BLUE TEAM)</div>
+        ${blue.map(p => {
+          const icon = getAgentIconUrl(p.character);
+          const rankImg = getRankImgUrl(p.currenttierpatched);
+          return `
+          <div class="intel-card-hover" style="background:var(--surface2); padding:12px; margin-bottom:8px; border-radius:var(--radius-sm); border:1px solid ${p.isMe ? 'rgba(62,207,142,0.3)' : 'rgba(77,159,255,0.15)'}; display: flex; align-items: center; gap: 12px; ${p.isMe ? 'background: rgba(62,207,142,0.03);' : ''}">
+            ${icon ? `<img src="${icon}" style="width:36px;height:36px;object-fit:contain;border-radius:4px;border:1px solid var(--border);" onerror="this.style.display='none'">` : ''}
+            <div style="flex:1">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:16px;">
+                  ${p.name} ${p.isMe ? `<span style="color:var(--accent); font-size:9px; margin-left:4px; background:rgba(62,207,142,0.1); padding:1px 4px; border-radius:3px; font-weight:800;">YOU</span>` : ''}
+                </div>
+                <div style="font-family:'DM Mono', monospace; font-size:10px; color:var(--muted);">Lvl ${p.account_level}</div>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                <div style="font-family:'DM Mono', monospace; font-size:11px; color:var(--muted2);">${p.character}</div>
+                <div style="display:flex; align-items:center; gap:4px; font-family:'DM Mono', monospace; font-size:10px; color:var(--text);">
+                  ${rankImg ? `<img src="${rankImg}" style="width:16px;height:16px;object-fit:contain;" onerror="this.style.display='none'">` : ''}
+                  ${p.currenttierpatched}
+                </div>
+              </div>
+              
+              <div style="margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;">
+                ${p.isMe ? `<span style="font-family:'DM Mono',monospace; font-size:8px; color:var(--win); background:rgba(62,207,142,0.1); border: 1px solid rgba(62,207,142,0.2); padding:2px 6px; border-radius:3px; font-weight:bold;">👑 IGL (SHOT CALLER)</span>` : ''}
+                ${p.isStreak ? `<span style="font-family:'DM Mono',monospace; font-size:8px; color:var(--win); background:rgba(62,207,142,0.1); border: 1px solid rgba(62,207,142,0.2); padding:2px 6px; border-radius:3px; font-weight:bold;">🔥 3 WIN STREAK</span>` : ''}
+              </div>
+            </div>
+          </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+    
+    <!-- TACTICAL BENTO OVERLAY -->
+    <div class="card" style="border:1px solid var(--border); background:rgba(255,255,255,0.01); padding:16px;">
+      <div style="font-family:'Barlow Condensed', sans-serif; font-weight:900; font-size:15px; letter-spacing:1px; color:#fff; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+        ⚔️ TACTICAL COMBAT ANALYSIS & MATCH PREDICTION
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 2fr; gap:20px; font-family:'DM Mono',monospace; font-size:11px;">
+        <div style="border-right: 1px solid var(--border); padding-right:12px;">
+          <div style="margin-bottom:8px;"><span style="color:var(--muted)">Lobby Avg:</span> <span style="color:#fff;">${identity.rank}</span></div>
+          <div style="margin-bottom:8px;"><span style="color:var(--muted)">Win Probability:</span> <span style="color:var(--win); font-weight:bold;">54% (Blue)</span></div>
+          <div><span style="color:var(--muted)">Key Threat:</span> <span style="color:var(--accent); font-weight:bold;">VALORANT Smurf</span></div>
+        </div>
+        <div>
+          <div style="color:var(--muted); margin-bottom:6px; font-weight:bold; font-size:10px;">RECOMMENDED LIVE TACTICS:</div>
+          <div style="color:var(--text); line-height:1.6; font-size:11px;">
+            ${tacticalTips.map(tip => `• ${tip}`).join('<br>')}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+    } // closes if (data.status === 'recent')
+  } catch(e) {
+    const content = document.getElementById('match-intel-content');
+    if (content) {
+      content.innerHTML = `<div style="text-align:center; color:var(--loss); padding:40px; font-family:'Barlow Condensed', sans-serif; font-size:20px;">Player is not currently in a live match.</div>`;
+    }
+  }
+}
+
+
+/* ── PHASE 1 V2 FEATURES: ANALYTICS & URL ROUTING ── */
+
+function renderAdvancedAnalytics(matches) {
+  let container = document.getElementById('advanced-analytics');
+  if (!container) {
+    const mainGrid = document.getElementById('main-grid');
+    if(mainGrid) {
+      container = document.createElement('div');
+      container.className = 'span-12';
+      container.id = 'advanced-analytics';
+      mainGrid.appendChild(container);
+    }
+  }
+  
+  if (!container || !matches || matches.length === 0) return;
+
+  let totalRounds = 0;
+  let firstBloods = 0;
+  let firstDeaths = 0;
+  let plants = 0;
+  let defuses = 0;
+  let pistolRounds = 0;
+  let pistolWins = 0;
+  let comebacks = 0;
+  let duoMap = {};
+  
+  matches.forEach(m => {
+    const me = findMe(m);
+    if (!me) return;
+    const myPuuid = me.puuid || me.subject;
+    const myTeamId = (me.team || '').toLowerCase();
+    
+    if (m.rounds && m.rounds.length > 0) {
+      totalRounds += m.rounds.length;
+      
+      [0, 12].forEach(rIdx => {
+        if (m.rounds[rIdx]) {
+          pistolRounds++;
+          if (m.rounds[rIdx].winning_team?.toLowerCase() === myTeamId) pistolWins++;
+        }
+      });
+      
+      if (m.rounds.length > 12) {
+        let myTeamHalf = 0, oppTeamHalf = 0;
+        for(let j=0; j<12; j++) {
+          if(m.rounds[j].winning_team?.toLowerCase() === myTeamId) myTeamHalf++;
+          else oppTeamHalf++;
+        }
+        const wonMatch = (m.teams && m.teams[myTeamId]?.has_won === true);
+        if (oppTeamHalf - myTeamHalf >= 3 && wonMatch) comebacks++;
+      }
+      
+      m.rounds.forEach(r => {
+        if (r.bomb_planted && r.plant_events?.planted_by?.puuid === myPuuid) plants++;
+        if (r.bomb_defused && r.defuse_events?.defused_by?.puuid === myPuuid) defuses++;
+      });
+    }
+    
+    if (m.kills && m.kills.length > 0) {
+      const roundKills = {};
+      m.kills.forEach(k => {
+        if (!roundKills[k.round]) roundKills[k.round] = [];
+        roundKills[k.round].push(k);
+      });
+      
+      Object.values(roundKills).forEach(rk => {
+        rk.sort((a,b) => a.kill_time_in_round - b.kill_time_in_round);
+        const firstKill = rk[0];
+        if (firstKill) {
+          if (firstKill.killer_puuid === myPuuid) firstBloods++;
+          if (firstKill.victim_puuid === myPuuid) firstDeaths++;
+        }
+      });
+    }
+    
+    const myPartyId = me.party_id;
+    const plist = getPlayerList(m);
+    if (myPartyId && plist.length) {
+      const wonMatch = (m.teams && m.teams[myTeamId]?.has_won === true);
+      plist.forEach(p => {
+        const pPuuid = p.puuid || p.subject;
+        if (pPuuid !== myPuuid && p.party_id === myPartyId) {
+          const pName = p.name + '#' + p.tag;
+          if(!duoMap[pName]) duoMap[pName] = { matches: 0, wins: 0 };
+          duoMap[pName].matches++;
+          if(wonMatch) duoMap[pName].wins++;
+        }
+      });
+    }
+  });
+  
+  let bestDuo = null;
+  Object.keys(duoMap).forEach(k => {
+    if (duoMap[k].matches > 1) { 
+      if (!bestDuo || duoMap[k].matches > bestDuo.matches) {
+        bestDuo = { name: k, ...duoMap[k] };
+      }
+    }
+  });
+  
+  const fbRate = totalRounds > 0 ? ((firstBloods / totalRounds) * 100).toFixed(1) : 0;
+  const pistolRate = pistolRounds > 0 ? ((pistolWins / pistolRounds) * 100).toFixed(1) : 0;
+  
+  container.innerHTML = `
+    <div class="section-label visible" style="margin-top:20px;">
+      <div class="sl-text">Advanced Analytics</div>
+      <div class="sl-line"></div>
+      <div class="sl-num">${matches.length} MATCHES</div>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px; margin-top:10px;">
+      <div class="card" style="padding:16px;">
+        <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:1px; margin-bottom:4px;">FIRST BLOOD RATE</div>
+        <div style="font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:28px; color:var(--accent);">${fbRate}%</div>
+        <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); margin-top:4px;">${firstBloods} FB / ${firstDeaths} FD</div>
+      </div>
+      <div class="card" style="padding:16px;">
+        <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:1px; margin-bottom:4px;">OBJECTIVE PLAY</div>
+        <div style="font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:28px; color:var(--blue);">${plants} <span style="font-size:14px; color:var(--muted)">PLANTS</span></div>
+        <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); margin-top:4px;">${defuses} Defuses</div>
+      </div>
+      <div class="card" style="padding:16px;">
+        <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:1px; margin-bottom:4px;">PISTOL ROUND WR</div>
+        <div style="font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:28px; color:${pistolRate > 50 ? 'var(--win)' : 'var(--text)'};">${pistolRate}%</div>
+        <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); margin-top:4px;">${pistolWins} / ${pistolRounds} Won</div>
+      </div>
+      <div class="card" style="padding:16px;">
+        <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:1px; margin-bottom:4px;">COMEBACKS</div>
+        <div style="font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:28px; color:#f5a623;">${comebacks}</div>
+        <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); margin-top:4px;">Won after down 3+ at half</div>
+      </div>
+      <div class="card" style="padding:16px;">
+        <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:1px; margin-bottom:4px;">TOP DUO SYNERGY</div>
+        ${bestDuo ? `
+        <div style="font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:20px; color:var(--accent); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${bestDuo.name}">${bestDuo.name}</div>
+        <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); margin-top:4px;">${((bestDuo.wins/bestDuo.matches)*100).toFixed(0)}% WR (${bestDuo.matches} matches)</div>
+        ` : `
+        <div style="font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:20px; color:var(--muted);">SOLO RIDER</div>
+        <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); margin-top:4px;">No frequent duo in recent matches</div>
+        `}
+      </div>
+    </div>
+  `;
+}
+
+const v2ProcessMatchesHook = processMatches;
+processMatches = function(matches) {
+  v2ProcessMatchesHook(matches);
+  renderAdvancedAnalytics(matches);
+};
+
+function checkUrlParams() {
+  const params = new URLSearchParams(window.location.search);
+  const pName = params.get('player');
+  const pTag = params.get('tag');
+  const pRegion = params.get('region');
+  const pMode = params.get('mode');
+  
+  if (pName && pTag) {
+    if(document.getElementById('player-name-input')) document.getElementById('player-name-input').value = pName;
+    if(document.getElementById('player-tag-input')) document.getElementById('player-tag-input').value = pTag;
+    if(document.getElementById('l-name')) document.getElementById('l-name').value = pName;
+    if(document.getElementById('l-tag')) document.getElementById('l-tag').value = pTag;
+    
+    if (pRegion) {
+      if(document.getElementById('region-select')) document.getElementById('region-select').value = pRegion;
+      if(document.getElementById('l-region')) document.getElementById('l-region').value = pRegion;
+    }
+    if (pMode) {
+      if(document.getElementById('mode-select')) document.getElementById('mode-select').value = pMode;
+      if(document.getElementById('l-mode')) document.getElementById('l-mode').value = pMode;
+    }
+    
+    if(typeof landingFetch === 'function' && document.getElementById('landing') && document.getElementById('landing').style.display !== 'none') {
+        landingFetch();
+    } else {
+        fetchAll();
+    }
+  }
+}
+
+const v2originalFetchAll = fetchAll;
+fetchAll = async function() {
+  const pName = document.getElementById('player-name-input').value.trim();
+  const pTag = document.getElementById('player-tag-input').value.trim().replace(/^#/,'');
+  const pRegion = document.getElementById('region-select').value;
+  const pMode = document.getElementById('mode-select').value;
+  
+  if (pName && pTag) {
+    const newUrl = `?player=${encodeURIComponent(pName)}&tag=${encodeURIComponent(pTag)}&region=${pRegion}&mode=${pMode}`;
+    window.history.replaceState({path:newUrl}, '', newUrl);
+  }
+  return v2originalFetchAll.apply(this, arguments);
+};
+
+function shareProfile() {
+  const url = window.location.href;
+  navigator.clipboard.writeText(url).then(() => {
+    showToast('Profile URL copied to clipboard!');
+  });
+}
+
+async function fetchLeaderboard() {
+  const modal = document.getElementById('leaderboard-modal');
+  const content = document.getElementById('leaderboard-content');
+  const region = document.getElementById('region-select').value;
+  
+  document.getElementById('lb-region-txt').innerText = '(' + region.toUpperCase() + ')';
+  content.innerHTML = '<div class="detail-loading" style="text-align:center;">FETCHING TOP 500...</div>';
+  modal.style.display = 'flex';
+  
+  try {
+    const res = await fetch(`/api/v1/leaderboard/${region}`);
+    if (!res.ok) throw new Error('Failed to fetch leaderboard');
+    const data = await res.json();
+    
+    if (!data || !data.data || !data.data.length) throw new Error('Leaderboard empty');
+    
+    let html = `<table class="scoreboard" style="width:100%;">
+      <thead>
+        <tr>
+          <th>RANK</th>
+          <th>PLAYER</th>
+          <th>RATING</th>
+          <th>WINS</th>
+        </tr>
+      </thead>
+      <tbody>`;
+      
+    data.data.slice(0, 500).forEach(p => {
+      let isAnon = p.IsAnonymized || !p.gameName;
+      let nameStr = isAnon ? '<span style="color:var(--muted)">Secret Agent</span>' : `${p.gameName} <span style="color:var(--muted)">#${p.tagLine}</span>`;
+      html += `
+        <tr>
+          <td style="color:#f5a623; font-weight:800;">#${p.leaderboardRank}</td>
+          <td style="font-family:'Barlow Condensed',sans-serif; font-size:16px;">${nameStr}</td>
+          <td style="font-family:'DM Mono',monospace; color:var(--accent);">${p.rankedRating} RR</td>
+          <td style="font-family:'DM Mono',monospace; color:var(--win);">${p.numberOfWins} W</td>
+        </tr>
+      `;
+    });
+    
+    html += '</tbody></table>';
+    content.innerHTML = html;
+  } catch(e) {
+    content.innerHTML = `<div style="text-align:center; color:var(--loss); padding:40px; font-family:'Barlow Condensed', sans-serif; font-size:20px;">Unable to load leaderboard: ${e.message}</div>`;
+  }
+}
+
+function toggleHeadToHead() {
+  const modal = document.getElementById('h2h-modal');
+  document.getElementById('h2h-content').innerHTML = '';
+  document.getElementById('h2h-p1-name').value = '';
+  document.getElementById('h2h-p1-tag').value = '';
+  document.getElementById('h2h-p2-name').value = '';
+  document.getElementById('h2h-p2-tag').value = '';
+  modal.style.display = 'flex';
+}
+
+async function fetchH2H() {
+  const p1Name = document.getElementById('h2h-p1-name').value.trim();
+  const p1Tag = document.getElementById('h2h-p1-tag').value.trim().replace(/^#/, '');
+  const p2Name = document.getElementById('h2h-p2-name').value.trim();
+  const p2Tag = document.getElementById('h2h-p2-tag').value.trim().replace(/^#/, '');
+  
+  if(!p1Name || !p1Tag || !p2Name || !p2Tag) {
+    showToast('Please fill all fields for both players');
+    return;
+  }
+  
+  const content = document.getElementById('h2h-content');
+  const region = document.getElementById('region-select').value;
+  content.innerHTML = '<div class="detail-loading" style="text-align:center;">COMPILING COMPARISON...</div>';
+  
+  try {
+    const [p1Res, p2Res] = await Promise.all([
+      fetch(`/api/v3/matches/${region}/${encodeURIComponent(p1Name)}/${encodeURIComponent(p1Tag)}?mode=competitive&size=10`),
+      fetch(`/api/v3/matches/${region}/${encodeURIComponent(p2Name)}/${encodeURIComponent(p2Tag)}?mode=competitive&size=10`)
+    ]);
+    
+    if(!p1Res.ok || !p2Res.ok) throw new Error('Could not fetch one or both players');
+    
+    const p1Data = await p1Res.json();
+    const p2Data = await p2Res.json();
+    
+    function summarize(matchesData, pname, ptag) {
+      if(!matchesData || !matchesData.data) return null;
+      let wins=0, kills=0, deaths=0, score=0, rounds=0;
+      matchesData.data.forEach(m => {
+        const all = getPlayerList(m);
+        const me = all.find(x => x.name.toLowerCase() === pname.toLowerCase() && x.tag.toLowerCase() === ptag.toLowerCase());
+        if(!me) return;
+        const myTeamId = (me.team||'').toLowerCase();
+        if(m.teams && m.teams[myTeamId]?.has_won) wins++;
+        
+        kills += me.stats?.kills||0;
+        deaths += me.stats?.deaths||0;
+        score += me.stats?.score||0;
+        rounds += (m.rounds?.length||0);
+      });
+      return {
+        wins: wins,
+        kd: deaths > 0 ? (kills/deaths) : kills,
+        acs: rounds > 0 ? (score/rounds) : 0
+      };
+    }
+    
+    const s1 = summarize(p1Data, p1Name, p1Tag);
+    const s2 = summarize(p2Data, p2Name, p2Tag);
+    
+    if(!s1 || !s2) throw new Error('Insufficient match data');
+    
+    const c = (v1, v2) => {
+      if(v1 > v2) return [`color:var(--win);font-weight:900;`, `color:var(--muted);`, '🏆', ''];
+      if(v2 > v1) return [`color:var(--muted);`, `color:var(--win);font-weight:900;`, '', '🏆'];
+      return [`color:var(--text);`, `color:var(--text);`, '', ''];
+    };
+    
+    const wrC = c(s1.wins, s2.wins);
+    const kdC = c(s1.kd, s2.kd);
+    const acsC = c(s1.acs, s2.acs);
+    
+    content.innerHTML = `
+      <table class="scoreboard" style="width:100%; text-align:center;">
+        <thead>
+          <tr>
+            <th style="text-align:center; font-size:18px; color:#fff;">${p1Name}</th>
+            <th style="text-align:center; color:var(--muted2);">METRIC (LAST 10)</th>
+            <th style="text-align:center; font-size:18px; color:#fff;">${p2Name}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="${wrC[0]} font-size:24px;">${wrC[2]} ${s1.wins}0%</td>
+            <td style="color:var(--muted); font-size:11px; letter-spacing:1px;">WIN RATE</td>
+            <td style="${wrC[1]} font-size:24px;">${s2.wins}0% ${wrC[3]}</td>
+          </tr>
+          <tr>
+            <td style="${kdC[0]} font-size:24px;">${kdC[2]} ${s1.kd.toFixed(2)}</td>
+            <td style="color:var(--muted); font-size:11px; letter-spacing:1px;">K/D RATIO</td>
+            <td style="${kdC[1]} font-size:24px;">${s2.kd.toFixed(2)} ${kdC[3]}</td>
+          </tr>
+          <tr>
+            <td style="${acsC[0]} font-size:24px;">${acsC[2]} ${s1.acs.toFixed(0)}</td>
+            <td style="color:var(--muted); font-size:11px; letter-spacing:1px;">AVERAGE COMBAT SCORE</td>
+            <td style="${acsC[1]} font-size:24px;">${s2.acs.toFixed(0)} ${acsC[3]}</td>
+          </tr>
+        </tbody>
+      </table>
+    `;
+    
+  } catch(e) {
+    content.innerHTML = `<div style="text-align:center; color:var(--loss); padding:40px; font-family:'Barlow Condensed', sans-serif; font-size:20px;">${e.message}</div>`;
+  }
+}
+
+// --- ESPORTS LOGIC ---
+
+let esportsLiveInterval = null;
+let esportsCountdownInterval = null;
+
+function toggleMainView(view) {
+  document.querySelectorAll('.topbar-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + view).classList.add('active');
+  
+  if (view === 'tracker') {
+    document.getElementById('tracker-view').style.display = 'block';
+    document.getElementById('esports-view').style.display = 'none';
+    document.querySelector('.player-search-wrap').style.display = 'flex';
+    document.getElementById('fetch-btn').style.display = 'inline-block';
+    if(esportsLiveInterval) clearInterval(esportsLiveInterval);
+    if(esportsCountdownInterval) clearInterval(esportsCountdownInterval);
+    dismissLanding();
+  } else {
+    document.getElementById('tracker-view').style.display = 'none';
+    document.getElementById('esports-view').style.display = 'block';
+    document.querySelector('.player-search-wrap').style.display = 'none';
+    document.getElementById('fetch-btn').style.display = 'none';
+    
+    const activeTab = document.querySelector('.esports-pill.active').textContent.toLowerCase();
+    switchEsportsTab(activeTab);
+  }
+}
+
+function switchEsportsTab(tab) {
+  document.querySelectorAll('.esports-pill').forEach(p => p.classList.remove('active'));
+  document.querySelector(`.esports-pill[onclick="switchEsportsTab('${tab}')"]`).classList.add('active');
+  
+  document.querySelectorAll('.esports-section').forEach(s => s.classList.remove('active'));
+  document.getElementById(`esp-sec-${tab}`).classList.add('active');
+  
+  if(esportsLiveInterval) clearInterval(esportsLiveInterval);
+  if(esportsCountdownInterval) clearInterval(esportsCountdownInterval);
+  
+  if (tab === 'live') { fetchEsportsLive(); esportsLiveInterval = setInterval(fetchEsportsLive, 60000); }
+  else if (tab === 'upcoming') { fetchEsportsUpcoming(); }
+  else if (tab === 'results') { fetchEsportsResults(); }
+  else if (tab === 'standings') { fetchEsportsStandings(); }
+  else if (tab === 'news') { fetchEsportsNews(); }
+}
+
+function toggleTiers() {
+  const showTier2 = document.getElementById('tier-toggle').checked;
+  const t2Cards = document.querySelectorAll('.tier-t2');
+  t2Cards.forEach(card => {
+    card.style.display = showTier2 ? 'grid' : 'none';
+  });
+}
+
+function getEspHTML(m, type) {
+  const teams = m.match?.teams || [];
+  const t1 = teams[0]?.name || 'TBD';
+  const t2 = teams[1]?.name || 'TBD';
+  const s1 = teams[0]?.game_wins || '0';
+  const s2 = teams[1]?.game_wins || '0';
+  const w1 = teams[0]?.has_won ? 'winner' : '';
+  const w2 = teams[1]?.has_won ? 'winner' : '';
+  
+  const event = m.league?.name || 'VCT';
+  const isTier2 = event.toLowerCase().includes('challengers') || event.toLowerCase().includes('game changers') || event.toLowerCase().includes('ascension') || event.toLowerCase().includes('vcl');
+  const tierClass = isTier2 ? 'tier-t2' : 'tier-t1';
+  const tierBadge = isTier2 ? '<span class="tier-badge t2">Tier 2</span>' : '<span class="tier-badge t1">VCT Tier 1</span>';
+  
+  let meta = '';
+  if (m.date) {
+    const d = new Date(m.date);
+    meta = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+  }
+  
+  let statusHtml = '';
+  if (m.state === 'inProgress') statusHtml = `<div class="esp-status live">LIVE</div>`;
+  else if (m.state === 'completed') statusHtml = `<div class="esp-status">FINAL</div>`;
+  else statusHtml = `<div class="esp-status">UPCOMING</div>`;
+
+  return `
+    <div class="esp-match-card ${tierClass}">
+      <div class="esp-team">
+        <div class="esp-tname">${t1}</div>
+        <div class="esp-tscore ${w1}">${type==='upcoming'?'':s1}</div>
+      </div>
+      <div class="esp-match-info">
+        <div class="esp-tourney">${tierBadge} ${event}</div>
+        ${statusHtml}
+        <div class="esp-meta">${meta}</div>
+      </div>
+      <div class="esp-team t-right">
+        <div class="esp-tscore ${w2}">${type==='upcoming'?'':s2}</div>
+        <div class="esp-tname">${t2}</div>
+      </div>
+    </div>
+  `;
+}
+
+async function fetchEsportsLive() {
+  const container = document.getElementById('esp-live-container');
+  if(!container.innerHTML) container.innerHTML = '<div class="placeholder-txt">Loading Live Matches...</div>';
+  try {
+    const res = await fetch('/api/esports/live');
+    const data = await res.json();
+    const matches = data.data || [];
+    if (!matches || matches.length === 0) {
+      container.innerHTML = '<div class="placeholder-txt">No live matches right now.</div>';
+      return;
+    }
+    container.innerHTML = matches.map(m => getEspHTML(m, 'live')).join('');
+    toggleTiers();
+  } catch (err) {
+    container.innerHTML = `
+      <div class="placeholder-txt" style="color:var(--loss)">
+        Live score service is currently unreachable.
+        <button class="fetch-btn" onclick="fetchEsportsLive()" style="margin-top:12px; font-size:11px;">Retry</button>
+      </div>`;
+  }
+}
+
+async function fetchEsportsResults() {
+  const container = document.getElementById('esp-results-container');
+  container.innerHTML = '<div class="placeholder-txt">Loading Recent Results...</div>';
+  try {
+    const res = await fetch('/api/esports/results');
+    const data = await res.json();
+    const matches = data.data || [];
+    if (!matches || matches.length === 0) {
+      container.innerHTML = '<div class="placeholder-txt">No recent results found.</div>';
+      return;
+    }
+    container.innerHTML = matches.slice(0,30).map(m => getEspHTML(m, 'results')).join('');
+    toggleTiers();
+  } catch (err) {
+    container.innerHTML = `
+      <div class="placeholder-txt" style="color:var(--loss)">
+        The external VLR service is taking too long to respond. 
+        <br><span style="font-size:12px; color:var(--muted); margin-top:8px; display:block;">(Common during high-traffic VCT events)</span>
+        <button class="fetch-btn" onclick="fetchEsportsResults()" style="margin-top:16px; background:rgba(255,255,255,0.05); color:var(--text); border-color:var(--border);">Retry Connection</button>
+      </div>
+    `;
+  }
+}
+
+async function fetchEsportsUpcoming() {
+  const container = document.getElementById('esp-upcoming-container');
+  container.innerHTML = '<div class="placeholder-txt">Loading Upcoming Matches...</div>';
+  try {
+    const res = await fetch('/api/esports/upcoming');
+    const data = await res.json();
+    const matches = data.data || [];
+    if (!matches || matches.length === 0) {
+      container.innerHTML = '<div class="placeholder-txt">No upcoming matches scheduled.</div>';
+      return;
+    }
+    container.innerHTML = matches.slice(0,30).map(m => getEspHTML(m, 'upcoming')).join('');
+    toggleTiers();
+  } catch (err) {
+    container.innerHTML = `
+      <div class="placeholder-txt" style="color:var(--loss)">
+        Upcoming matches service is timed out.
+        <button class="fetch-btn" onclick="fetchEsportsUpcoming()" style="margin-top:12px; font-size:11px;">Retry</button>
+      </div>`;
+  }
+}
+
+async function fetchEsportsStandings() {
+  const container = document.getElementById('esp-standings-tbody');
+  const region = document.getElementById('esp-standings-region').value;
+  container.innerHTML = '<tr><td colspan="4" class="placeholder-txt" style="border:none">Loading Rankings...</td></tr>';
+  try {
+    const res = await fetch('/api/esports/standings/' + region);
+    const data = await res.json();
+    let rows = data.data || [];
+
+    if (!rows || rows.length === 0) {
+      container.innerHTML = '<tr><td colspan="4" class="placeholder-txt" style="border:none">No standings found for this region.</td></tr>';
+      return;
+    }
+    let html = '';
+    rows.forEach((r, i) => {
+      html += `
+        <tr>
+          <td style="color:var(--muted)">#${r.rank || i+1}</td>
+          <td><div class="esp-standings-team"><div style="font-size:11px;color:var(--muted);width:20px;text-align:center">${r.country||''}</div><span style="font-weight:700;color:#fff">${r.team || 'Unknown'}</span></div></td>
+          <td>${r.wins||0}W - ${r.losses||0}L</td>
+          <td style="color:var(--muted)">${r.streak||'-'}</td>
+        </tr>
+      `;
+    });
+    container.innerHTML = html;
+  } catch (err) {
+    container.innerHTML = '<tr><td colspan="4" class="placeholder-txt" style="color:var(--loss);border:none">Rankings service timed out. <button class="fetch-btn" onclick="fetchEsportsStandings()" style="margin-top:8px; font-size:10px;">Retry</button></td></tr>';
+  }
+}
+
+async function fetchEsportsNews() {
+  const container = document.getElementById('esp-news-container');
+  container.innerHTML = '<div class="placeholder-txt" style="grid-column:1/-1">Loading Latest News...</div>';
+  try {
+    const res = await fetch('/api/esports/news');
+    const data = await res.json();
+    const news = data.data || [];
+    if (!news || news.length === 0) {
+      container.innerHTML = '<div class="placeholder-txt" style="grid-column:1/-1">No news found.</div>';
+      return;
+    }
+    let html = '';
+    news.forEach(n => {
+      html += `
+        <a href="${n.url_path ? 'https://vlr.gg'+n.url_path : '#'}" target="_blank" class="esp-news-card">
+          <div class="esp-news-title">${n.title || 'Esports Update'}</div>
+          <div class="esp-news-desc">${n.description || n.desc || ''}</div>
+          <div class="esp-news-meta">
+            <span>${n.author || 'VLR.gg'} • ${n.date || 'Recent'}</span>
+            <span class="esp-news-tag">News</span>
+          </div>
+        </a>
+      `;
+    });
+    container.innerHTML = html;
+  } catch (err) {
+    container.innerHTML = '<div class="placeholder-txt" style="color:var(--loss);grid-column:1/-1">News service timed out. <button class="fetch-btn" onclick="fetchEsportsNews()" style="margin-top:12px; font-size:11px;">Retry News</button></div>';
+  }
+}
+
+// HUD Ease of Access smooth scrolling
+function smoothScrollTo(elementId, event) {
+  if (event) event.preventDefault();
+  const el = document.getElementById(elementId);
+  if (el) {
+    const offset = 110; // Sticky top header heights combined
+    const bodyRect = document.body.getBoundingClientRect().top;
+    const elementRect = el.getBoundingClientRect().top;
+    const elementPosition = elementRect - bodyRect;
+    const offsetPosition = elementPosition - offset;
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: 'smooth'
+    });
+  }
+}
+
+// HUD Scrollspy active indicator tracking
+function initScrollSpy() {
+  const sections = [
+    'sec-combat', 'sec-performance', 'sec-trend', 'sec-agents',
+    'sec-maps', 'sec-clutch', 'sec-accuracy', 'sec-weapons',
+    'sec-matches', 'sec-ai', 'sec-deep', 'sec-lab'
+  ];
+  
+  const navItems = {
+    'sec-combat': document.querySelector('#tracker-nav a[onclick*="sec-combat"]'),
+    'sec-performance': document.querySelector('#tracker-nav a[onclick*="sec-performance"]'),
+    'sec-trend': document.querySelector('#tracker-nav a[onclick*="sec-trend"]'),
+    'sec-agents': document.querySelector('#tracker-nav a[onclick*="sec-agents"]'),
+    'sec-maps': document.querySelector('#tracker-nav a[onclick*="sec-maps"]'),
+    'sec-clutch': document.querySelector('#tracker-nav a[onclick*="sec-clutch"]'),
+    'sec-accuracy': document.querySelector('#tracker-nav a[onclick*="sec-accuracy"]'),
+    'sec-weapons': document.querySelector('#tracker-nav a[onclick*="sec-weapons"]'),
+    'sec-matches': document.querySelector('#tracker-nav a[onclick*="sec-matches"]'),
+    'sec-ai': document.querySelector('#tracker-nav a[onclick*="sec-ai"]'),
+    'sec-deep': document.querySelector('#tracker-nav a[onclick*="sec-deep"]'),
+    'sec-lab': document.querySelector('#tracker-nav a[onclick*="sec-lab"]')
+  };
+
+  window.addEventListener('scroll', () => {
+    let currentSectionId = '';
+    const scrollPosition = window.scrollY + 150; // offset for detection
+    
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.offsetTop <= scrollPosition) {
+        currentSectionId = id;
+      }
+    });
+
+    if (currentSectionId) {
+      Object.keys(navItems).forEach(key => {
+        const item = navItems[key];
+        if (item) {
+          if (key === currentSectionId) {
+            item.classList.add('active');
+          } else {
+            item.classList.remove('active');
+          }
+        }
+      });
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => { 
+  setTimeout(checkUrlParams, 200); 
+  setTimeout(initScrollSpy, 500);
+});
