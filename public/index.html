@@ -7192,7 +7192,7 @@ async function switchVctModalTab(stage, region) {
   
   if (!vctFranchiseData) {
     try {
-      const res = await fetch('/vct_teams.json');
+      const res = await fetch('/vct_teams.json?v=3');
       vctFranchiseData = await res.json();
     } catch (e) {
       console.error("Failed to load franchise data:", e);
@@ -7471,7 +7471,7 @@ function getEspHTML(m, type) {
 async function fetchEsportsOverview() {
   if (!vctFranchiseData) {
     try {
-      const res = await fetch('/vct_teams.json');
+      const res = await fetch('/vct_teams.json?v=3');
       vctFranchiseData = await res.json();
     } catch (e) {
       console.error("Failed to load franchise data:", e);
@@ -7630,7 +7630,7 @@ async function initTeamsTab() {
   if (pList.innerHTML) return;
   
   try {
-    const res = await fetch('/vct_teams.json');
+    const res = await fetch('/vct_teams.json?v=3');
     vctFranchiseData = await res.json();
     
     const regions = { 'pacific': pList, 'americas': aList, 'emea': eList, 'china': cList };
