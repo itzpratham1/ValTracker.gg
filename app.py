@@ -7,7 +7,7 @@ import urllib.parse
 import concurrent.futures
 from datetime import datetime
 from functools import wraps
-from flask import Flask, request, jsonify, send_from_directory, make_response
+from flask import Flask, request, jsonify, send_from_directory, make_response, send_file
 from flask_cors import CORS
 from dotenv import load_dotenv
 
