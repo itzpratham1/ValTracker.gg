@@ -7636,6 +7636,7 @@ async function initTeamsTab() {
     const regions = { 'pacific': pList, 'americas': aList, 'emea': eList, 'china': cList };
     Object.entries(regions).forEach(([regName, domEl]) => {
       const teams = vctFranchiseData[regName] || [];
+      console.log(`[DEBUG] Region ${regName} fetched ${teams.length} teams:`, teams.map(t => t.name));
       domEl.innerHTML = teams.map(t => `
         <div class="esp-sidebar-team-btn" data-team-id="${t.id}" onclick="selectFranchiseTeam('${regName}', '${t.id}')">${t.name}</div>
       `).join('');
