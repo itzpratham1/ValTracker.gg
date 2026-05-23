@@ -452,9 +452,10 @@
 <!-- ESPORTS VIEW -->
 <div id="esports-view" style="display:none;">
   <div class="esports-subnav">
-    <div class="esports-pill active" onclick="switchEsportsTab('live')">Live</div>
-    <div class="esports-pill" onclick="switchEsportsTab('upcoming')">Upcoming</div>
-    <div class="esports-pill" onclick="switchEsportsTab('results')">Results</div>
+    <div class="esports-pill active" onclick="switchEsportsTab('overview')">Overview</div>
+    <div class="esports-pill" onclick="switchEsportsTab('schedule')">Schedule</div>
+    <div class="esports-pill" onclick="switchEsportsTab('vct26')">VCT26</div>
+    <div class="esports-pill" onclick="switchEsportsTab('teams')">Teams</div>
     <div class="esports-pill" onclick="switchEsportsTab('standings')">Rankings</div>
     <div class="esports-pill" onclick="switchEsportsTab('news')">News</div>
     <div style="flex-grow:1"></div>
@@ -469,31 +470,176 @@
   
   <div class="esports-content">
     
-    <!-- LIVE SECTION -->
-    <div id="esp-sec-live" class="esports-section active">
+    <!-- OVERVIEW SECTION -->
+    <div id="esp-sec-overview" class="esports-section active">
       <div class="section-label visible" style="margin-bottom:16px;">
-        <span class="sl-text">Live Matches</span>
+        <span class="sl-text">Live Action & Highlight Updates</span>
         <div class="sl-line"></div>
       </div>
-      <div id="esp-live-container"></div>
+      
+      <!-- Split Overview Dashboard -->
+      <div style="display: grid; grid-template-columns: 1.8fr 1fr; gap: 24px; margin-bottom: 24px;">
+        <div>
+          <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:16px; text-transform:uppercase; margin-bottom:12px; color:var(--accent);">🔴 Active Matches</h4>
+          <div id="esp-ov-live-container"></div>
+          
+          <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:16px; text-transform:uppercase; margin-top:24px; margin-bottom:12px; color:var(--accent);">🏆 Highlight Matches</h4>
+          <div id="esp-ov-results-container"></div>
+        </div>
+        <div>
+          <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:16px; text-transform:uppercase; margin-bottom:12px; color:var(--accent);">📰 Latest headlines</h4>
+          <div id="esp-ov-news-container" style="display:flex; flex-direction:column; gap:12px;"></div>
+        </div>
+      </div>
     </div>
     
-    <!-- UPCOMING SECTION -->
-    <div id="esp-sec-upcoming" class="esports-section">
-      <div class="section-label visible" style="margin-bottom:16px;">
-        <span class="sl-text">Upcoming Matches</span>
-        <div class="sl-line"></div>
+    <!-- SCHEDULE SECTION -->
+    <div id="esp-sec-schedule" class="esports-section">
+      <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 24px;">
+        <div>
+          <div class="section-label visible" style="margin-bottom:16px;">
+            <span class="sl-text">Upcoming Matches</span>
+            <div class="sl-line"></div>
+          </div>
+          <div id="esp-upcoming-container"></div>
+        </div>
+        <div>
+          <div class="section-label visible" style="margin-bottom:16px;">
+            <span class="sl-text">Recent Results</span>
+            <div class="sl-line"></div>
+          </div>
+          <div id="esp-results-container"></div>
+        </div>
       </div>
-      <div id="esp-upcoming-container"></div>
     </div>
     
-    <!-- RESULTS SECTION -->
-    <div id="esp-sec-results" class="esports-section">
+    <!-- VCT26 ROADMAP TIMELINE SECTION -->
+    <div id="esp-sec-vct26" class="esports-section">
       <div class="section-label visible" style="margin-bottom:16px;">
-        <span class="sl-text">Recent Results</span>
+        <span class="sl-text">VCT 2026 Season roadmap</span>
         <div class="sl-line"></div>
       </div>
-      <div id="esp-results-container"></div>
+      
+      <!-- Roadmap scrollable container -->
+      <div class="vct-roadmap-wrap" id="vct-roadmap-timeline-container">
+        <!-- Timeline column 1 -->
+        <div class="vct-roadmap-col">
+          <div class="vct-roadmap-header concluded">International League</div>
+          <div class="vct-roadmap-card concluded">
+            <div class="vct-roadmap-title">VCT Kickoff</div>
+            <div class="vct-roadmap-subtitle" style="color:var(--loss)">Concluded</div>
+            <div class="vct-roadmap-subtitle" style="font-size: 9px; margin-top: 4px;">Winner: Gen.G / SEN / KC / EDG</div>
+          </div>
+        </div>
+        <!-- Timeline column 2 -->
+        <div class="vct-roadmap-col">
+          <div class="vct-roadmap-header concluded">Global Event</div>
+          <div class="vct-roadmap-card concluded tall">
+            <div class="vct-roadmap-title" style="color: #c084fc;">Masters Santiago</div>
+            <div class="vct-roadmap-subtitle" style="color:var(--loss)">Concluded</div>
+            <div class="vct-roadmap-dates">Feb 28 - Mar 16, 2026</div>
+            <div class="vct-roadmap-subtitle" style="font-size: 9px; margin-top: 12px; color:#c084fc;">Winner: Sentinels</div>
+          </div>
+        </div>
+        <!-- Timeline column 3 -->
+        <div class="vct-roadmap-col">
+          <div class="vct-roadmap-header ongoing">International League</div>
+          <div class="vct-roadmap-card ongoing">
+            <div class="vct-roadmap-title">VCT Stage 1</div>
+            <div class="vct-roadmap-subtitle" style="color:var(--win)">Ongoing</div>
+            <div class="vct-roadmap-dates">Apr 11 - May 25, 2026</div>
+          </div>
+        </div>
+        <!-- Timeline column 4 -->
+        <div class="vct-roadmap-col">
+          <div class="vct-roadmap-header">Global Event</div>
+          <div class="vct-roadmap-card tall">
+            <div class="vct-roadmap-title" style="color: #a855f7;">Masters London</div>
+            <div class="vct-roadmap-subtitle" style="color:var(--muted)">Upcoming</div>
+            <div class="vct-roadmap-dates">June 2026</div>
+          </div>
+        </div>
+        <!-- Timeline column 5 -->
+        <div class="vct-roadmap-col">
+          <div class="vct-roadmap-header">International League</div>
+          <div class="vct-roadmap-card">
+            <div class="vct-roadmap-title">VCT Stage 2</div>
+            <div class="vct-roadmap-subtitle" style="color:var(--muted)">Upcoming</div>
+            <div class="vct-roadmap-dates">July 2026</div>
+          </div>
+        </div>
+        <!-- Timeline column 6 -->
+        <div class="vct-roadmap-col">
+          <div class="vct-roadmap-header">Global Event</div>
+          <div class="vct-roadmap-card tall champions">
+            <div class="vct-roadmap-title" style="color: #fbbf24;">Champions Shanghai</div>
+            <div class="vct-roadmap-subtitle" style="color:var(--muted)">Upcoming</div>
+            <div class="vct-roadmap-dates">September 2026</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Bottom Dotted Timeline diamond progression bar -->
+      <div class="vct-roadmap-tracker">
+        <div class="vct-roadmap-node active" title="Kickoff - Concluded"></div>
+        <div class="vct-roadmap-node active" title="Masters Santiago - Concluded"></div>
+        <div class="vct-roadmap-node active" title="Stage 1 - Ongoing"></div>
+        <div class="vct-roadmap-node" title="Masters London - Upcoming"></div>
+        <div class="vct-roadmap-node" title="Stage 2 - Upcoming"></div>
+        <div class="vct-roadmap-node" title="Champions Shanghai - Upcoming"></div>
+      </div>
+    </div>
+    
+    <!-- TEAMS FRANCHISE ROSTER EXPLORER SECTION -->
+    <div id="esp-sec-teams" class="esports-section">
+      <div class="esp-teams-layout">
+        <!-- Sidebar region selection -->
+        <div class="esp-sidebar">
+          <div class="esp-sidebar-region-header" onclick="toggleSidebarRegion('ov-americas')">VCT Americas</div>
+          <div class="esp-sidebar-team-list" id="ov-americas"></div>
+          
+          <div class="esp-sidebar-region-header" onclick="toggleSidebarRegion('ov-emea')">VCT EMEA</div>
+          <div class="esp-sidebar-team-list" id="ov-emea"></div>
+          
+          <div class="esp-sidebar-region-header" onclick="toggleSidebarRegion('ov-pacific')">VCT Pacific</div>
+          <div class="esp-sidebar-team-list" id="ov-pacific"></div>
+          
+          <div class="esp-sidebar-region-header" onclick="toggleSidebarRegion('ov-china')">VCT CN</div>
+          <div class="esp-sidebar-team-list" id="ov-china"></div>
+        </div>
+        
+        <!-- Team details central panel -->
+        <div class="esp-team-dashboard" id="esp-team-details-panel">
+          <div id="esp-team-main-area">
+            <div class="esp-team-hero">
+              <div class="esp-team-title-row">
+                <div class="esp-team-name-lg" id="esp-active-team-name">Select a Team</div>
+              </div>
+              <div class="esp-team-desc" id="esp-active-team-desc">Select a VCT Franchise team from the left sidebar to explorer their full roster players, coach staff, and capsule skin details.</div>
+              
+              <!-- Capsule Promos -->
+              <div class="capsule-promo-card" id="esp-active-team-capsule-wrap" style="display:none;">
+                <img class="capsule-promo-img" id="esp-active-team-capsule-img" src="" alt="VCT Capsule"/>
+                <div class="capsule-promo-info">
+                  <div class="capsule-promo-title" id="esp-active-team-capsule-title">VCT Capsule</div>
+                  <div class="capsule-promo-desc" id="esp-active-team-capsule-desc">Support your favorite team.</div>
+                </div>
+              </div>
+            </div>
+            
+            <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:18px; text-transform:uppercase; margin-top:20px; color:#fff;">Team Roster</h4>
+            <div class="player-card-grid" id="esp-active-team-roster-grid"></div>
+          </div>
+          
+          <!-- Team-specific upcoming matches -->
+          <div>
+            <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:16px; text-transform:uppercase; color:var(--accent); margin-bottom:12px;">Upcoming Matches</h4>
+            <div id="esp-active-team-matches-container">
+              <div class="placeholder-txt" style="font-size:11px; padding:16px;">Select a team.</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     
     <!-- STANDINGS SECTION -->
@@ -517,8 +663,9 @@
             <tr>
               <th style="width:50px">Rank</th>
               <th>Team</th>
-              <th>W - L</th>
-              <th>Streak</th>
+              <th style="width:100px">Rating (ELO)</th>
+              <th style="width:100px">W - L</th>
+              <th style="width:100px">Streak</th>
             </tr>
           </thead>
           <tbody id="esp-standings-tbody"></tbody>
@@ -6487,6 +6634,8 @@ function renderH2HComparison(p1Data, p2Data, p1Mmr, p2Mmr, p1Acc, p2Acc, p1Name,
 
 let esportsLiveInterval = null;
 let esportsCountdownInterval = null;
+let vctFranchiseData = null;
+let allMatchesCache = [];
 
 function toggleMainView(view) {
   document.querySelectorAll('.topbar-tab').forEach(t => t.classList.remove('active'));
@@ -6517,7 +6666,9 @@ function toggleMainView(view) {
 
 function switchEsportsTab(tab) {
   document.querySelectorAll('.esports-pill').forEach(p => p.classList.remove('active'));
-  document.querySelector(`.esports-pill[onclick="switchEsportsTab('${tab}')"]`).classList.add('active');
+  
+  const activePill = Array.from(document.querySelectorAll('.esports-pill')).find(p => p.textContent.toLowerCase() === tab.toLowerCase());
+  if (activePill) activePill.classList.add('active');
   
   document.querySelectorAll('.esports-section').forEach(s => s.classList.remove('active'));
   document.getElementById(`esp-sec-${tab}`).classList.add('active');
@@ -6525,11 +6676,26 @@ function switchEsportsTab(tab) {
   if(esportsLiveInterval) clearInterval(esportsLiveInterval);
   if(esportsCountdownInterval) clearInterval(esportsCountdownInterval);
   
-  if (tab === 'live') { fetchEsportsLive(); esportsLiveInterval = setInterval(fetchEsportsLive, 60000); }
-  else if (tab === 'upcoming') { fetchEsportsUpcoming(); }
-  else if (tab === 'results') { fetchEsportsResults(); }
-  else if (tab === 'standings') { fetchEsportsStandings(); }
-  else if (tab === 'news') { fetchEsportsNews(); }
+  if (tab === 'overview') {
+    fetchEsportsOverview();
+    esportsLiveInterval = setInterval(fetchEsportsOverview, 60000);
+  }
+  else if (tab === 'schedule') {
+    fetchEsportsUpcoming();
+    fetchEsportsResults();
+  }
+  else if (tab === 'vct26') {
+    // Already populated statically in HTML
+  }
+  else if (tab === 'teams') {
+    initTeamsTab();
+  }
+  else if (tab === 'standings') {
+    fetchEsportsStandings();
+  }
+  else if (tab === 'news') {
+    fetchEsportsNews();
+  }
 }
 
 function toggleTiers() {
@@ -6554,56 +6720,99 @@ function getEspHTML(m, type) {
   const tierClass = isTier2 ? 'tier-t2' : 'tier-t1';
   const tierBadge = isTier2 ? '<span class="tier-badge t2">Tier 2</span>' : '<span class="tier-badge t1">VCT Tier 1</span>';
   
-  let meta = '';
-  if (m.date) {
-    const d = new Date(m.date);
-    meta = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-  }
-  
   let statusHtml = '';
-  if (m.state === 'inProgress') statusHtml = `<div class="esp-status live">LIVE</div>`;
-  else if (m.state === 'completed') statusHtml = `<div class="esp-status">FINAL</div>`;
-  else statusHtml = `<div class="esp-status">UPCOMING</div>`;
+  let mediaBtn = '';
+  if (m.state === 'in_progress' || m.state === 'inProgress') {
+    statusHtml = `<div class="esp-status live">LIVE</div>`;
+    mediaBtn = `<a href="https://twitch.tv/valorant" target="_blank" class="esp-btn live">🔴 Watch Live</a>`;
+  } else if (m.state === 'completed') {
+    statusHtml = `<div class="esp-status">FINAL</div>`;
+    if (m.vod) {
+      mediaBtn = `<a href="${m.vod}" target="_blank" class="esp-btn vod">📺 Watch VOD</a>`;
+    } else {
+      const searchQ = `VCT ${t1} vs ${t2} highlights`;
+      mediaBtn = `<a href="https://www.youtube.com/results?search_query=${encodeURIComponent(searchQ)}" target="_blank" class="esp-btn vod">📺 View Highlights</a>`;
+    }
+  } else {
+    statusHtml = `<div class="esp-status">UPCOMING</div>`;
+  }
 
   return `
     <div class="esp-match-card ${tierClass}">
       <div class="esp-team">
         <div class="esp-tname">${t1}</div>
-        <div class="esp-tscore ${w1}">${type==='upcoming'?'':s1}</div>
+        <div class="esp-tscore ${w1}">${m.state==='unstarted'?'':s1}</div>
       </div>
       <div class="esp-match-info">
         <div class="esp-tourney">${tierBadge} ${event}</div>
         ${statusHtml}
-        <div class="esp-meta">${meta}</div>
+        <div class="esp-meta">${m.date || 'TBD'}</div>
+        <div style="margin-top: 8px;">${mediaBtn}</div>
       </div>
       <div class="esp-team t-right">
-        <div class="esp-tscore ${w2}">${type==='upcoming'?'':s2}</div>
+        <div class="esp-tscore ${w2}">${m.state==='unstarted'?'':s2}</div>
         <div class="esp-tname">${t2}</div>
       </div>
     </div>
   `;
 }
 
-async function fetchEsportsLive() {
-  const container = document.getElementById('esp-live-container');
-  if(!container.innerHTML) container.innerHTML = '<div class="placeholder-txt">Loading Live Matches...</div>';
+async function fetchEsportsOverview() {
+  const liveContainer = document.getElementById('esp-ov-live-container');
+  const resultsContainer = document.getElementById('esp-ov-results-container');
+  const newsContainer = document.getElementById('esp-ov-news-container');
+  
+  if(!liveContainer.innerHTML) liveContainer.innerHTML = '<div class="placeholder-txt">Loading Active matches...</div>';
+  if(!resultsContainer.innerHTML) resultsContainer.innerHTML = '<div class="placeholder-txt">Loading highlight results...</div>';
+  if(!newsContainer.innerHTML) newsContainer.innerHTML = '<div class="placeholder-txt">Loading latest headlines...</div>';
+  
   try {
-    const res = await fetch('/api/esports/live');
-    const data = await res.json();
-    const matches = data.data || [];
-    if (!matches || matches.length === 0) {
-      container.innerHTML = '<div class="placeholder-txt">No live matches right now.</div>';
-      return;
+    const liveRes = await fetch('/api/esports/live');
+    const liveData = await liveRes.json();
+    const liveMatches = liveData.data || [];
+    if (!liveMatches || liveMatches.length === 0) {
+      liveContainer.innerHTML = '<div class="placeholder-txt">No live matches right now.</div>';
+    } else {
+      liveContainer.innerHTML = liveMatches.map(m => getEspHTML(m, 'live')).join('');
     }
-    container.innerHTML = matches.map(m => getEspHTML(m, 'live')).join('');
+    
+    const resRes = await fetch('/api/esports/results');
+    const resData = await resRes.json();
+    const resultsMatches = resData.data || [];
+    if (!resultsMatches || resultsMatches.length === 0) {
+      resultsContainer.innerHTML = '<div class="placeholder-txt">No recent results found.</div>';
+    } else {
+      resultsContainer.innerHTML = resultsMatches.slice(0,3).map(m => getEspHTML(m, 'results')).join('');
+    }
+    
+    const newsRes = await fetch('/api/esports/news');
+    const newsData = await newsRes.json();
+    const newsItems = newsData.data || [];
+    if (!newsItems || newsItems.length === 0) {
+      newsContainer.innerHTML = '<div class="placeholder-txt">No news headlines found.</div>';
+    } else {
+      let newsHtml = '';
+      newsItems.slice(0, 4).forEach(n => {
+        newsHtml += `
+          <a href="${n.url_path ? 'https://vlr.gg'+n.url_path : '#'}" target="_blank" class="esp-news-card" style="padding:12px; gap:8px;">
+            <div class="esp-news-title" style="font-size:15px;">${n.title}</div>
+            <div class="esp-news-desc" style="font-size:11px;-webkit-line-clamp:2;">${n.description || ''}</div>
+            <div class="esp-news-meta" style="font-size:9px; margin-top:4px;">
+              <span>${n.author} • ${n.date}</span>
+            </div>
+          </a>
+        `;
+      });
+      newsContainer.innerHTML = newsHtml;
+    }
     toggleTiers();
   } catch (err) {
-    container.innerHTML = `
-      <div class="placeholder-txt" style="color:var(--loss)">
-        Live score service is currently unreachable.
-        <button class="fetch-btn" onclick="fetchEsportsLive()" style="margin-top:12px; font-size:11px;">Retry</button>
-      </div>`;
+    console.error("Overview load failed", err);
   }
+}
+
+async function fetchEsportsLive() {
+  // Handled inside overview
 }
 
 async function fetchEsportsResults() {
@@ -6623,8 +6832,7 @@ async function fetchEsportsResults() {
     container.innerHTML = `
       <div class="placeholder-txt" style="color:var(--loss)">
         The external VLR service is taking too long to respond. 
-        <br><span style="font-size:12px; color:var(--muted); margin-top:8px; display:block;">(Common during high-traffic VCT events)</span>
-        <button class="fetch-btn" onclick="fetchEsportsResults()" style="margin-top:16px; background:rgba(255,255,255,0.05); color:var(--text); border-color:var(--border);">Retry Connection</button>
+        <button class="fetch-btn" onclick="fetchEsportsResults()" style="margin-top:16px;">Retry Connection</button>
       </div>
     `;
   }
@@ -6637,6 +6845,7 @@ async function fetchEsportsUpcoming() {
     const res = await fetch('/api/esports/upcoming');
     const data = await res.json();
     const matches = data.data || [];
+    allMatchesCache = matches;
     if (!matches || matches.length === 0) {
       container.innerHTML = '<div class="placeholder-txt">No upcoming matches scheduled.</div>';
       return;
@@ -6647,7 +6856,7 @@ async function fetchEsportsUpcoming() {
     container.innerHTML = `
       <div class="placeholder-txt" style="color:var(--loss)">
         Upcoming matches service is timed out.
-        <button class="fetch-btn" onclick="fetchEsportsUpcoming()" style="margin-top:12px; font-size:11px;">Retry</button>
+        <button class="fetch-btn" onclick="fetchEsportsUpcoming()" style="margin-top:12px;">Retry</button>
       </div>`;
   }
 }
@@ -6655,30 +6864,41 @@ async function fetchEsportsUpcoming() {
 async function fetchEsportsStandings() {
   const container = document.getElementById('esp-standings-tbody');
   const region = document.getElementById('esp-standings-region').value;
-  container.innerHTML = '<tr><td colspan="4" class="placeholder-txt" style="border:none">Loading Rankings...</td></tr>';
+  container.innerHTML = '<tr><td colspan="5" class="placeholder-txt" style="border:none">Loading Rankings...</td></tr>';
   try {
     const res = await fetch('/api/esports/standings/' + region);
     const data = await res.json();
     let rows = data.data || [];
 
     if (!rows || rows.length === 0) {
-      container.innerHTML = '<tr><td colspan="4" class="placeholder-txt" style="border:none">No standings found for this region.</td></tr>';
+      container.innerHTML = '<tr><td colspan="5" class="placeholder-txt" style="border:none">No standings found for this region.</td></tr>';
       return;
     }
     let html = '';
     rows.forEach((r, i) => {
+      const logoHtml = r.logo ? `<img class="esp-standings-logo" src="${r.logo}" alt="logo"/>` : '';
+      const streakCls = r.streak.includes('W') ? 'w' : r.streak.includes('L') ? 'l' : '';
+      const streakHtml = `<span class="esp-streak-pill ${streakCls}">${r.streak}</span>`;
+      
       html += `
         <tr>
           <td style="color:var(--muted)">#${r.rank || i+1}</td>
-          <td><div class="esp-standings-team"><div style="font-size:11px;color:var(--muted);width:20px;text-align:center">${r.country||''}</div><span style="font-weight:700;color:#fff">${r.team || 'Unknown'}</span></div></td>
+          <td>
+            <div class="esp-standings-team">
+              ${logoHtml}
+              <div style="font-size:10px;color:var(--muted);width:20px;text-align:center">${r.country||''}</div>
+              <span style="font-weight:700;color:#fff">${r.team || 'Unknown'}</span>
+            </div>
+          </td>
+          <td style="color:var(--accent); font-weight:700;">${r.rating||'1000'}</td>
           <td>${r.wins||0}W - ${r.losses||0}L</td>
-          <td style="color:var(--muted)">${r.streak||'-'}</td>
+          <td>${streakHtml}</td>
         </tr>
       `;
     });
     container.innerHTML = html;
   } catch (err) {
-    container.innerHTML = '<tr><td colspan="4" class="placeholder-txt" style="color:var(--loss);border:none">Rankings service timed out. <button class="fetch-btn" onclick="fetchEsportsStandings()" style="margin-top:8px; font-size:10px;">Retry</button></td></tr>';
+    container.innerHTML = '<tr><td colspan="5" class="placeholder-txt" style="color:var(--loss);border:none">Rankings service timed out. <button class="fetch-btn" onclick="fetchEsportsStandings()" style="margin-top:8px;">Retry</button></td></tr>';
   }
 }
 
@@ -6698,7 +6918,7 @@ async function fetchEsportsNews() {
       html += `
         <a href="${n.url_path ? 'https://vlr.gg'+n.url_path : '#'}" target="_blank" class="esp-news-card">
           <div class="esp-news-title">${n.title || 'Esports Update'}</div>
-          <div class="esp-news-desc">${n.description || n.desc || ''}</div>
+          <div class="esp-news-desc">${n.description || ''}</div>
           <div class="esp-news-meta">
             <span>${n.author || 'VLR.gg'} • ${n.date || 'Recent'}</span>
             <span class="esp-news-tag">News</span>
@@ -6708,7 +6928,103 @@ async function fetchEsportsNews() {
     });
     container.innerHTML = html;
   } catch (err) {
-    container.innerHTML = '<div class="placeholder-txt" style="color:var(--loss);grid-column:1/-1">News service timed out. <button class="fetch-btn" onclick="fetchEsportsNews()" style="margin-top:12px; font-size:11px;">Retry News</button></div>';
+    container.innerHTML = '<div class="placeholder-txt" style="color:var(--loss);grid-column:1/-1">News service timed out. <button class="fetch-btn" onclick="fetchEsportsNews()" style="margin-top:12px;">Retry News</button></div>';
+  }
+}
+
+function toggleSidebarRegion(regionId) {
+  const header = document.querySelector(`.esp-sidebar-region-header[onclick*="${regionId}"]`);
+  const list = document.getElementById(regionId);
+  if (list && header) {
+    list.classList.toggle('collapsed');
+    header.classList.toggle('collapsed');
+  }
+}
+
+async function initTeamsTab() {
+  const pList = document.getElementById('ov-pacific');
+  const aList = document.getElementById('ov-americas');
+  const eList = document.getElementById('ov-emea');
+  const cList = document.getElementById('ov-china');
+  
+  if (pList.innerHTML) return;
+  
+  try {
+    const res = await fetch('/public/vct_teams.json');
+    vctFranchiseData = await res.json();
+    
+    const regions = { 'pacific': pList, 'americas': aList, 'emea': eList, 'china': cList };
+    Object.entries(regions).forEach(([regName, domEl]) => {
+      const teams = vctFranchiseData[regName] || [];
+      domEl.innerHTML = teams.map(t => `
+        <div class="esp-sidebar-team-btn" data-team-id="${t.id}" onclick="selectFranchiseTeam('${regName}', '${t.id}')">${t.name}</div>
+      `).join('');
+    });
+    
+    selectFranchiseTeam('pacific', 'global_esports');
+    
+    if (!allMatchesCache.length) {
+      const matchesRes = await fetch('/api/esports/upcoming');
+      const matchesData = await matchesRes.json();
+      allMatchesCache = matchesData.data || [];
+    }
+  } catch (e) {
+    console.error("Teams loader error:", e);
+  }
+}
+
+function selectFranchiseTeam(region, teamId) {
+  document.querySelectorAll('.esp-sidebar-team-btn').forEach(btn => btn.classList.remove('active'));
+  const activeBtn = document.querySelector(`.esp-sidebar-team-btn[data-team-id="${teamId}"]`);
+  if (activeBtn) activeBtn.classList.add('active');
+  
+  if (!vctFranchiseData) return;
+  const team = (vctFranchiseData[region] || []).find(t => t.id === teamId);
+  if (!team) return;
+  
+  document.getElementById('esp-active-team-name').textContent = team.name;
+  document.getElementById('esp-active-team-desc').textContent = team.description;
+  
+  const capWrap = document.getElementById('esp-active-team-capsule-wrap');
+  const capImg = document.getElementById('esp-active-team-capsule-img');
+  const capTitle = document.getElementById('esp-active-team-capsule-title');
+  const capDesc = document.getElementById('esp-active-team-capsule-desc');
+  
+  if (team.capsule_image) {
+    capWrap.style.display = 'flex';
+    capImg.src = team.capsule_image;
+    capTitle.textContent = team.capsule_title || 'VCT Capsule';
+    capDesc.textContent = team.capsule_desc || 'Support your team';
+  } else {
+    capWrap.style.display = 'none';
+  }
+  
+  const rosterGrid = document.getElementById('esp-active-team-roster-grid');
+  rosterGrid.innerHTML = (team.roster || []).map(p => `
+    <div class="player-card">
+      <span class="player-card-role ${p.role.toLowerCase() === 'coach' ? 'coach' : ''}">${p.role}</span>
+      <img class="player-card-avatar" src="${p.avatar}" alt="${p.name}"/>
+      <div class="player-card-meta">
+        <div class="player-card-handle">${p.name}</div>
+        <div class="player-card-real">${p.real_name}</div>
+      </div>
+    </div>
+  `).join('');
+  
+  const matchContainer = document.getElementById('esp-active-team-matches-container');
+  const teamMatches = allMatchesCache.filter(m => {
+    const teams = m.match?.teams || [];
+    return teams.some(t => t.name?.toLowerCase().includes(team.name.toLowerCase()) || team.name.toLowerCase().includes(t.name?.toLowerCase()));
+  });
+  
+  if (teamMatches.length === 0) {
+    matchContainer.innerHTML = `
+      <div class="esp-match-card tier-t1" style="min-height:120px; display:flex; align-items:center; justify-content:center; border-style:dashed;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;color:var(--muted);text-transform:uppercase;">No Upcoming Matches</div>
+      </div>
+    `;
+  } else {
+    matchContainer.innerHTML = teamMatches.map(m => getEspHTML(m, 'upcoming')).join('');
   }
 }
 

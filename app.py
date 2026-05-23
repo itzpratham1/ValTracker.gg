@@ -976,41 +976,217 @@ def proxy_api(subpath):
 
 
 # --- ESPORTS ROUTES ---
-def get_henrik_schedule():
-    cache_key = "henrik_schedule"
+
+def scrape_vlr_matches():
+    import re
+    from bs4 import BeautifulSoup
+    cache_key = "vlr_scraped_matches"
     if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < 120:
         return cache[cache_key]["data"]
         
     try:
-        url = "https://api.henrikdev.xyz/valorant/v1/esports/schedule"
-        headers = {"Authorization": API_KEY}
-        r = requests.get(url, headers=headers, timeout=10)
-        if r.status_code == 200:
-            data = r.json().get("data", [])
-            cache[cache_key] = {"data": data, "timestamp": time.time()}
-            return data
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
+        r = requests.get('https://www.vlr.gg/matches', headers=headers, timeout=10)
+        if r.status_code != 200:
+            return []
+            
+        soup = BeautifulSoup(r.text, 'html.parser')
+        matches = []
+        cards = soup.find_all('div', class_='wf-card')
+        current_date = "Today"
+        
+        for card in cards:
+            date_el = card.find(class_='wf-label')
+            if date_el and 'mod-large' in date_el.get('class', []):
+                current_date = date_el.text.strip()
+                
+            match_items = card.find_all('a', class_='match-item')
+            for item in match_items:
+                href = item.get('href', '')
+                match_id = re.search(r'/(\d+)/', href)
+                match_id = match_id.group(1) if match_id else href
+                
+                time_el = item.find('div', class_='match-item-time')
+                time_str = time_el.text.strip() if time_el else "00:00"
+                
+                teams_divs = item.find_all('div', class_='match-item-vs-team')
+                teams_data = []
+                for t_div in teams_divs:
+                    name_el = t_div.find('div', class_='text-of')
+                    name = name_el.text.strip() if name_el else "TBD"
+                    
+                    score_el = t_div.find('div', class_='match-item-vs-team-score')
+                    score_str = score_el.text.strip() if score_el else "0"
+                    try:
+                        score = int(score_str)
+                    except ValueError:
+                        score = 0
+                    
+                    teams_data.append({
+                        "name": name,
+                        "game_wins": score,
+                        "has_won": False
+                    })
+                
+                if len(teams_data) < 2:
+                    teams_data = [{"name": "TBD", "game_wins": 0, "has_won": False}, {"name": "TBD", "game_wins": 0, "has_won": False}]
+                    
+                eta_el = item.find('div', class_='ml-status')
+                status_text = eta_el.text.strip().upper() if eta_el else "UPCOMING"
+                
+                state = "unstarted"
+                if "LIVE" in status_text:
+                    state = "in_progress"
+                elif "FINAL" in status_text or "COMPLETED" in status_text:
+                    state = "completed"
+                    
+                if state == "completed":
+                    s1 = teams_data[0]["game_wins"]
+                    s2 = teams_data[1]["game_wins"]
+                    if s1 > s2:
+                        teams_data[0]["has_won"] = True
+                    elif s2 > s1:
+                        teams_data[1]["has_won"] = True
+                        
+                event_el = item.find('div', class_='match-item-event')
+                event_name = "VCT"
+                stage_name = ""
+                if event_el:
+                    parts = [p.strip() for p in event_el.text.strip().split('\n') if p.strip()]
+                    stage_name = parts[0] if len(parts) >= 1 else ""
+                    event_name = parts[1] if len(parts) >= 2 else stage_name
+                    
+                date_meta = f"{current_date} {time_str}"
+                
+                matches.append({
+                    "id": match_id,
+                    "date": date_meta,
+                    "state": state,
+                    "league": {
+                        "name": event_name,
+                        "region": stage_name
+                    },
+                    "match": {
+                        "id": match_id,
+                        "teams": teams_data
+                    },
+                    "vod": None
+                })
+        cache[cache_key] = {"data": matches, "timestamp": time.time()}
+        return matches
     except Exception as e:
-        print("[ERROR] Henrik schedule fetch failed:", e)
-    return []
+        print("[ERROR] scrape_vlr_matches failed:", e)
+        return []
+
+def scrape_vlr_results():
+    import re
+    from bs4 import BeautifulSoup
+    cache_key = "vlr_scraped_results"
+    if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < 120:
+        return cache[cache_key]["data"]
+        
+    try:
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
+        r = requests.get('https://www.vlr.gg/matches/results', headers=headers, timeout=10)
+        if r.status_code != 200:
+            return []
+            
+        soup = BeautifulSoup(r.text, 'html.parser')
+        matches = []
+        cards = soup.find_all('div', class_='wf-card')
+        current_date = "Recent"
+        
+        for card in cards:
+            date_el = card.find(class_='wf-label')
+            if date_el and 'mod-large' in date_el.get('class', []):
+                current_date = date_el.text.strip()
+                
+            match_items = card.find_all('a', class_='match-item')
+            for item in match_items:
+                href = item.get('href', '')
+                match_id = re.search(r'/(\d+)/', href)
+                match_id = match_id.group(1) if match_id else href
+                
+                time_el = item.find('div', class_='match-item-time')
+                time_str = time_el.text.strip() if time_el else "00:00"
+                
+                teams_divs = item.find_all('div', class_='match-item-vs-team')
+                teams_data = []
+                for t_div in teams_divs:
+                    name_el = t_div.find('div', class_='text-of')
+                    name = name_el.text.strip() if name_el else "TBD"
+                    
+                    score_el = t_div.find('div', class_='match-item-vs-team-score')
+                    score_str = score_el.text.strip() if score_el else "0"
+                    try:
+                        score = int(score_str)
+                    except ValueError:
+                        score = 0
+                    
+                    teams_data.append({
+                        "name": name,
+                        "game_wins": score,
+                        "has_won": False
+                    })
+                
+                if len(teams_data) < 2:
+                    continue
+                    
+                state = "completed"
+                s1 = teams_data[0]["game_wins"]
+                s2 = teams_data[1]["game_wins"]
+                if s1 > s2:
+                    teams_data[0]["has_won"] = True
+                elif s2 > s1:
+                    teams_data[1]["has_won"] = True
+                    
+                event_el = item.find('div', class_='match-item-event')
+                event_name = "VCT"
+                stage_name = ""
+                if event_el:
+                    parts = [p.strip() for p in event_el.text.strip().split('\n') if p.strip()]
+                    stage_name = parts[0] if len(parts) >= 1 else ""
+                    event_name = parts[1] if len(parts) >= 2 else stage_name
+                    
+                date_meta = f"{current_date} {time_str}"
+                
+                matches.append({
+                    "id": match_id,
+                    "date": date_meta,
+                    "state": state,
+                    "league": {
+                        "name": event_name,
+                        "region": stage_name
+                    },
+                    "match": {
+                        "id": match_id,
+                        "teams": teams_data
+                    },
+                    "vod": None
+                })
+        cache[cache_key] = {"data": matches, "timestamp": time.time()}
+        return matches
+    except Exception as e:
+        print("[ERROR] scrape_vlr_results failed:", e)
+        return []
 
 @app.route("/api/esports/live")
 @rate_limit(requests_per_minute=30)
 def esports_live():
-    data = get_henrik_schedule()
-    live = [m for m in data if m.get("state") == "inProgress"]
+    data = scrape_vlr_matches()
+    live = [m for m in data if m.get("state") in ("in_progress", "inProgress")]
     return jsonify({"data": live})
 
 @app.route("/api/esports/results")
 @rate_limit(requests_per_minute=30)
 def esports_results():
-    data = get_henrik_schedule()
-    results = [m for m in data if m.get("state") == "completed"]
+    results = scrape_vlr_results()
     return jsonify({"data": results})
 
 @app.route("/api/esports/upcoming")
 @rate_limit(requests_per_minute=30)
 def esports_upcoming():
-    data = get_henrik_schedule()
+    data = scrape_vlr_matches()
     upcoming = [m for m in data if m.get("state") == "unstarted"]
     return jsonify({"data": upcoming})
 
@@ -1023,26 +1199,31 @@ def esports_news():
         
     try:
         from bs4 import BeautifulSoup
-        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
         r = requests.get('https://www.vlr.gg/news', headers=headers, timeout=10)
         soup = BeautifulSoup(r.text, 'html.parser')
         news_items = []
         for item in soup.find_all('a', class_='wf-module-item')[:15]:
             title_el = item.find('div', style=lambda v: v and 'font-weight: 700' in v)
+            desc_el = item.find('div', style=lambda v: v and 'font-size: 13px' in v)
             date_author_el = item.find('div', class_='ge-text-light')
             
             if title_el:
+                description = desc_el.text.strip() if desc_el else ""
+                
+                raw_txt = date_author_el.text.strip() if date_author_el else "Recent"
+                raw_txt = raw_txt.replace('\n', ' ').replace('\t', ' ')
+                
+                parts = [p.strip() for p in raw_txt.split('by') if p.strip()]
                 date_str = "Recent"
                 author_str = "VLR.gg"
-                if date_author_el:
-                    parts = date_author_el.text.strip().split('•')
-                    if len(parts) >= 2:
-                        date_str = parts[0].strip()
-                        author_str = parts[1].strip()
+                if len(parts) >= 1:
+                    date_str = parts[0].strip(' \u2022\u00a0\u2014-')
+                    author_str = parts[1].strip() if len(parts) > 1 else "VLR.gg"
                 
                 news_items.append({
                     "title": title_el.text.strip(),
-                    "description": "",
+                    "description": description,
                     "date": date_str,
                     "author": author_str,
                     "url_path": item.get('href', '')
@@ -1056,38 +1237,81 @@ def esports_news():
 @app.route("/api/esports/standings/<region>")
 @rate_limit(requests_per_minute=30)
 def esports_standings(region):
-    # region can be na, eu, ap, la, kr, cn, or all
+    import re
     cache_key = f"vlr_standings_{region}"
     if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < 3600:
         return jsonify({"data": cache[cache_key]["data"]})
         
     try:
         from bs4 import BeautifulSoup
-        headers = {'User-Agent': 'Mozilla/5.0'}
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
         url_region = region
         if region == "all": url_region = "north-america"
         elif region == "na": url_region = "north-america"
         elif region == "eu": url_region = "europe"
         elif region == "ap": url_region = "asia-pacific"
         elif region == "la": url_region = "latin-america"
+        elif region == "mn": url_region = "china"
         
         r = requests.get(f'https://www.vlr.gg/rankings/{url_region}', headers=headers, timeout=10)
         soup = BeautifulSoup(r.text, 'html.parser')
         
         standings = []
-        rows = soup.find_all('tr')
-        rank = 1
-        for row in rows[1:51]: # skip header, take top 50
-            tds = row.find_all('td')
-            if len(tds) >= 2:
-                team_name = tds[0].text.replace('\t', '').replace('\n', ' ').strip().split('  ')[0].strip()
-                standings.append({
-                    "rank": rank,
-                    "team": team_name,
-                    "wins": 0, "losses": 0, "streak": "-", "country": region.upper()
-                })
-                rank += 1
+        rank_items = soup.find_all('div', class_='rank-item')
+        
+        for item in rank_items[:50]: # top 50
+            rank_el = item.find('div', class_='rank-item-rank-num')
+            rank_num = rank_el.text.strip() if rank_el else "1"
+            
+            team_a = item.find('a', class_='rank-item-team')
+            if not team_a:
+                continue
                 
+            team_name = ""
+            ge_text_el = team_a.find('div', class_='ge-text')
+            if ge_text_el:
+                texts = [t for t in ge_text_el.find_all(text=True, recursive=False) if t.strip()]
+                team_name = texts[0].strip() if texts else ge_text_el.text.strip()
+                team_name = team_name.split('#')[0].strip()
+                
+            img_el = team_a.find('img')
+            logo_url = ""
+            if img_el and img_el.get('src'):
+                src = img_el.get('src')
+                logo_url = "https:" + src if src.startswith('//') else src
+                
+            country_el = team_a.find('div', class_='rank-item-team-country')
+            country = country_el.text.strip() if country_el else region.upper()
+            
+            rating_el = item.find('div', class_='rank-item-rating')
+            rating_str = "1000"
+            if rating_el:
+                rating_str = rating_el.text.strip()
+                rating_str = [r.strip() for r in rating_str.split('\n') if r.strip()][0]
+                
+            streak_el = item.find('div', class_='rank-item-streak')
+            streak = streak_el.text.strip() if streak_el else "-"
+            
+            record_el = item.find('div', class_='rank-item-record')
+            wins, losses = 0, 0
+            if record_el:
+                rec_txt = record_el.text.strip()
+                digits = re.findall(r'\d+', rec_txt)
+                if len(digits) >= 2:
+                    wins = int(digits[0])
+                    losses = int(digits[1])
+            
+            standings.append({
+                "rank": int(rank_num) if rank_num.isdigit() else 1,
+                "team": team_name,
+                "logo": logo_url,
+                "country": country,
+                "rating": rating_str,
+                "wins": wins,
+                "losses": losses,
+                "streak": streak
+            })
+            
         cache[cache_key] = {"data": standings, "timestamp": time.time()}
         return jsonify({"data": standings})
     except Exception as e:

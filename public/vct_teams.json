@@ -1,0 +1,282 @@
+{
+  "pacific": [
+    {
+      "id": "global_esports",
+      "name": "Global Esports",
+      "tag": "GE",
+      "description": "Global Esports started in 2017 as a way for a bunch of friends to do something cool playing video games and competing in events. VALORANT has been in our DNA and core from the closed Beta, we just have to showcase it on stage this year. In the last decade we have generated billions of views and are getting ready for our biggest finale yet in 2026. #GEFighting",
+      "capsule_title": "VCT x GE",
+      "capsule_desc": "Teams will earn a portion of proceeds from their respective Capsules.",
+      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/bltb9e4feee06fb1d42/65dcf594a10787ad7f59d57a/VCT24_Classic_Skin_GlobalEsports.png",
+      "roster": [
+        { "name": "AUTUMN", "real_name": "Kale Dunne", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "KR1STAL", "real_name": "Savva Fedorov", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "PATMEN", "real_name": "Jhon Patrick Ramos Mendoza", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "UDOTAN", "real_name": "Kyeongwon Ko", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "XAVI8K", "real_name": "Xavier Juan", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "FR0ST", "real_name": "Hector Rosario", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
+      ]
+    },
+    {
+      "id": "paper_rex",
+      "name": "Paper Rex",
+      "tag": "PRX",
+      "description": "Paper Rex is a Southeast Asian esports organization based in Singapore. Famed for their hyper-aggressive, off-meta double-duelist playstyles, Paper Rex has captured the hearts of fans worldwide as the absolute entertainment kings of VCT Pacific.",
+      "capsule_title": "VCT x PRX",
+      "capsule_desc": "Support Paper Rex by purchasing their official VCT Classic Capsule.",
+      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blt46d6cc98f4cc1450/65dcf594ec17a3a9ec1cc21b/VCT24_Classic_Skin_PaperRex.png",
+      "roster": [
+        { "name": "f0rsakeN", "real_name": "Jason Susanto", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "mindfreak", "real_name": "Aaron Leonhart", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "d4v41", "real_name": "Khalish Rusyaidee", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "something", "real_name": "Ilya Petrov", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "Jinggg", "real_name": "Wang Jing Jie", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "ALECKS", "real_name": "Alexandre Salle", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
+      ]
+    },
+    {
+      "id": "gen_g",
+      "name": "Gen.G Esports",
+      "tag": "GEN",
+      "description": "Gen.G Esports is a premier South Korean esports powerhouse. Crowned as the VCT Pacific Stage 1 and Masters Shanghai Champions, Gen.G boasts absolute precision, masterful strategy, and unbreakable team cohesion.",
+      "capsule_title": "VCT x GEN",
+      "capsule_desc": "Support Gen.G by purchasing their official VCT Classic Capsule.",
+      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blt221b2d45c5890bfa/65dcf594a10787ad7f59d57a/VCT24_Classic_Skin_GenG.png",
+      "roster": [
+        { "name": "Munchkin", "real_name": "Byeon Sang-beom", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "t3xture", "real_name": "Kim Na-ra", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "Meteor", "real_name": "Kim Tae-o", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "Lakia", "real_name": "Kim Jong-min", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "Karon", "real_name": "Kim Won-tae", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "SOLO", "real_name": "Kang Keun-chul", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
+      ]
+    },
+    {
+      "id": "drx",
+      "name": "Kiwoom DRX",
+      "tag": "DRX",
+      "description": "DRX is a leading South Korean esports organization. With a legendary history of dominant streaks in Korea and VCT Pacific, DRX is famous for nurturing world-class tier-1 talents and executing flawless site takes.",
+      "capsule_title": "VCT x DRX",
+      "capsule_desc": "Support DRX by purchasing their official VCT Classic Capsule.",
+      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blta5e39603f90f23cb/65dcf5941c2c2f2ffc424dfd/VCT24_Classic_Skin_DRX.png",
+      "roster": [
+        { "name": "BuZz", "real_name": "Yu Byung-chul", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "MaKo", "real_name": "Kim Myeong-kwan", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "Foxy9", "real_name": "Jung Jae-sung", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "Flashback", "real_name": "Min Min-gyu", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "HYN", "real_name": "Kim Ji-woo", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "TERMI", "real_name": "Pyeon Seon-ho", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
+      ]
+    },
+    {
+      "id": "t1",
+      "name": "T1 Esports",
+      "tag": "T1",
+      "description": "T1 is one of the most prestigious names in global esports. Based in South Korea, T1 VALORANT blends veteran gaming wisdom with raw mechanical skill to conquer the global stage.",
+      "capsule_title": "VCT x T1",
+      "capsule_desc": "Support T1 by purchasing their official VCT Classic Capsule.",
+      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/bltd9f1c7bfdfc9dbba/65dcf594e9feadbe9a9a3b93/VCT24_Classic_Skin_T1.png",
+      "roster": [
+        { "name": "xccurate", "real_name": "Kevin Susanto", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "Sayaplayer", "real_name": "Ha Jung-woo", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "Carpe", "real_name": "Lee Jae-hyeok", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "iZu", "real_name": "Ham Woo-joo", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "Rossy", "real_name": "Daniel Abedrabbo", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "AUTUMN", "real_name": "Yoon Eu-teum", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
+      ]
+    },
+    {
+      "id": "zeta_division",
+      "name": "ZETA DIVISION",
+      "tag": "ZETA",
+      "description": "ZETA DIVISION is Japan's premier gaming lifestyle and esports organization. Renowned for their historic 3rd place run at Masters Reykjavik, ZETA represents the pride and tactical excellence of Japanese VALORANT.",
+      "capsule_title": "VCT x ZETA",
+      "capsule_desc": "Support ZETA by purchasing their official VCT Classic Capsule.",
+      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blt46d6cc98f4cc1450/65dcf594ec17a3a9ec1cc21b/VCT24_Classic_Skin_ZetaDivision.png",
+      "roster": [
+        { "name": "Laz", "real_name": "Koji Ushida", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "Dep", "real_name": "Yuma Hashimoto", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "SugarZ3ro", "real_name": "Shota Watanabe", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "hiroronn", "real_name": "Hiroto Yanai", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "Yuran", "real_name": "Yushin Hada", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "CARLAO", "real_name": "Carlos Mohn", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
+      ]
+    },
+    {
+      "id": "team_secret",
+      "name": "Team Secret",
+      "tag": "TS",
+      "description": "Team Secret is a globally renowned esports organization. Their Filipino VALORANT roster represents the ultimate mechanical kings of the Philippines, bringing loud personalities and tactical depth to VCT Pacific.",
+      "capsule_title": "VCT x TS",
+      "capsule_desc": "Support Team Secret by purchasing their official VCT Classic Capsule.",
+      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/bltd9f1c7bfdfc9dbba/65dcf594e9feadbe9a9a3b93/VCT24_Classic_Skin_TeamSecret.png",
+      "roster": [
+        { "name": "JessieVash", "real_name": "Jessie Cristy Cuyco", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "invy", "real_name": "Adrian Jaldon", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "NDG", "real_name": "Noel De Guia", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "Jremy", "real_name": "Jeremy Cabrera", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "wild0reoo", "real_name": "Brando Urip", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "DUMMY", "real_name": "dummy", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
+      ]
+    },
+    {
+      "id": "detonation_focusme",
+      "name": "DetonatioN FocusMe",
+      "tag": "DFM",
+      "description": "DetonatioN FocusMe is a Japanese esports organization under the DetonatioN Gaming umbrella. Blending Japanese strategies and top-tier training infrastructure, they aim to disrupt VCT Pacific standings in 2026.",
+      "capsule_title": "VCT x DFM",
+      "capsule_desc": "Support DFM by purchasing their official VCT Classic Capsule.",
+      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/bltb9e4feee06fb1d42/65dcf594a10787ad7f59d57a/VCT24_Classic_Skin_DetonationFocusMe.png",
+      "roster": [
+        { "name": "Meiy", "real_name": "Ibuki Seki", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "Suggest", "real_name": "Seo Jae-young", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "neth", "real_name": "Yuma Kubo", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "Anthem", "real_name": "Yoshitaka Nakamoto", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "Astell", "real_name": "Moon Ji-won", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "MELOFOVIA", "real_name": "Hirotaka Okazaki", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
+      ]
+    },
+    {
+      "id": "full_sense",
+      "name": "FULL SENSE",
+      "tag": "FS",
+      "description": "FULL SENSE is a premier Thai esports team that rose through Challengers and Ascension to claim their rightful spot in VCT Pacific franchise leagues. Famous for their electric synergy and intense tactical setups.",
+      "capsule_title": "VCT x FS",
+      "capsule_desc": "Support FULL SENSE by purchasing their official VCT Classic Capsule.",
+      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blt46d6cc98f4cc1450/65dcf594ec17a3a9ec1cc21b/VCT24_Classic_Skin_PaperRex.png",
+      "roster": [
+        { "name": "SuperBusS", "real_name": "Nattawat Yoosawat", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "JohnOlsen", "real_name": "Chanawin Nakpathom", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "ChAlalala", "real_name": "Chanitpak Suwanaprateep", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "PTC", "real_name": "Kititkawin Rattanasukol", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "THEG9", "real_name": "Thanaphat Limpaphan", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "DOBY", "real_name": "doby", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
+      ]
+    },
+    {
+      "id": "varrel",
+      "name": "VARREL Esports",
+      "tag": "VL",
+      "description": "VARREL is a rising star Japanese esports franchise. Fighting their way out of VCL Japan with absolute dedication, VARREL brings sharp mechanical power and precise team play to VCT Pacific.",
+      "capsule_title": "VCT x VL",
+      "capsule_desc": "Support VARREL by purchasing their official VCT Classic Capsule.",
+      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blt46d6cc98f4cc1450/65dcf594ec17a3a9ec1cc21b/VCT24_Classic_Skin_ZetaDivision.png",
+      "roster": [
+        { "name": "Zepher", "real_name": "Jyousuke Jyousuke", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "LOB", "real_name": "Lim Byung-gun", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "BlackWiz", "real_name": "Naoki Sotoyama", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "Bangban", "real_name": "bangban", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "xnfri", "real_name": "Akihiro Moriya", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "EAMA", "real_name": "eama", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
+      ]
+    }
+  ],
+  "americas": [
+    {
+      "id": "sentinels",
+      "name": "Sentinels",
+      "tag": "SEN",
+      "description": "Sentinels is a premier esports organization based in Los Angeles, California. As the Masters Madrid Champions and one of the most followed VALORANT teams in history, Sentinels combines absolute mechanical supremacy with a massive fanbase.",
+      "capsule_title": "VCT x SEN",
+      "capsule_desc": "Support Sentinels by purchasing their official VCT Classic Capsule.",
+      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blteee9594cfeb6cb15/65dcf594ec17a3a9ec1cc213/VCT24_Classic_Skin_Sentinels.png",
+      "roster": [
+        { "name": "zekken", "real_name": "Zachary Patrone", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "johnqt", "real_name": "Mohamed Amine Ouarid", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "Zellsis", "real_name": "Jordan Montemurro", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "Sacy", "real_name": "Gustavo Rossi", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "TenZ", "real_name": "Tyson Ngo", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "KAPLAN", "real_name": "Adam Kaplan", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
+      ]
+    },
+    {
+      "id": "g2_esports",
+      "name": "G2 Esports",
+      "tag": "G2",
+      "description": "G2 Esports is a world-renowned European powerhouse now competing in VCT Americas. Reaching the grand final of Stage 1, G2's unbreakable defensive systems and team strategy make them a top-tier contender.",
+      "capsule_title": "VCT x G2",
+      "capsule_desc": "Support G2 by purchasing their official VCT Classic Capsule.",
+      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blt46d6cc98f4cc1450/65dcf594ec17a3a9ec1cc21b/VCT24_Classic_Skin_PaperRex.png",
+      "roster": [
+        { "name": "valyn", "real_name": "Jacob Batio", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "JonahP", "real_name": "Jonah Pulice", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "trent", "real_name": "Trent Cairns", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "leaf", "real_name": "Nathan Orf", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "icy", "real_name": "Jacob Lange", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "JOSHRT", "real_name": "Josh Lee", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
+      ]
+    },
+    {
+      "id": "leviatan",
+      "name": "Leviatán",
+      "tag": "LEV",
+      "description": "Leviatán is a premier Argentine esports organization. Armed with the legendary World Champion duelist 'aspas' and a roster of hyper-mechanical Latin American stars, they represent absolute lethal firepower.",
+      "capsule_title": "VCT x LEV",
+      "capsule_desc": "Support Leviatán by purchasing their official VCT Classic Capsule.",
+      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blt46d6cc98f4cc1450/65dcf594ec17a3a9ec1cc21b/VCT24_Classic_Skin_PaperRex.png",
+      "roster": [
+        { "name": "aspas", "real_name": "Erick Santos", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "kiNgg", "real_name": "Francisco Aravena", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "mazino", "real_name": "Roberto Rivas", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "tex", "real_name": "Ian Botisch", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "C0M", "real_name": "Corbin Lee", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "ITZ_CHRIZ", "real_name": "Christian Guerra", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
+      ]
+    }
+  ],
+  "emea": [
+    {
+      "id": "fnatic",
+      "name": "Fnatic",
+      "tag": "FNC",
+      "description": "Fnatic is one of the most successful VALORANT teams in history. Based in London, Fnatic won back-to-back global trophies in 2023 (LOCK//IN and Masters Tokyo) and continues to dominate EMEA with tactical genius.",
+      "capsule_title": "VCT x FNC",
+      "capsule_desc": "Support Fnatic by purchasing their official VCT Classic Capsule.",
+      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blt46d6cc98f4cc1450/65dcf594ec17a3a9ec1cc21b/VCT24_Classic_Skin_PaperRex.png",
+      "roster": [
+        { "name": "Boaster", "real_name": "Jake Howlett", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "Derke", "real_name": "Nikita Sirmitev", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "Chronicle", "real_name": "Timofey Khromov", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "Alfajer", "real_name": "Emir Ali Beder", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "hiro", "real_name": "Hiroshi Miyamoto", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "ELMAPUDDY", "real_name": "Chris Tebbit", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
+      ]
+    },
+    {
+      "id": "team_heretics",
+      "name": "Team Heretics",
+      "tag": "TH",
+      "description": "Team Heretics is a Spanish esports organization that conquered VCT EMEA in 2026. Famous for their aggressive double-initiator setups and incredibly young mechanics, they represent the absolute future of European VALORANT.",
+      "capsule_title": "VCT x TH",
+      "capsule_desc": "Support Team Heretics by purchasing their official VCT Classic Capsule.",
+      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blt46d6cc98f4cc1450/65dcf594ec17a3a9ec1cc21b/VCT24_Classic_Skin_PaperRex.png",
+      "roster": [
+        { "name": "Boo", "real_name": "Ričardas Lukaševičius", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "Benjyfishy", "real_name": "Benjy David Fish", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "MiniBoo", "real_name": "Dominykas Lukaševičius", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "RieNs", "real_name": "Enes Ecirli", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "wo0t", "real_name": "Mert Alkan", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "NEILZINHO", "real_name": "Neil Finlay", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
+      ]
+    }
+  ],
+  "china": [
+    {
+      "id": "edg",
+      "name": "Edward Gaming",
+      "tag": "EDG",
+      "description": "Edward Gaming is the undisputed king of Chinese VALORANT. Crowned as champions of every VCT CN split, EDG combines absolute hyper-aggressive playstyles led by star duelist KangKang with bulletproof tactical execution.",
+      "capsule_title": "VCT x EDG",
+      "capsule_desc": "Support Edward Gaming by purchasing their official VCT Classic Capsule.",
+      "capsule_image": "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blt46d6cc98f4cc1450/65dcf594ec17a3a9ec1cc21b/VCT24_Classic_Skin_PaperRex.png",
+      "roster": [
+        { "name": "ZmjjKK", "real_name": "Zheng Yongkang", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "CHICHOO", "real_name": "Wan Shunji", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "nobody", "real_name": "Wang Senxu", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "Smoggy", "real_name": "Zhang Zhao", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "S1Mon", "real_name": "Hsieh Meng-hsun", "role": "PLAYER", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" },
+        { "name": "MUGGLE", "real_name": "Lo Chi-wook", "role": "COACH", "avatar": "https://owcdn.net/img/65a3922c2a07e.png" }
+      ]
+    }
+  ]
+}
