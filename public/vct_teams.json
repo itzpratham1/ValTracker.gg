@@ -1,183 +1,6 @@
 {
     "americas": [
         {
-            "id": "2",
-            "name": "Sentinels",
-            "logo": "https://owcdn.net/img/62875027c8e06.png",
-            "roster": [
-                {
-                    "name": "johnqt",
-                    "real_name": "Mohamed Amine Ouarid",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69741441b9923.png"
-                },
-                {
-                    "name": "Reduxx",
-                    "real_name": "Yassin Aboulalazm",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6974144d86cdb.png"
-                },
-                {
-                    "name": "Jerrwin",
-                    "real_name": "Gurjiwan Gill",
-                    "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
-                },
-                {
-                    "name": "cortezia",
-                    "real_name": "Gabriel Cortez",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69741432dd5e2.png"
-                },
-                {
-                    "name": "JonahP",
-                    "real_name": "Jonah Pulice",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/65e4636c00e46.png"
-                },
-                {
-                    "name": "Victor",
-                    "real_name": "Victor Wong",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/64169062bfcf2.png"
-                },
-                {
-                    "name": "Zyto",
-                    "real_name": "Bryan Ybanez",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/66c25238e898d.png"
-                },
-                {
-                    "name": "Ewok",
-                    "real_name": "Marthinus Jacobus Van Der Walt",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6821f785e3ef1.png"
-                },
-                {
-                    "name": "GUNTER",
-                    "real_name": "Luke Clives",
-                    "role": "COACH",
-                    "avatar": "/img/base/ph/sil.png"
-                }
-            ]
-        },
-        {
-            "id": "6961",
-            "name": "LOUD",
-            "logo": "https://owcdn.net/img/62bbec8dc1b9f.png",
-            "roster": [
-                {
-                    "name": "lukxo",
-                    "real_name": "Lucca Travaioli",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69e023fe3a5b8.png"
-                },
-                {
-                    "name": "Darker",
-                    "real_name": "Sebasti\u00e1n Castro Cicuamia",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69e02450abf75.png"
-                },
-                {
-                    "name": "Virtyy",
-                    "real_name": "Leandro Moreno",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69e023c039e74.png"
-                },
-                {
-                    "name": "erde",
-                    "real_name": "Roberto Lobos",
-                    "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
-                },
-                {
-                    "name": "cauanzin",
-                    "real_name": "Cauan Pereira",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69e024587afee.png"
-                },
-                {
-                    "name": "Wenty",
-                    "real_name": "Carlos Lira Portela",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6889dbe04ee67.png"
-                },
-                {
-                    "name": "Romanilly",
-                    "real_name": "Gonzalo Manzano",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69e023eeafb62.png"
-                },
-                {
-                    "name": "Bati",
-                    "real_name": "Miguel Batista",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69e024e2a1f17.png"
-                },
-                {
-                    "name": "bajerski",
-                    "real_name": "Lucas Bajerski Pereira",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6889c7fc2b646.png"
-                }
-            ]
-        },
-        {
-            "id": "1034",
-            "name": "NRG",
-            "logo": "https://owcdn.net/img/6610f026c1a9e.png",
-            "roster": [
-                {
-                    "name": "Ethan",
-                    "real_name": "Ethan Arnold",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6974068bad561.png"
-                },
-                {
-                    "name": "keiko",
-                    "real_name": "Georgio Sanassy",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/697406c5ecbcd.png"
-                },
-                {
-                    "name": "brawk",
-                    "real_name": "Brock Somerhalder",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/697426e1f3308.png"
-                },
-                {
-                    "name": "mada",
-                    "real_name": "Adam Pampuch",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/697406cf6b086.png"
-                },
-                {
-                    "name": "skuba",
-                    "real_name": "Logan Jenkins",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6974067806f34.png"
-                },
-                {
-                    "name": "Ry",
-                    "real_name": "Zachary Parr",
-                    "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
-                },
-                {
-                    "name": "bonkar",
-                    "real_name": "Malkolm Rench",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69740665ea1d3.png"
-                },
-                {
-                    "name": "mitch",
-                    "real_name": "Mitch Semago",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/696eb214bb188.png"
-                }
-            ]
-        },
-        {
             "id": "120",
             "name": "100 Thieves",
             "logo": "https://owcdn.net/img/603c00d5c5a08.png",
@@ -215,124 +38,14 @@
                 {
                     "name": "Nbs",
                     "real_name": "Laurynas Kisielius",
-                    "role": "COACH",
+                    "role": "PLAYER",
                     "avatar": "/api/image?url=https://owcdn.net/img/613e111eb7fee.png"
                 },
                 {
                     "name": "d00mbr0s",
                     "real_name": "Carl Erik Victor William Sandgren",
-                    "role": "COACH",
+                    "role": "PLAYER",
                     "avatar": "/api/image?url=https://owcdn.net/img/642eabe168fd7.png"
-                }
-            ]
-        },
-        {
-            "id": "2359",
-            "name": "LEVIAT\u00c1N",
-            "logo": "https://owcdn.net/img/61b8888cc3860.png",
-            "roster": [
-                {
-                    "name": "kiNgg",
-                    "real_name": "Francisco Aravena",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69234b213a609.png"
-                },
-                {
-                    "name": "spike",
-                    "real_name": "Rodrigo Lombardi",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69234b7d30781.png"
-                },
-                {
-                    "name": "blowz",
-                    "real_name": "Guilherme Oliviera",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69234aef86f4b.png"
-                },
-                {
-                    "name": "Neon",
-                    "real_name": "Bruno Rodr\u00edguez",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69234b3d0a58d.png"
-                },
-                {
-                    "name": "Sato",
-                    "real_name": "Eduardo Kenzo Nagahama Sato",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69234b72ce3db.png"
-                },
-                {
-                    "name": "Onur",
-                    "real_name": "Rodrigo Dalmagro",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69234b4d36e7b.png"
-                },
-                {
-                    "name": "Jhein",
-                    "real_name": "Cristian Cama\u00f1o",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/695ee3ba44d91.png"
-                }
-            ]
-        },
-        {
-            "id": "11058",
-            "name": "G2 Esports",
-            "logo": "https://owcdn.net/img/633822848a741.png",
-            "roster": [
-                {
-                    "name": "valyn",
-                    "real_name": "Jacob Batio",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/65e4660ee20e5.png"
-                },
-                {
-                    "name": "jawgemo",
-                    "real_name": "Alexander Mor",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/64169400bfed7.png"
-                },
-                {
-                    "name": "BABYBAY",
-                    "real_name": "Andrej Francisty",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6224a67aabf26.png"
-                },
-                {
-                    "name": "trent",
-                    "real_name": "Trent Cairns",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/65e466071ca19.png"
-                },
-                {
-                    "name": "leaf",
-                    "real_name": "Nathan Orf",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6613103dd51a4.png"
-                },
-                {
-                    "name": "Ambrose",
-                    "real_name": "Ambrose Lai",
-                    "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
-                },
-                {
-                    "name": "JoshRT",
-                    "real_name": "Josh Lee",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/65e46376a2867.png"
-                },
-                {
-                    "name": "shhhack",
-                    "real_name": "Peter Belej",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/65e46626795d3.png"
-                },
-                {
-                    "name": "Robert",
-                    "real_name": "Robert Yip",
-                    "role": "COACH",
-                    "avatar": "/img/base/ph/sil.png"
                 }
             ]
         },
@@ -382,183 +95,6 @@
                     "real_name": "Wyatt Blevins",
                     "role": "PLAYER",
                     "avatar": "/api/image?url=https://owcdn.net/img/69a870aee640d.png"
-                }
-            ]
-        },
-        {
-            "id": "2355",
-            "name": "KR\u00dc Esports",
-            "logo": "https://owcdn.net/img/63976677069e1.png",
-            "roster": [
-                {
-                    "name": "saadhak",
-                    "real_name": "Matias Delipetro",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69e6509789324.png"
-                },
-                {
-                    "name": "mwzera",
-                    "real_name": "Leonardo Serrati",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69e6507319f13.png"
-                },
-                {
-                    "name": "silentzz",
-                    "real_name": "Caio Morita",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69e650a00dd36.png"
-                },
-                {
-                    "name": "Less",
-                    "real_name": "Felipe de Loyola Basso",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69e64fe599b45.png"
-                },
-                {
-                    "name": "Dantedeu5",
-                    "real_name": "Jes\u00fas Federico Larrosa",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69e64fdcabd75.png"
-                },
-                {
-                    "name": "torito",
-                    "real_name": "Cristobal Quintana",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69e650f4d872c.png"
-                },
-                {
-                    "name": "ZONYK",
-                    "real_name": "Nicolas Carboni",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69e651196eca6.png"
-                },
-                {
-                    "name": "Fadeout",
-                    "real_name": "Alex Arg\u00fcello",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69e64faea1f3f.png"
-                },
-                {
-                    "name": "Nyogen",
-                    "real_name": "Tom\u00e1s Castiglione",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/687bfb5cebf46.png"
-                },
-                {
-                    "name": "Psiarthurleon",
-                    "real_name": "Arthur Leon",
-                    "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
-                }
-            ]
-        },
-        {
-            "id": "7386",
-            "name": "MIBR",
-            "logo": "https://owcdn.net/img/632be7626d6d9.png",
-            "roster": [
-                {
-                    "name": "zekken",
-                    "real_name": "Zachary Patrone",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69742b2cdd6c3.png"
-                },
-                {
-                    "name": "tex",
-                    "real_name": "Ian Botsch",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69742b4f94c53.png"
-                },
-                {
-                    "name": "Mazino",
-                    "real_name": "Roberto Rivas",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69742ba0b7d17.png"
-                },
-                {
-                    "name": "Verno",
-                    "real_name": "Andrew Maust",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69742b3c25b7c.png"
-                },
-                {
-                    "name": "aspas",
-                    "real_name": "Erick Santos",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6977f8cf0996f.png"
-                },
-                {
-                    "name": "Nandinnn",
-                    "real_name": "",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69780bdc021d7.png"
-                },
-                {
-                    "name": "fRoD",
-                    "real_name": "Daniel Montaner",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6977f8fa9f7ae.png"
-                },
-                {
-                    "name": "Happy",
-                    "real_name": "Vincent Schopenhauer",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/67925038e29d3.png"
-                }
-            ]
-        },
-        {
-            "id": "2406",
-            "name": "FURIA",
-            "logo": "https://owcdn.net/img/632be843b7d51.png",
-            "roster": [
-                {
-                    "name": "artzin",
-                    "real_name": "Arthur Araujo",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6984ec87c63c1.png"
-                },
-                {
-                    "name": "nerve",
-                    "real_name": "Michael Yerrow",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6984ecdcccb3b.png"
-                },
-                {
-                    "name": "eeiu",
-                    "real_name": "Daniel Vucenovic",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6984ecacc0ffe.png"
-                },
-                {
-                    "name": "koalanoob",
-                    "real_name": "Gianfranco Potestio",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6984ecbcc0f22.png"
-                },
-                {
-                    "name": "alym",
-                    "real_name": "Torogul Baidyldaev",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6984ec7bad23e.png"
-                },
-                {
-                    "name": "basic",
-                    "real_name": "Luis Henrique Ferlin Tessaro",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/67ae72c12777e.png"
-                },
-                {
-                    "name": "shaW",
-                    "real_name": "Ian Jardim",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/63ca0f6e7ca4f.png"
-                },
-                {
-                    "name": "Kamino",
-                    "real_name": "Lucas Kamino",
-                    "role": "COACH",
-                    "avatar": "/img/base/ph/sil.png"
                 }
             ]
         },
@@ -634,12 +170,580 @@
                     "avatar": "/api/image?url=/img/base/ph/sil.png"
                 }
             ]
+        },
+        {
+            "id": "2406",
+            "name": "FURIA",
+            "logo": "https://owcdn.net/img/632be843b7d51.png",
+            "roster": [
+                {
+                    "name": "artzin",
+                    "real_name": "Arthur Araujo",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6984ec87c63c1.png"
+                },
+                {
+                    "name": "nerve",
+                    "real_name": "Michael Yerrow",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6984ecdcccb3b.png"
+                },
+                {
+                    "name": "eeiu",
+                    "real_name": "Daniel Vucenovic",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6984ecacc0ffe.png"
+                },
+                {
+                    "name": "koalanoob",
+                    "real_name": "Gianfranco Potestio",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6984ecbcc0f22.png"
+                },
+                {
+                    "name": "alym",
+                    "real_name": "Torogul Baidyldaev",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6984ec7bad23e.png"
+                },
+                {
+                    "name": "basic",
+                    "real_name": "Luis Henrique Ferlin Tessaro",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/67ae72c12777e.png"
+                },
+                {
+                    "name": "shaW",
+                    "real_name": "Ian Jardim",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/63ca0f6e7ca4f.png"
+                },
+                {
+                    "name": "Kamino",
+                    "real_name": "Lucas Kamino",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                }
+            ]
+        },
+        {
+            "id": "2355",
+            "name": "KR\u00dc Esports",
+            "logo": "https://owcdn.net/img/63976677069e1.png",
+            "roster": [
+                {
+                    "name": "saadhak",
+                    "real_name": "Matias Delipetro",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69e6509789324.png"
+                },
+                {
+                    "name": "mwzera",
+                    "real_name": "Leonardo Serrati",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69e6507319f13.png"
+                },
+                {
+                    "name": "silentzz",
+                    "real_name": "Caio Morita",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69e650a00dd36.png"
+                },
+                {
+                    "name": "Less",
+                    "real_name": "Felipe de Loyola Basso",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69e64fe599b45.png"
+                },
+                {
+                    "name": "Dantedeu5",
+                    "real_name": "Jes\u00fas Federico Larrosa",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69e64fdcabd75.png"
+                },
+                {
+                    "name": "torito",
+                    "real_name": "Cristobal Quintana",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69e650f4d872c.png"
+                },
+                {
+                    "name": "ZONYK",
+                    "real_name": "Nicolas Carboni",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69e651196eca6.png"
+                },
+                {
+                    "name": "Fadeout",
+                    "real_name": "Alex Arg\u00fcello",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69e64faea1f3f.png"
+                },
+                {
+                    "name": "Nyogen",
+                    "real_name": "Tom\u00e1s Castiglione",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/687bfb5cebf46.png"
+                },
+                {
+                    "name": "Psiarthurleon",
+                    "real_name": "Arthur Leon",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                }
+            ]
+        },
+        {
+            "id": "2359",
+            "name": "Leviat\u00e1n",
+            "logo": "https://owcdn.net/img/61b8888cc3860.png",
+            "roster": [
+                {
+                    "name": "kiNgg",
+                    "real_name": "Francisco Aravena",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69234b213a609.png"
+                },
+                {
+                    "name": "spike",
+                    "real_name": "Rodrigo Lombardi",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69234b7d30781.png"
+                },
+                {
+                    "name": "blowz",
+                    "real_name": "Guilherme Oliviera",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69234aef86f4b.png"
+                },
+                {
+                    "name": "Neon",
+                    "real_name": "Bruno Rodr\u00edguez",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69234b3d0a58d.png"
+                },
+                {
+                    "name": "Sato",
+                    "real_name": "Eduardo Kenzo Nagahama Sato",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69234b72ce3db.png"
+                },
+                {
+                    "name": "Onur",
+                    "real_name": "Rodrigo Dalmagro",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69234b4d36e7b.png"
+                },
+                {
+                    "name": "Jhein",
+                    "real_name": "Cristian Cama\u00f1o",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/695ee3ba44d91.png"
+                }
+            ]
+        },
+        {
+            "id": "6961",
+            "name": "LOUD",
+            "logo": "https://owcdn.net/img/62bbec8dc1b9f.png",
+            "roster": [
+                {
+                    "name": "lukxo",
+                    "real_name": "Lucca Travaioli",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69e023fe3a5b8.png"
+                },
+                {
+                    "name": "Darker",
+                    "real_name": "Sebasti\u00e1n Castro Cicuamia",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69e02450abf75.png"
+                },
+                {
+                    "name": "Virtyy",
+                    "real_name": "Leandro Moreno",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69e023c039e74.png"
+                },
+                {
+                    "name": "erde",
+                    "real_name": "Roberto Lobos",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "cauanzin",
+                    "real_name": "Cauan Pereira",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69e024587afee.png"
+                },
+                {
+                    "name": "Wenty",
+                    "real_name": "Carlos Lira Portela",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6889dbe04ee67.png"
+                },
+                {
+                    "name": "Romanilly",
+                    "real_name": "Gonzalo Manzano",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69e023eeafb62.png"
+                },
+                {
+                    "name": "Bati",
+                    "real_name": "Miguel Batista",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69e024e2a1f17.png"
+                },
+                {
+                    "name": "bajerski",
+                    "real_name": "Lucas Bajerski Pereira",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6889c7fc2b646.png"
+                }
+            ]
+        },
+        {
+            "id": "7386",
+            "name": "MIBR",
+            "logo": "https://owcdn.net/img/632be7626d6d9.png",
+            "roster": [
+                {
+                    "name": "zekken",
+                    "real_name": "Zachary Patrone",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69742b2cdd6c3.png"
+                },
+                {
+                    "name": "tex",
+                    "real_name": "Ian Botsch",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69742b4f94c53.png"
+                },
+                {
+                    "name": "Mazino",
+                    "real_name": "Roberto Rivas",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69742ba0b7d17.png"
+                },
+                {
+                    "name": "Verno",
+                    "real_name": "Andrew Maust",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69742b3c25b7c.png"
+                },
+                {
+                    "name": "aspas",
+                    "real_name": "Erick Santos",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6977f8cf0996f.png"
+                },
+                {
+                    "name": "Nandinnn",
+                    "real_name": "",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69780bdc021d7.png"
+                },
+                {
+                    "name": "fRoD",
+                    "real_name": "Daniel Montaner",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6977f8fa9f7ae.png"
+                },
+                {
+                    "name": "Happy",
+                    "real_name": "Vincent Schopenhauer",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/67925038e29d3.png"
+                }
+            ]
+        },
+        {
+            "id": "1034",
+            "name": "NRG",
+            "logo": "https://owcdn.net/img/6610f026c1a9e.png",
+            "roster": [
+                {
+                    "name": "Ethan",
+                    "real_name": "Ethan Arnold",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6974068bad561.png"
+                },
+                {
+                    "name": "keiko",
+                    "real_name": "Georgio Sanassy",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/697406c5ecbcd.png"
+                },
+                {
+                    "name": "brawk",
+                    "real_name": "Brock Somerhalder",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/697426e1f3308.png"
+                },
+                {
+                    "name": "mada",
+                    "real_name": "Adam Pampuch",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/697406cf6b086.png"
+                },
+                {
+                    "name": "skuba",
+                    "real_name": "Logan Jenkins",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6974067806f34.png"
+                },
+                {
+                    "name": "Ry",
+                    "real_name": "Zachary Parr",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "bonkar",
+                    "real_name": "Malkolm Rench",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69740665ea1d3.png"
+                },
+                {
+                    "name": "mitch",
+                    "real_name": "Mitch Semago",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/696eb214bb188.png"
+                }
+            ]
+        },
+        {
+            "id": "2",
+            "name": "Sentinels",
+            "logo": "https://owcdn.net/img/62875027c8e06.png",
+            "roster": [
+                {
+                    "name": "johnqt",
+                    "real_name": "Mohamed Amine Ouarid",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69741441b9923.png"
+                },
+                {
+                    "name": "Reduxx",
+                    "real_name": "Yassin Aboulalazm",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6974144d86cdb.png"
+                },
+                {
+                    "name": "Jerrwin",
+                    "real_name": "Gurjiwan Gill",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "cortezia",
+                    "real_name": "Gabriel Cortez",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69741432dd5e2.png"
+                },
+                {
+                    "name": "JonahP",
+                    "real_name": "Jonah Pulice",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/65e4636c00e46.png"
+                },
+                {
+                    "name": "Victor",
+                    "real_name": "Victor Wong",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/64169062bfcf2.png"
+                },
+                {
+                    "name": "Zyto",
+                    "real_name": "Bryan Ybanez",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/66c25238e898d.png"
+                },
+                {
+                    "name": "Ewok",
+                    "real_name": "Marthinus Jacobus Van Der Walt",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6821f785e3ef1.png"
+                },
+                {
+                    "name": "GUNTER",
+                    "real_name": "Luke Clives",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                }
+            ]
+        },
+        {
+            "id": "11058",
+            "name": "G2 Esports",
+            "logo": "https://owcdn.net/img/633822848a741.png",
+            "roster": [
+                {
+                    "name": "valyn",
+                    "real_name": "Jacob Batio",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/65e4660ee20e5.png"
+                },
+                {
+                    "name": "jawgemo",
+                    "real_name": "Alexander Mor",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/64169400bfed7.png"
+                },
+                {
+                    "name": "BABYBAY",
+                    "real_name": "Andrej Francisty",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6224a67aabf26.png"
+                },
+                {
+                    "name": "trent",
+                    "real_name": "Trent Cairns",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/65e466071ca19.png"
+                },
+                {
+                    "name": "leaf",
+                    "real_name": "Nathan Orf",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6613103dd51a4.png"
+                },
+                {
+                    "name": "Ambrose",
+                    "real_name": "Ambrose Lai",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "JoshRT",
+                    "real_name": "Josh Lee",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/65e46376a2867.png"
+                },
+                {
+                    "name": "shhhack",
+                    "real_name": "Peter Belej",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/65e46626795d3.png"
+                },
+                {
+                    "name": "Robert",
+                    "real_name": "Robert Yip",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                }
+            ]
+        },
+        {
+            "id": "427",
+            "name": "ENVY",
+            "logo": "https://owcdn.net/img/5f3ca822464a3.png",
+            "roster": [
+                {
+                    "name": "P0PPIN",
+                    "real_name": "Matteo Weber",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "Eggsterr",
+                    "real_name": "Evan Grady",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "Demon1",
+                    "real_name": "Max Mazanov",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "Rossy",
+                    "real_name": "Daniel Abedrabbo",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/65cc6f07740b9.png"
+                },
+                {
+                    "name": "keznit",
+                    "real_name": "Angelo Mori",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/687bfb08ac062.png"
+                },
+                {
+                    "name": "ion",
+                    "real_name": "Ayan Rastogi",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "Stunner",
+                    "real_name": "Dakota MacLeod",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/65cc6f253a03d.png"
+                },
+                {
+                    "name": "WKN",
+                    "real_name": "Alvaro Bustos",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/688c62e2dbb98.png"
+                }
+            ]
         }
     ],
     "emea": [
         {
+            "id": "397",
+            "name": "BBL Esports",
+            "logo": "https://owcdn.net/img/65b8ccef5e273.png",
+            "roster": [
+                {
+                    "name": "Crewen",
+                    "real_name": "Ali Eren Sargin",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69797451d6733.png"
+                },
+                {
+                    "name": "Lar0k",
+                    "real_name": "Yusuf Kaan Kanber",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/697974e4d16d5.png"
+                },
+                {
+                    "name": "Loita",
+                    "real_name": "Utku Kart",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6979752e8d3fa.png"
+                },
+                {
+                    "name": "Ros\u00e9",
+                    "real_name": "Eren Erzan",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6979757c1322c.png"
+                },
+                {
+                    "name": "lovers rock",
+                    "real_name": "Umut Pekdo\u011fan",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/697975c71d41b.png"
+                },
+                {
+                    "name": "KEY",
+                    "real_name": "Mert \u00c7elebi",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69797492d5ce7.png"
+                },
+                {
+                    "name": "Viento",
+                    "real_name": "G\u00f6ktu\u011f Alp \u00c7ebi",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/697981e6c32a4.png"
+                }
+            ]
+        },
+        {
             "id": "2593",
-            "name": "FNATIC",
+            "name": "Fnatic",
             "logo": "https://owcdn.net/img/62a40cc2b5e29.png",
             "roster": [
                 {
@@ -687,26 +791,240 @@
                 {
                     "name": "Desmo",
                     "real_name": "Casper Rasmussen",
-                    "role": "COACH",
+                    "role": "PLAYER",
                     "avatar": "/api/image?url=https://owcdn.net/img/65785a3a4dac2.png"
                 },
                 {
                     "name": "Szed",
                     "real_name": "Philipp Schickor",
-                    "role": "COACH",
+                    "role": "PLAYER",
                     "avatar": "/api/image?url=https://owcdn.net/img/688a7a22a8ec5.png"
                 },
                 {
                     "name": "Milan",
                     "real_name": "Milan de Meij",
-                    "role": "COACH",
+                    "role": "PLAYER",
                     "avatar": "/api/image?url=https://owcdn.net/img/687e2c5f80388.png"
                 }
             ]
         },
         {
+            "id": "1184",
+            "name": "FUT Esports",
+            "logo": "https://owcdn.net/img/632be9976b8fe.png",
+            "roster": [
+                {
+                    "name": "s0pp",
+                    "real_name": "Efe Tur",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "xeus",
+                    "real_name": "Do\u011fan G\u00f6zgen",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/697ab97a4855f.png"
+                },
+                {
+                    "name": "yetujey",
+                    "real_name": "Eray Budak",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/697ab948ca75e.png"
+                },
+                {
+                    "name": "KROSTALY",
+                    "real_name": "Okan Ala\u00e7am",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/697aba0af3cd9.png"
+                },
+                {
+                    "name": "sociablEE",
+                    "real_name": "Volkan Yonal",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/680a926893d7b.png"
+                },
+                {
+                    "name": "baha",
+                    "real_name": "Baha G\u00f6zmen",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/697aba5dec2dc.png"
+                },
+                {
+                    "name": "AtaKaptan",
+                    "real_name": "Ata Tan",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/65dbdd988fc0f.png"
+                },
+                {
+                    "name": "qRaxs",
+                    "real_name": "Do\u011fukan Balaban",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/65dbc2508d984.png"
+                },
+                {
+                    "name": "MrFaliN",
+                    "real_name": "Furkan Ye\u011fen",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/697aba35e69bd.png"
+                },
+                {
+                    "name": "Mighty",
+                    "real_name": "Berkalp Kaan Y\u0131lmazo\u011flu",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/697abfa689e67.png"
+                },
+                {
+                    "name": "Vlad",
+                    "real_name": "Berke Kant\u00fcrk",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/68730dca15978.png"
+                },
+                {
+                    "name": "Bambino",
+                    "real_name": "Tyler Jay",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/697ab9aca4566.png"
+                }
+            ]
+        },
+        {
+            "id": "11181",
+            "name": "Gentle Mates",
+            "logo": "/img/vlr/tmp/vlr.png",
+            "roster": [
+                {
+                    "name": "RGod",
+                    "real_name": "",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "vlad",
+                    "real_name": "",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "Rei",
+                    "real_name": "",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "wawa",
+                    "real_name": "",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "kou",
+                    "real_name": "",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                }
+            ]
+        },
+        {
+            "id": "15119",
+            "name": "GIANTX",
+            "logo": "https://owcdn.net/img/657b2f3fcd199.png",
+            "roster": [
+                {
+                    "name": "jduh",
+                    "real_name": "Ceyda Kondu",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/65a420d325fa8.png"
+                },
+                {
+                    "name": "Anva",
+                    "real_name": "Nehir Din\u00e7er",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "Anita",
+                    "real_name": "",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "adora",
+                    "real_name": "",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "jademwah",
+                    "real_name": "Jade Duffy",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/68333e6203b0d.png"
+                },
+                {
+                    "name": "Aska",
+                    "real_name": "Antonio Lozano",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/66636bfaf0f79.png"
+                }
+            ]
+        },
+        {
+            "id": "8877",
+            "name": "Karmine Corp",
+            "logo": "https://owcdn.net/img/627403a0d9e48.png",
+            "roster": [
+                {
+                    "name": "dos9",
+                    "real_name": "Zhumagali Dastan",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69e903fd4c11a.png"
+                },
+                {
+                    "name": "LewN",
+                    "real_name": "Burak Alkan",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/680a9297edd81.png"
+                },
+                {
+                    "name": "Avez",
+                    "real_name": "Hazem Khaled",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/63e4aecb51963.png"
+                },
+                {
+                    "name": "SUYGETSU",
+                    "real_name": "Dmitry Ilyushin",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/642eabfbd9478.png"
+                },
+                {
+                    "name": "N4RRATE",
+                    "real_name": "Marshall Massey",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6974146682328.png"
+                },
+                {
+                    "name": "Chaza",
+                    "real_name": "Charlie Phillips",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "sheydos",
+                    "real_name": "Bogdan Naumov",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/65e74c694b17e.png"
+                },
+                {
+                    "name": "ZE1SH",
+                    "real_name": "Ahmed El Sheikh",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/645c01ead0e8c.png"
+                }
+            ]
+        },
+        {
             "id": "21715",
-            "name": "Natus Vincere Junior",
+            "name": "Natus Vincere",
             "logo": "https://owcdn.net/img/62a4109ddbd7f.png",
             "roster": [
                 {
@@ -738,6 +1056,79 @@
                     "real_name": "",
                     "role": "PLAYER",
                     "avatar": "/api/image?url=https://owcdn.net/img/69fa1bda34703.png"
+                }
+            ]
+        },
+        {
+            "id": "1001",
+            "name": "Team Heretics",
+            "logo": "https://owcdn.net/img/637b755224c12.png",
+            "roster": [
+                {
+                    "name": "Boo",
+                    "real_name": "Ri\u010dardas Luka\u0161evi\u010dius",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69778b1c2192b.png"
+                },
+                {
+                    "name": "koshmaras",
+                    "real_name": "Martynas Namikas",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "Wo0t",
+                    "real_name": "Mert Alkan",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69778b5885054.png"
+                },
+                {
+                    "name": "RieNs",
+                    "real_name": "Enes Ecirli",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69778b71c9366.png"
+                },
+                {
+                    "name": "benjyfishy",
+                    "real_name": "Benjamin David Fish",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69778b2bf3e20.png"
+                },
+                {
+                    "name": "Niklas",
+                    "real_name": "Niklas Geiss",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/665b775b3da55.png"
+                },
+                {
+                    "name": "Copper",
+                    "real_name": "Daniel Blaimauer",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "neilzinho",
+                    "real_name": "Neil Finlay",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69778b4dbd0a9.png"
+                },
+                {
+                    "name": "weber",
+                    "real_name": "Brandon Weber",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69778b9e2607f.png"
+                },
+                {
+                    "name": "Rob",
+                    "real_name": "Robert William Davies",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "Beni",
+                    "real_name": "Benedikt Baumann",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
                 }
             ]
         },
@@ -815,262 +1206,6 @@
             ]
         },
         {
-            "id": "8877",
-            "name": "Karmine Corp",
-            "logo": "https://owcdn.net/img/627403a0d9e48.png",
-            "roster": [
-                {
-                    "name": "dos9",
-                    "real_name": "Zhumagali Dastan",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69e903fd4c11a.png"
-                },
-                {
-                    "name": "LewN",
-                    "real_name": "Burak Alkan",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/680a9297edd81.png"
-                },
-                {
-                    "name": "Avez",
-                    "real_name": "Hazem Khaled",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/63e4aecb51963.png"
-                },
-                {
-                    "name": "SUYGETSU",
-                    "real_name": "Dmitry Ilyushin",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/642eabfbd9478.png"
-                },
-                {
-                    "name": "N4RRATE",
-                    "real_name": "Marshall Massey",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6974146682328.png"
-                },
-                {
-                    "name": "Chaza",
-                    "real_name": "Charlie Phillips",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=/img/base/ph/sil.png"
-                },
-                {
-                    "name": "sheydos",
-                    "real_name": "Bogdan Naumov",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/65e74c694b17e.png"
-                },
-                {
-                    "name": "ZE1SH",
-                    "real_name": "Ahmed El Sheikh",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/645c01ead0e8c.png"
-                }
-            ]
-        },
-        {
-            "id": "1001",
-            "name": "Team Heretics",
-            "logo": "https://owcdn.net/img/637b755224c12.png",
-            "roster": [
-                {
-                    "name": "Boo",
-                    "real_name": "Ri\u010dardas Luka\u0161evi\u010dius",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69778b1c2192b.png"
-                },
-                {
-                    "name": "koshmaras",
-                    "real_name": "Martynas Namikas",
-                    "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
-                },
-                {
-                    "name": "Wo0t",
-                    "real_name": "Mert Alkan",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69778b5885054.png"
-                },
-                {
-                    "name": "RieNs",
-                    "real_name": "Enes Ecirli",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69778b71c9366.png"
-                },
-                {
-                    "name": "benjyfishy",
-                    "real_name": "Benjamin David Fish",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69778b2bf3e20.png"
-                },
-                {
-                    "name": "Niklas",
-                    "real_name": "Niklas Geiss",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/665b775b3da55.png"
-                },
-                {
-                    "name": "Copper",
-                    "real_name": "Daniel Blaimauer",
-                    "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
-                },
-                {
-                    "name": "neilzinho",
-                    "real_name": "Neil Finlay",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69778b4dbd0a9.png"
-                },
-                {
-                    "name": "weber",
-                    "real_name": "Brandon Weber",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69778b9e2607f.png"
-                },
-                {
-                    "name": "Rob",
-                    "real_name": "Robert William Davies",
-                    "role": "COACH",
-                    "avatar": "/img/base/ph/sil.png"
-                },
-                {
-                    "name": "Beni",
-                    "real_name": "Benedikt Baumann",
-                    "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
-                }
-            ]
-        },
-        {
-            "id": "1184",
-            "name": "FUT Esports",
-            "logo": "https://owcdn.net/img/632be9976b8fe.png",
-            "roster": [
-                {
-                    "name": "s0pp",
-                    "real_name": "Efe Tur",
-                    "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
-                },
-                {
-                    "name": "xeus",
-                    "real_name": "Do\u011fan G\u00f6zgen",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/697ab97a4855f.png"
-                },
-                {
-                    "name": "yetujey",
-                    "real_name": "Eray Budak",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/697ab948ca75e.png"
-                },
-                {
-                    "name": "KROSTALY",
-                    "real_name": "Okan Ala\u00e7am",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/697aba0af3cd9.png"
-                },
-                {
-                    "name": "sociablEE",
-                    "real_name": "Volkan Yonal",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/680a926893d7b.png"
-                },
-                {
-                    "name": "baha",
-                    "real_name": "Baha G\u00f6zmen",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/697aba5dec2dc.png"
-                },
-                {
-                    "name": "AtaKaptan",
-                    "real_name": "Ata Tan",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/65dbdd988fc0f.png"
-                },
-                {
-                    "name": "qRaxs",
-                    "real_name": "Do\u011fukan Balaban",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/65dbc2508d984.png"
-                },
-                {
-                    "name": "MrFaliN",
-                    "real_name": "Furkan Ye\u011fen",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/697aba35e69bd.png"
-                },
-                {
-                    "name": "Mighty",
-                    "real_name": "Berkalp Kaan Y\u0131lmazo\u011flu",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/697abfa689e67.png"
-                },
-                {
-                    "name": "Vlad",
-                    "real_name": "Berke Kant\u00fcrk",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/68730dca15978.png"
-                },
-                {
-                    "name": "Bambino",
-                    "real_name": "Tyler Jay",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/697ab9aca4566.png"
-                }
-            ]
-        },
-        {
-            "id": "397",
-            "name": "BBL Esports",
-            "logo": "https://owcdn.net/img/65b8ccef5e273.png",
-            "roster": [
-                {
-                    "name": "Crewen",
-                    "real_name": "Ali Eren Sargin",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69797451d6733.png"
-                },
-                {
-                    "name": "Lar0k",
-                    "real_name": "Yusuf Kaan Kanber",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/697974e4d16d5.png"
-                },
-                {
-                    "name": "Loita",
-                    "real_name": "Utku Kart",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6979752e8d3fa.png"
-                },
-                {
-                    "name": "Ros\u00e9",
-                    "real_name": "Eren Erzan",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6979757c1322c.png"
-                },
-                {
-                    "name": "lovers rock",
-                    "real_name": "Umut Pekdo\u011fan",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/697975c71d41b.png"
-                },
-                {
-                    "name": "KEY",
-                    "real_name": "Mert \u00c7elebi",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69797492d5ce7.png"
-                },
-                {
-                    "name": "Viento",
-                    "real_name": "G\u00f6ktu\u011f Alp \u00c7ebi",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/697981e6c32a4.png"
-                }
-            ]
-        },
-        {
             "id": "2059",
             "name": "Team Vitality",
             "logo": "https://owcdn.net/img/6466d79e1ed40.png",
@@ -1114,13 +1249,13 @@
                 {
                     "name": "PAL",
                     "real_name": "Gregor Morton",
-                    "role": "COACH",
+                    "role": "PLAYER",
                     "avatar": "/api/image?url=https://owcdn.net/img/6977a7159f173.png"
                 },
                 {
                     "name": "Scuttt",
                     "real_name": "Benjamin Hutchinson",
-                    "role": "COACH",
+                    "role": "PLAYER",
                     "avatar": "/api/image?url=https://owcdn.net/img/69d5f8dd1642b.png"
                 },
                 {
@@ -1132,225 +1267,218 @@
             ]
         },
         {
-            "id": "15119",
-            "name": "GIANTX GC",
-            "logo": "https://owcdn.net/img/657b2f3fcd199.png",
+            "id": "6392",
+            "name": "Eternal Fire",
+            "logo": "https://owcdn.net/img/6628980dcdaea.png",
             "roster": [
                 {
-                    "name": "jduh",
-                    "real_name": "Ceyda Kondu",
+                    "name": "nekky",
+                    "real_name": "An\u0131l Da\u011fdeviren",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/65a420d325fa8.png"
+                    "avatar": "/api/image?url=https://owcdn.net/img/69e22617e9dba.png"
                 },
                 {
-                    "name": "Anva",
-                    "real_name": "Nehir Din\u00e7er",
+                    "name": "Izzy",
+                    "real_name": "Baran Y\u0131lmaz",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                    "avatar": "/api/image?url=https://owcdn.net/img/69e2262aa9d9c.png"
                 },
                 {
-                    "name": "Anita",
-                    "real_name": "",
+                    "name": "audaz",
+                    "real_name": "Soner Ekiz",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                    "avatar": "/api/image?url=https://owcdn.net/img/69e2266f85fd8.png"
                 },
                 {
-                    "name": "adora",
-                    "real_name": "",
+                    "name": "Favian",
+                    "real_name": "Enes Yi\u011fiter",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                    "avatar": "/api/image?url=https://owcdn.net/img/69e226459b5e0.png"
                 },
                 {
-                    "name": "jademwah",
-                    "real_name": "Jade Duffy",
+                    "name": "echo",
+                    "real_name": "\u00d6m\u00fcr Serkan \u015eenol",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/68333e6203b0d.png"
+                    "avatar": "/api/image?url=https://owcdn.net/img/69e226559a674.png"
                 },
                 {
-                    "name": "Aska",
-                    "real_name": "Antonio Lozano",
+                    "name": "afr0nfire",
+                    "real_name": "Hakan P\u0131narba\u015f\u0131",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/66636bfaf0f79.png"
+                    "avatar": "/api/image?url=https://owcdn.net/img/69e2267b850ee.png"
                 }
             ]
         },
         {
-            "id": "7035",
-            "name": "KOI",
-            "logo": "https://owcdn.net/img/67667c7a563be.png",
+            "id": "3478",
+            "name": "PCIFIC Esports",
+            "logo": "https://owcdn.net/img/656e2ae2b8a48.png",
             "roster": [
                 {
-                    "name": "simoz",
-                    "real_name": "Simone Giovannini",
+                    "name": "qpert",
+                    "real_name": "Mateja Mijovic",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/65bfd57705ced.png"
+                    "avatar": "/api/image?url=https://owcdn.net/img/696fd48d8390b.png"
+                },
+                {
+                    "name": "al0rante",
+                    "real_name": "Felix Brandl",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/696fd45ed51dd.png"
+                },
+                {
+                    "name": "cNed",
+                    "real_name": "Mehmet Ya\u011f\u0131z \u0130pek",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/696fd4808fcf3.png"
+                },
+                {
+                    "name": "NINJA",
+                    "real_name": "Patryk Koczyba",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/696fd44184f92.png"
+                },
+                {
+                    "name": "seven",
+                    "real_name": "Johann Hernandez",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/696fd431305c6.png"
+                },
+                {
+                    "name": "thinkii",
+                    "real_name": "Manuel Mart\u00ednez",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/696fd40ac872b.png"
+                },
+                {
+                    "name": "ZaeS",
+                    "real_name": "Dario Gomez",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69d0e59d08660.png"
+                },
+                {
+                    "name": "Koyo",
+                    "real_name": "Koray Arpat",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/693dcf0dcaa5c.png"
                 }
             ]
         },
         {
-            "id": "11181",
-            "name": "BAS",
-            "logo": "/img/vlr/tmp/vlr.png",
+            "id": "18019",
+            "name": "ULF Esports",
+            "logo": "https://owcdn.net/img/67d59bfc9eb2a.png",
             "roster": [
                 {
-                    "name": "RGod",
-                    "real_name": "",
+                    "name": "nekky",
+                    "real_name": "An\u0131l Da\u011fdeviren",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69e22617e9dba.png"
+                },
+                {
+                    "name": "audaz",
+                    "real_name": "Soner Ekiz",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69e2266f85fd8.png"
+                },
+                {
+                    "name": "Favian",
+                    "real_name": "Enes Yi\u011fiter",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69e226459b5e0.png"
+                },
+                {
+                    "name": "s0pp",
+                    "real_name": "Efe Tur",
                     "role": "PLAYER",
                     "avatar": "/api/image?url=/img/base/ph/sil.png"
                 },
                 {
-                    "name": "vlad",
-                    "real_name": "",
+                    "name": "echo",
+                    "real_name": "\u00d6m\u00fcr Serkan \u015eenol",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                    "avatar": "/api/image?url=https://owcdn.net/img/69e226559a674.png"
                 },
                 {
-                    "name": "Rei",
-                    "real_name": "",
+                    "name": "Draen",
+                    "real_name": "Kaan \u00d6zgen",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                    "avatar": "/api/image?url=https://owcdn.net/img/68019f2667ac6.png"
                 },
                 {
-                    "name": "wawa",
-                    "real_name": "",
+                    "name": "afr0nfire",
+                    "real_name": "Hakan P\u0131narba\u015f\u0131",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                    "avatar": "/api/image?url=https://owcdn.net/img/69e2267b850ee.png"
                 },
                 {
-                    "name": "kou",
-                    "real_name": "",
+                    "name": "L7",
+                    "real_name": "Emirhan \u015eahint\u00fcrk",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                    "avatar": "/api/image?url=https://owcdn.net/img/65c6fd43af6d7.png"
                 }
             ]
         }
     ],
     "pacific": [
         {
-            "id": "624",
-            "name": "Paper Rex",
-            "logo": "https://owcdn.net/img/62bbeba74d5cb.png",
+            "id": "278",
+            "name": "DetonatioN FocusMe",
+            "logo": "https://owcdn.net/img/63972e548cdc9.png",
             "roster": [
                 {
-                    "name": "invy",
-                    "real_name": "Adrian Jiggs Reyes",
+                    "name": "Meiy",
+                    "real_name": "Ibuki Seki",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69735f4a21e3b.png"
+                    "avatar": "/api/image?url=https://owcdn.net/img/674037871e878.png"
                 },
                 {
-                    "name": "Jinggg",
-                    "real_name": "Wang Jing Jie",
+                    "name": "SSeeS",
+                    "real_name": "Tomonori Okimura",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69735f0889a6b.png"
+                    "avatar": "/api/image?url=https://owcdn.net/img/674037e9c4e3c.png"
                 },
                 {
-                    "name": "f0rsakeN",
-                    "real_name": "Jason Susanto",
+                    "name": "yatsuka",
+                    "real_name": "Kazuya Ikeda",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69735f135cf21.png"
+                    "avatar": "/api/image?url=https://owcdn.net/img/682d95bed801b.png"
                 },
                 {
-                    "name": "d4v41",
-                    "real_name": "Khalish Rusyaidee",
+                    "name": "Caedye",
+                    "real_name": "Amon Mateus Okakura",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69735f207c9bf.png"
+                    "avatar": "/api/image?url=https://owcdn.net/img/682d95ad8a7a4.png"
                 },
                 {
-                    "name": "something",
-                    "real_name": "Ilya Petrov",
+                    "name": "Akame",
+                    "real_name": "Yu Gwang-hui (\uc720\uad11\ud76c)",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69735f396861f.png"
+                    "avatar": "/api/image?url=https://owcdn.net/img/674037c47365d.png"
                 },
                 {
-                    "name": "Tommy",
-                    "real_name": "Kumaresan Ramani",
+                    "name": "Vorz",
+                    "real_name": "Kakeru Ikarashi",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69735f7397123.png"
+                    "avatar": "/api/image?url=https://owcdn.net/img/682d95c6b376d.png"
                 },
                 {
-                    "name": "alecks",
-                    "real_name": "Alexandre Sall\u00e9",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69735f608e3ed.png"
-                },
-                {
-                    "name": "Wendler",
-                    "real_name": "Ashton Wendler",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69735f5257ee4.png"
-                },
-                {
-                    "name": "Panda",
-                    "real_name": "Laijhun Cheng",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69735f694e1cd.png"
-                }
-            ]
-        },
-        {
-            "id": "17",
-            "name": "Gen.G",
-            "logo": "https://owcdn.net/img/6970c986eddc6.png",
-            "roster": [
-                {
-                    "name": "Lakia",
-                    "real_name": "Kim Jong-min (\uae40\uc885\ubbfc)",
+                    "name": "Melofovia",
+                    "real_name": "Hirotaka Okazaki",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/65f66e9636e73.png"
+                    "avatar": "/api/image?url=https://owcdn.net/img/674037ce2ecb6.png"
                 },
                 {
-                    "name": "ZynX",
-                    "real_name": "Kim Dong-ha (\uae40\ub3d9\ud558)",
+                    "name": "NorthernLights",
+                    "real_name": "Tsubasa Ando",
                     "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
-                },
-                {
-                    "name": "Ash",
-                    "real_name": "Ha Hyun-cheol (\ud558\ud604\ucca0)",
-                    "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
-                },
-                {
-                    "name": "Karon",
-                    "real_name": "Kim Won-tae (\uae40\uc6d0\ud0dc)",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/676ba061b7251.png"
-                },
-                {
-                    "name": "t3xture",
-                    "real_name": "Kim Na-ra (\uae40\ub098\ub77c)",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/676ba04aee5f9.png"
-                },
-                {
-                    "name": "Xiesta",
-                    "real_name": "Jung Si-hwan (\uc815\uc2dc\ud658)",
-                    "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
-                },
-                {
-                    "name": "solo",
-                    "real_name": "Kang Geun-chul (\uac15\uadfc\ucca0)",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/676ba06a8c461.png"
-                },
-                {
-                    "name": "HSK",
-                    "real_name": "Kim Hae-seong (\uae40\ud574\uc131)",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/676ba072a7070.png"
-                },
-                {
-                    "name": "peri",
-                    "real_name": "Jung Bum-ki (\uc815\ubc94\uae30)",
-                    "role": "COACH",
-                    "avatar": "/img/base/ph/sil.png"
+                    "avatar": "/api/image?url=https://owcdn.net/img/674037d6a9c48.png"
                 }
             ]
         },
         {
             "id": "198",
-            "name": "Vision Strikers",
+            "name": "DRX",
             "logo": "https://owcdn.net/img/6217116c87b89.png",
             "roster": [
                 {
@@ -1416,6 +1544,329 @@
             ]
         },
         {
+            "id": "4050",
+            "name": "FULL SENSE",
+            "logo": "https://owcdn.net/img/6537a7954d915.png",
+            "roster": [
+                {
+                    "name": "Leviathan",
+                    "real_name": "Thanyathon Nakmee",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6944046a70e0c.png"
+                },
+                {
+                    "name": "Killua",
+                    "real_name": "Tanate Teerasawad",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6944048d3e33c.png"
+                },
+                {
+                    "name": "primmie",
+                    "real_name": "Papaphat Sriprapha",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6944047b31bc9.png"
+                },
+                {
+                    "name": "JitBoyS",
+                    "real_name": "Jittana Nokngam",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/694404f04f64d.png"
+                },
+                {
+                    "name": "Crws",
+                    "real_name": "Thanamethk Mahatthananuyut",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6944049622e2a.png"
+                },
+                {
+                    "name": "seph1roth",
+                    "real_name": "Chinnakrit Phoojaroen",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/698dc4936bb6b.png"
+                },
+                {
+                    "name": "thyy",
+                    "real_name": "Anupong Preamsak",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69440472837f1.png"
+                },
+                {
+                    "name": "THEELOVEFAMILY",
+                    "real_name": "Thanaphat Limpaphan",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6944049f4b8dd.png"
+                },
+                {
+                    "name": "Sushiboys",
+                    "real_name": "Panyawat Subsiriroj",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/68808fb164f1b.png"
+                }
+            ]
+        },
+        {
+            "id": "17",
+            "name": "Gen.G",
+            "logo": "https://owcdn.net/img/6970c986eddc6.png",
+            "roster": [
+                {
+                    "name": "Lakia",
+                    "real_name": "Kim Jong-min (\uae40\uc885\ubbfc)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/65f66e9636e73.png"
+                },
+                {
+                    "name": "ZynX",
+                    "real_name": "Kim Dong-ha (\uae40\ub3d9\ud558)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "Ash",
+                    "real_name": "Ha Hyun-cheol (\ud558\ud604\ucca0)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "Karon",
+                    "real_name": "Kim Won-tae (\uae40\uc6d0\ud0dc)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/676ba061b7251.png"
+                },
+                {
+                    "name": "t3xture",
+                    "real_name": "Kim Na-ra (\uae40\ub098\ub77c)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/676ba04aee5f9.png"
+                },
+                {
+                    "name": "Xiesta",
+                    "real_name": "Jung Si-hwan (\uc815\uc2dc\ud658)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "solo",
+                    "real_name": "Kang Geun-chul (\uac15\uadfc\ucca0)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/676ba06a8c461.png"
+                },
+                {
+                    "name": "HSK",
+                    "real_name": "Kim Hae-seong (\uae40\ud574\uc131)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/676ba072a7070.png"
+                },
+                {
+                    "name": "peri",
+                    "real_name": "Jung Bum-ki (\uc815\ubc94\uae30)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                }
+            ]
+        },
+        {
+            "id": "918",
+            "name": "Global Esports",
+            "logo": "https://owcdn.net/img/629f316ddd4dd.png",
+            "roster": [
+                {
+                    "name": "PatMen",
+                    "real_name": "Patrick Mendoza",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/67c6d1461c5cf.png"
+                },
+                {
+                    "name": "UdoTan",
+                    "real_name": "Go Kyung-won (\uace0\uacbd\uc6d0)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/677901e39cef9.png"
+                },
+                {
+                    "name": "Kr1stal",
+                    "real_name": "Savva Fedorov",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/677901eba6d1f.png"
+                },
+                {
+                    "name": "xavi8k",
+                    "real_name": "Xavier Juan",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6846808f529c9.png"
+                },
+                {
+                    "name": "Autumn",
+                    "real_name": "Kale Dunne",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6780cc5e726c5.png"
+                },
+                {
+                    "name": "Vatsal",
+                    "real_name": "Vatsal Uniyal",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/629f34c158a84.png"
+                },
+                {
+                    "name": "FrosT",
+                    "real_name": "Hector Rosario",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "vladk0r",
+                    "real_name": "Vladimir Kornev",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/691f87c7b2711.png"
+                },
+                {
+                    "name": "Platoon",
+                    "real_name": "Daniel Zhou",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "taeri",
+                    "real_name": "Hose Son (\uc190\ud638\uc138)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "UnknowN",
+                    "real_name": "Minseong Kim",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                }
+            ]
+        },
+        {
+            "id": "624",
+            "name": "Paper Rex",
+            "logo": "https://owcdn.net/img/62bbeba74d5cb.png",
+            "roster": [
+                {
+                    "name": "invy",
+                    "real_name": "Adrian Jiggs Reyes",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69735f4a21e3b.png"
+                },
+                {
+                    "name": "Jinggg",
+                    "real_name": "Wang Jing Jie",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69735f0889a6b.png"
+                },
+                {
+                    "name": "f0rsakeN",
+                    "real_name": "Jason Susanto",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69735f135cf21.png"
+                },
+                {
+                    "name": "d4v41",
+                    "real_name": "Khalish Rusyaidee",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69735f207c9bf.png"
+                },
+                {
+                    "name": "something",
+                    "real_name": "Ilya Petrov",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69735f396861f.png"
+                },
+                {
+                    "name": "Tommy",
+                    "real_name": "Kumaresan Ramani",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69735f7397123.png"
+                },
+                {
+                    "name": "alecks",
+                    "real_name": "Alexandre Sall\u00e9",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69735f608e3ed.png"
+                },
+                {
+                    "name": "Wendler",
+                    "real_name": "Ashton Wendler",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69735f5257ee4.png"
+                },
+                {
+                    "name": "Panda",
+                    "real_name": "Laijhun Cheng",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/69735f694e1cd.png"
+                }
+            ]
+        },
+        {
+            "id": "878",
+            "name": "Rex Regum Qeon",
+            "logo": "https://owcdn.net/img/629f17f51e7a3.png",
+            "roster": [
+                {
+                    "name": "crazyguy",
+                    "real_name": "Ng\u00f4 C\u00f4ng Anh",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6821f7746590a.png"
+                },
+                {
+                    "name": "Monyet",
+                    "real_name": "Cahya Nugraha",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6821f747b910a.png"
+                },
+                {
+                    "name": "xffero",
+                    "real_name": "David Monangin",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6821f77c54827.png"
+                },
+                {
+                    "name": "Jemkin",
+                    "real_name": "Maksim Batorov",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6821f75962425.png"
+                },
+                {
+                    "name": "Kushy",
+                    "real_name": "Bryan Carlos Setiawan",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6821f764bd20a.png"
+                },
+                {
+                    "name": "SeasoNz",
+                    "real_name": "Joe Lai",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "Jovi",
+                    "real_name": "Jovanni Vera",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/65c672ac36698.png"
+                },
+                {
+                    "name": "Warbirds",
+                    "real_name": "Evan Olzem",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6821f79304fbe.png"
+                },
+                {
+                    "name": "Rebecca",
+                    "real_name": "Rebecca Wong",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "Jomengz",
+                    "real_name": "Jonathan Hoo",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                }
+            ]
+        },
+        {
             "id": "14",
             "name": "T1",
             "logo": "https://owcdn.net/img/62fe0b8f6b084.png",
@@ -1465,75 +1916,14 @@
                 {
                     "name": "KDG",
                     "real_name": "Kim Dong-gun (\uae40\ub3d9\uac74)",
-                    "role": "COACH",
+                    "role": "PLAYER",
                     "avatar": "/api/image?url=https://owcdn.net/img/696cbede6314d.png"
                 },
                 {
                     "name": "CheongGak",
                     "real_name": "Lee Il-ho (\uc774\uc77c\ud638)",
-                    "role": "COACH",
+                    "role": "PLAYER",
                     "avatar": "/api/image?url=https://owcdn.net/img/696cbed457a6c.png"
-                }
-            ]
-        },
-        {
-            "id": "5448",
-            "name": "ZETA DIVISION",
-            "logo": "https://owcdn.net/img/62a411783d94d.png",
-            "roster": [
-                {
-                    "name": "Absol",
-                    "real_name": "Kazuki Fujinoki",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/67934b434bc95.png"
-                },
-                {
-                    "name": "SyouTa",
-                    "real_name": "Shota Aoki",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/678a91dbae974.png"
-                },
-                {
-                    "name": "SugarZ3ro",
-                    "real_name": "Shota Watanabe",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/678a91caf34dd.png"
-                },
-                {
-                    "name": "eKo",
-                    "real_name": "Yeom Wang-ryong (\uc5fc\uc655\ub8e1)",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/65534235d6705.png"
-                },
-                {
-                    "name": "Xdll",
-                    "real_name": "Yuto Mizomori",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/678a91e7bd2a2.png"
-                },
-                {
-                    "name": "ryota-",
-                    "real_name": "Ryota Okayama",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=/img/base/ph/sil.png"
-                },
-                {
-                    "name": "XQQ",
-                    "real_name": "Motoyama Hibiki",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/678a91ef1b380.png"
-                },
-                {
-                    "name": "gya9",
-                    "real_name": "",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=/img/base/ph/sil.png"
-                },
-                {
-                    "name": "Mini",
-                    "real_name": "Jacob Harris",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=/img/base/ph/sil.png"
                 }
             ]
         },
@@ -1599,246 +1989,63 @@
             ]
         },
         {
-            "id": "8304",
-            "name": "TALON",
-            "logo": "https://owcdn.net/img/6226f3d764e03.png",
+            "id": "5448",
+            "name": "ZETA DIVISION",
+            "logo": "https://owcdn.net/img/62a411783d94d.png",
             "roster": [
                 {
-                    "name": "Crws",
-                    "real_name": "Thanamethk Mahatthananuyut",
+                    "name": "Absol",
+                    "real_name": "Kazuki Fujinoki",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6944049622e2a.png"
+                    "avatar": "/api/image?url=https://owcdn.net/img/67934b434bc95.png"
                 },
                 {
-                    "name": "Killua",
-                    "real_name": "Tanate Teerasawad",
+                    "name": "SyouTa",
+                    "real_name": "Shota Aoki",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6944048d3e33c.png"
+                    "avatar": "/api/image?url=https://owcdn.net/img/678a91dbae974.png"
                 },
                 {
-                    "name": "thyy",
-                    "real_name": "Anupong Preamsak",
+                    "name": "SugarZ3ro",
+                    "real_name": "Shota Watanabe",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/69440472837f1.png"
+                    "avatar": "/api/image?url=https://owcdn.net/img/678a91caf34dd.png"
                 },
                 {
-                    "name": "JitBoyS",
-                    "real_name": "Jittana Nokngam",
+                    "name": "eKo",
+                    "real_name": "Yeom Wang-ryong (\uc5fc\uc655\ub8e1)",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/694404f04f64d.png"
+                    "avatar": "/api/image?url=https://owcdn.net/img/65534235d6705.png"
                 },
                 {
-                    "name": "primmie",
-                    "real_name": "Papaphat Sriprapha",
+                    "name": "Xdll",
+                    "real_name": "Yuto Mizomori",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6944047b31bc9.png"
+                    "avatar": "/api/image?url=https://owcdn.net/img/678a91e7bd2a2.png"
                 },
                 {
-                    "name": "Surf",
-                    "real_name": "Thanachart Rungapajaratkul",
+                    "name": "ryota-",
+                    "real_name": "Ryota Okayama",
                     "role": "PLAYER",
                     "avatar": "/api/image?url=/img/base/ph/sil.png"
                 },
                 {
-                    "name": "HeadHawk",
-                    "real_name": "Jirawat Kalumpanun",
+                    "name": "XQQ",
+                    "real_name": "Motoyama Hibiki",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/678a91ef1b380.png"
+                },
+                {
+                    "name": "gya9",
+                    "real_name": "",
                     "role": "PLAYER",
                     "avatar": "/api/image?url=/img/base/ph/sil.png"
-                }
-            ]
-        },
-        {
-            "id": "918",
-            "name": "Global Esports",
-            "logo": "https://owcdn.net/img/629f316ddd4dd.png",
-            "roster": [
+                },
                 {
-                    "name": "PatMen",
-                    "real_name": "Patrick Mendoza",
+                    "name": "Mini",
+                    "real_name": "Jacob Harris",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/67c6d1461c5cf.png"
-                },
-                {
-                    "name": "UdoTan",
-                    "real_name": "Go Kyung-won (\uace0\uacbd\uc6d0)",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/677901e39cef9.png"
-                },
-                {
-                    "name": "Kr1stal",
-                    "real_name": "Savva Fedorov",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/677901eba6d1f.png"
-                },
-                {
-                    "name": "xavi8k",
-                    "real_name": "Xavier Juan",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6846808f529c9.png"
-                },
-                {
-                    "name": "Autumn",
-                    "real_name": "Kale Dunne",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6780cc5e726c5.png"
-                },
-                {
-                    "name": "Vatsal",
-                    "real_name": "Vatsal Uniyal",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/629f34c158a84.png"
-                },
-                {
-                    "name": "FrosT",
-                    "real_name": "Hector Rosario",
-                    "role": "COACH",
-                    "avatar": "/img/base/ph/sil.png"
-                },
-                {
-                    "name": "vladk0r",
-                    "real_name": "Vladimir Kornev",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/691f87c7b2711.png"
-                },
-                {
-                    "name": "Platoon",
-                    "real_name": "Daniel Zhou",
-                    "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
-                },
-                {
-                    "name": "taeri",
-                    "real_name": "Hose Son (\uc190\ud638\uc138)",
-                    "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
-                },
-                {
-                    "name": "UnknowN",
-                    "real_name": "Minseong Kim",
-                    "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
-                }
-            ]
-        },
-        {
-            "id": "878",
-            "name": "Rex Regum Qeon",
-            "logo": "https://owcdn.net/img/629f17f51e7a3.png",
-            "roster": [
-                {
-                    "name": "crazyguy",
-                    "real_name": "Ng\u00f4 C\u00f4ng Anh",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6821f7746590a.png"
-                },
-                {
-                    "name": "Monyet",
-                    "real_name": "Cahya Nugraha",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6821f747b910a.png"
-                },
-                {
-                    "name": "xffero",
-                    "real_name": "David Monangin",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6821f77c54827.png"
-                },
-                {
-                    "name": "Jemkin",
-                    "real_name": "Maksim Batorov",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6821f75962425.png"
-                },
-                {
-                    "name": "Kushy",
-                    "real_name": "Bryan Carlos Setiawan",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6821f764bd20a.png"
-                },
-                {
-                    "name": "SeasoNz",
-                    "real_name": "Joe Lai",
-                    "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
-                },
-                {
-                    "name": "Jovi",
-                    "real_name": "Jovanni Vera",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/65c672ac36698.png"
-                },
-                {
-                    "name": "Warbirds",
-                    "real_name": "Evan Olzem",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6821f79304fbe.png"
-                },
-                {
-                    "name": "Rebecca",
-                    "real_name": "Rebecca Wong",
-                    "role": "COACH",
-                    "avatar": "/img/base/ph/sil.png"
-                },
-                {
-                    "name": "Jomengz",
-                    "real_name": "Jonathan Hoo",
-                    "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
-                }
-            ]
-        },
-        {
-            "id": "278",
-            "name": "DetonatioN FocusMe",
-            "logo": "https://owcdn.net/img/63972e548cdc9.png",
-            "roster": [
-                {
-                    "name": "Meiy",
-                    "real_name": "Ibuki Seki",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/674037871e878.png"
-                },
-                {
-                    "name": "SSeeS",
-                    "real_name": "Tomonori Okimura",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/674037e9c4e3c.png"
-                },
-                {
-                    "name": "yatsuka",
-                    "real_name": "Kazuya Ikeda",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/682d95bed801b.png"
-                },
-                {
-                    "name": "Caedye",
-                    "real_name": "Amon Mateus Okakura",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/682d95ad8a7a4.png"
-                },
-                {
-                    "name": "Akame",
-                    "real_name": "Yu Gwang-hui (\uc720\uad11\ud76c)",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/674037c47365d.png"
-                },
-                {
-                    "name": "Vorz",
-                    "real_name": "Kakeru Ikarashi",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/682d95c6b376d.png"
-                },
-                {
-                    "name": "Melofovia",
-                    "real_name": "Hirotaka Okazaki",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/674037ce2ecb6.png"
-                },
-                {
-                    "name": "NorthernLights",
-                    "real_name": "Tsubasa Ando",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/674037d6a9c48.png"
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
                 }
             ]
         },
@@ -1896,9 +2103,210 @@
                     "avatar": "/api/image?url=https://owcdn.net/img/69d5f8b63528b.png"
                 }
             ]
+        },
+        {
+            "id": "11229",
+            "name": "VARREL",
+            "logo": "https://owcdn.net/img/63a74624cc76a.png",
+            "roster": [
+                {
+                    "name": "Foxy9",
+                    "real_name": "Jung Jae-sung (\uc815\uc7ac\uc131)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/676ba0170dbab.png"
+                },
+                {
+                    "name": "C1ndeR",
+                    "real_name": "Ko Jae-hyuk (\uace0\uc7ac\ud601)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6540cb0ba90ed.png"
+                },
+                {
+                    "name": "Klaus",
+                    "real_name": "Kim Min-hyuk (\uae40\ubbfc\ud601)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "XuNa",
+                    "real_name": "Kim Tae-geon (\uae40\ud0dc\uac74)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "oonzmlp",
+                    "real_name": "Shin Sang-beom (\uc2e0\uc0c1\ubc94)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "Zexy",
+                    "real_name": "Jang Suk-hyun (\uc7a5\uc11d\ud604)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "TK9",
+                    "real_name": "Goo Tae-kyun (\uad6c\ud0dc\uade0)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "R3THME",
+                    "real_name": "Kim Ki-woon (\uae40\uae30\uc6b4)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "Howard",
+                    "real_name": "Jeong Hyun-woo (\uc815\ud604\uc6b0)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                }
+            ]
         }
     ],
     "china": [
+        {
+            "id": "1119",
+            "name": "All Gamers",
+            "logo": "https://owcdn.net/img/6549c2b905061.png",
+            "roster": [
+                {
+                    "name": "Septem7",
+                    "real_name": "Liu Zhening (\u5218\u54f2\u5b81)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6783ce936c71c.png"
+                },
+                {
+                    "name": "Shr1mp",
+                    "real_name": "Yang Yong (\u6768\u52c7)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/67e2eb755cab7.png"
+                },
+                {
+                    "name": "Youze",
+                    "real_name": "",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "K1ra",
+                    "real_name": "Huang Zhihao (\u9ec4\u5fd7\u8c6a)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/677fbe754983a.png"
+                },
+                {
+                    "name": "f4ngeer",
+                    "real_name": "Roman Smirnov",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "iamgrq",
+                    "real_name": "Gao Ruiqi (\u9ad8\u9510\u7426)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "AaRon0",
+                    "real_name": "Xu Maoxiao (\u5f90\u8302\u856d)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "ED101",
+                    "real_name": "Han Tianqi (\u97e9\u5929\u5947)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "Master",
+                    "real_name": "Cheng Zihan (\u7a0b\u5b50\u6657)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                }
+            ]
+        },
+        {
+            "id": "12010",
+            "name": "Bilibili Gaming",
+            "logo": "https://owcdn.net/img/63f25d72216c1.png",
+            "roster": [
+                {
+                    "name": "whzy",
+                    "real_name": "Wang Haozhe (\u738b\u660a\u54f2)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/677fdfcb36dac.png"
+                },
+                {
+                    "name": "rushia",
+                    "real_name": "Wang Xiaojie (\u738b\u6653\u6770)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/677fdfeb6f40b.png"
+                },
+                {
+                    "name": "nephh",
+                    "real_name": "Marcus Tan",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/677fdff5be5db.png"
+                },
+                {
+                    "name": "yilai",
+                    "real_name": "Gu Yiming (\u987e\u4f9d\u94ed)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "Knight",
+                    "real_name": "Liu Yuxiang (\u5218\u5b87\u7fd4)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/677fdffe244c5.png"
+                },
+                {
+                    "name": "bud",
+                    "real_name": "Yang Renyu (\u6768\u97e7\u4f59)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "Levius",
+                    "real_name": "Lu Yinzhong (\u5362\u80e4\u4e2d)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/677fdfe36d135.png"
+                },
+                {
+                    "name": "Gandolf",
+                    "real_name": "Jiang Hao (\u848b\u6d69)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/67f0e602e4eb6.png"
+                },
+                {
+                    "name": "Muggle",
+                    "real_name": "Tang Shijun (\u5510\u65f6\u4fca)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/677fe44baa46b.png"
+                },
+                {
+                    "name": "YaoXie",
+                    "real_name": "Zhang Jihang (\u5f35\u7e7c\u822a)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "Jexen",
+                    "real_name": "Wang Lin Xiao (\u738b\u6797\u9a81)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/677fe007f0a1c.png"
+                },
+                {
+                    "name": "Rain",
+                    "real_name": "Deng Shiyao (\u9093\u8bd7\u8000)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/68370af5b15ea.png"
+                }
+            ]
+        },
         {
             "id": "1120",
             "name": "EDward Gaming",
@@ -1950,25 +2358,25 @@
                     "name": "Hibari",
                     "real_name": "Jin Xingyu (\u91d1\u661f\u5b87)",
                     "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
                 },
                 {
                     "name": "Autumn",
                     "real_name": "Yoon Eu-teum (\uc724\uc73c\ub738)",
-                    "role": "COACH",
+                    "role": "PLAYER",
                     "avatar": "/api/image?url=https://owcdn.net/img/65cc6f357d3c0.png"
                 },
                 {
                     "name": "Indigo",
                     "real_name": "Seol Do-hoon (\uc124\ub3c4\ud6c8)",
-                    "role": "COACH",
+                    "role": "PLAYER",
                     "avatar": "/api/image?url=https://owcdn.net/img/6757d3c8ef4e1.png"
                 },
                 {
                     "name": "signed",
                     "real_name": "Dale Tang",
-                    "role": "COACH",
-                    "avatar": "/img/base/ph/sil.png"
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
                 }
             ]
         },
@@ -2034,81 +2442,143 @@
             ]
         },
         {
-            "id": "12010",
-            "name": "Bilibili Gaming",
-            "logo": "https://owcdn.net/img/63f25d72216c1.png",
+            "id": "13078",
+            "name": "JD Gaming",
+            "logo": "/img/vlr/tmp/vlr.png",
             "roster": [
                 {
-                    "name": "whzy",
-                    "real_name": "Wang Haozhe (\u738b\u660a\u54f2)",
+                    "name": "Legend",
+                    "real_name": "",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/677fdfcb36dac.png"
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
                 },
                 {
-                    "name": "rushia",
-                    "real_name": "Wang Xiaojie (\u738b\u6653\u6770)",
+                    "name": "Carnage",
+                    "real_name": "",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/677fdfeb6f40b.png"
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
                 },
                 {
-                    "name": "nephh",
-                    "real_name": "Marcus Tan",
+                    "name": "Swichblade",
+                    "real_name": "",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/677fdff5be5db.png"
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
                 },
                 {
-                    "name": "yilai",
-                    "real_name": "Gu Yiming (\u987e\u4f9d\u94ed)",
+                    "name": "Ev0",
+                    "real_name": "",
                     "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
                 },
                 {
-                    "name": "Knight",
-                    "real_name": "Liu Yuxiang (\u5218\u5b87\u7fd4)",
+                    "name": "renai",
+                    "real_name": "",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/677fdffe244c5.png"
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
                 },
                 {
-                    "name": "bud",
-                    "real_name": "Yang Renyu (\u6768\u97e7\u4f59)",
+                    "name": "Buzzer",
+                    "real_name": "",
                     "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
                 },
                 {
-                    "name": "Levius",
-                    "real_name": "Lu Yinzhong (\u5362\u80e4\u4e2d)",
+                    "name": "CalvinD",
+                    "real_name": "",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/677fdfe36d135.png"
-                },
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                }
+            ]
+        },
+        {
+            "id": "12064",
+            "name": "Nova Esports",
+            "logo": "https://owcdn.net/img/6404c0174250b.png",
+            "roster": [
                 {
-                    "name": "Gandolf",
-                    "real_name": "Jiang Hao (\u848b\u6d69)",
+                    "name": "qiutiaN",
+                    "real_name": "Bijan Moeinzadeh (\u6155\u82f1\u6bd5\u5f3a)",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/67f0e602e4eb6.png"
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
                 },
                 {
-                    "name": "Muggle",
-                    "real_name": "Tang Shijun (\u5510\u65f6\u4fca)",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/677fe44baa46b.png"
-                },
-                {
-                    "name": "YaoXie",
-                    "real_name": "Zhang Jihang (\u5f35\u7e7c\u822a)",
-                    "role": "COACH",
-                    "avatar": "/img/base/ph/sil.png"
-                },
-                {
-                    "name": "Jexen",
-                    "real_name": "Wang Lin Xiao (\u738b\u6797\u9a81)",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/677fe007f0a1c.png"
-                },
-                {
-                    "name": "Rain",
-                    "real_name": "Deng Shiyao (\u9093\u8bd7\u8000)",
+                    "name": "kodeth",
+                    "real_name": "Bo Li",
                     "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/68370af5b15ea.png"
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "OBONE",
+                    "real_name": "Chen Yijie (\u9648\u6021\u6d01)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6780f17d5f806.png"
+                },
+                {
+                    "name": "Ezeir",
+                    "real_name": "Zhao Zejun (\u8d75\u6cfd\u9a8f)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6780f19ae199e.png"
+                },
+                {
+                    "name": "GREEN",
+                    "real_name": "Qiu Jianzhi (\u90b1\u5efa\u667a)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/658658c275a25.png"
+                },
+                {
+                    "name": "GuanG",
+                    "real_name": "Guang Honglin (\u5149\u6d2a\u9716)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6780f1a2e0d06.png"
+                },
+                {
+                    "name": "swagzor",
+                    "real_name": "Mikhail Vaniushin",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "OnbusH",
+                    "real_name": "Kim Taek-soo (\uae40\ud0dd\uc218)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                }
+            ]
+        },
+        {
+            "id": "11258",
+            "name": "Titan Esports Club",
+            "logo": "https://owcdn.net/img/63bc4d3e94276.png",
+            "roster": [
+                {
+                    "name": "s4id",
+                    "real_name": "Roland\tSzab\u00f3",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "oli",
+                    "real_name": "Oliv\u00e9r Paksi",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "TRuve",
+                    "real_name": "Peter Bozs\u00f3",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "WheelzOnFire",
+                    "real_name": "Norbert\tHorv\u00e1th",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "kriszgod",
+                    "real_name": "Kriszti\u00e1n Kem\u00e9ny",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
                 }
             ]
         },
@@ -2186,269 +2656,6 @@
             ]
         },
         {
-            "id": "11258",
-            "name": "Grindmore Esports",
-            "logo": "https://owcdn.net/img/63bc4d3e94276.png",
-            "roster": [
-                {
-                    "name": "s4id",
-                    "real_name": "Roland\tSzab\u00f3",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=/img/base/ph/sil.png"
-                },
-                {
-                    "name": "oli",
-                    "real_name": "Oliv\u00e9r Paksi",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=/img/base/ph/sil.png"
-                },
-                {
-                    "name": "TRuve",
-                    "real_name": "Peter Bozs\u00f3",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=/img/base/ph/sil.png"
-                },
-                {
-                    "name": "WheelzOnFire",
-                    "real_name": "Norbert\tHorv\u00e1th",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=/img/base/ph/sil.png"
-                },
-                {
-                    "name": "kriszgod",
-                    "real_name": "Kriszti\u00e1n Kem\u00e9ny",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=/img/base/ph/sil.png"
-                }
-            ]
-        },
-        {
-            "id": "12064",
-            "name": "Nova Esports",
-            "logo": "https://owcdn.net/img/6404c0174250b.png",
-            "roster": [
-                {
-                    "name": "qiutiaN",
-                    "real_name": "Bijan Moeinzadeh (\u6155\u82f1\u6bd5\u5f3a)",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=/img/base/ph/sil.png"
-                },
-                {
-                    "name": "kodeth",
-                    "real_name": "Bo Li",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=/img/base/ph/sil.png"
-                },
-                {
-                    "name": "OBONE",
-                    "real_name": "Chen Yijie (\u9648\u6021\u6d01)",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6780f17d5f806.png"
-                },
-                {
-                    "name": "Ezeir",
-                    "real_name": "Zhao Zejun (\u8d75\u6cfd\u9a8f)",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6780f19ae199e.png"
-                },
-                {
-                    "name": "GREEN",
-                    "real_name": "Qiu Jianzhi (\u90b1\u5efa\u667a)",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/658658c275a25.png"
-                },
-                {
-                    "name": "GuanG",
-                    "real_name": "Guang Honglin (\u5149\u6d2a\u9716)",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6780f1a2e0d06.png"
-                },
-                {
-                    "name": "swagzor",
-                    "real_name": "Mikhail Vaniushin",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=/img/base/ph/sil.png"
-                },
-                {
-                    "name": "OnbusH",
-                    "real_name": "Kim Taek-soo (\uae40\ud0dd\uc218)",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=/img/base/ph/sil.png"
-                }
-            ]
-        },
-        {
-            "id": "13078",
-            "name": "CC Premier",
-            "logo": "/img/vlr/tmp/vlr.png",
-            "roster": [
-                {
-                    "name": "Legend",
-                    "real_name": "",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=/img/base/ph/sil.png"
-                },
-                {
-                    "name": "Carnage",
-                    "real_name": "",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=/img/base/ph/sil.png"
-                },
-                {
-                    "name": "Swichblade",
-                    "real_name": "",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=/img/base/ph/sil.png"
-                },
-                {
-                    "name": "Ev0",
-                    "real_name": "",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=/img/base/ph/sil.png"
-                },
-                {
-                    "name": "renai",
-                    "real_name": "",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=/img/base/ph/sil.png"
-                },
-                {
-                    "name": "Buzzer",
-                    "real_name": "",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=/img/base/ph/sil.png"
-                },
-                {
-                    "name": "CalvinD",
-                    "real_name": "",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=/img/base/ph/sil.png"
-                }
-            ]
-        },
-        {
-            "id": "1119",
-            "name": "All Gamers",
-            "logo": "https://owcdn.net/img/6549c2b905061.png",
-            "roster": [
-                {
-                    "name": "Septem7",
-                    "real_name": "Liu Zhening (\u5218\u54f2\u5b81)",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6783ce936c71c.png"
-                },
-                {
-                    "name": "Shr1mp",
-                    "real_name": "Yang Yong (\u6768\u52c7)",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/67e2eb755cab7.png"
-                },
-                {
-                    "name": "Youze",
-                    "real_name": "",
-                    "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
-                },
-                {
-                    "name": "K1ra",
-                    "real_name": "Huang Zhihao (\u9ec4\u5fd7\u8c6a)",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/677fbe754983a.png"
-                },
-                {
-                    "name": "f4ngeer",
-                    "real_name": "Roman Smirnov",
-                    "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
-                },
-                {
-                    "name": "iamgrq",
-                    "real_name": "Gao Ruiqi (\u9ad8\u9510\u7426)",
-                    "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
-                },
-                {
-                    "name": "AaRon0",
-                    "real_name": "Xu Maoxiao (\u5f90\u8302\u856d)",
-                    "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
-                },
-                {
-                    "name": "ED101",
-                    "real_name": "Han Tianqi (\u97e9\u5929\u5947)",
-                    "role": "COACH",
-                    "avatar": "/img/base/ph/sil.png"
-                },
-                {
-                    "name": "Master",
-                    "real_name": "Cheng Zihan (\u7a0b\u5b50\u6657)",
-                    "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
-                }
-            ]
-        },
-        {
-            "id": "11981",
-            "name": "Dragon Ranger Gaming",
-            "logo": "https://owcdn.net/img/642233fc01f26.png",
-            "roster": [
-                {
-                    "name": "Nicc",
-                    "real_name": "Shao Yi-qun (\u90b5\u9038\u7fa4)",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6782611e6a470.png"
-                },
-                {
-                    "name": "Flex1n",
-                    "real_name": "Lo Rui (\u7f57\u745e)",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/678260fd260da.png"
-                },
-                {
-                    "name": "Life",
-                    "real_name": "Qu Donghao (\u77bf\u4e1c\u8c6a)",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6780cc893eb8f.png"
-                },
-                {
-                    "name": "vo0kashu",
-                    "real_name": "Ilya Ushakov",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/67826114df9ea.png"
-                },
-                {
-                    "name": "Akeman",
-                    "real_name": "Zhang Haoran (\u5f20\u6d69\u7136)",
-                    "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
-                },
-                {
-                    "name": "SpiritZ1",
-                    "real_name": "Lin Dingyu (\u6797\u5b9a\u5b87)",
-                    "role": "PLAYER",
-                    "avatar": "/api/image?url=https://owcdn.net/img/67826152e8ca0.png"
-                },
-                {
-                    "name": "NaThanD",
-                    "real_name": "Deng Senqiao (\u9093\u68ee\u4fa8)",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6846943684830.png"
-                },
-                {
-                    "name": "JKH",
-                    "real_name": "Fei Han",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/6782612e8f817.png"
-                },
-                {
-                    "name": "1t",
-                    "real_name": "Huang Biaohong (\u9ec4\u5f6a\u5b8f)",
-                    "role": "COACH",
-                    "avatar": "/api/image?url=https://owcdn.net/img/67826125c955e.png"
-                }
-            ]
-        },
-        {
             "id": "731",
             "name": "TYLOO",
             "logo": "https://owcdn.net/img/63eb60fb08390.png",
@@ -2457,7 +2664,7 @@
                     "name": "splash",
                     "real_name": "Moses Christophe Jonathan",
                     "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
                 },
                 {
                     "name": "Scales",
@@ -2469,7 +2676,7 @@
                     "name": "Erv",
                     "real_name": "Shen Zhiwei",
                     "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
                 },
                 {
                     "name": "sword9",
@@ -2487,18 +2694,18 @@
                     "name": "fc4t",
                     "real_name": "Yang Jiawei (\u6768\u5bb6\u73ae)",
                     "role": "PLAYER",
-                    "avatar": "/img/base/ph/sil.png"
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
                 },
                 {
                     "name": "hypnotizing",
                     "real_name": "Xie Haozhi (\u8c22\u660a\u5fd7)",
-                    "role": "COACH",
+                    "role": "PLAYER",
                     "avatar": "/api/image?url=https://owcdn.net/img/6848f52b9a361.png"
                 },
                 {
                     "name": "Billyo",
                     "real_name": "Li Xinyu (\u674e\u65b0\u5b87)",
-                    "role": "COACH",
+                    "role": "PLAYER",
                     "avatar": "/api/image?url=https://owcdn.net/img/6848f5c1b53a4.png"
                 }
             ]
@@ -2557,6 +2764,73 @@
                     "avatar": "/api/image?url=/img/base/ph/sil.png"
                 }
             ]
+        },
+        {
+            "id": "11981",
+            "name": "Dragon Ranger Gaming",
+            "logo": "https://owcdn.net/img/642233fc01f26.png",
+            "roster": [
+                {
+                    "name": "Nicc",
+                    "real_name": "Shao Yi-qun (\u90b5\u9038\u7fa4)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6782611e6a470.png"
+                },
+                {
+                    "name": "Flex1n",
+                    "real_name": "Lo Rui (\u7f57\u745e)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/678260fd260da.png"
+                },
+                {
+                    "name": "Life",
+                    "real_name": "Qu Donghao (\u77bf\u4e1c\u8c6a)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6780cc893eb8f.png"
+                },
+                {
+                    "name": "vo0kashu",
+                    "real_name": "Ilya Ushakov",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/67826114df9ea.png"
+                },
+                {
+                    "name": "Akeman",
+                    "real_name": "Zhang Haoran (\u5f20\u6d69\u7136)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=/img/base/ph/sil.png"
+                },
+                {
+                    "name": "SpiritZ1",
+                    "real_name": "Lin Dingyu (\u6797\u5b9a\u5b87)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/67826152e8ca0.png"
+                },
+                {
+                    "name": "NaThanD",
+                    "real_name": "Deng Senqiao (\u9093\u68ee\u4fa8)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6846943684830.png"
+                },
+                {
+                    "name": "JKH",
+                    "real_name": "Fei Han",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/6782612e8f817.png"
+                },
+                {
+                    "name": "1t",
+                    "real_name": "Huang Biaohong (\u9ec4\u5f6a\u5b8f)",
+                    "role": "PLAYER",
+                    "avatar": "/api/image?url=https://owcdn.net/img/67826125c955e.png"
+                }
+            ]
+        },
+        {
+            "id": "xlg_esports",
+            "name": "XLG Esports",
+            "logo": "https://owcdn.net/img/65a3922c2a07e.png",
+            "roster": []
         }
     ],
     "others": [
