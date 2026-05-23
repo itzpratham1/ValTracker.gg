@@ -1075,7 +1075,7 @@ def scrape_vlr_matches():
         cache[cache_key] = {"data": matches, "timestamp": time.time()}
         return matches
     except Exception as e:
-        print("[ERROR] scrape_vlr_matches failed:", e)
+        print("[ERROR] fetch_vlr_matches failed:", e)
         return []
 
 def scrape_vlr_results():
@@ -1167,7 +1167,7 @@ def scrape_vlr_results():
         cache[cache_key] = {"data": matches, "timestamp": time.time()}
         return matches
     except Exception as e:
-        print("[ERROR] scrape_vlr_results failed:", e)
+        print("[ERROR] fetch_vlr_results failed:", e)
         return []
 
 @app.route("/api/esports/live")
@@ -1231,7 +1231,7 @@ def esports_news():
         cache[cache_key] = {"data": news_items, "timestamp": time.time()}
         return jsonify({"data": news_items})
     except Exception as e:
-        print("[ERROR] VLR News scraping failed:", e)
+        print("[ERROR] Esports News fetch failed:", e)
         return jsonify({"error": "Internal server error", "data": []}), 500
 
 @app.route("/api/esports/standings/<region>")
@@ -1316,7 +1316,7 @@ def esports_standings(region):
             cache[cache_key] = {"data": standings, "timestamp": time.time()}
         return jsonify({"data": standings})
     except Exception as e:
-        print(f"[ERROR] VLR Standings scraping failed:", e)
+        print(f"[ERROR] Esports Standings fetch failed:", e)
         return jsonify({"error": "Internal server error", "data": []}), 500
 
 @app.route("/api/esports/event/<event_id>")
@@ -1392,7 +1392,7 @@ def esports_event_teams(event_id):
             cache[cache_key] = {"data": teams, "timestamp": time.time()}
         return jsonify({"data": teams})
     except Exception as e:
-        print("[ERROR] VLR Event Teams scraping failed:", e)
+        print("[ERROR] Esports Event Teams fetch failed:", e)
         return jsonify({"error": "Internal server error", "data": []}), 500
 
 if __name__ == "__main__":

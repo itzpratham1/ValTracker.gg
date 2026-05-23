@@ -7325,6 +7325,19 @@ function toggleTiers() {
   });
 }
 
+function getEsportsTeamLogoHtml(name) {
+  if (!name || name === 'TBD') return '';
+  if (vctFranchiseData) {
+    for (const reg in vctFranchiseData) {
+      const match = vctFranchiseData[reg].find(t => t.name.toLowerCase() === name.toLowerCase() || t.id.toLowerCase() === name.toLowerCase().replace(/\s+/g, '_'));
+      if (match && match.logo) {
+        return `<img src="${match.logo}" style="width:20px;height:20px;object-fit:contain;margin-right:8px;" onerror="this.style.display='none';" />`;
+      }
+    }
+  }
+  return `<div style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;color:var(--accent);margin-right:8px;">${name.substring(0, 2).toUpperCase()}</div>`;
+}
+
 function getEspHTML(m, type) {
   const teams = m.match?.teams || [];
   const rawT1 = teams[0]?.name || 'TBD';
@@ -7412,9 +7425,10 @@ function getEspHTML(m, type) {
 
   return `
     <div class="esp-match-card ${tierClass}">
-      <div class="esp-team">
+      <div class="esp-team" style="display:flex; align-items:center;">
+        ${getEsportsTeamLogoHtml(t1)}
         <div class="esp-tname">${t1}</div>
-        <div class="esp-tscore ${w1}">${m.state==='unstarted'?'':s1}</div>
+        <div class="esp-tscore ${w1}" style="margin-left:auto;">${m.state==='unstarted'?'':s1}</div>
       </div>
       <div class="esp-match-info">
         <div class="esp-tourney">${tierBadge} ${event}</div>
@@ -7422,15 +7436,25 @@ function getEspHTML(m, type) {
         <div class="esp-meta">${m.date || 'TBD'}</div>
         <div style="margin-top: 8px;">${mediaBtn}</div>
       </div>
-      <div class="esp-team t-right">
-        <div class="esp-tscore ${w2}">${m.state==='unstarted'?'':s2}</div>
+      <div class="esp-team t-right" style="display:flex; align-items:center; justify-content:flex-end;">
+        <div class="esp-tscore ${w2}" style="margin-right:auto;">${m.state==='unstarted'?'':s2}</div>
         <div class="esp-tname">${t2}</div>
+        <div style="margin-left:8px;">${getEsportsTeamLogoHtml(t2).replace('margin-right:8px;', '')}</div>
       </div>
     </div>
   `;
 }
 
 async function fetchEsportsOverview() {
+  if (!vctFranchiseData) {
+    try {
+      const res = await fetch('/vct_teams.json');
+      vctFranchiseData = await res.json();
+    } catch (e) {
+      console.error("Failed to load franchise data:", e);
+    }
+  }
+
   const liveContainer = document.getElementById('esp-ov-live-container');
   const resultsContainer = document.getElementById('esp-ov-results-container');
   const newsContainer = document.getElementById('esp-ov-news-container');
@@ -7471,7 +7495,7 @@ async function fetchEsportsOverview() {
             <div class="esp-news-title" style="font-size:15px;">${n.title}</div>
             <div class="esp-news-desc" style="font-size:11px;-webkit-line-clamp:2;">${n.description || ''}</div>
             <div class="esp-news-meta" style="font-size:9px; margin-top:4px;">
-              <span>${n.author} • ${n.date}</span>
+              <span>${n.author === 'VLR.gg' ? 'Valorant Esports' : n.author} • ${n.date}</span>
             </div>
           </a>
         `;
