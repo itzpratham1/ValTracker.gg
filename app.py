@@ -977,6 +977,61 @@ def proxy_api(subpath):
 
 # --- ESPORTS ROUTES ---
 
+def parse_vlr_time(date_str, time_str):
+    if time_str == "TBD" or not time_str:
+        return f"{date_str} {time_str} ET"
+    try:
+        import datetime, pytz
+        eastern = pytz.timezone('US/Eastern')
+        now_et = datetime.datetime.now(eastern)
+        
+        # Parse time (e.g. 5:15 PM)
+        # remove timezone strings if they exist like ET
+        time_clean = time_str.replace(" ET", "").strip()
+        dt_time = datetime.datetime.strptime(time_clean, "%I:%M %p").time()
+        
+        if "Today" in date_str:
+            dt_date = now_et.date()
+        elif "Tomorrow" in date_str:
+            dt_date = now_et.date() + datetime.timedelta(days=1)
+        elif "Yesterday" in date_str:
+            dt_date = now_et.date() - datetime.timedelta(days=1)
+        else:
+            clean_date = date_str.split(',')[1].strip() if ',' in date_str else date_str.strip()
+            dt_date = datetime.datetime.strptime(f"{clean_date} {now_et.year}", "%b %d %Y").date()
+            
+        final_dt = datetime.datetime.combine(dt_date, dt_time)
+        final_dt = eastern.localize(final_dt)
+        return final_dt.isoformat()
+    except Exception as e:
+        return f"{date_str} {time_str} ET"
+
+def parse_vlr_time(date_str, time_str):
+    if time_str == "TBD" or not time_str:
+        return f"{date_str} {time_str} ET"
+    try:
+        import datetime, pytz
+        eastern = pytz.timezone('US/Eastern')
+        now_et = datetime.datetime.now(eastern)
+        time_clean = time_str.replace(" ET", "").strip()
+        dt_time = datetime.datetime.strptime(time_clean, "%I:%M %p").time()
+        
+        if "Today" in date_str:
+            dt_date = now_et.date()
+        elif "Tomorrow" in date_str:
+            dt_date = now_et.date() + datetime.timedelta(days=1)
+        elif "Yesterday" in date_str:
+            dt_date = now_et.date() - datetime.timedelta(days=1)
+        else:
+            clean_date = date_str.split(',')[1].strip() if ',' in date_str else date_str.strip()
+            dt_date = datetime.datetime.strptime(f"{clean_date} {now_et.year}", "%b %d %Y").date()
+            
+        final_dt = datetime.datetime.combine(dt_date, dt_time)
+        final_dt = eastern.localize(final_dt)
+        return final_dt.isoformat()
+    except Exception as e:
+        return f"{date_str} {time_str} ET"
+
 def scrape_vlr_matches():
     import re
     from bs4 import BeautifulSoup
@@ -1008,8 +1063,7 @@ def scrape_vlr_matches():
                 
                 time_el = item.find('div', class_='match-item-time')
                 time_str = time_el.text.strip() if time_el else "00:00"
-                if time_str and "TBD" not in time_str.upper() and "ET" not in time_str:
-                    time_str += " ET"
+                date_meta = parse_vlr_time(current_date, time_str)
                 
                 teams_divs = item.find_all('div', class_='match-item-vs-team')
                 teams_data = []
@@ -1058,7 +1112,7 @@ def scrape_vlr_matches():
                     stage_name = parts[0] if len(parts) >= 1 else ""
                     event_name = parts[1] if len(parts) >= 2 else stage_name
                     
-                date_meta = f"{current_date} {time_str}"
+                date_meta = parse_vlr_time(current_date, time_str)
                 
                 matches.append({
                     "id": match_id,
@@ -1152,7 +1206,7 @@ def scrape_vlr_results():
                     stage_name = parts[0] if len(parts) >= 1 else ""
                     event_name = parts[1] if len(parts) >= 2 else stage_name
                     
-                date_meta = f"{current_date} {time_str}"
+                date_meta = parse_vlr_time(current_date, time_str)
                 
                 matches.append({
                     "id": match_id,

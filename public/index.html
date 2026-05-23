@@ -7327,15 +7327,17 @@ function toggleTiers() {
 
 function getEsportsTeamLogoHtml(name) {
   if (!name || name === 'TBD') return '';
+  const fallback = `<div style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;color:var(--accent);margin-right:8px;">${name.substring(0, 2).toUpperCase()}</div>`;
   if (vctFranchiseData) {
     for (const reg in vctFranchiseData) {
       const match = vctFranchiseData[reg].find(t => t.name.toLowerCase() === name.toLowerCase() || t.id.toLowerCase() === name.toLowerCase().replace(/\s+/g, '_'));
       if (match && match.logo) {
-        return `<img src="${match.logo}" style="width:20px;height:20px;object-fit:contain;margin-right:8px;" onerror="this.style.display='none';" />`;
+        const fallbackEscaped = fallback.replace(/"/g, '&quot;');
+        return `<img src="${match.logo}" style="width:20px;height:20px;object-fit:contain;margin-right:8px;" onerror="this.outerHTML='${fallbackEscaped}';" />`;
       }
     }
   }
-  return `<div style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;color:var(--accent);margin-right:8px;">${name.substring(0, 2).toUpperCase()}</div>`;
+  return fallback;
 }
 
 function getEspHTML(m, type) {
@@ -7365,7 +7367,6 @@ function getEspHTML(m, type) {
   let mediaBtn = '';
   if (m.state === 'in_progress' || m.state === 'inProgress') {
     statusHtml = `<div class="esp-status live">LIVE</div>`;
-    mediaBtn = `<a href="https://twitch.tv/valorantesports" target="_blank" class="esp-btn live">🔴 Watch Live</a>`;
   } else if (m.state === 'completed') {
     statusHtml = `<div class="esp-status">FINAL</div>`;
     if (m.vod) {
@@ -7423,6 +7424,15 @@ function getEspHTML(m, type) {
     statusHtml = `<div class="esp-status">UPCOMING</div>`;
   }
 
+  // Format ISO date to local string if possible
+  let displayDate = m.date || 'TBD';
+  if (displayDate.includes('T')) {
+    try {
+      const d = new Date(displayDate);
+      displayDate = d.toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+    } catch(e) {}
+  }
+
   return `
     <div class="esp-match-card ${tierClass}">
       <div class="esp-team" style="display:flex; align-items:center;">
@@ -7433,7 +7443,7 @@ function getEspHTML(m, type) {
       <div class="esp-match-info">
         <div class="esp-tourney">${tierBadge} ${event}</div>
         ${statusHtml}
-        <div class="esp-meta">${m.date || 'TBD'}</div>
+        <div class="esp-meta">${displayDate}</div>
         <div style="margin-top: 8px;">${mediaBtn}</div>
       </div>
       <div class="esp-team t-right" style="display:flex; align-items:center; justify-content:flex-end;">
