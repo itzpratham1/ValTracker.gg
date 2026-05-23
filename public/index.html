@@ -624,7 +624,8 @@
               
               <!-- Capsule Promos -->
               <div class="capsule-promo-card" id="esp-active-team-capsule-wrap" style="display:none;">
-                <img class="capsule-promo-img" id="esp-active-team-capsule-img" src="" alt="VCT Capsule"/>
+                <img class="capsule-promo-img" id="esp-active-team-capsule-img" src="" alt="VCT Capsule" onerror="this.style.display='none'; document.getElementById('esp-active-team-capsule-fallback-badge').style.display='flex';"/>
+                <div id="esp-active-team-capsule-fallback-badge" style="display:none; width:48px; height:48px; border-radius:4px; border:1px solid rgba(255,70,85,0.3); background:rgba(255,70,85,0.1); align-items:center; justify-content:center; font-size:20px; color:var(--accent); font-weight:bold; margin-right:12px;">🔫</div>
                 <div class="capsule-promo-info">
                   <div class="capsule-promo-title" id="esp-active-team-capsule-title">VCT Capsule</div>
                   <div class="capsule-promo-desc" id="esp-active-team-capsule-desc">Support your favorite team.</div>
@@ -712,12 +713,15 @@
       <button class="stat-modal-close" onclick="closeVctModal()">✕</button>
     </div>
     <div class="stat-modal-body" style="padding: 20px 0; max-height: 480px; overflow-y: auto;">
+      <!-- Regional Tabs Selector -->
+      <div id="vct-modal-tabs" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:10px;"></div>
+
       <!-- Regional Winners -->
-      <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:14px; text-transform:uppercase; color:var(--accent); margin-bottom:12px; letter-spacing:0.5px; display:flex; align-items:center; gap:6px;">🏆 Regional Winners</h4>
+      <h4 id="vct-modal-winners-title" style="font-family:'Barlow Condensed', sans-serif; font-size:14px; text-transform:uppercase; color:var(--accent); margin-bottom:12px; letter-spacing:0.5px; display:flex; align-items:center; gap:6px;">🏆 Regional Winners</h4>
       <div id="vct-modal-winners" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; margin-bottom:24px;"></div>
       
       <!-- Participating Teams -->
-      <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:14px; text-transform:uppercase; color:#fff; margin-bottom:12px; letter-spacing:0.5px; display:flex; align-items:center; gap:6px;">👥 Participating Teams</h4>
+      <h4 id="vct-modal-teams-title" style="font-family:'Barlow Condensed', sans-serif; font-size:14px; text-transform:uppercase; color:#fff; margin-bottom:12px; letter-spacing:0.5px; display:flex; align-items:center; gap:6px;">👥 Participating Teams</h4>
       <div id="vct-modal-teams" class="player-card-grid" style="grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px;"></div>
     </div>
   </div>
@@ -6726,109 +6730,269 @@ const VCT_STAGE_DATA = {
   kickoff: {
     title: "VCT Kickoff 2026",
     dates: "Feb 15 - Mar 2, 2026",
-    winners: [
-      { region: "Americas", team: "FURIA Esports", tag: "FUR", logo: "https://owcdn.net/img/62a74c4314dc8.png", color: "#3b82f6" },
-      { region: "Pacific", team: "Nongshim RedForce", tag: "NS", logo: "https://owcdn.net/img/631fb2d87e076.png", color: "#ef4444" },
-      { region: "EMEA", team: "BBL Esports", tag: "BBL", logo: "https://owcdn.net/img/62b667bd4ec56.png", color: "#fbbf24" },
-      { region: "China", team: "All Gamers", tag: "AG", logo: "https://owcdn.net/img/627a8cbbeba23.png", color: "#a855f7" }
-    ],
-    teams: [
-      { name: "Nongshim RedForce", tag: "NS", region: "ov-pacific", id: "gen_g" },
-      { name: "BBL Esports", tag: "BBL", region: "ov-emea", id: "fnatic" },
-      { name: "All Gamers", tag: "AG", region: "ov-china", id: "edg" },
-      { name: "FURIA Esports", tag: "FUR", region: "ov-americas", id: "sentinels" },
-      { name: "Paper Rex", tag: "PRX", region: "ov-pacific", id: "paper_rex" },
-      { name: "DRX", tag: "DRX", region: "ov-pacific", id: "drx" },
-      { name: "Team Secret", tag: "TS", region: "ov-pacific", id: "team_secret" },
-      { name: "Fnatic", tag: "FNC", region: "ov-emea", id: "fnatic" },
-      { name: "Team Heretics", tag: "TH", region: "ov-emea", id: "team_heretics" },
-      { name: "Sentinels", tag: "SEN", region: "ov-americas", id: "sentinels" },
-      { name: "G2 Esports", tag: "G2", region: "ov-americas", id: "g2_esports" },
-      { name: "Global Esports", tag: "GE", region: "ov-pacific", id: "global_esports" }
-    ]
+    regions: {
+      global: {
+        winners: [
+          { region: "Americas Winner", team: "FURIA Esports", tag: "FUR", logo: "https://owcdn.net/img/62a74c4314dc8.png", color: "#3b82f6" },
+          { region: "Pacific Winner", team: "Nongshim RedForce", tag: "NS", logo: "https://owcdn.net/img/631fb2d87e076.png", color: "#ef4444" },
+          { region: "EMEA Winner", team: "BBL Esports", tag: "BBL", logo: "https://owcdn.net/img/62b667bd4ec56.png", color: "#fbbf24" },
+          { region: "China Winner", team: "All Gamers", tag: "AG", logo: "https://owcdn.net/img/627a8cbbeba23.png", color: "#a855f7" }
+        ],
+        teams: [
+          { name: "Nongshim RedForce", tag: "NS", region: "ov-pacific", id: "gen_g" },
+          { name: "Paper Rex", tag: "PRX", region: "ov-pacific", id: "paper_rex" },
+          { name: "FURIA Esports", tag: "FUR", region: "ov-americas", id: "sentinels" },
+          { name: "BBL Esports", tag: "BBL", region: "ov-emea", id: "fnatic" },
+          { name: "All Gamers", tag: "AG", region: "ov-china", id: "edg" }
+        ]
+      },
+      americas: {
+        winners: [
+          { region: "Champion", team: "FURIA Esports", tag: "FUR", logo: "https://owcdn.net/img/62a74c4314dc8.png", color: "#3b82f6" }
+        ],
+        teams: [
+          { name: "FURIA Esports", tag: "FUR", region: "ov-americas", id: "sentinels" },
+          { name: "G2 Esports", tag: "G2", region: "ov-americas", id: "g2_esports" },
+          { name: "Sentinels", tag: "SEN", region: "ov-americas", id: "sentinels" },
+          { name: "Leviatán", tag: "LEV", region: "ov-americas", id: "leviatan" },
+          { name: "LOUD", tag: "LOUD", region: "ov-americas", id: "sentinels" },
+          { name: "100 Thieves", tag: "100T", region: "ov-americas", id: "sentinels" },
+          { name: "NRG", tag: "NRG", region: "ov-americas", id: "sentinels" }
+        ]
+      },
+      pacific: {
+        winners: [
+          { region: "Champion", team: "Nongshim RedForce", tag: "NS", logo: "https://owcdn.net/img/631fb2d87e076.png", color: "#ef4444" }
+        ],
+        teams: [
+          { name: "Nongshim RedForce", tag: "NS", region: "ov-pacific", id: "gen_g" },
+          { name: "Paper Rex", tag: "PRX", region: "ov-pacific", id: "paper_rex" },
+          { name: "Gen.G Esports", tag: "GEN", region: "ov-pacific", id: "gen_g" },
+          { name: "Kiwoom DRX", tag: "DRX", region: "ov-pacific", id: "drx" },
+          { name: "T1 Esports", tag: "T1", region: "ov-pacific", id: "t1" },
+          { name: "ZETA DIVISION", tag: "ZETA", region: "ov-pacific", id: "zeta_division" },
+          { name: "Team Secret", tag: "TS", region: "ov-pacific", id: "team_secret" },
+          { name: "DetonatioN FocusMe", tag: "DFM", region: "ov-pacific", id: "detonation_focusme" },
+          { name: "FULL SENSE", tag: "FS", region: "ov-pacific", id: "full_sense" },
+          { name: "VARREL Esports", tag: "VL", region: "ov-pacific", id: "varrel" }
+        ]
+      },
+      emea: {
+        winners: [
+          { region: "Champion", team: "BBL Esports", tag: "BBL", logo: "https://owcdn.net/img/62b667bd4ec56.png", color: "#fbbf24" }
+        ],
+        teams: [
+          { name: "BBL Esports", tag: "BBL", region: "ov-emea", id: "fnatic" },
+          { name: "Fnatic", tag: "FNC", region: "ov-emea", id: "fnatic" },
+          { name: "Team Heretics", tag: "TH", region: "ov-emea", id: "team_heretics" },
+          { name: "Karmine Corp", tag: "KC", region: "ov-emea", id: "fnatic" },
+          { name: "Team Vitality", tag: "VIT", region: "ov-emea", id: "fnatic" },
+          { name: "FUT Esports", tag: "FUT", region: "ov-emea", id: "fnatic" }
+        ]
+      },
+      china: {
+        winners: [
+          { region: "Champion", team: "All Gamers", tag: "AG", logo: "https://owcdn.net/img/627a8cbbeba23.png", color: "#a855f7" }
+        ],
+        teams: [
+          { name: "All Gamers", tag: "AG", region: "ov-china", id: "edg" },
+          { name: "EDward Gaming", tag: "EDG", region: "ov-china", id: "edg" },
+          { name: "FunPlus Phoenix", tag: "FPX", region: "ov-china", id: "edg" },
+          { name: "Trace Esports", tag: "TE", region: "ov-china", id: "edg" },
+          { name: "Bilibili Gaming", tag: "BLG", region: "ov-china", id: "edg" }
+        ]
+      }
+    }
   },
   masters_santiago: {
     title: "Masters Santiago 2026",
     dates: "Feb 28 - Mar 16, 2026",
-    winners: [
-      { region: "Champion", team: "Nongshim RedForce", tag: "NS", logo: "https://owcdn.net/img/631fb2d87e076.png", color: "#ef4444" },
-      { region: "Runner-up", team: "Paper Rex", tag: "PRX", logo: "https://owcdn.net/img/62b6946bc0e88.png", color: "#db2777" }
-    ],
-    teams: [
-      { name: "Nongshim RedForce", tag: "NS", region: "ov-pacific", id: "gen_g" },
-      { name: "Paper Rex", tag: "PRX", region: "ov-pacific", id: "paper_rex" },
-      { name: "BBL Esports", tag: "BBL", region: "ov-emea", id: "fnatic" },
-      { name: "All Gamers", tag: "AG", region: "ov-china", id: "edg" },
-      { name: "FURIA Esports", tag: "FUR", region: "ov-americas", id: "sentinels" },
-      { name: "Fnatic", tag: "FNC", region: "ov-emea", id: "fnatic" },
-      { name: "Sentinels", tag: "SEN", region: "ov-americas", id: "sentinels" },
-      { name: "Team Heretics", tag: "TH", region: "ov-emea", id: "team_heretics" }
-    ]
+    regions: {
+      global: {
+        winners: [
+          { region: "Champion", team: "Nongshim RedForce", tag: "NS", logo: "https://owcdn.net/img/631fb2d87e076.png", color: "#ef4444" },
+          { region: "Runner-up", team: "Paper Rex", tag: "PRX", logo: "https://owcdn.net/img/62b6946bc0e88.png", color: "#db2777" },
+          { region: "3rd Place", team: "FURIA Esports", tag: "FUR", logo: "https://owcdn.net/img/62a74c4314dc8.png", color: "#3b82f6" },
+          { region: "4th Place", team: "Team Heretics", tag: "TH", logo: "https://owcdn.net/img/635b7ecb1dc66.png", color: "#f97316" }
+        ],
+        teams: [
+          { name: "Nongshim RedForce", tag: "NS", region: "ov-pacific", id: "gen_g" },
+          { name: "Paper Rex", tag: "PRX", region: "ov-pacific", id: "paper_rex" },
+          { name: "FURIA Esports", tag: "FUR", region: "ov-americas", id: "sentinels" },
+          { name: "Team Heretics", tag: "TH", region: "ov-emea", id: "team_heretics" },
+          { name: "Fnatic", tag: "FNC", region: "ov-emea", id: "fnatic" },
+          { name: "All Gamers", tag: "AG", region: "ov-china", id: "edg" }
+        ]
+      }
+    }
   },
   stage1: {
     title: "VCT Stage 1 2026",
     dates: "Apr 11 - May 25, 2026",
-    winners: [
-      { region: "Pacific Winner", team: "Paper Rex", tag: "PRX", logo: "https://owcdn.net/img/62b6946bc0e88.png", color: "#db2777" },
-      { region: "EMEA Winner", team: "Team Heretics", tag: "TH", logo: "https://owcdn.net/img/635b7ecb1dc66.png", color: "#f97316" },
-      { region: "China Winner", team: "EDward Gaming", tag: "EDG", logo: "https://owcdn.net/img/627a8cbbeba23.png", color: "#a855f7" },
-      { region: "Americas Winner", team: "Ongoing (Grand Final May 24)", tag: "TBD", logo: "", color: "#8b5cf6" }
-    ],
-    teams: [
-      { name: "Paper Rex", tag: "PRX", region: "ov-pacific", id: "paper_rex" },
-      { name: "Team Heretics", tag: "TH", region: "ov-emea", id: "team_heretics" },
-      { name: "EDward Gaming", tag: "EDG", region: "ov-china", id: "edg" },
-      { name: "Sentinels", tag: "SEN", region: "ov-americas", id: "sentinels" },
-      { name: "G2 Esports", tag: "G2", region: "ov-americas", id: "g2_esports" },
-      { name: "Nongshim RedForce", tag: "NS", region: "ov-pacific", id: "gen_g" },
-      { name: "Fnatic", tag: "FNC", region: "ov-emea", id: "fnatic" },
-      { name: "DRX", tag: "DRX", region: "ov-pacific", id: "drx" },
-      { name: "Leviatán", tag: "LEV", region: "ov-americas", id: "leviatan" },
-      { name: "ZETA DIVISION", tag: "ZETA", region: "ov-pacific", id: "zeta_division" },
-      { name: "Team Secret", tag: "TS", region: "ov-pacific", id: "team_secret" },
-      { name: "Global Esports", tag: "GE", region: "ov-pacific", id: "global_esports" }
-    ]
+    regions: {
+      global: {
+        winners: [
+          { region: "Americas Winner", team: "Ongoing (Final May 24)", tag: "TBD", logo: "", color: "#3b82f6" },
+          { region: "Pacific Winner", team: "Paper Rex", tag: "PRX", logo: "https://owcdn.net/img/62b6946bc0e88.png", color: "#db2777" },
+          { region: "EMEA Winner", team: "Team Heretics", tag: "TH", logo: "https://owcdn.net/img/635b7ecb1dc66.png", color: "#f97316" },
+          { region: "China Winner", team: "EDward Gaming", tag: "EDG", logo: "https://owcdn.net/img/627a8cbbeba23.png", color: "#a855f7" }
+        ],
+        teams: [
+          { name: "Paper Rex", tag: "PRX", region: "ov-pacific", id: "paper_rex" },
+          { name: "Team Heretics", tag: "TH", region: "ov-emea", id: "team_heretics" },
+          { name: "EDward Gaming", tag: "EDG", region: "ov-china", id: "edg" },
+          { name: "G2 Esports", tag: "G2", region: "ov-americas", id: "g2_esports" }
+        ]
+      },
+      americas: {
+        winners: [
+          { region: "Status", team: "Ongoing (Grand Final May 24)", tag: "TBD", logo: "", color: "#3b82f6" }
+        ],
+        teams: [
+          { name: "FURIA Esports", tag: "FUR", region: "ov-americas", id: "sentinels" },
+          { name: "G2 Esports", tag: "G2", region: "ov-americas", id: "g2_esports" },
+          { name: "Sentinels", tag: "SEN", region: "ov-americas", id: "sentinels" },
+          { name: "Leviatán", tag: "LEV", region: "ov-americas", id: "leviatan" },
+          { name: "LOUD", tag: "LOUD", region: "ov-americas", id: "sentinels" },
+          { name: "100 Thieves", tag: "100T", region: "ov-americas", id: "sentinels" },
+          { name: "NRG", tag: "NRG", region: "ov-americas", id: "sentinels" }
+        ]
+      },
+      pacific: {
+        winners: [
+          { region: "Champion", team: "Paper Rex", tag: "PRX", logo: "https://owcdn.net/img/62b6946bc0e88.png", color: "#db2777" }
+        ],
+        teams: [
+          { name: "Paper Rex", tag: "PRX", region: "ov-pacific", id: "paper_rex" },
+          { name: "FULL SENSE", tag: "FS", region: "ov-pacific", id: "full_sense" },
+          { name: "Gen.G Esports", tag: "GEN", region: "ov-pacific", id: "gen_g" },
+          { name: "Kiwoom DRX", tag: "DRX", region: "ov-pacific", id: "drx" },
+          { name: "T1 Esports", tag: "T1", region: "ov-pacific", id: "t1" },
+          { name: "ZETA DIVISION", tag: "ZETA", region: "ov-pacific", id: "zeta_division" },
+          { name: "Team Secret", tag: "TS", region: "ov-pacific", id: "team_secret" },
+          { name: "DetonatioN FocusMe", tag: "DFM", region: "ov-pacific", id: "detonation_focusme" },
+          { name: "Nongshim RedForce", tag: "NS", region: "ov-pacific", id: "gen_g" },
+          { name: "VARREL Esports", tag: "VL", region: "ov-pacific", id: "varrel" }
+        ]
+      },
+      emea: {
+        winners: [
+          { region: "Champion", team: "Team Heretics", tag: "TH", logo: "https://owcdn.net/img/635b7ecb1dc66.png", color: "#f97316" }
+        ],
+        teams: [
+          { name: "Team Heretics", tag: "TH", region: "ov-emea", id: "team_heretics" },
+          { name: "Team Vitality", tag: "VIT", region: "ov-emea", id: "fnatic" },
+          { name: "Fnatic", tag: "FNC", region: "ov-emea", id: "fnatic" },
+          { name: "Karmine Corp", tag: "KC", region: "ov-emea", id: "fnatic" },
+          { name: "FUT Esports", tag: "FUT", region: "ov-emea", id: "fnatic" },
+          { name: "BBL Esports", tag: "BBL", region: "ov-emea", id: "fnatic" }
+        ]
+      },
+      china: {
+        winners: [
+          { region: "Champion", team: "EDward Gaming", tag: "EDG", logo: "https://owcdn.net/img/627a8cbbeba23.png", color: "#a855f7" }
+        ],
+        teams: [
+          { name: "EDward Gaming", tag: "EDG", region: "ov-china", id: "edg" },
+          { name: "XLG Esports", tag: "XLG", region: "ov-china", id: "edg" },
+          { name: "All Gamers", tag: "AG", region: "ov-china", id: "edg" },
+          { name: "FunPlus Phoenix", tag: "FPX", region: "ov-china", id: "edg" },
+          { name: "Trace Esports", tag: "TE", region: "ov-china", id: "edg" }
+        ]
+      }
+    }
   },
   masters_london: {
     title: "Masters London 2026",
     dates: "June 5 - June 21, 2026",
-    winners: [
-      { region: "Status", team: "Upcoming Global Event", tag: "TBD", logo: "", color: "#a855f7" }
-    ],
-    teams: [
-      { name: "Paper Rex", tag: "PRX", region: "ov-pacific", id: "paper_rex" },
-      { name: "Team Heretics", tag: "TH", region: "ov-emea", id: "team_heretics" },
-      { name: "EDward Gaming", tag: "EDG", region: "ov-china", id: "edg" },
-      { name: "Nongshim RedForce", tag: "NS", region: "ov-pacific", id: "gen_g" },
-      { name: "Fnatic", tag: "FNC", region: "ov-emea", id: "fnatic" },
-      { name: "DRX", tag: "DRX", region: "ov-pacific", id: "drx" }
-    ]
+    regions: {
+      global: {
+        winners: [
+          { region: "Status", team: "Upcoming Global Event", tag: "TBD", logo: "", color: "#a855f7" }
+        ],
+        teams: [
+          { name: "Paper Rex", tag: "PRX", region: "ov-pacific", id: "paper_rex" },
+          { name: "Team Heretics", tag: "TH", region: "ov-emea", id: "team_heretics" },
+          { name: "EDward Gaming", tag: "EDG", region: "ov-china", id: "edg" },
+          { name: "Nongshim RedForce", tag: "NS", region: "ov-pacific", id: "gen_g" },
+          { name: "Fnatic", tag: "FNC", region: "ov-emea", id: "fnatic" },
+          { name: "DRX", tag: "DRX", region: "ov-pacific", id: "drx" }
+        ]
+      }
+    }
   },
   stage2: {
     title: "VCT Stage 2 2026",
     dates: "July - August 2026",
-    winners: [
-      { region: "Status", team: "Upcoming Regional Splits", tag: "TBD", logo: "", color: "#3b82f6" }
-    ],
-    teams: [
-      { name: "Sentinels", tag: "SEN", region: "ov-americas", id: "sentinels" },
-      { name: "Paper Rex", tag: "PRX", region: "ov-pacific", id: "paper_rex" },
-      { name: "Fnatic", tag: "FNC", region: "ov-emea", id: "fnatic" },
-      { name: "EDward Gaming", tag: "EDG", region: "ov-china", id: "edg" },
-      { name: "Team Heretics", tag: "TH", region: "ov-emea", id: "team_heretics" },
-      { name: "Leviatán", tag: "LEV", region: "ov-americas", id: "leviatan" },
-      { name: "DRX", tag: "DRX", region: "ov-pacific", id: "drx" }
-    ]
+    regions: {
+      global: {
+        winners: [
+          { region: "Status", team: "Upcoming Regional Splits", tag: "TBD", logo: "", color: "#3b82f6" }
+        ],
+        teams: [
+          { name: "Sentinels", tag: "SEN", region: "ov-americas", id: "sentinels" },
+          { name: "Paper Rex", tag: "PRX", region: "ov-pacific", id: "paper_rex" },
+          { name: "Fnatic", tag: "FNC", region: "ov-emea", id: "fnatic" },
+          { name: "EDward Gaming", tag: "EDG", region: "ov-china", id: "edg" }
+        ]
+      },
+      americas: {
+        winners: [
+          { region: "Status", team: "Upcoming regional split", tag: "TBD", logo: "", color: "#3b82f6" }
+        ],
+        teams: [
+          { name: "FURIA Esports", tag: "FUR", region: "ov-americas", id: "sentinels" },
+          { name: "G2 Esports", tag: "G2", region: "ov-americas", id: "g2_esports" },
+          { name: "Sentinels", tag: "SEN", region: "ov-americas", id: "sentinels" },
+          { name: "Leviatán", tag: "LEV", region: "ov-americas", id: "leviatan" }
+        ]
+      },
+      pacific: {
+        winners: [
+          { region: "Status", team: "Upcoming regional split", tag: "TBD", logo: "", color: "#ef4444" }
+        ],
+        teams: [
+          { name: "Paper Rex", tag: "PRX", region: "ov-pacific", id: "paper_rex" },
+          { name: "Gen.G Esports", tag: "GEN", region: "ov-pacific", id: "gen_g" },
+          { name: "Kiwoom DRX", tag: "DRX", region: "ov-pacific", id: "drx" },
+          { name: "Global Esports", tag: "GE", region: "ov-pacific", id: "global_esports" }
+        ]
+      },
+      emea: {
+        winners: [
+          { region: "Status", team: "Upcoming regional split", tag: "TBD", logo: "", color: "#fbbf24" }
+        ],
+        teams: [
+          { name: "Team Heretics", tag: "TH", region: "ov-emea", id: "team_heretics" },
+          { name: "Fnatic", tag: "FNC", region: "ov-emea", id: "fnatic" },
+          { name: "Karmine Corp", tag: "KC", region: "ov-emea", id: "fnatic" }
+        ]
+      },
+      china: {
+        winners: [
+          { region: "Status", team: "Upcoming regional split", tag: "TBD", logo: "", color: "#a855f7" }
+        ],
+        teams: [
+          { name: "EDward Gaming", tag: "EDG", region: "ov-china", id: "edg" },
+          { name: "All Gamers", tag: "AG", region: "ov-china", id: "edg" },
+          { name: "FunPlus Phoenix", tag: "FPX", region: "ov-china", id: "edg" }
+        ]
+      }
+    }
   },
   champions: {
     title: "Champions Shanghai 2026",
     dates: "September 2026",
-    winners: [
-      { region: "Status", team: "The Ultimate Crown", tag: "TBD", logo: "", color: "#fbbf24" }
-    ],
-    teams: [
-      { name: "TBD - Qualified Teams", tag: "VAL", region: "ov-pacific", id: "global_esports" }
-    ]
+    regions: {
+      global: {
+        winners: [
+          { region: "Status", team: "The Ultimate Crown", tag: "TBD", logo: "", color: "#fbbf24" }
+        ],
+        teams: [
+          { name: "TBD - Qualified Teams", tag: "VAL", region: "ov-pacific", id: "global_esports" }
+        ]
+      }
+    }
   }
 };
 
@@ -6844,33 +7008,89 @@ function openVctTournamentModal(stage) {
   const data = VCT_STAGE_DATA[stage];
   if (!data) return;
   
-  document.getElementById('vct-modal-title').textContent = data.title;
+  // Create regional tabs
+  const tabContainer = document.getElementById('vct-modal-tabs');
+  const availableRegions = Object.keys(data.regions);
   
-  const winnersContainer = document.getElementById('vct-modal-winners');
-  winnersContainer.innerHTML = data.winners.map(w => {
-    const logoHtml = w.logo ? `<img src="${w.logo}" style="width:20px;height:20px;object-fit:contain;" />` : '';
-    return `
-      <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); padding:10px; border-radius:4px; display:flex; align-items:center; gap:10px;">
-        <div style="font-size:10px; color:var(--muted); text-transform:uppercase;">${w.region}</div>
-        <div style="display:flex; align-items:center; gap:6px; margin-left:auto;">
-          ${logoHtml}
-          <span style="font-weight:700; color:${w.color || '#fff'}">${w.team}</span>
-        </div>
-      </div>
-    `;
-  }).join('');
+  const regionLabels = {
+    global: "🌎 Overview",
+    americas: "🇺🇸 Americas",
+    pacific: "🇰🇷 Pacific",
+    emea: "🇪🇺 EMEA",
+    china: "🇨🇳 China"
+  };
   
-  const teamsContainer = document.getElementById('vct-modal-teams');
-  teamsContainer.innerHTML = data.teams.map(t => {
-    return `
-      <div class="player-card" onclick="selectTeamFromModal('${t.region}', '${t.id}')" style="cursor:pointer; min-height:60px; padding:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); transition:var(--transition);" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.05)'">
-        <div style="font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:12px; color:#fff; text-transform:uppercase; text-align:center;">${t.name}</div>
-        <div style="font-size:9px; color:var(--muted); text-transform:uppercase; margin-top:2px;">${t.tag}</div>
-      </div>
-    `;
-  }).join('');
+  tabContainer.innerHTML = availableRegions.map(r => `
+    <button class="vct-modal-tab-btn" data-modal-region="${r}" onclick="switchVctModalTab('${stage}', '${r}')" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); color:#fff; font-family:'Barlow Condensed',sans-serif; font-size:11px; padding:6px 12px; border-radius:4px; cursor:pointer; text-transform:uppercase; transition:var(--transition); font-weight:700;">
+      ${regionLabels[r] || r}
+    </button>
+  `).join('');
   
+  switchVctModalTab(stage, availableRegions[0]);
   openVctModal();
+}
+
+function switchVctModalTab(stage, region) {
+  const data = VCT_STAGE_DATA[stage];
+  if (!data) return;
+  
+  const regData = data.regions[region];
+  if (!regData) return;
+  
+  // Highlight active tab
+  document.querySelectorAll('.vct-modal-tab-btn').forEach(btn => {
+    btn.style.background = 'rgba(255,255,255,0.03)';
+    btn.style.borderColor = 'rgba(255,255,255,0.1)';
+    btn.style.color = '#fff';
+  });
+  const activeBtn = document.querySelector(`.vct-modal-tab-btn[data-modal-region="${region}"]`);
+  if (activeBtn) {
+    activeBtn.style.background = 'var(--loss)';
+    activeBtn.style.borderColor = 'var(--loss)';
+    activeBtn.style.color = '#fff';
+  }
+  
+  // Render Winners
+  const winnersContainer = document.getElementById('vct-modal-winners');
+  const winnersTitle = document.getElementById('vct-modal-winners-title');
+  if (regData.winners && regData.winners.length > 0) {
+    winnersTitle.style.display = 'flex';
+    winnersContainer.style.display = 'grid';
+    winnersContainer.innerHTML = regData.winners.map(w => {
+      const logoHtml = w.logo ? `<img src="${w.logo}" style="width:20px;height:20px;object-fit:contain;" />` : '';
+      return `
+        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); padding:10px; border-radius:4px; display:flex; align-items:center; gap:10px;">
+          <div style="font-size:10px; color:var(--muted); text-transform:uppercase;">${w.region}</div>
+          <div style="display:flex; align-items:center; gap:6px; margin-left:auto;">
+            ${logoHtml}
+            <span style="font-weight:700; color:${w.color || '#fff'}">${w.team}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+  } else {
+    winnersTitle.style.display = 'none';
+    winnersContainer.style.display = 'none';
+  }
+  
+  // Render Teams
+  const teamsContainer = document.getElementById('vct-modal-teams');
+  const teamsTitle = document.getElementById('vct-modal-teams-title');
+  if (regData.teams && regData.teams.length > 0) {
+    teamsTitle.style.display = 'flex';
+    teamsContainer.style.display = 'grid';
+    teamsContainer.innerHTML = regData.teams.map(t => {
+      return `
+        <div class="player-card" onclick="selectTeamFromModal('${t.region}', '${t.id}')" style="cursor:pointer; min-height:60px; padding:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); transition:var(--transition);" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.05)'">
+          <div style="font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:12px; color:#fff; text-transform:uppercase; text-align:center;">${t.name}</div>
+          <div style="font-size:9px; color:var(--muted); text-transform:uppercase; margin-top:2px;">${t.tag}</div>
+        </div>
+      `;
+    }).join('');
+  } else {
+    teamsTitle.style.display = 'none';
+    teamsContainer.style.display = 'none';
+  }
 }
 
 function selectTeamFromModal(regionId, teamId) {
@@ -6904,7 +7124,14 @@ function getEspHTML(m, type) {
   const w1 = teams[0]?.has_won ? 'winner' : '';
   const w2 = teams[1]?.has_won ? 'winner' : '';
   
-  const event = m.league?.name || 'VCT';
+  let event = m.league?.name || 'VCT';
+  if (m.league?.region) {
+    if (m.league.region.toLowerCase().includes(event.toLowerCase())) {
+      event = m.league.region;
+    } else {
+      event = `${m.league.region} ${event}`;
+    }
+  }
   const isTier2 = event.toLowerCase().includes('challengers') || event.toLowerCase().includes('game changers') || event.toLowerCase().includes('ascension') || event.toLowerCase().includes('vcl');
   const tierClass = isTier2 ? 'tier-t2' : 'tier-t1';
   const tierBadge = isTier2 ? '<span class="tier-badge t2">Tier 2</span>' : '<span class="tier-badge t1">VCT Tier 1</span>';
@@ -6919,7 +7146,13 @@ function getEspHTML(m, type) {
     if (m.vod) {
       mediaBtn = `<a href="${m.vod}" target="_blank" class="esp-btn vod">📺 Watch VOD</a>`;
     } else {
-      const searchQ = `${event} ${t1} vs ${t2} highlights`;
+      let datePart = '';
+      if (m.date) {
+        datePart = m.date.replace(/\b\d{1,2}:\d{2}\b/, '').trim(); // Remove HH:MM
+        datePart = datePart.replace(/(Today|Yesterday|Tomorrow)/i, '').trim(); // Remove Today/Yesterday
+        datePart = datePart.replace(/^[,\s]+|[,\s]+$/g, ''); // Trim commas and whitespace
+      }
+      const searchQ = `${event} ${t1} vs ${t2} highlights ${datePart}`.trim();
       mediaBtn = `<a href="https://www.youtube.com/results?search_query=${encodeURIComponent(searchQ)}" target="_blank" class="esp-btn vod">📺 View Highlights</a>`;
     }
   } else {
@@ -7182,6 +7415,9 @@ function selectFranchiseTeam(region, teamId) {
   
   if (team.capsule_image) {
     capWrap.style.display = 'flex';
+    capImg.style.display = 'block';
+    const fbBadge = document.getElementById('esp-active-team-capsule-fallback-badge');
+    if (fbBadge) fbBadge.style.display = 'none';
     capImg.src = team.capsule_image;
     capTitle.textContent = team.capsule_title || 'VCT Capsule';
     capDesc.textContent = team.capsule_desc || 'Support your team';
@@ -7193,7 +7429,10 @@ function selectFranchiseTeam(region, teamId) {
   rosterGrid.innerHTML = (team.roster || []).map(p => `
     <div class="player-card">
       <span class="player-card-role ${p.role.toLowerCase() === 'coach' ? 'coach' : ''}">${p.role}</span>
-      <img class="player-card-avatar" src="${p.avatar}" alt="${p.name}"/>
+      <img class="player-card-avatar" src="${p.avatar}" alt="${p.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"/>
+      <div class="player-card-avatar-fallback" style="display:none; width:100%; flex:1; background:linear-gradient(180deg, rgba(255,70,85,0.05) 0%, rgba(20,20,20,0.8) 100%); align-items:center; justify-content:center; font-family:'Barlow Condensed',sans-serif; font-size:36px; font-weight:900; color:var(--accent); text-transform:uppercase; min-height:120px;">
+        ${p.name ? p.name.charAt(0) : 'P'}
+      </div>
       <div class="player-card-meta">
         <div class="player-card-handle">${p.name}</div>
         <div class="player-card-real">${p.real_name}</div>

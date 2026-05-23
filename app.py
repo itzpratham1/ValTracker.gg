@@ -1312,7 +1312,8 @@ def esports_standings(region):
                 "streak": streak
             })
             
-        cache[cache_key] = {"data": standings, "timestamp": time.time()}
+        if standings:
+            cache[cache_key] = {"data": standings, "timestamp": time.time()}
         return jsonify({"data": standings})
     except Exception as e:
         print(f"[ERROR] VLR Standings scraping failed:", e)
