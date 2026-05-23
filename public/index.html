@@ -701,6 +701,73 @@
 <div class="toast" id="toast"></div>
 
 <script>
+function expandTeamName(name) {
+  if (!name) return 'TBD';
+  const clean = name.trim();
+  const lower = clean.toLowerCase();
+  
+  if (lower.startsWith('100 th') || lower.includes('100t')) return '100 Thieves';
+  if (lower.startsWith('nongshim') || lower.includes('redforce') || lower.includes('redfor')) return 'Nongshim RedForce';
+  if (lower.startsWith('paper r') || lower === 'prx') return 'Paper Rex';
+  if (lower.startsWith('edward') || lower === 'edg') return 'EDward Gaming';
+  if (lower.startsWith('gen.g') || lower === 'geng') return 'Gen.G Esports';
+  if (lower.startsWith('sentinel') || lower === 'sen') return 'Sentinels';
+  if (lower.startsWith('leviat')) return 'Leviatán';
+  if (lower.startsWith('team heret') || lower === 'th') return 'Team Heretics';
+  if (lower.startsWith('karmine') || lower === 'kc') return 'Karmine Corp';
+  if (lower.startsWith('fnatic') || lower === 'fnc') return 'Fnatic';
+  
+  if (lower.startsWith('funplus') || lower === 'fpx') return 'FunPlus Phoenix';
+  if (lower.startsWith('trace') || lower === 'te') return 'Trace Esports';
+  if (lower.startsWith('bilibili') || lower === 'blg') return 'Bilibili Gaming';
+  
+  if (lower.startsWith('zeta') || lower.startsWith('zeta d')) return 'ZETA DIVISION';
+  if (lower.startsWith('detonation') || lower.startsWith('dfm') || lower.startsWith('detonati')) return 'DetonatioN FocusMe';
+  if (lower.startsWith('global') || lower.startsWith('ge')) return 'Global Esports';
+  
+  if (lower.startsWith('furia')) return 'FURIA Esports';
+  
+  if (lower.startsWith('fut') || lower === 'fut') return 'FUT Esports';
+  if (lower.startsWith('vitali') || lower.startsWith('team vit')) return 'Team Vitality';
+  if (lower.startsWith('bbl') || lower === 'bbl') return 'BBL Esports';
+  
+  if (lower.startsWith('xlg')) return 'XLG Esports';
+  if (lower.startsWith('dragon') || lower.startsWith('drg')) return 'Dragon Ranger Gaming';
+  
+  return clean;
+}
+
+function getTeamSearchName(name) {
+  if (!name) return '';
+  const lower = name.trim().toLowerCase();
+  
+  if (lower.startsWith('100 th') || lower.includes('100t')) return '100T';
+  if (lower.startsWith('nongshim') || lower.includes('redforce') || lower.includes('redfor')) return 'Nongshim RedForce';
+  if (lower.startsWith('paper r') || lower === 'prx') return 'PRX';
+  if (lower.startsWith('edward') || lower === 'edg') return 'EDG';
+  if (lower.startsWith('gen.g') || lower === 'geng') return 'GEN';
+  if (lower.startsWith('sentinel') || lower === 'sen') return 'SEN';
+  if (lower.startsWith('leviat')) return 'LEV';
+  if (lower.startsWith('team heret') || lower === 'th') return 'TH';
+  if (lower.startsWith('karmine') || lower === 'kc') return 'KC';
+  if (lower.startsWith('fnatic') || lower === 'fnc') return 'FNC';
+  if (lower.startsWith('drx')) return 'DRX';
+  if (lower.startsWith('zeta') || lower.startsWith('zeta d')) return 'ZETA';
+  if (lower.startsWith('detonation') || lower.startsWith('dfm')) return 'DFM';
+  if (lower.startsWith('global') || lower.startsWith('ge')) return 'GE';
+  if (lower.startsWith('furia') || lower === 'fur') return 'FUR';
+  if (lower.startsWith('fut') || lower === 'fut') return 'FUT';
+  if (lower.startsWith('vitali') || lower === 'vit') return 'VIT';
+  if (lower.startsWith('bbl') || lower === 'bbl') return 'BBL';
+  if (lower.startsWith('xlg')) return 'XLG';
+  if (lower.startsWith('dragon') || lower.startsWith('drg')) return 'DRG';
+  if (lower.startsWith('kru') || lower === 'kru') return 'KRU';
+  if (lower === 'loud') return 'LOUD';
+  if (lower === 'mibr') return 'MIBR';
+  
+  return name.trim();
+}
+
 function getPlayerList(match) {
   if (!match) return [];
   if (Array.isArray(match.players)) return match.players;
@@ -7260,8 +7327,10 @@ function toggleTiers() {
 
 function getEspHTML(m, type) {
   const teams = m.match?.teams || [];
-  const t1 = teams[0]?.name || 'TBD';
-  const t2 = teams[1]?.name || 'TBD';
+  const rawT1 = teams[0]?.name || 'TBD';
+  const rawT2 = teams[1]?.name || 'TBD';
+  const t1 = expandTeamName(rawT1);
+  const t2 = expandTeamName(rawT2);
   const s1 = teams[0]?.game_wins || '0';
   const s2 = teams[1]?.game_wins || '0';
   const w1 = teams[0]?.has_won ? 'winner' : '';
@@ -7334,7 +7403,7 @@ function getEspHTML(m, type) {
         cleanEvent = 'VCT China';
       }
       
-      const searchQ = `${cleanEvent} ${t1} vs ${t2} highlights ${datePart}`.trim();
+      const searchQ = `${cleanEvent} ${getTeamSearchName(t1)} vs ${getTeamSearchName(t2)} highlights ${datePart}`.trim();
       mediaBtn = `<a href="https://www.youtube.com/results?search_query=${encodeURIComponent(searchQ)}" target="_blank" class="esp-btn vod">📺 View Highlights</a>`;
     }
   } else {
