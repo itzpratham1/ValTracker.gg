@@ -981,7 +981,7 @@ def parse_vlr_time(date_str, time_str):
     if time_str == "TBD" or not time_str:
         return f"{date_str} {time_str}"
     try:
-        import datetime
+        import datetime, time
         now = datetime.datetime.now()
         
         time_clean = time_str.replace(" ET", "").strip()
@@ -999,7 +999,13 @@ def parse_vlr_time(date_str, time_str):
             clean_date = date_str.split(',')[1].strip() if ',' in date_str else date_str.strip()
             date_clean = f"{clean_date}, {now.year}"
             
-        return f"{date_clean} {time_clean} EDT"
+        offset_sec = -time.timezone if (time.localtime().tm_isdst == 0) else -time.altzone
+        offset_hours = int(offset_sec // 3600)
+        offset_mins = int((abs(offset_sec) % 3600) // 60)
+        sign = '+' if offset_sec >= 0 else '-'
+        tz_str = f"{sign}{abs(offset_hours):02d}{offset_mins:02d}"
+            
+        return f"{date_clean} {time_clean} {tz_str}"
     except Exception as e:
         return f"{date_str} {time_str}"
 
