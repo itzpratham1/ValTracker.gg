@@ -663,6 +663,22 @@ def live_match(region, name, tag):
         "message": "No active match found."
     })
 
+@app.route("/api/image")
+@rate_limit(requests_per_minute=300)
+def proxy_image():
+    url = request.args.get("url")
+    if not url:
+        return "No url provided", 400
+    try:
+        import io
+        r = requests.get(url, headers={'User-Agent': 'Mozilla/5.0', 'Referer': 'https://www.vlr.gg/'})
+        return send_file(
+            io.BytesIO(r.content),
+            mimetype=r.headers.get('Content-Type', 'image/png')
+        )
+    except Exception as e:
+        return str(e), 500
+
 @app.route("/api/<path:subpath>", methods=["GET", "POST"])
 @rate_limit(requests_per_minute=120)
 def proxy_api(subpath):
@@ -981,7 +997,7 @@ def parse_vlr_time(date_str, time_str):
     if time_str == "TBD" or not time_str:
         return f"{date_str} {time_str}"
     try:
-        import datetime, time
+        import datetime
         now = datetime.datetime.now()
         
         time_clean = time_str.replace(" ET", "").strip()
@@ -999,13 +1015,8 @@ def parse_vlr_time(date_str, time_str):
             clean_date = date_str.split(',')[1].strip() if ',' in date_str else date_str.strip()
             date_clean = f"{clean_date}, {now.year}"
             
-        offset_sec = -time.timezone if (time.localtime().tm_isdst == 0) else -time.altzone
-        offset_hours = int(offset_sec // 3600)
-        offset_mins = int((abs(offset_sec) % 3600) // 60)
-        sign = '+' if offset_sec >= 0 else '-'
-        tz_str = f"{sign}{abs(offset_hours):02d}{offset_mins:02d}"
-            
-        return f"{date_clean} {time_clean} {tz_str}"
+        # Just return the raw local time, JS will parse it as local time
+        return f"{date_clean} {time_clean}"
     except Exception as e:
         return f"{date_str} {time_str}"
 
