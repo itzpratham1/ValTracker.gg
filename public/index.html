@@ -8280,7 +8280,7 @@ function openSkinModal(uuid) {
       const title = chroma.displayName.includes('\n') ? chroma.displayName.replace('\n', ' ') : chroma.displayName;
       
       const badge = document.createElement('div');
-      badge.className = 'player-card';
+      badge.className = 'skin-chroma-card';
       badge.style = `cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; padding:6px 12px; border:1px solid rgba(255,255,255,0.08); border-radius:18px; font-size:10px; font-family:'DM Mono',monospace; font-weight:800; background:rgba(255,255,255,0.02); transition:var(--transition); ${activeStyle}`;
       badge.innerHTML = `
         <img src="${chroma.displayIcon || s.displayIcon}" style="width:28px; height:14px; object-fit:contain; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));" />
@@ -8288,7 +8288,7 @@ function openSkinModal(uuid) {
       `;
       badge.onclick = () => {
         // Toggle active border
-        chromasContainer.querySelectorAll('.player-card').forEach(b => b.style.borderColor = 'rgba(255,255,255,0.08)');
+        chromasContainer.querySelectorAll('.skin-chroma-card').forEach(b => b.style.borderColor = 'rgba(255,255,255,0.08)');
         badge.style.borderColor = 'var(--accent)';
         largeImg.style.transform = 'scale(0.85)';
         largeImg.style.opacity = '0';
@@ -8321,8 +8321,8 @@ function openSkinModal(uuid) {
       const cursorStyle = isPlayable ? 'cursor:pointer;' : 'cursor:default;';
       const levelItem = document.createElement('div');
       
-      levelItem.className = 'player-card';
-      levelItem.style = `padding:10px 14px; display:flex; align-items:center; justify-content:space-between; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.05); border-radius:6px; font-size:11px; ${cursorStyle} ${borderHoverStyle} transition:var(--transition);`;
+      levelItem.className = 'skin-level-card';
+      levelItem.style = `padding:10px 14px; display:flex; align-items:center; justify-content:space-between; background:rgba(255,255,255,0.015); border:1px solid rgba(255,255,255,0.05); border-radius:6px; font-size:11px; ${cursorStyle} ${borderHoverStyle} transition:var(--transition);`;
       
       // Clean up level name
       let displayName = level.displayName || `Level ${idx+1}`;
@@ -8523,6 +8523,42 @@ input:checked + .slider:before { transform:translateX(14px); background-color:#f
 .tier-badge { display:inline-block; padding:2px 6px; border-radius:4px; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-right:6px; vertical-align:middle; }
 .tier-badge.t1 { background:rgba(232,255,71,0.15); color:#e8ff47; border:1px solid rgba(232,255,71,0.3); }
 .tier-badge.t2 { background:rgba(255,255,255,0.1); color:var(--muted); border:1px solid var(--border); }
+
+/* ── SKIN EXPLORER CARD OVERRIDES ── */
+.skin-level-card {
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  font-size: 11px;
+  transition: var(--transition);
+  width: 100%;
+}
+.skin-level-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+.skin-chroma-card {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  font-size: 10px;
+  font-family: 'DM Mono', monospace;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.02);
+  transition: var(--transition);
+}
+.skin-chroma-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
 </style>
 <div class="glass-orb-2"></div>
 <!-- SESSION SUMMARY MODAL -->
