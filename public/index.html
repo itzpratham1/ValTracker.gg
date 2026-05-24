@@ -88,6 +88,8 @@
       <div class="topbar-tab active" id="tab-tracker" onclick="toggleMainView('tracker')">Tracker</div>
       <div class="topbar-tab" id="tab-esports" onclick="toggleMainView('esports')">Esports</div>
       <div class="topbar-tab" id="tab-store" onclick="toggleMainView('store')">Skins Store</div>
+      <div class="topbar-tab" id="tab-lineups" onclick="toggleMainView('lineups')">Lineups</div>
+      <div class="topbar-tab" id="tab-crosshairs" onclick="toggleMainView('crosshairs')">Crosshairs</div>
     </div>
     
     <div class="topbar-divider" id="tracker-divider-1"></div>
@@ -698,6 +700,219 @@
       <!-- Participating Teams -->
       <h4 id="vct-modal-teams-title" style="font-family:'Barlow Condensed', sans-serif; font-size:14px; text-transform:uppercase; color:#fff; margin-bottom:12px; letter-spacing:0.5px; display:flex; align-items:center; gap:6px;">👥 Participating Teams</h4>
       <div id="vct-modal-teams" class="player-card-grid" style="grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px;"></div>
+<!-- LINEUPS VIEW CONTAINER -->
+<div id="lineups-view" style="display:none; padding: 24px; max-width: 1400px; margin: 0 auto;">
+  <!-- Header Banner -->
+  <div style="background: linear-gradient(135deg, rgba(77, 159, 255, 0.12) 0%, rgba(20, 20, 22, 0.45) 100%); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 8px;">
+    <h2 style="font-family:'Barlow Condensed',sans-serif; font-size: 32px; font-weight: 900; text-transform: uppercase; color: #fff; letter-spacing: 1.5px; margin: 0;">Interactive Agent Lineup Explorer</h2>
+    <p style="font-size: 13px; color: var(--muted); margin: 0; max-width: 750px;">Select a map, setup agent, and ability to load an interactive tactical mini-map. Click on map pins to reveal step-by-step positions, landmarks, and looping high-definition previews of landings.</p>
+  </div>
+
+  <!-- Filters Row -->
+  <div style="display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap;">
+    <div style="display: flex; flex-direction: column; gap: 6px; min-width: 180px;">
+      <label style="font-family:'Barlow Condensed',sans-serif; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--muted);">🗺️ Select Map</label>
+      <select id="lineup-map-select" onchange="updateAgentDropdownForSelectedMap()" style="background: rgba(20,20,22,0.8); border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-family:'Barlow Condensed',sans-serif; color: #fff; font-size: 14px; font-weight: 700; width: 100%; outline: none; cursor: pointer;"></select>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px; min-width: 180px;">
+      <label style="font-family:'Barlow Condensed',sans-serif; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--muted);">👤 Select Agent</label>
+      <select id="lineup-agent-select" onchange="loadLineupMapData()" style="background: rgba(20,20,22,0.8); border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-family:'Barlow Condensed',sans-serif; color: #fff; font-size: 14px; font-weight: 700; width: 100%; outline: none; cursor: pointer;"></select>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px; min-width: 180px;">
+      <label style="font-family:'Barlow Condensed',sans-serif; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--muted);">⚡ Ability Filter</label>
+      <select id="lineup-ability-select" onchange="filterLineupPins()" style="background: rgba(20,20,22,0.8); border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-family:'Barlow Condensed',sans-serif; color: #fff; font-size: 14px; font-weight: 700; width: 100%; outline: none; cursor: pointer;">
+        <option value="all">All Abilities</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Main Split Layout -->
+  <div style="display: grid; grid-template-columns: 1fr 340px; gap: 28px;" class="lineup-layout-grid">
+    <!-- LEFT: Interactive Map Canvas -->
+    <div style="position: relative; border: 1px solid var(--border); border-radius: 12px; background: rgba(0,0,0,0.4); padding: 20px; display: flex; align-items: center; justify-content: center; min-height: 500px; overflow: hidden; box-shadow: inset 0 0 40px rgba(0,0,0,0.6);" class="card">
+      <div id="lineup-map-container" style="position: relative; width: 100%; max-width: 500px; aspect-ratio: 1/1;">
+        <img id="lineup-map-img" src="" alt="Valorant Map" style="width: 100%; height: 100%; object-fit: contain; opacity: 0.85; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.5));" />
+        <div id="lineup-map-pins-overlay" style="position: absolute; inset: 0; pointer-events: none;"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Details Drawer Panel -->
+    <div id="lineup-detail-drawer" style="display: flex; flex-direction: column; gap: 20px;">
+      <div class="card" style="padding: 20px; border-radius: 12px; background: rgba(20, 20, 22, 0.55); border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 350px; text-align: center; color: var(--muted);" id="lineup-drawer-placeholder">
+        <span style="font-size: 32px; margin-bottom: 12px;">📍</span>
+        <div style="font-family:'Barlow Condensed',sans-serif; font-weight: 900; font-size: 15px; text-transform: uppercase; color: #fff; letter-spacing: 0.5px;">No Lineup Selected</div>
+        <div style="font-size: 11px; font-family:'DM Mono',monospace; max-width: 220px; margin-top: 6px;">Tap any glowing ability coordinate pin on the mini-map to unlock deep strategic instructions.</div>
+      </div>
+      
+      <!-- Actual Content Drawer Card -->
+      <div class="card" style="display: none; padding: 20px; border-radius: 12px; background: rgba(20, 20, 22, 0.55); border: 1px solid var(--border); flex-direction: column; gap: 16px;" id="lineup-drawer-content">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="font-family:'Barlow Condensed',sans-serif; font-weight: 900; font-size: 16px; text-transform: uppercase; color: #fff;" id="ld-title">Title</div>
+          <span id="ld-badge" class="tier-badge t1">ATTACK</span>
+        </div>
+        <p style="font-size: 11px; color: var(--muted); margin: 0; line-height: 1.4;" id="ld-desc">Description</p>
+        
+        <div style="display: flex; flex-direction: column; gap: 12px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;">
+          <!-- Step 1 -->
+          <div>
+            <div style="font-family:'DM Mono',monospace; font-size: 10px; font-weight: 800; color: var(--accent); margin-bottom: 4px;">STEP 1: WHERE TO STAND</div>
+            <div style="font-size: 11px; color: #fff; margin-bottom: 6px; line-height: 1.3;" id="ld-stand-desc">Stand position...</div>
+            <div style="width: 100%; height: 100px; background: #000; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); cursor: pointer;" onclick="openExpandedImg(this.firstElementChild.src)">
+              <img id="ld-stand-img" src="" style="width: 100%; height: 100%; object-fit: cover;" />
+            </div>
+          </div>
+          <!-- Step 2 -->
+          <div>
+            <div style="font-family:'DM Mono',monospace; font-size: 10px; font-weight: 800; color: var(--accent); margin-bottom: 4px;">STEP 2: WHERE TO AIM</div>
+            <div style="font-size: 11px; color: #fff; margin-bottom: 6px; line-height: 1.3;" id="ld-aim-desc">Aim position...</div>
+            <div style="width: 100%; height: 100px; background: #000; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); cursor: pointer;" onclick="openExpandedImg(this.firstElementChild.src)">
+              <img id="ld-aim-img" src="" style="width: 100%; height: 100%; object-fit: cover;" />
+            </div>
+          </div>
+        </div>
+
+        <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;">
+          <div style="font-family:'DM Mono',monospace; font-size: 10px; font-weight: 800; color: var(--win); margin-bottom: 6px;">⚡ CHARGE / BOUNCE RULE</div>
+          <div style="font-family:'Barlow Condensed',sans-serif; font-weight: 800; font-size: 13px; color: #ffb700; text-transform: uppercase;" id="ld-charge">2 Bars, 0 Bounce</div>
+        </div>
+
+        <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px; display: flex; flex-direction: column; gap: 6px;" id="ld-video-wrap">
+          <div style="font-family:'DM Mono',monospace; font-size: 10px; font-weight: 800; color: var(--muted); margin-bottom: 4px;">📺 LANDING TRAJECTORY DEMO</div>
+          <div style="width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 6px; overflow: hidden; border: 1px solid var(--border);">
+            <video id="ld-video" src="" autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: contain;"></video>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CROSSHAIRS VIEW CONTAINER -->
+<div id="crosshairs-view" style="display:none; padding: 24px; max-width: 1400px; margin: 0 auto;">
+  <!-- Header Banner -->
+  <div style="background: linear-gradient(135deg, rgba(179, 102, 255, 0.12) 0%, rgba(20, 20, 22, 0.45) 100%); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 8px;">
+    <h2 style="font-family:'Barlow Condensed',sans-serif; font-size: 32px; font-weight: 900; text-transform: uppercase; color: #fff; letter-spacing: 1.5px; margin: 0;">Interactive Crosshair Designer & Presets</h2>
+    <p style="font-size: 13px; color: var(--muted); margin: 0; max-width: 750px;">Choose a pre-configured VCT pro crosshair preset or customize your own using real-time sliders. Copy the official Riot Import Code instantly to import your crosshair directly in-game, or import any code to visualize it.</p>
+  </div>
+
+  <!-- Main Split Layout -->
+  <div style="display: grid; grid-template-columns: 1fr 360px; gap: 28px;" class="crosshair-layout-grid">
+    <!-- LEFT: Visual Preview and Pro Presets -->
+    <div style="display: flex; flex-direction: column; gap: 24px;">
+      <!-- The Live Preview Target Card -->
+      <div style="position: relative; border: 1px solid var(--border); border-radius: 12px; background: rgba(0,0,0,0.6); min-height: 380px; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: inset 0 0 50px rgba(0,0,0,0.85);" class="card">
+        <!-- Target BG image -->
+        <img id="crosshair-preview-bg" src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1000" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.65; pointer-events: none;" />
+        
+        <!-- Interactive crosshair overlay container -->
+        <div id="crosshair-canvas-overlay" style="position: absolute; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center;"></div>
+        
+        <div style="position: absolute; bottom: 12px; left: 12px; display: flex; gap: 8px;">
+          <button onclick="changeCrosshairPreviewBg('ascent')" class="esp-btn vod" style="font-size: 9px; padding: 4px 8px;">Ascent A</button>
+          <button onclick="changeCrosshairPreviewBg('bind')" class="esp-btn vod" style="font-size: 9px; padding: 4px 8px;">Bind B</button>
+          <button onclick="changeCrosshairPreviewBg('grid')" class="esp-btn vod" style="font-size: 9px; padding: 4px 8px;">Grey Grid</button>
+        </div>
+      </div>
+
+      <!-- Pro Presets List -->
+      <div>
+        <div class="section-label visible" style="margin-bottom: 12px;">
+          <span class="sl-text">⭐️ Popular VCT Pro Crosshair Presets</span>
+          <div class="sl-line"></div>
+        </div>
+        <div id="crosshairs-pro-presets" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px;">
+          <!-- Loaded dynamically via JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Controller Adjustments -->
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+      <div class="card" style="padding: 20px; border-radius: 12px; background: rgba(20, 20, 22, 0.55); border: 1px solid var(--border); display: flex; flex-direction: column; gap: 16px;">
+        <!-- Code Import Box -->
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <label style="font-family:'Barlow Condensed',sans-serif; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--muted);">📥 Paste Riot Crosshair Code</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="crosshair-code-input" placeholder="0;s;1;P;c;5;h;0;m;1;0l;4;0v;4;..." style="flex: 1; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; font-family:'DM Mono',monospace; color: #fff; font-size: 11px; outline: none;" />
+            <button onclick="importRiotCrosshairCode()" class="esp-btn live" style="padding: 8px 12px;">Import</button>
+          </div>
+        </div>
+
+        <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px;" class="crosshair-sliders-container">
+          <div style="font-family:'Barlow Condensed',sans-serif; font-weight: 900; font-size: 14px; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; letter-spacing: 0.5px;">⚙️ Customizer Controls</div>
+          
+          <!-- Color Dropdown -->
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <span style="font-size: 12px; color: #fff; font-family:'Barlow Condensed',sans-serif; font-weight:700;">CROSSHAIR COLOR</span>
+            <select id="ch-color-select" onchange="updateCrosshairFromSliders()" style="background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 4px; padding: 4px 8px; font-family:'Barlow Condensed',sans-serif; color: #fff; font-size: 11px; outline: none; cursor: pointer;">
+              <option value="5">Cyan (Teal)</option>
+              <option value="1">Green</option>
+              <option value="2">Yellow</option>
+              <option value="4">Red</option>
+              <option value="0">White</option>
+              <option value="6">Pink</option>
+              <option value="3">Blue</option>
+            </select>
+          </div>
+
+          <!-- Outlines Checkbox -->
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <span style="font-size: 12px; color: #fff; font-family:'Barlow Condensed',sans-serif; font-weight:700;">OUTLINES</span>
+            <input type="checkbox" id="ch-outlines-check" onchange="updateCrosshairFromSliders()" style="cursor: pointer;" checked />
+          </div>
+
+          <!-- Center Dot Checkbox -->
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+            <span style="font-size: 12px; color: #fff; font-family:'Barlow Condensed',sans-serif; font-weight:700;">CENTER DOT</span>
+            <input type="checkbox" id="ch-center-dot-check" onchange="updateCrosshairFromSliders()" style="cursor: pointer;" />
+          </div>
+
+          <!-- Slider Inner Line Opacity -->
+          <div style="margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; font-size: 10px; font-family:'DM Mono',monospace; color: var(--muted); margin-bottom: 4px;">
+              <span>INNER LINE OPACITY</span>
+              <span id="val-ch-inner-opacity">1.0</span>
+            </div>
+            <input type="range" id="ch-inner-opacity" min="0" max="1" step="0.1" value="1.0" oninput="updateCrosshairFromSliders()" style="width: 100%; accent-color: var(--accent);" />
+          </div>
+
+          <!-- Slider Inner Line Length -->
+          <div style="margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; font-size: 10px; font-family:'DM Mono',monospace; color: var(--muted); margin-bottom: 4px;">
+              <span>INNER LINE LENGTH</span>
+              <span id="val-ch-inner-length">4</span>
+            </div>
+            <input type="range" id="ch-inner-length" min="0" max="16" step="1" value="4" oninput="updateCrosshairFromSliders()" style="width: 100%; accent-color: var(--accent);" />
+          </div>
+
+          <!-- Slider Inner Line Thickness -->
+          <div style="margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; font-size: 10px; font-family:'DM Mono',monospace; color: var(--muted); margin-bottom: 4px;">
+              <span>INNER LINE THICKNESS</span>
+              <span id="val-ch-inner-thickness">2</span>
+            </div>
+            <input type="range" id="ch-inner-thickness" min="0" max="10" step="1" value="2" oninput="updateCrosshairFromSliders()" style="width: 100%; accent-color: var(--accent);" />
+          </div>
+
+          <!-- Slider Inner Line Offset -->
+          <div style="margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; font-size: 10px; font-family:'DM Mono',monospace; color: var(--muted); margin-bottom: 4px;">
+              <span>INNER LINE OFFSET</span>
+              <span id="val-ch-inner-offset">2</span>
+            </div>
+            <input type="range" id="ch-inner-offset" min="0" max="20" step="1" value="2" oninput="updateCrosshairFromSliders()" style="width: 100%; accent-color: var(--accent);" />
+          </div>
+        </div>
+
+        <!-- Compiled Code Box -->
+        <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; display: flex; flex-direction: column; gap: 8px;">
+          <label style="font-family:'Barlow Condensed',sans-serif; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--muted);">📤 Compiled Riot Code</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="crosshair-compiled-output" style="flex: 1; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; font-family:'DM Mono',monospace; color: #ffb700; font-size: 10px; outline: none;" readonly value="0;s;1;P;c;5;h;0;m;1;0l;4;0v;4;0o;2;0a;1;0f;0;1b;0" />
+            <button onclick="copyCompiledCrosshairCode()" class="esp-btn vod" style="padding: 8px 12px;">Copy</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -6839,10 +7054,15 @@ function toggleMainView(view) {
   const targetTab = document.getElementById('tab-' + view);
   if (targetTab) targetTab.classList.add('active');
   
+  // Hide all views first
+  document.getElementById('tracker-view').style.display = 'none';
+  document.getElementById('esports-view').style.display = 'none';
+  document.getElementById('store-view').style.display = 'none';
+  document.getElementById('lineups-view').style.display = 'none';
+  document.getElementById('crosshairs-view').style.display = 'none';
+  
   if (view === 'tracker') {
     document.getElementById('tracker-view').style.display = 'block';
-    document.getElementById('esports-view').style.display = 'none';
-    document.getElementById('store-view').style.display = 'none';
     document.querySelector('.player-search-wrap').style.display = 'flex';
     document.getElementById('fetch-btn').style.display = 'inline-block';
     const h2hb = document.getElementById('h2h-trigger-btn');
@@ -6851,9 +7071,7 @@ function toggleMainView(view) {
     if(esportsCountdownInterval) clearInterval(esportsCountdownInterval);
     dismissLanding();
   } else if (view === 'esports') {
-    document.getElementById('tracker-view').style.display = 'none';
     document.getElementById('esports-view').style.display = 'block';
-    document.getElementById('store-view').style.display = 'none';
     document.querySelector('.player-search-wrap').style.display = 'none';
     document.getElementById('fetch-btn').style.display = 'none';
     const h2hb = document.getElementById('h2h-trigger-btn');
@@ -6862,8 +7080,6 @@ function toggleMainView(view) {
     const activeTab = document.querySelector('.esports-pill.active').textContent.toLowerCase();
     switchEsportsTab(activeTab);
   } else if (view === 'store') {
-    document.getElementById('tracker-view').style.display = 'none';
-    document.getElementById('esports-view').style.display = 'none';
     document.getElementById('store-view').style.display = 'block';
     document.querySelector('.player-search-wrap').style.display = 'none';
     document.getElementById('fetch-btn').style.display = 'none';
@@ -6873,6 +7089,26 @@ function toggleMainView(view) {
     if(esportsLiveInterval) clearInterval(esportsLiveInterval);
     if(esportsCountdownInterval) clearInterval(esportsCountdownInterval);
     initStoreView();
+  } else if (view === 'lineups') {
+    document.getElementById('lineups-view').style.display = 'block';
+    document.querySelector('.player-search-wrap').style.display = 'none';
+    document.getElementById('fetch-btn').style.display = 'none';
+    const h2hb = document.getElementById('h2h-trigger-btn');
+    if (h2hb) h2hb.style.display = 'none';
+    
+    if(esportsLiveInterval) clearInterval(esportsLiveInterval);
+    if(esportsCountdownInterval) clearInterval(esportsCountdownInterval);
+    initLineupsView();
+  } else if (view === 'crosshairs') {
+    document.getElementById('crosshairs-view').style.display = 'block';
+    document.querySelector('.player-search-wrap').style.display = 'none';
+    document.getElementById('fetch-btn').style.display = 'none';
+    const h2hb = document.getElementById('h2h-trigger-btn');
+    if (h2hb) h2hb.style.display = 'none';
+    
+    if(esportsLiveInterval) clearInterval(esportsLiveInterval);
+    if(esportsCountdownInterval) clearInterval(esportsCountdownInterval);
+    initCrosshairsView();
   }
 }
 
@@ -8366,6 +8602,575 @@ function closeSkinModal() {
   }
 }
 
+// --- INTERACTIVE LINEUPS EXPLORER & CROSSHAIR CUSTOMIZER LOGIC ---
+const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
+
+let lineupsData = null;
+
+async function initLineupsView() {
+  const mapSelect = document.getElementById('lineup-map-select');
+  const agentSelect = document.getElementById('lineup-agent-select');
+  
+  if (!lineupsData) {
+    try {
+      const res = await fetch('/lineups.json');
+      lineupsData = await res.json();
+    } catch (err) {
+      try {
+        const res2 = await fetch('lineups.json');
+        lineupsData = await res2.json();
+      } catch (err2) {
+        console.error("Failed to load lineups.json:", err2);
+        showToast("Error loading lineups database!");
+        return;
+      }
+    }
+  }
+  
+  if (lineupsData) {
+    // Populate maps select dynamically
+    const maps = Object.keys(lineupsData);
+    mapSelect.innerHTML = '';
+    maps.forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m;
+      opt.textContent = capitalize(m);
+      mapSelect.appendChild(opt);
+    });
+    
+    // Populate agents select dynamically based on the default map
+    updateAgentDropdownForSelectedMap();
+  }
+}
+
+function updateAgentDropdownForSelectedMap() {
+  const mapSelect = document.getElementById('lineup-map-select');
+  const agentSelect = document.getElementById('lineup-agent-select');
+  const selectedMap = mapSelect.value;
+  
+  if (!lineupsData || !lineupsData[selectedMap]) {
+    agentSelect.innerHTML = '<option value="">No Agents Available</option>';
+    return;
+  }
+  
+  const agents = Object.keys(lineupsData[selectedMap]);
+  agentSelect.innerHTML = '';
+  agents.forEach(a => {
+    const opt = document.createElement('option');
+    opt.value = a;
+    opt.textContent = capitalize(a);
+    agentSelect.appendChild(opt);
+  });
+  
+  loadLineupMapData();
+}
+
+function loadLineupMapData() {
+  const mapSelect = document.getElementById('lineup-map-select');
+  const agentSelect = document.getElementById('lineup-agent-select');
+  const abilitySelect = document.getElementById('lineup-ability-select');
+  
+  const selectedMap = mapSelect.value;
+  const selectedAgent = agentSelect.value;
+  
+  const mapImg = document.getElementById('lineup-map-img');
+  
+  // High quality Valorant minimaps from valorant-api
+  const mapImages = {
+    "ascent": "https://media.valorant-api.com/maps/7eae253f-414f-ab70-a155-949b2b2ec290/displayicon.png",
+    "bind": "https://media.valorant-api.com/maps/2c91b6c9-4f1b-a52e-3214-ef73aa99f1a8/displayicon.png",
+    "haven": "https://media.valorant-api.com/maps/2bee0dc9-40ae-5283-a3d1-7a5d925d4db5/displayicon.png",
+    "split": "https://media.valorant-api.com/maps/d9661555-4366-03b3-20ef-6f5e274a27fc/displayicon.png",
+    "breeze": "https://media.valorant-api.com/maps/2fb9b465-493c-8896-1c28-91b2dae6a218/displayicon.png",
+    "sunset": "https://media.valorant-api.com/maps/92fb14ab-4959-d891-4541-401f5c61386d/displayicon.png",
+    "lotus": "https://media.valorant-api.com/maps/2fe4ed3a-450a-948b-724d-4e94098c433c/displayicon.png",
+    "icebox": "https://media.valorant-api.com/maps/e2ad38c8-40f4-8776-800c-b26f56157f49/displayicon.png",
+    "pearl": "https://media.valorant-api.com/maps/fd2648d4-4cbe-1348-18e3-0d8b39855c74/displayicon.png",
+    "fracture": "https://media.valorant-api.com/maps/b52944c1-4bf6-a590-198e-7dd7a39d33f7/displayicon.png",
+    "abyss": "https://media.valorant-api.com/maps/2240977d-4f74-f170-7c39-10b06b5d4e5e/displayicon.png"
+  };
+  
+  mapImg.src = mapImages[selectedMap] || "https://media.valorant-api.com/maps/7eae253f-414f-ab70-a155-949b2b2ec290/displayicon.png";
+  
+  // Clear drawer state
+  document.getElementById('lineup-drawer-placeholder').style.display = 'flex';
+  document.getElementById('lineup-drawer-content').style.display = 'none';
+  
+  if (!lineupsData || !lineupsData[selectedMap] || !lineupsData[selectedMap][selectedAgent]) {
+    abilitySelect.innerHTML = '<option value="all">All Abilities</option>';
+    renderPins([]);
+    return;
+  }
+  
+  const lineups = lineupsData[selectedMap][selectedAgent];
+  
+  // Extract unique ability names
+  const uniqueAbilities = new Set();
+  lineups.forEach(l => {
+    if (l.title.toLowerCase().includes('recon')) uniqueAbilities.add('Recon Bolt');
+    else if (l.title.toLowerCase().includes('shock')) uniqueAbilities.add('Shock Dart');
+    else if (l.title.toLowerCase().includes('snakebite')) uniqueAbilities.add('Snakebite');
+    else if (l.title.toLowerCase().includes('poison')) uniqueAbilities.add('Poison Cloud');
+    else if (l.title.toLowerCase().includes('nanoswarm')) uniqueAbilities.add('Nanoswarm');
+    else if (l.title.toLowerCase().includes('incendiary') || l.title.toLowerCase().includes('moly')) uniqueAbilities.add('Incendiary');
+    else if (l.title.toLowerCase().includes('mosh')) uniqueAbilities.add('Mosh Pit');
+    else uniqueAbilities.add(capitalize(l.title.split(' ')[0]));
+  });
+  
+  abilitySelect.innerHTML = '<option value="all">All Abilities</option>';
+  uniqueAbilities.forEach(ab => {
+    const opt = document.createElement('option');
+    opt.value = ab;
+    opt.textContent = ab;
+    abilitySelect.appendChild(opt);
+  });
+  
+  renderPins(lineups);
+}
+
+function filterLineupPins() {
+  const mapSelect = document.getElementById('lineup-map-select');
+  const agentSelect = document.getElementById('lineup-agent-select');
+  const abilitySelect = document.getElementById('lineup-ability-select');
+  
+  const selectedMap = mapSelect.value;
+  const selectedAgent = agentSelect.value;
+  const selectedAbility = abilitySelect.value;
+  
+  if (!lineupsData || !lineupsData[selectedMap] || !lineupsData[selectedMap][selectedAgent]) return;
+  
+  let lineups = lineupsData[selectedMap][selectedAgent];
+  if (selectedAbility !== 'all') {
+    lineups = lineups.filter(l => {
+      const titleLower = l.title.toLowerCase();
+      const abLower = selectedAbility.toLowerCase();
+      if (abLower === 'recon bolt') return titleLower.includes('recon');
+      if (abLower === 'shock dart') return titleLower.includes('shock');
+      if (abLower === 'poison cloud') return titleLower.includes('poison');
+      if (abLower === 'nanoswarm') return titleLower.includes('nanoswarm');
+      if (abLower === 'incendiary') return (titleLower.includes('incendiary') || titleLower.includes('moly'));
+      if (abLower === 'mosh pit') return titleLower.includes('mosh');
+      return titleLower.includes(abLower);
+    });
+  }
+  
+  renderPins(lineups);
+}
+
+function renderPins(lineupsList) {
+  const container = document.getElementById('lineup-map-pins-overlay');
+  container.innerHTML = '';
+  
+  lineupsList.forEach(lineup => {
+    const pin = document.createElement('div');
+    pin.className = 'lineup-map-pin';
+    
+    const isAttack = lineup.side === 'attack';
+    const pinColor = isAttack ? '#3ecf8e' : '#ff4444';
+    
+    pin.style = `
+      position: absolute;
+      left: ${lineup.map_coords.x}%;
+      top: ${lineup.map_coords.y}%;
+      width: 22px;
+      height: 22px;
+      background-color: ${pinColor};
+      border: 2px solid #fff;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+      pointer-events: auto;
+      box-shadow: 0 0 10px ${pinColor}, 0 0 20px ${pinColor};
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease-in-out;
+      z-index: 10;
+    `;
+    
+    const pulse = document.createElement('div');
+    pulse.style = `
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: ${pinColor};
+      opacity: 0.6;
+      animation: pin-pulse 1.8s infinite ease-in-out;
+      pointer-events: none;
+      z-index: -1;
+    `;
+    pin.appendChild(pulse);
+    
+    const letter = document.createElement('span');
+    letter.style = "color: #fff; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 900;";
+    letter.textContent = lineup.side.charAt(0).toUpperCase();
+    pin.appendChild(letter);
+    
+    pin.onclick = (e) => {
+      e.stopPropagation();
+      container.querySelectorAll('.lineup-map-pin').forEach(p => {
+        p.style.transform = 'translate(-50%, -50%) scale(1)';
+        p.style.borderColor = '#fff';
+      });
+      pin.style.transform = 'translate(-50%, -50%) scale(1.3)';
+      pin.style.borderColor = 'var(--accent)';
+      selectLineup(lineup);
+    };
+    
+    container.appendChild(pin);
+  });
+}
+
+function selectLineup(lineup) {
+  document.getElementById('lineup-drawer-placeholder').style.display = 'none';
+  document.getElementById('lineup-drawer-content').style.display = 'flex';
+  
+  document.getElementById('ld-title').textContent = lineup.title;
+  
+  const badge = document.getElementById('ld-badge');
+  badge.textContent = lineup.side.toUpperCase();
+  if (lineup.side === 'attack') {
+    badge.className = 'tier-badge t1';
+    badge.style.color = '#e8ff47';
+    badge.style.borderColor = 'rgba(232,255,71,0.3)';
+    badge.style.background = 'rgba(232,255,71,0.15)';
+  } else {
+    badge.className = 'tier-badge t2';
+    badge.style.color = '#ff4444';
+    badge.style.borderColor = 'rgba(255,68,68,0.3)';
+    badge.style.background = 'rgba(255,68,68,0.1)';
+  }
+  
+  document.getElementById('ld-desc').textContent = lineup.description;
+  document.getElementById('ld-stand-desc').textContent = lineup.steps.stand_desc;
+  document.getElementById('ld-stand-img').src = lineup.steps.stand_img;
+  document.getElementById('ld-aim-desc').textContent = lineup.steps.aim_desc;
+  document.getElementById('ld-aim-img').src = lineup.steps.aim_img;
+  document.getElementById('ld-charge').textContent = lineup.steps.charge;
+  
+  const video = document.getElementById('ld-video');
+  const videoWrap = document.getElementById('ld-video-wrap');
+  if (lineup.steps.video_loop) {
+    videoWrap.style.display = 'flex';
+    video.src = lineup.steps.video_loop;
+    video.play().catch(() => {});
+  } else {
+    videoWrap.style.display = 'none';
+    video.src = '';
+  }
+}
+
+function openExpandedImg(src) {
+  let overlay = document.getElementById('lineup-img-modal');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'lineup-img-modal';
+    overlay.style = "display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:10000; align-items:center; justify-content:center; cursor:zoom-out;";
+    overlay.onclick = () => overlay.style.display = 'none';
+    const img = document.createElement('img');
+    img.id = 'lineup-img-modal-src';
+    img.style = "max-width:92%; max-height:92%; border-radius:8px; border:1px solid rgba(255,255,255,0.1); box-shadow:0 8px 32px rgba(0,0,0,0.6); object-fit:contain; transition:transform 0.2s;";
+    overlay.appendChild(img);
+    document.body.appendChild(overlay);
+  }
+  document.getElementById('lineup-img-modal-src').src = src;
+  overlay.style.display = 'flex';
+}
+
+// --- INTERACTIVE CROSSHAIR CUSTOMIZER LOGIC ---
+const PRO_PRESETS = [
+  { name: "TenZ", team: "SEN", code: "0;s;1;P;c;5;h;0;m;1;0l;4;0v;4;0o;2;0a;1;0f;0;1b;0" },
+  { name: "aspas", team: "LEV", code: "0;s;1;P;c;5;h;0;0l;4;0v;4;0o;2;0a;1;0f;0;1b;0" },
+  { name: "Boaster", team: "FNC", code: "0;s;1;P;c;1;h;0;0l;2;0v;2;0o;2;0a;1;0f;0;1b;0" },
+  { name: "Derke", team: "VIT", code: "0;s;1;P;c;2;h;0;0l;2;0v;2;0o;2;0a;1;0f;0;1b;0" },
+  { name: "Yay", team: "DSG", code: "0;s;1;P;h;0;0l;3;0v;3;0o;2;0a;1;0f;0;1b;0" },
+  { name: "Chronicle", team: "FNC", code: "0;s;1;P;c;1;h;0;0l;3;0v;3;0o;4;0a;1;0f;0;1b;0" },
+  { name: "cned", team: "FUT", code: "0;s;1;P;c;5;h;0;0l;1;0v;1;0o;2;0a;1;0f;0;1b;0" },
+  { name: "ScreaM", team: "KC", code: "0;s;1;P;c;5;o;1;d;1;0b;0;1b;0" }
+];
+
+function renderProPresets() {
+  const container = document.getElementById('crosshairs-pro-presets');
+  container.innerHTML = '';
+  
+  PRO_PRESETS.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'card pro-preset-card';
+    card.style = "padding: 10px; border-radius: 8px; background: rgba(20,20,22,0.6); border: 1px solid var(--border); text-align: center; cursor: pointer; transition: var(--transition); display:flex; flex-direction:column; gap:4px;";
+    card.onclick = () => {
+      document.getElementById('crosshair-code-input').value = p.code;
+      importRiotCrosshairCode();
+      showToast(`Loaded ${p.name}'s Crosshair Preset!`);
+    };
+    
+    card.innerHTML = `
+      <div style="font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:14px; color:#fff; text-transform:uppercase;">${p.name}</div>
+      <div style="font-family:'DM Mono',monospace; font-size:9px; color:var(--accent); font-weight:700;">${p.team}</div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function parseRiotCode(code) {
+  const settings = {
+    color: "5",
+    outlines: true,
+    centerDot: false,
+    opacity: 1.0,
+    length: 4,
+    thickness: 2,
+    offset: 2
+  };
+  
+  if (!code || typeof code !== 'string') return settings;
+  
+  const parts = code.split(';');
+  let isPrimary = false;
+  
+  for (let i = 0; i < parts.length; i++) {
+    const key = parts[i];
+    const val = parts[i + 1];
+    
+    if (key === 'P') {
+      isPrimary = true;
+      continue;
+    }
+    
+    if (key === 'c') settings.color = val;
+    if (key === 'h') settings.outlines = (val === '1');
+    if (key === 'd') settings.centerDot = (val === '1');
+    if (key === '0l') settings.length = parseInt(val, 10);
+    if (key === '0t') settings.thickness = parseInt(val, 10);
+    if (key === '0o') settings.offset = parseInt(val, 10);
+    if (key === '0a') settings.opacity = parseFloat(val);
+    
+    if (key === '0b' && val === '0') {
+      settings.length = 0;
+    }
+  }
+  
+  return settings;
+}
+
+function compileRiotCode(settings) {
+  const parts = ['0', 's', '1', 'P'];
+  
+  if (settings.color !== undefined) parts.push('c', settings.color);
+  parts.push('h', settings.outlines ? '1' : '0');
+  parts.push('d', settings.centerDot ? '1' : '0');
+  
+  if (settings.length === 0) {
+    parts.push('0b', '0');
+  } else {
+    parts.push('0l', settings.length.toString());
+    parts.push('0v', settings.length.toString());
+    parts.push('0t', settings.thickness.toString());
+    parts.push('0o', settings.offset.toString());
+    parts.push('0a', settings.opacity.toString());
+  }
+  
+  parts.push('0f', '0');
+  parts.push('1b', '0');
+  
+  return parts.join(';');
+}
+
+function drawCrosshair(settings) {
+  const container = document.getElementById('crosshair-canvas-overlay');
+  container.innerHTML = '';
+  
+  const colors = {
+    "0": "#ffffff",
+    "1": "#00ff00",
+    "2": "#ffff00",
+    "3": "#3b82f6",
+    "4": "#ff4444",
+    "5": "#00ffff",
+    "6": "#ff66cc"
+  };
+  
+  const hexColor = colors[settings.color] || "#00ffff";
+  const opacity = settings.opacity;
+  const length = settings.length;
+  const thickness = settings.thickness;
+  const offset = settings.offset;
+  const outlines = settings.outlines;
+  const centerDot = settings.centerDot;
+  
+  const outlineStyle = outlines ? "outline: 1px solid #000000; box-shadow: inset 0 0 0 1px #000000;" : "";
+  
+  if (centerDot) {
+    const dot = document.createElement('div');
+    dot.style = `
+      position: absolute;
+      width: ${thickness}px;
+      height: ${thickness}px;
+      background-color: ${hexColor};
+      opacity: ${opacity};
+      border-radius: 1px;
+      ${outlineStyle}
+      pointer-events: none;
+      z-index: 2;
+    `;
+    container.appendChild(dot);
+  }
+  
+  if (length > 0 && thickness > 0) {
+    // Left
+    const left = document.createElement('div');
+    left.style = `
+      position: absolute;
+      width: ${length}px;
+      height: ${thickness}px;
+      background-color: ${hexColor};
+      opacity: ${opacity};
+      right: calc(50% + ${offset}px);
+      top: calc(50% - ${thickness / 2}px);
+      ${outlineStyle}
+      pointer-events: none;
+    `;
+    container.appendChild(left);
+    
+    // Right
+    const right = document.createElement('div');
+    right.style = `
+      position: absolute;
+      width: ${length}px;
+      height: ${thickness}px;
+      background-color: ${hexColor};
+      opacity: ${opacity};
+      left: calc(50% + ${offset}px);
+      top: calc(50% - ${thickness / 2}px);
+      ${outlineStyle}
+      pointer-events: none;
+    `;
+    container.appendChild(right);
+    
+    // Top
+    const top = document.createElement('div');
+    top.style = `
+      position: absolute;
+      width: ${thickness}px;
+      height: ${length}px;
+      background-color: ${hexColor};
+      opacity: ${opacity};
+      bottom: calc(50% + ${offset}px);
+      left: calc(50% - ${thickness / 2}px);
+      ${outlineStyle}
+      pointer-events: none;
+    `;
+    container.appendChild(top);
+    
+    // Bottom
+    const bottom = document.createElement('div');
+    bottom.style = `
+      position: absolute;
+      width: ${thickness}px;
+      height: ${length}px;
+      background-color: ${hexColor};
+      opacity: ${opacity};
+      top: calc(50% + ${offset}px);
+      left: calc(50% - ${thickness / 2}px);
+      ${outlineStyle}
+      pointer-events: none;
+    `;
+    container.appendChild(bottom);
+  }
+}
+
+function initCrosshairsView() {
+  renderProPresets();
+  const defaultCode = "0;s;1;P;c;5;h;0;m;1;0l;4;0v;4;0o;2;0a;1;0f;0;1b;0";
+  document.getElementById('crosshair-code-input').value = defaultCode;
+  importRiotCrosshairCode();
+}
+
+function importRiotCrosshairCode() {
+  const codeInput = document.getElementById('crosshair-code-input');
+  const code = codeInput.value.trim() || "0;s;1;P;c;5;h;0;m;1;0l;4;0v;4;0o;2;0a;1;0f;0;1b;0";
+  
+  const settings = parseRiotCode(code);
+  
+  document.getElementById('ch-color-select').value = settings.color;
+  document.getElementById('ch-outlines-check').checked = settings.outlines;
+  document.getElementById('ch-center-dot-check').checked = settings.centerDot;
+  document.getElementById('ch-inner-opacity').value = settings.opacity;
+  document.getElementById('ch-inner-length').value = settings.length;
+  document.getElementById('ch-inner-thickness').value = settings.thickness;
+  document.getElementById('ch-inner-offset').value = settings.offset;
+  
+  document.getElementById('val-ch-inner-opacity').textContent = settings.opacity.toFixed(1);
+  document.getElementById('val-ch-inner-length').textContent = settings.length;
+  document.getElementById('val-ch-inner-thickness').textContent = settings.thickness;
+  document.getElementById('val-ch-inner-offset').textContent = settings.offset;
+  
+  drawCrosshair(settings);
+  document.getElementById('crosshair-compiled-output').value = code;
+}
+
+function updateCrosshairFromSliders() {
+  const color = document.getElementById('ch-color-select').value;
+  const outlines = document.getElementById('ch-outlines-check').checked;
+  const centerDot = document.getElementById('ch-center-dot-check').checked;
+  const opacity = parseFloat(document.getElementById('ch-inner-opacity').value);
+  const length = parseInt(document.getElementById('ch-inner-length').value, 10);
+  const thickness = parseInt(document.getElementById('ch-inner-thickness').value, 10);
+  const offset = parseInt(document.getElementById('ch-inner-offset').value, 10);
+  
+  document.getElementById('val-ch-inner-opacity').textContent = opacity.toFixed(1);
+  document.getElementById('val-ch-inner-length').textContent = length;
+  document.getElementById('val-ch-inner-thickness').textContent = thickness;
+  document.getElementById('val-ch-inner-offset').textContent = offset;
+  
+  const settings = {
+    color,
+    outlines,
+    centerDot,
+    opacity,
+    length,
+    thickness,
+    offset
+  };
+  
+  drawCrosshair(settings);
+  const code = compileRiotCode(settings);
+  document.getElementById('crosshair-compiled-output').value = code;
+}
+
+function copyCompiledCrosshairCode() {
+  const output = document.getElementById('crosshair-compiled-output');
+  output.select();
+  output.setSelectionRange(0, 99999);
+  
+  try {
+    navigator.clipboard.writeText(output.value);
+    showToast("Copied Crosshair Code to Clipboard!");
+  } catch (err) {
+    showToast("Failed to copy code automatically. Copy manually!");
+  }
+}
+
+function changeCrosshairPreviewBg(bg) {
+  const bgImg = document.getElementById('crosshair-preview-bg');
+  const parent = bgImg.parentElement;
+  
+  if (bg === 'ascent') {
+    bgImg.style.display = 'block';
+    bgImg.src = 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1000';
+    parent.style.background = 'rgba(0,0,0,0.6)';
+  } else if (bg === 'bind') {
+    bgImg.style.display = 'block';
+    bgImg.src = 'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1000';
+    parent.style.background = 'rgba(0,0,0,0.6)';
+  } else if (bg === 'grid') {
+    bgImg.style.display = 'none';
+    parent.style.background = '#101014 radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px)';
+    parent.style.backgroundSize = '16px 16px';
+  }
+  showToast(`Switched preview background to ${bg.toUpperCase()}!`);
+}
+
 document.addEventListener('DOMContentLoaded', () => { 
   setTimeout(checkUrlParams, 200); 
   setTimeout(initScrollSpy, 500);
@@ -8558,6 +9363,42 @@ input:checked + .slider:before { transform:translateX(14px); background-color:#f
 }
 .skin-chroma-card:hover {
   background: rgba(255, 255, 255, 0.05);
+}
+
+/* ── LINEUPS & CROSSHAIR CUSTOM STYLES ── */
+.lineup-map-pin:hover {
+  transform: translate(-50%, -50%) scale(1.2) !important;
+  box-shadow: 0 0 15px var(--accent), 0 0 30px var(--accent) !important;
+}
+
+@keyframes pin-pulse {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+.crosshair-preview-canvas {
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(0,0,0,0.3);
+}
+
+.pro-preset-card {
+  transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.pro-preset-card:hover {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 15px rgba(250, 68, 84, 0.25) !important;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 900px) {
+  .lineup-layout-grid, .crosshair-layout-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
 </style>
 <div class="glass-orb-2"></div>
