@@ -7085,6 +7085,13 @@ function toggleMainView(view) {
   const targetTab = document.getElementById('tab-' + view);
   if (targetTab) targetTab.classList.add('active');
   
+  // Hide landing overlay to prevent it from overlaying the active view
+  const landing = document.getElementById('landing');
+  if (landing) {
+    landing.classList.add('hidden');
+    landing.style.display = 'none';
+  }
+  
   // Hide all views first
   document.getElementById('tracker-view').style.display = 'none';
   document.getElementById('esports-view').style.display = 'none';
