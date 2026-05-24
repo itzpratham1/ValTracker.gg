@@ -40,6 +40,14 @@
 | **Export Stats Card** | Export a shareable stats card image |
 | **Share Profile** | Copy a shareable link to a profile |
 
+### Skins Store & Cosmetics
+| Feature | Description |
+|---|---|
+| **Global Featured Bundles** | Live in-game featured store bundles with prices, discount percentages, active countdown timers, and official bundle names dynamically resolved. |
+| **Cosmetics Catalog** | Comprehensive Valorant weapon skins database. Filter by name, weapon category, and content tier (Select, Deluxe, Premium, Ultra, Exclusive). |
+| **Interactive Chroma Swapper** | Swap skin renders in real-time using interactive circular variant color badges. |
+| **Finisher/VFX Previews** | Embedded inline streaming video player that smooth-scrolls directly to playable level upgrade animations (VFX, SFX, custom reload, and finishers). |
+
 ### Esports
 | Feature | Description |
 |---|---|
@@ -47,7 +55,8 @@
 | **Upcoming Matches** | Scheduled VCT matches |
 | **Results** | Completed match results |
 | **Rankings** | Regional team standings (scraped from VLR.gg) |
-| **News** | Latest Valorant esports news (scraped from VLR.gg) |
+| **News** | Latest Valorant esports news (resilient BS4 scraping + public API fallback + cached backup) |
+| **VCT 2026 Season Roadmap** | Interactive season timeline showcasing regional champions, international contenders (Santiago, London, Champions), and CORS-proxied winners logos. |
 
 ### UI/UX
 - Cyberpunk glassmorphism dark theme
@@ -64,14 +73,14 @@
 |---|---|
 | **Backend** | Python 3, Flask 3.1.3 |
 | **Frontend** | Vanilla HTML, CSS, JavaScript (single-page app) |
-| **API Source** | [HenrikDev API](https://docs.henrikdev.xyz) (Valorant data) |
+| **API Sources** | [HenrikDev API](https://docs.henrikdev.xyz) (Valorant stats) & [Valorant-API](https://valorant-api.com) (cosmetics metadata & bundles) |
 | **Esports Data** | HenrikDev esports schedule + VLR.gg scraping (BeautifulSoup4) |
 | **Hosting** | Render (free tier) |
 | **Uptime Monitor** | UptimeRobot (5-min ping to prevent sleep) |
 | **Version Control** | GitHub — `itzpratham1/ValTracker.gg` |
 | **CORS** | Flask-CORS |
 | **Server** | Gunicorn (production), Flask dev server (local) |
-| **Caching** | In-memory server cache (1 min TTL for match data, 2 min for esports, 10 min for news, 1 hr for standings) |
+| **Caching** | Server-side in-memory cache (1 min TTL for match data, 2 min for esports, 10 min for news scraper, 1 hr for standings & store featured bundles) |
 
 ---
 
@@ -104,6 +113,8 @@ v8/
 | `GET` | `/api/esports/upcoming` | Upcoming VCT matches |
 | `GET` | `/api/esports/news` | Latest news scraped from VLR.gg |
 | `GET` | `/api/esports/standings/<region>` | Team rankings scraped from VLR.gg |
+| `GET` | `/api/store/featured` | Current global featured store bundles (caching 1 hr TTL) |
+| `GET` | `/api/image` | Server-side proxy to download and pipe remote assets (bypassing CORS/hotlinks) |
 
 ---
 
@@ -179,6 +190,8 @@ HENRIKDEV_API_KEY = your_api_key_here
 - **In-memory caching**: Prevents hammering the HenrikDev rate limits. Cache resets on server restart (acceptable for free tier).
 - **`overflow-x: clip` on body**: Using `clip` instead of `hidden` ensures `position: sticky` works correctly on mobile Safari/Chrome browsers.
 - **No framework**: Pure Vanilla JS + CSS — zero dependencies on the frontend, loads instantly.
+- **Server-Side Asset Proxying**: Routes external images (such as team logos on VLR.gg) through a `/api/image` endpoint to seamlessly bypass browser-level hotlinking bans and CORS issues.
+- **Credentials-Free Store Explorer**: Decouples daily shop tracking from private in-game credentials by integrating a complete global catalog explorer, safeguarding player authorization tokens.
 
 ---
 
