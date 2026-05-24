@@ -821,10 +821,16 @@
       <!-- Pro Presets List -->
       <div>
         <div class="section-label visible" style="margin-bottom: 12px;">
-          <span class="sl-text">⭐️ Popular VCT Pro Crosshair Presets</span>
+          <span class="sl-text">⭐️ VCT Pro Player Crosshairs Directory</span>
           <div class="sl-line"></div>
         </div>
-        <div id="crosshairs-pro-presets" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px;">
+        
+        <!-- Search bar for pro crosshairs -->
+        <div style="position: relative; margin-bottom: 16px;">
+          <input type="text" id="pro-crosshair-search" placeholder="🔍 Search 40+ pro players (e.g. TenZ, aspas, nAts, f0rsakeN)..." onkeyup="filterProCrosshairs()" style="width: 100%; padding: 11px 16px; border: 1px solid var(--border); border-radius: 8px; background: rgba(0,0,0,0.4); color: #fff; font-size: 13px; outline: none; transition: var(--transition);" />
+        </div>
+
+        <div id="crosshairs-pro-presets" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; max-height: 250px; overflow-y: auto; padding-right: 4px;">
           <!-- Loaded dynamically via JS -->
         </div>
       </div>
@@ -8792,6 +8798,9 @@ function renderPins(lineupsList) {
       z-index: 10;
     `;
     
+    // Interactive mouseover tooltip
+    pin.title = `${lineup.title} (${lineup.side.toUpperCase()})`;
+
     const pulse = document.createElement('div');
     pulse.style = `
       position: absolute;
@@ -8806,9 +8815,18 @@ function renderPins(lineupsList) {
     `;
     pin.appendChild(pulse);
     
+    // Ability-specific tactical letters instead of confusing side letters
+    let abilityChar = '🎯';
+    const titleLower = lineup.title.toLowerCase();
+    if (titleLower.includes('recon')) abilityChar = 'R';
+    else if (titleLower.includes('shock')) abilityChar = 'S';
+    else if (titleLower.includes('snakebite') || titleLower.includes('poison') || titleLower.includes('nanoswarm')) abilityChar = 'S';
+    else if (titleLower.includes('incendiary') || titleLower.includes('moly')) abilityChar = 'I';
+    else if (titleLower.includes('mosh')) abilityChar = 'M';
+    
     const letter = document.createElement('span');
-    letter.style = "color: #fff; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 900;";
-    letter.textContent = lineup.side.charAt(0).toUpperCase();
+    letter.style = "color: #fff; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 900; pointer-events: none;";
+    letter.textContent = abilityChar;
     pin.appendChild(letter);
     
     pin.onclick = (e) => {
@@ -8891,14 +8909,50 @@ const PRO_PRESETS = [
   { name: "Yay", team: "DSG", code: "0;s;1;P;h;0;0l;3;0v;3;0o;2;0a;1;0f;0;1b;0" },
   { name: "Chronicle", team: "FNC", code: "0;s;1;P;c;1;h;0;0l;3;0v;3;0o;4;0a;1;0f;0;1b;0" },
   { name: "cned", team: "FUT", code: "0;s;1;P;c;5;h;0;0l;1;0v;1;0o;2;0a;1;0f;0;1b;0" },
-  { name: "ScreaM", team: "KC", code: "0;s;1;P;c;5;o;1;d;1;0b;0;1b;0" }
+  { name: "ScreaM", team: "KC", code: "0;s;1;P;c;5;o;1;d;1;0b;0;1b;0" },
+  { name: "Jinggg", team: "PRX", code: "0;s;1;P;c;1;h;0;0l;4;0v;4;0o;2;0a;1;0f;0;1b;0" },
+  { name: "f0rsakeN", team: "PRX", code: "0;s;1;P;o;1;d;1;0b;0;1b;0" },
+  { name: "something", team: "PRX", code: "0;s;1;P;c;1;h;0;0l;4;0v;4;0o;2;0a;1;0f;0;1b;0" },
+  { name: "MaKo", team: "DRX", code: "0;s;1;P;c;1;o;1;f;0;0l;4;0v;4;0o;2;0a;1;0f;0;1b;0" },
+  { name: "Stax", team: "T1", code: "0;s;1;P;c;1;h;0;f;0;0l;3;0v;3;0o;2;0a;1;0f;0;1b;0" },
+  { name: "nAts", team: "KC", code: "0;s;1;P;c;1;h;0;0l;2;0v;2;0o;2;0a;1;0f;0;1b;0" },
+  { name: "Leo", team: "FNC", code: "0;s;1;P;h;0;0l;3;0v;4;0o;2;0a;1;0f;0;1b;0" },
+  { name: "Alfajer", team: "FNC", code: "0;s;1;P;c;5;o;1;d;1;0b;0;1b;0" },
+  { name: "Cryocells", team: "100T", code: "0;s;1;P;h;0;0l;3;0v;3;0o;2;0a;1;0f;0;1b;0" },
+  { name: "Asuna", team: "100T", code: "0;s;1;P;o;1;d;1;0b;0;1b;0" },
+  { name: "Bang", team: "100T", code: "0;s;1;P;c;5;h;0;0l;4;0v;4;0o;2;0a;1;0f;0;1b;0" },
+  { name: "Boostio", team: "100T", code: "0;s;1;P;h;0;0l;3;0v;3;0o;2;0a;1;0f;0;1b;0" },
+  { name: "Oxy", team: "C9", code: "0;s;1;P;c;5;h;0;0l;4;0v;4;0o;2;0a;1;0f;0;1b;0" },
+  { name: "Leaf", team: "G2", code: "0;s;1;P;h;0;0l;3;0v;3;0o;2;0a;1;0f;0;1b;0" },
+  { name: "Trent", team: "G2", code: "0;s;1;P;c;1;h;0;0l;3;0v;3;0o;2;0a;1;0f;0;1b;0" },
+  { name: "Valyn", team: "G2", code: "0;s;1;P;h;0;0l;3;0v;3;0o;2;0a;1;0f;0;1b;0" },
+  { name: "Saadhak", team: "LOUD", code: "0;s;1;P;c;1;h;0;0l;4;0v;4;0o;2;0a;1;0f;0;1b;0" },
+  { name: "Less", team: "LOUD", code: "0;s;1;P;c;1;h;0;0l;4;0v;4;0o;2;0a;1;0f;0;1b;0" },
+  { name: "tuyz", team: "LOUD", code: "0;s;1;P;c;1;h;0;0l;4;0v;4;0o;2;0a;1;0f;0;1b;0" },
+  { name: "cauanzin", team: "LOUD", code: "0;s;1;P;c;1;h;0;0l;4;0v;4;0o;2;0a;1;0f;0;1b;0" },
+  { name: "mazin", team: "MIBR", code: "0;s;1;P;c;1;h;0;0l;4;0v;4;0o;2;0a;1;0f;0;1b;0" },
+  { name: "Art", team: "MIBR", code: "0;s;1;P;c;1;h;0;0l;4;0v;4;0o;2;0a;1;0f;0;1b;0" },
+  { name: "dgzin", team: "FUR", code: "0;s;1;P;c;1;h;0;0l;4;0v;4;0o;2;0a;1;0f;0;1b;0" },
+  { name: "Khalil", team: "FUR", code: "0;s;1;P;c;1;h;0;0l;4;0v;4;0o;2;0a;1;0f;0;1b;0" },
+  { name: "Mazino", team: "LEV", code: "0;s;1;P;c;1;h;0;0l;4;0v;4;0o;2;0a;1;0f;0;1b;0" },
+  { name: "Keznit", team: "KRU", code: "0;s;1;P;c;1;h;0;0l;4;0v;4;0o;2;0a;1;0f;0;1b;0" },
+  { name: "Melser", team: "KRU", code: "0;s;1;P;c;1;h;0;0l;4;0v;4;0o;2;0a;1;0f;0;1b;0" }
 ];
 
-function renderProPresets() {
+function renderProPresets(list = PRO_PRESETS) {
   const container = document.getElementById('crosshairs-pro-presets');
   container.innerHTML = '';
   
-  PRO_PRESETS.forEach(p => {
+  if (list.length === 0) {
+    container.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 24px; color: var(--muted); font-size: 12px; font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:0.5px;">
+        🔍 No pro matches found
+      </div>
+    `;
+    return;
+  }
+  
+  list.forEach(p => {
     const card = document.createElement('div');
     card.className = 'card pro-preset-card';
     card.style = "padding: 10px; border-radius: 8px; background: rgba(20,20,22,0.6); border: 1px solid var(--border); text-align: center; cursor: pointer; transition: var(--transition); display:flex; flex-direction:column; gap:4px;";
@@ -8914,6 +8968,19 @@ function renderProPresets() {
     `;
     container.appendChild(card);
   });
+}
+
+function filterProCrosshairs() {
+  const query = document.getElementById('pro-crosshair-search').value.toLowerCase().trim();
+  if (!query) {
+    renderProPresets(PRO_PRESETS);
+    return;
+  }
+  const filtered = PRO_PRESETS.filter(p => 
+    p.name.toLowerCase().includes(query) || 
+    p.team.toLowerCase().includes(query)
+  );
+  renderProPresets(filtered);
 }
 
 function parseRiotCode(code) {
