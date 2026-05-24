@@ -6,14 +6,17 @@
         "title": "B-Site Main Entry Recon",
         "description": "Scans deep B Main lane, ultimate orb, and shed entry from B lobby.",
         "side": "attack",
-        "map_coords": { "x": 19.5, "y": 62.4 },
+        "map_coords": {
+          "x": 19.5,
+          "y": 62.4
+        },
         "steps": {
           "stand_desc": "Stand in B-Lobby corner against the wooden box crates.",
-          "stand_img": "https://media.valtracker.gg/lineups/sova/ascent/stand_b_crates.jpg",
+          "stand_img": "https://media.valorant-api.com/maps/7eaecc1b-4337-bbf6-6ab9-04b8f06b3319/splash.png",
           "aim_desc": "Aim at the intersection of the crane rope and the sky dome outline.",
-          "aim_img": "https://media.valtracker.gg/lineups/sova/ascent/aim_crane.jpg",
+          "aim_img": "https://media.valorant-api.com/maps/7eaecc1b-4337-bbf6-6ab9-04b8f06b3319/splash.png",
           "charge": "2 Bars, No Bounce",
-          "video_loop": "https://media.valtracker.gg/lineups/sova/ascent/recon_b_main_loop.webm"
+          "video_loop": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/72c8af91-f9f9-4044-801c-3e73ee2f2aa1_default_universal.mp4"
         }
       },
       {
@@ -21,14 +24,17 @@
         "title": "A-Site Default Plant Shock Dart",
         "description": "Lands on default generator plant spot from A Garden lobby.",
         "side": "attack",
-        "map_coords": { "x": 78.4, "y": 80.2 },
+        "map_coords": {
+          "x": 78.4,
+          "y": 80.2
+        },
         "steps": {
           "stand_desc": "Stand in A Garden against the green wooden crate barrel.",
-          "stand_img": "https://media.valtracker.gg/lineups/sova/ascent/stand_a_crates.jpg",
+          "stand_img": "https://media.valorant-api.com/maps/7eaecc1b-4337-bbf6-6ab9-04b8f06b3319/splash.png",
           "aim_desc": "Align Sova's double-shock diamond UI tip with the corner of the brick chimney.",
-          "aim_img": "https://media.valtracker.gg/lineups/sova/ascent/aim_chimney.jpg",
+          "aim_img": "https://media.valorant-api.com/maps/7eaecc1b-4337-bbf6-6ab9-04b8f06b3319/splash.png",
           "charge": "1 Bar, 1 Bounce",
-          "video_loop": "https://media.valtracker.gg/lineups/sova/ascent/shock_a_default.webm"
+          "video_loop": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/b794b134-42d6-3138-188d-66a940a66304_default_universal.mp4"
         }
       }
     ],
@@ -38,14 +44,17 @@
         "title": "A-Site Default Snakebite",
         "description": "Lands on default generator plant to deny defuse from A Main.",
         "side": "attack",
-        "map_coords": { "x": 74.2, "y": 65.8 },
+        "map_coords": {
+          "x": 74.2,
+          "y": 65.8
+        },
         "steps": {
           "stand_desc": "Stand in A Main against the vertical brick column near the entry choke.",
-          "stand_img": "https://media.valtracker.gg/lineups/viper/ascent/stand_a_main.jpg",
+          "stand_img": "https://media.valorant-api.com/maps/7eaecc1b-4337-bbf6-6ab9-04b8f06b3319/splash.png",
           "aim_desc": "Aim at the bottom-right corner of the hanging metal banner roof ornament.",
-          "aim_img": "https://media.valtracker.gg/lineups/viper/ascent/aim_banner.jpg",
+          "aim_img": "https://media.valorant-api.com/maps/7eaecc1b-4337-bbf6-6ab9-04b8f06b3319/splash.png",
           "charge": "Simple Throw",
-          "video_loop": "https://media.valtracker.gg/lineups/viper/ascent/snakebite_a_default.webm"
+          "video_loop": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/32f7797f-4491-e21f-e40b-cfb639df3c97_default_universal.mp4"
         }
       }
     ],
@@ -55,14 +64,17 @@
         "title": "B-Site Default Plant Nanoswarm",
         "description": "Lands on default lane box plant spot from B Link hallway.",
         "side": "defense",
-        "map_coords": { "x": 28.5, "y": 38.2 },
+        "map_coords": {
+          "x": 28.5,
+          "y": 38.2
+        },
         "steps": {
           "stand_desc": "Stand in B Link in front of the grey metal server console.",
-          "stand_img": "https://media.valtracker.gg/lineups/kj/ascent/stand_b_link.jpg",
+          "stand_img": "https://media.valorant-api.com/maps/7eaecc1b-4337-bbf6-6ab9-04b8f06b3319/splash.png",
           "aim_desc": "Aim at the second row bolt on the ceiling air vent duct.",
-          "aim_img": "https://media.valtracker.gg/lineups/kj/ascent/aim_duct.jpg",
+          "aim_img": "https://media.valorant-api.com/maps/7eaecc1b-4337-bbf6-6ab9-04b8f06b3319/splash.png",
           "charge": "Jump Throw",
-          "video_loop": "https://media.valtracker.gg/lineups/kj/ascent/nanoswarm_b_default.webm"
+          "video_loop": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/72c8af91-f9f9-4044-801c-3e73ee2f2aa1_default_universal.mp4"
         }
       }
     ]
@@ -74,14 +86,17 @@
         "title": "A-Site Default Recon Bolt",
         "description": "Scans default plant, A-bath entry, and truck from A-lobby.",
         "side": "attack",
-        "map_coords": { "x": 76.5, "y": 72.2 },
+        "map_coords": {
+          "x": 76.5,
+          "y": 72.2
+        },
         "steps": {
           "stand_desc": "Stand in A-Lobby against the second metal pipe barrel.",
-          "stand_img": "https://media.valtracker.gg/lineups/sova/bind/stand_a_lobby.jpg",
+          "stand_img": "https://media.valorant-api.com/maps/2c9d57ec-4431-9c5e-2939-8f9ef6dd5cba/splash.png",
           "aim_desc": "Aim at the corner of the solar panel, align Sova's charge bar UI line with the leaf below.",
-          "aim_img": "https://media.valtracker.gg/lineups/sova/bind/aim_solar_panel.jpg",
+          "aim_img": "https://media.valorant-api.com/maps/2c9d57ec-4431-9c5e-2939-8f9ef6dd5cba/splash.png",
           "charge": "1 Bar, No Bounce",
-          "video_loop": "https://media.valtracker.gg/lineups/sova/bind/recon_a_site_loop.webm"
+          "video_loop": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/b794b134-42d6-3138-188d-66a940a66304_default_universal.mp4"
         }
       }
     ],
@@ -91,14 +106,17 @@
         "title": "B-Site Default Plant Incendiary",
         "description": "Burns the default back-site container plant zone from B Long fountain.",
         "side": "attack",
-        "map_coords": { "x": 24.8, "y": 55.4 },
+        "map_coords": {
+          "x": 24.8,
+          "y": 55.4
+        },
         "steps": {
           "stand_desc": "Stand at B Long fountain, tuck into the corner of the brick flowerbed.",
-          "stand_img": "https://media.valtracker.gg/lineups/brim/bind/stand_fountain.jpg",
+          "stand_img": "https://media.valorant-api.com/maps/2c9d57ec-4431-9c5e-2939-8f9ef6dd5cba/splash.png",
           "aim_desc": "Align the bottom-left tip of Brimstone's moly hud icon with the third leaf branch on the tree.",
-          "aim_img": "https://media.valtracker.gg/lineups/brim/bind/aim_moly_tree.jpg",
+          "aim_img": "https://media.valorant-api.com/maps/2c9d57ec-4431-9c5e-2939-8f9ef6dd5cba/splash.png",
           "charge": "Simple Left-Click Throw",
-          "video_loop": "https://media.valtracker.gg/lineups/brim/bind/moly_b_default.webm"
+          "video_loop": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/32f7797f-4491-e21f-e40b-cfb639df3c97_default_universal.mp4"
         }
       }
     ],
@@ -108,14 +126,17 @@
         "title": "A-Site Truck Mosh Pit",
         "description": "Covers A site truck cubby to deny plants or force defenders out.",
         "side": "attack",
-        "map_coords": { "x": 80.2, "y": 48.5 },
+        "map_coords": {
+          "x": 80.2,
+          "y": 48.5
+        },
         "steps": {
           "stand_desc": "Stand in A Bath shower entry lobby against the green metal fence post.",
-          "stand_img": "https://media.valtracker.gg/lineups/gekko/bind/stand_a_showers.jpg",
+          "stand_img": "https://media.valorant-api.com/maps/2c9d57ec-4431-9c5e-2939-8f9ef6dd5cba/splash.png",
           "aim_desc": "Aim at the top-left corner of the orange billboard banner.",
-          "aim_img": "https://media.valtracker.gg/lineups/gekko/bind/aim_billboard.jpg",
+          "aim_img": "https://media.valorant-api.com/maps/2c9d57ec-4431-9c5e-2939-8f9ef6dd5cba/splash.png",
           "charge": "Simple Left-Click Throw",
-          "video_loop": "https://media.valtracker.gg/lineups/gekko/bind/mosh_a_truck.webm"
+          "video_loop": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/72c8af91-f9f9-4044-801c-3e73ee2f2aa1_default_universal.mp4"
         }
       }
     ]
@@ -127,14 +148,17 @@
         "title": "C-Site Back Site Recon Bolt",
         "description": "Scans deep C long entry, C garage door, and back-site platform from C lobby.",
         "side": "attack",
-        "map_coords": { "x": 18.2, "y": 74.8 },
+        "map_coords": {
+          "x": 18.2,
+          "y": 74.8
+        },
         "steps": {
           "stand_desc": "Stand in C Lobby corner in front of the green garden fence.",
-          "stand_img": "https://media.valtracker.gg/lineups/sova/haven/stand_c_garden.jpg",
+          "stand_img": "https://media.valorant-api.com/maps/2bee0dc9-4ffe-519b-1cbd-7fbe763a6047/splash.png",
           "aim_desc": "Aim at the top of the tall pagoda tower roof spire, 2 bars charge.",
-          "aim_img": "https://media.valtracker.gg/lineups/sova/haven/aim_pagoda.jpg",
+          "aim_img": "https://media.valorant-api.com/maps/2bee0dc9-4ffe-519b-1cbd-7fbe763a6047/splash.png",
           "charge": "2 Bars, No Bounce",
-          "video_loop": "https://media.valtracker.gg/lineups/sova/haven/recon_c_site.webm"
+          "video_loop": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/b794b134-42d6-3138-188d-66a940a66304_default_universal.mp4"
         }
       }
     ],
@@ -144,14 +168,17 @@
         "title": "B-Site Default Plant Snakebite",
         "description": "Denies default plant inside B center box from Mid window choke.",
         "side": "attack",
-        "map_coords": { "x": 49.5, "y": 52.4 },
+        "map_coords": {
+          "x": 49.5,
+          "y": 52.4
+        },
         "steps": {
           "stand_desc": "Stand inside Mid Window room, line up against the left side of the frame.",
-          "stand_img": "https://media.valtracker.gg/lineups/viper/haven/stand_window.jpg",
+          "stand_img": "https://media.valorant-api.com/maps/2bee0dc9-4ffe-519b-1cbd-7fbe763a6047/splash.png",
           "aim_desc": "Aim at the top edge of the dragon banner ornament hanging on B site facade.",
-          "aim_img": "https://media.valtracker.gg/lineups/viper/haven/aim_dragon.jpg",
+          "aim_img": "https://media.valorant-api.com/maps/2bee0dc9-4ffe-519b-1cbd-7fbe763a6047/splash.png",
           "charge": "Left-Click Throw",
-          "video_loop": "https://media.valtracker.gg/lineups/viper/haven/snakebite_b_default.webm"
+          "video_loop": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/32f7797f-4491-e21f-e40b-cfb639df3c97_default_universal.mp4"
         }
       }
     ]
@@ -163,14 +190,17 @@
         "title": "A-Site Screens Poison Cloud",
         "description": "One-way smoke covering A main screens push to block attackers vision.",
         "side": "defense",
-        "map_coords": { "x": 75.8, "y": 54.2 },
+        "map_coords": {
+          "x": 75.8,
+          "y": 54.2
+        },
         "steps": {
           "stand_desc": "Stand on A site rafters ramp, align with the center wall stripe.",
-          "stand_img": "https://media.valtracker.gg/lineups/viper/split/stand_rafters.jpg",
+          "stand_img": "https://media.valorant-api.com/maps/d960549e-485c-e861-8d71-aa9d1aed12a2/splash.png",
           "aim_desc": "Aim at the white horizontal panel line on the screens pillar.",
-          "aim_img": "https://media.valtracker.gg/lineups/viper/split/aim_screens.jpg",
+          "aim_img": "https://media.valorant-api.com/maps/d960549e-485c-e861-8d71-aa9d1aed12a2/splash.png",
           "charge": "Right-Click Underhand Throw",
-          "video_loop": "https://media.valtracker.gg/lineups/viper/split/poison_a_screens.webm"
+          "video_loop": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/72c8af91-f9f9-4044-801c-3e73ee2f2aa1_default_universal.mp4"
         }
       }
     ]
@@ -182,14 +212,17 @@
         "title": "A-Site Pyramids Recon Bolt",
         "description": "Scans back pyramids, yellow container, and site entries from A shop lobby.",
         "side": "attack",
-        "map_coords": { "x": 68.2, "y": 68.4 },
+        "map_coords": {
+          "x": 68.2,
+          "y": 68.4
+        },
         "steps": {
           "stand_desc": "Stand in A Shop lobby corner next to the metallic barrels.",
-          "stand_img": "https://media.valtracker.gg/lineups/sova/breeze/stand_shop.jpg",
+          "stand_img": "https://media.valorant-api.com/maps/2fb9a4fd-47b8-4e7d-a969-74b4046ebd53/splash.png",
           "aim_desc": "Aim at the top apex of the mountain peak visible in the clouds background.",
-          "aim_img": "https://media.valtracker.gg/lineups/sova/breeze/aim_mountain.jpg",
+          "aim_img": "https://media.valorant-api.com/maps/2fb9a4fd-47b8-4e7d-a969-74b4046ebd53/splash.png",
           "charge": "Max Charge, 1 Bounce",
-          "video_loop": "https://media.valtracker.gg/lineups/sova/breeze/recon_a_default.webm"
+          "video_loop": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/b794b134-42d6-3138-188d-66a940a66304_default_universal.mp4"
         }
       }
     ]
@@ -201,14 +234,17 @@
         "title": "B-Site Default Plant Mosh Pit",
         "description": "Denies defuse on default B pillar plant spot from B Main lobby.",
         "side": "attack",
-        "map_coords": { "x": 22.4, "y": 42.8 },
+        "map_coords": {
+          "x": 22.4,
+          "y": 42.8
+        },
         "steps": {
           "stand_desc": "Stand in B Main lobby next to the blue double door dumpster.",
-          "stand_img": "https://media.valtracker.gg/lineups/gekko/sunset/stand_dumpster.jpg",
+          "stand_img": "https://media.valorant-api.com/maps/92584fbe-486a-b1b2-9faa-39b0f486b498/splash.png",
           "aim_desc": "Aim at the wire node intersection on the building telephone pole.",
-          "aim_img": "https://media.valtracker.gg/lineups/gekko/sunset/aim_wire.jpg",
+          "aim_img": "https://media.valorant-api.com/maps/92584fbe-486a-b1b2-9faa-39b0f486b498/splash.png",
           "charge": "Jump Throw",
-          "video_loop": "https://media.valtracker.gg/lineups/gekko/sunset/mosh_b_default.webm"
+          "video_loop": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/32f7797f-4491-e21f-e40b-cfb639df3c97_default_universal.mp4"
         }
       }
     ]

@@ -806,7 +806,7 @@
       <!-- The Live Preview Target Card -->
       <div style="position: relative; border: 1px solid var(--border); border-radius: 12px; background: rgba(0,0,0,0.6); min-height: 380px; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: inset 0 0 50px rgba(0,0,0,0.85);" class="card">
         <!-- Target BG image -->
-        <img id="crosshair-preview-bg" src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1000" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.65; pointer-events: none;" />
+        <img id="crosshair-preview-bg" src="https://media.valorant-api.com/maps/7eaecc1b-4337-bbf6-6ab9-04b8f06b3319/splash.png" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.65; pointer-events: none;" />
         
         <!-- Interactive crosshair overlay container -->
         <div id="crosshair-canvas-overlay" style="position: absolute; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center;"></div>
@@ -8681,20 +8681,20 @@ function loadLineupMapData() {
   
   // High quality Valorant minimaps from valorant-api
   const mapImages = {
-    "ascent": "https://media.valorant-api.com/maps/7eae253f-414f-ab70-a155-949b2b2ec290/displayicon.png",
-    "bind": "https://media.valorant-api.com/maps/2c91b6c9-4f1b-a52e-3214-ef73aa99f1a8/displayicon.png",
-    "haven": "https://media.valorant-api.com/maps/2bee0dc9-40ae-5283-a3d1-7a5d925d4db5/displayicon.png",
-    "split": "https://media.valorant-api.com/maps/d9661555-4366-03b3-20ef-6f5e274a27fc/displayicon.png",
-    "breeze": "https://media.valorant-api.com/maps/2fb9b465-493c-8896-1c28-91b2dae6a218/displayicon.png",
-    "sunset": "https://media.valorant-api.com/maps/92fb14ab-4959-d891-4541-401f5c61386d/displayicon.png",
-    "lotus": "https://media.valorant-api.com/maps/2fe4ed3a-450a-948b-724d-4e94098c433c/displayicon.png",
-    "icebox": "https://media.valorant-api.com/maps/e2ad38c8-40f4-8776-800c-b26f56157f49/displayicon.png",
-    "pearl": "https://media.valorant-api.com/maps/fd2648d4-4cbe-1348-18e3-0d8b39855c74/displayicon.png",
-    "fracture": "https://media.valorant-api.com/maps/b52944c1-4bf6-a590-198e-7dd7a39d33f7/displayicon.png",
-    "abyss": "https://media.valorant-api.com/maps/2240977d-4f74-f170-7c39-10b06b5d4e5e/displayicon.png"
+    "ascent": "https://media.valorant-api.com/maps/7eaecc1b-4337-bbf6-6ab9-04b8f06b3319/displayicon.png",
+    "bind": "https://media.valorant-api.com/maps/2c9d57ec-4431-9c5e-2939-8f9ef6dd5cba/displayicon.png",
+    "haven": "https://media.valorant-api.com/maps/2bee0dc9-4ffe-519b-1cbd-7fbe763a6047/displayicon.png",
+    "split": "https://media.valorant-api.com/maps/d960549e-485c-e861-8d71-aa9d1aed12a2/displayicon.png",
+    "breeze": "https://media.valorant-api.com/maps/2fb9a4fd-47b8-4e7d-a969-74b4046ebd53/displayicon.png",
+    "sunset": "https://media.valorant-api.com/maps/92584fbe-486a-b1b2-9faa-39b0f486b498/displayicon.png",
+    "lotus": "https://media.valorant-api.com/maps/2fe4ed3a-450a-948b-6d6b-e89a78e680a9/displayicon.png",
+    "icebox": "https://media.valorant-api.com/maps/e2ad5c54-4114-a870-9641-8ea21279579a/displayicon.png",
+    "pearl": "https://media.valorant-api.com/maps/fd267378-4d1d-484f-ff52-77821ed10dc2/displayicon.png",
+    "fracture": "https://media.valorant-api.com/maps/b529448b-4d60-346e-e89e-00a4c527a405/displayicon.png",
+    "abyss": "https://media.valorant-api.com/maps/224b0a95-48b9-f703-1bd8-67aca101a61f/displayicon.png"
   };
   
-  mapImg.src = mapImages[selectedMap] || "https://media.valorant-api.com/maps/7eae253f-414f-ab70-a155-949b2b2ec290/displayicon.png";
+  mapImg.src = mapImages[selectedMap] || "https://media.valorant-api.com/maps/7eaecc1b-4337-bbf6-6ab9-04b8f06b3319/displayicon.png";
   
   // Clear drawer state
   document.getElementById('lineup-drawer-placeholder').style.display = 'flex';
@@ -9161,11 +9161,11 @@ function changeCrosshairPreviewBg(bg) {
   
   if (bg === 'ascent') {
     bgImg.style.display = 'block';
-    bgImg.src = 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1000';
+    bgImg.src = 'https://media.valorant-api.com/maps/7eaecc1b-4337-bbf6-6ab9-04b8f06b3319/splash.png';
     parent.style.background = 'rgba(0,0,0,0.6)';
   } else if (bg === 'bind') {
     bgImg.style.display = 'block';
-    bgImg.src = 'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1000';
+    bgImg.src = 'https://media.valorant-api.com/maps/2c9d57ec-4431-9c5e-2939-8f9ef6dd5cba/splash.png';
     parent.style.background = 'rgba(0,0,0,0.6)';
   } else if (bg === 'grid') {
     bgImg.style.display = 'none';
