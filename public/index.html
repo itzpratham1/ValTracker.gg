@@ -761,32 +761,16 @@
           <div>
             <div style="font-family:'DM Mono',monospace; font-size: 10px; font-weight: 800; color: var(--accent); margin-bottom: 4px;">STEP 1: WHERE TO STAND</div>
             <div style="font-size: 11px; color: #fff; margin-bottom: 6px; line-height: 1.3;" id="ld-stand-desc">Stand position...</div>
-            <div style="position: relative; width: 100%; height: 110px; background: #070708; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); cursor: pointer;" onclick="openExpandedImg(this.firstElementChild.src)">
-              <img id="ld-stand-img" src="" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.75;" />
-              <!-- HUD Grid overlay -->
-              <div style="position: absolute; inset: 0; pointer-events: none; border: 1px solid rgba(250, 68, 84, 0.1); background: linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.6) 100%);"></div>
-              <div style="position: absolute; bottom: 8px; left: 8px; font-family:'DM Mono',monospace; font-size: 8px; color: rgba(255,255,255,0.4); text-transform: uppercase;">[ STAND_ALIGN_OK ]</div>
+            <div id="ld-stand-img-container" style="position: relative; width: 100%; height: 110px; background: #070708; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); cursor: pointer;">
+              <!-- Dynamic SVG blueprint or image loaded via JS -->
             </div>
           </div>
           <!-- Step 2 -->
           <div>
             <div style="font-family:'DM Mono',monospace; font-size: 10px; font-weight: 800; color: var(--accent); margin-bottom: 4px;">STEP 2: WHERE TO AIM</div>
             <div style="font-size: 11px; color: #fff; margin-bottom: 6px; line-height: 1.3;" id="ld-aim-desc">Aim position...</div>
-            <div style="position: relative; width: 100%; height: 110px; background: #070708; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); cursor: pointer;" onclick="openExpandedImg(this.firstElementChild.src)">
-              <img id="ld-aim-img" src="" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.65;" />
-              <!-- Tactical HUD Targeting Blueprint -->
-              <div style="position: absolute; inset: 0; pointer-events: none; display: flex; align-items: center; justify-content: center;">
-                <!-- Crosshairs -->
-                <div style="position: absolute; width: 100%; height: 1px; background: linear-gradient(90deg, transparent, var(--accent) 30%, var(--accent) 70%, transparent); opacity: 0.8;"></div>
-                <div style="position: absolute; height: 100%; width: 1px; background: linear-gradient(180deg, transparent, var(--accent) 30%, var(--accent) 70%, transparent); opacity: 0.8;"></div>
-                <!-- Notched Dial -->
-                <div style="position: absolute; width: 34px; height: 34px; border: 1px dashed var(--accent); border-radius: 50%; opacity: 0.6;"></div>
-                <div style="position: absolute; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 8px var(--accent);"></div>
-                
-                <!-- Advanced Blueprint HUD HUD text details -->
-                <div style="position: absolute; bottom: 8px; right: 8px; font-family:'DM Mono',monospace; font-size: 7.5px; color: var(--accent); opacity: 0.8; letter-spacing: 0.5px;">AIM_LOCK_CALIBRATED</div>
-                <div style="position: absolute; top: 8px; left: 8px; font-family:'DM Mono',monospace; font-size: 7.5px; color: var(--accent); opacity: 0.8; letter-spacing: 0.5px;">COORDS_VERIFIED</div>
-              </div>
+            <div id="ld-aim-img-container" style="position: relative; width: 100%; height: 110px; background: #070708; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); cursor: pointer;">
+              <!-- Dynamic SVG blueprint or image loaded via JS -->
             </div>
           </div>
         </div>
@@ -804,7 +788,8 @@
               <span style="width: 5px; height: 5px; background: #ff4444; border-radius: 50%; display: inline-block; animation: pin-pulse 1s infinite alternate;"></span>
               <span style="font-family:'DM Mono',monospace; font-size: 8px; font-weight: 800; color: #fff; letter-spacing: 0.5px; text-transform: uppercase;">TRAJECTORY ANALYTICS</span>
             </div>
-            <video id="ld-video" src="" autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: contain;"></video>
+            <!-- Video Frame Wrapper -->
+            <div style="width: 100%; height: 100%;"></div>
           </div>
         </div>
       </div>
@@ -8872,6 +8857,135 @@ function renderPins(lineupsList) {
   });
 }
 
+function getTacticalBlueprint(lineupId, step) {
+  if (lineupId === 'ascent_sova_recon_b_site') {
+    if (step === 1) {
+      return `
+        <svg width="100%" height="100%" viewBox="0 0 200 110" style="background:#0b0c10; font-family:'DM Mono',monospace;">
+          <defs>
+            <radialGradient id="standGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.5"/>
+              <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <path d="M 0,27.5 L 200,27.5 M 0,55 L 200,55 M 0,82.5 L 200,82.5 M 50,0 L 50,110 M 100,0 L 100,110 M 150,0 L 150,110" stroke="rgba(0, 255, 255, 0.05)" stroke-width="1" />
+          <rect x="25" y="20" width="35" height="40" fill="none" stroke="#2a2d36" stroke-width="1.5" />
+          <text x="42.5" y="42" fill="rgba(255,255,255,0.2)" font-size="7" text-anchor="middle">CRATE_A</text>
+          <rect x="60" y="20" width="30" height="40" fill="none" stroke="#2a2d36" stroke-width="1.5" />
+          <text x="75" y="42" fill="rgba(255,255,255,0.2)" font-size="7" text-anchor="middle">CRATE_B</text>
+          <rect x="40" y="55" width="40" height="35" fill="none" stroke="#2a2d36" stroke-width="1.5" />
+          <text x="60" y="75" fill="rgba(255,255,255,0.2)" font-size="7" text-anchor="middle">BARRELS</text>
+          <circle cx="25" cy="60" r="12" fill="url(#standGlow)" />
+          <circle cx="25" cy="60" r="6" fill="rgba(0, 255, 255, 0.15)" stroke="var(--accent)" stroke-width="1.5" />
+          <circle cx="25" cy="60" r="2" fill="var(--accent)" />
+          <text x="95" y="42" fill="#fff" font-size="9" font-weight="900" letter-spacing="0.5">STAND CORNER</text>
+          <text x="95" y="54" fill="var(--accent)" font-size="8" font-weight="700">TUCKED IN B-LOBBY</text>
+          <text x="95" y="66" fill="rgba(255,255,255,0.4)" font-size="7">ALIGNMENT: 100% SECURE</text>
+          <text x="95" y="78" fill="rgba(255,255,255,0.3)" font-size="6.5">SYS_CALIBRATE_OK</text>
+          <rect x="0" y="0" width="200" height="110" fill="none" stroke="rgba(0,255,255,0.15)" stroke-width="1" />
+        </svg>
+      `;
+    } else {
+      return `
+        <svg width="100%" height="100%" viewBox="0 0 200 110" style="background:#0b0c10; font-family:'DM Mono',monospace;">
+          <path d="M 0,27.5 L 200,27.5 M 0,55 L 200,55 M 0,82.5 L 200,82.5 M 50,0 L 50,110 M 100,0 L 100,110 M 150,0 L 150,110" stroke="rgba(0, 255, 255, 0.05)" stroke-width="1" />
+          <line x1="60" y1="15" x2="160" y2="95" stroke="#ff4444" stroke-width="1.5" opacity="0.8" />
+          <text x="135" y="65" fill="#ff4444" font-size="7" opacity="0.8">[ CRANE CABLE ]</text>
+          <path d="M 20,80 Q 90,25 180,38" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1" stroke-dasharray="3,3" />
+          <text x="35" y="45" fill="rgba(255,255,255,0.35)" font-size="7">[ SKY DOME LIMIT ]</text>
+          <circle cx="110" cy="55" r="12" fill="none" stroke="var(--accent)" stroke-width="1.2" stroke-dasharray="2,2" />
+          <line x1="92" y1="55" x2="128" y2="55" stroke="var(--accent)" stroke-width="1" />
+          <line x1="110" y1="37" x2="110" y2="73" stroke="var(--accent)" stroke-width="1" />
+          <circle cx="110" cy="55" r="2" fill="var(--accent)" />
+          <text x="10" y="22" fill="#fff" font-size="9" font-weight="900" letter-spacing="0.5">AIM INTERSECTION</text>
+          <text x="10" y="32" fill="var(--accent)" font-size="7.5" font-weight="700">CROSSHAIR AT CROSSOVER</text>
+          <text x="116" y="52" fill="var(--accent)" font-size="7" font-weight="900">AIM_LOCK</text>
+          <rect x="0" y="0" width="200" height="110" fill="none" stroke="rgba(0,255,255,0.15)" stroke-width="1" />
+        </svg>
+      `;
+    }
+  }
+  if (lineupId === 'ascent_sova_shock_a_default') {
+    if (step === 1) {
+      return `
+        <svg width="100%" height="100%" viewBox="0 0 200 110" style="background:#0b0c10; font-family:'DM Mono',monospace;">
+          <path d="M 0,27.5 L 200,27.5 M 0,55 L 200,55 M 0,82.5 L 200,82.5 M 50,0 L 50,110 M 100,0 L 100,110 M 150,0 L 150,110" stroke="rgba(0, 255, 255, 0.05)" stroke-width="1" />
+          <rect x="30" y="20" width="35" height="70" fill="none" stroke="#2a2d36" stroke-width="1.5" />
+          <text x="47.5" y="55" fill="rgba(255,255,255,0.2)" font-size="7" text-anchor="middle">GARDEN_PILLAR</text>
+          <circle cx="70" cy="85" r="10" fill="none" stroke="#2a2d36" stroke-dasharray="2,2" />
+          <text x="70" y="88" fill="rgba(255,255,255,0.2)" font-size="6" text-anchor="middle">BARREL</text>
+          <circle cx="30" cy="85" r="10" fill="rgba(0, 255, 255, 0.1)" />
+          <circle cx="30" cy="85" r="5" fill="rgba(0, 255, 255, 0.15)" stroke="var(--accent)" stroke-width="1.5" />
+          <circle cx="30" cy="85" r="1.5" fill="var(--accent)" />
+          <text x="95" y="45" fill="#fff" font-size="9" font-weight="900" letter-spacing="0.5">BARREL CORNER</text>
+          <text x="95" y="57" fill="var(--accent)" font-size="8" font-weight="700">TUCK IN GARDEN</text>
+          <text x="95" y="69" fill="rgba(255,255,255,0.4)" font-size="7">ALIGN: OK (BARREL VERT)</text>
+          <rect x="0" y="0" width="200" height="110" fill="none" stroke="rgba(0,255,255,0.15)" stroke-width="1" />
+        </svg>
+      `;
+    } else {
+      return `
+        <svg width="100%" height="100%" viewBox="0 0 200 110" style="background:#0b0c10; font-family:'DM Mono',monospace;">
+          <path d="M 0,27.5 L 200,27.5 M 0,55 L 200,55 M 0,82.5 L 200,82.5 M 50,0 L 50,110 M 100,0 L 100,110 M 150,0 L 150,110" stroke="rgba(0, 255, 255, 0.05)" stroke-width="1" />
+          <rect x="110" y="20" width="25" height="50" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" />
+          <text x="122.5" y="45" fill="rgba(255,255,255,0.3)" font-size="7" text-anchor="middle">CHIMNEY</text>
+          <polygon points="85,75 95,65 105,75 95,85" fill="none" stroke="var(--accent)" stroke-width="1.5" />
+          <polygon points="88,75 95,68 102,75 95,82" fill="none" stroke="var(--accent)" stroke-width="1" />
+          <circle cx="110" cy="20" r="3" fill="#ff4444" opacity="0.8" />
+          <line x1="95" y1="65" x2="110" y2="20" stroke="var(--accent)" stroke-width="1" stroke-dasharray="2,2" />
+          <text x="10" y="25" fill="#fff" font-size="9" font-weight="900" letter-spacing="0.5">HUD SHOCK DIAMOND</text>
+          <text x="10" y="37" fill="var(--accent)" font-size="7.5" font-weight="700">ALIGN LEFT TIP WITH CORNER</text>
+          <rect x="0" y="0" width="200" height="110" fill="none" stroke="rgba(0,255,255,0.15)" stroke-width="1" />
+        </svg>
+      `;
+    }
+  }
+  if (lineupId === 'ascent_viper_snakebite_a_default') {
+    if (step === 1) {
+      return `
+        <svg width="100%" height="100%" viewBox="0 0 200 110" style="background:#0b0c10; font-family:'DM Mono',monospace;">
+          <path d="M 0,27.5 L 200,27.5 M 0,55 L 200,55 M 0,82.5 L 200,82.5 M 50,0 L 50,110 M 100,0 L 100,110 M 150,0 L 150,110" stroke="rgba(0, 255, 255, 0.05)" stroke-width="1" />
+          <rect x="35" y="15" width="35" height="80" fill="none" stroke="#2a2d36" stroke-width="1.5" />
+          <text x="52.5" y="55" fill="rgba(255,255,255,0.2)" font-size="7" text-anchor="middle">MAIN_PILLAR</text>
+          <circle cx="35" cy="75" r="10" fill="rgba(0, 255, 255, 0.1)" />
+          <circle cx="35" cy="75" r="5" fill="rgba(0, 255, 255, 0.15)" stroke="var(--accent)" stroke-width="1.5" />
+          <circle cx="35" cy="75" r="1.5" fill="var(--accent)" />
+          <text x="85" y="45" fill="#fff" font-size="9" font-weight="900" letter-spacing="0.5">PILLAR EDGE STAND</text>
+          <text x="85" y="57" fill="var(--accent)" font-size="8" font-weight="700">TUCK AT A-MAIN</text>
+          <text x="85" y="69" fill="rgba(255,255,255,0.4)" font-size="7">ALIGNMENT: OK</text>
+          <rect x="0" y="0" width="200" height="110" fill="none" stroke="rgba(0,255,255,0.15)" stroke-width="1" />
+        </svg>
+      `;
+    } else {
+      return `
+        <svg width="100%" height="100%" viewBox="0 0 200 110" style="background:#0b0c10; font-family:'DM Mono',monospace;">
+          <path d="M 0,27.5 L 200,27.5 M 0,55 L 200,55 M 0,82.5 L 200,82.5 M 50,0 L 50,110 M 100,0 L 100,110 M 150,0 L 150,110" stroke="rgba(0, 255, 255, 0.05)" stroke-width="1" />
+          <rect x="110" y="15" width="30" height="35" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" />
+          <text x="125" y="32" fill="rgba(255,255,255,0.3)" font-size="7" text-anchor="middle">ROOF BANNER</text>
+          <circle cx="110" cy="50" r="12" fill="none" stroke="var(--accent)" stroke-width="1" stroke-dasharray="2,2" />
+          <line x1="95" y1="50" x2="125" y2="50" stroke="var(--accent)" stroke-width="1" />
+          <line x1="110" y1="35" x2="110" y2="65" stroke="var(--accent)" stroke-width="1" />
+          <circle cx="110" cy="50" r="2" fill="var(--accent)" />
+          <text x="10" y="25" fill="#fff" font-size="9" font-weight="900" letter-spacing="0.5">BANNER CORNER AIM</text>
+          <text x="10" y="37" fill="var(--accent)" font-size="7.5" font-weight="700">CROSSHAIR ON BOTTOM CORNER</text>
+          <rect x="0" y="0" width="200" height="110" fill="none" stroke="rgba(0,255,255,0.15)" stroke-width="1" />
+        </svg>
+      `;
+    }
+  }
+  return `
+    <svg width="100%" height="100%" viewBox="0 0 200 110" style="background:#070708; font-family:'DM Mono',monospace;">
+      <path d="M 0,27.5 L 200,27.5 M 0,55 L 200,55 M 0,82.5 L 200,82.5 M 50,0 L 50,110 M 100,0 L 100,110 M 150,0 L 150,110" stroke="rgba(255,255,255,0.03)" stroke-width="1" />
+      <circle cx="100" cy="55" r="30" fill="none" stroke="rgba(0,255,255,0.08)" stroke-width="1" />
+      <circle cx="100" cy="55" r="10" fill="none" stroke="rgba(0,255,255,0.15)" stroke-width="1" />
+      <circle cx="100" cy="55" r="2" fill="var(--accent)" />
+      <path d="M 85,55 L 115,55 M 100,40 L 100,70" stroke="var(--accent)" stroke-width="1.2" opacity="0.6" />
+      <text x="100" y="93" fill="var(--accent)" font-size="7.5" font-weight="800" text-anchor="middle" letter-spacing="1">HUD_BLUEPRINT_CALIBRATED</text>
+      <rect x="0" y="0" width="200" height="110" fill="none" stroke="rgba(0,255,255,0.08)" stroke-width="1" />
+    </svg>
+  `;
+}
+
 function selectLineup(lineup) {
   document.getElementById('lineup-drawer-placeholder').style.display = 'none';
   document.getElementById('lineup-drawer-content').style.display = 'flex';
@@ -8894,9 +9008,25 @@ function selectLineup(lineup) {
   
   document.getElementById('ld-desc').textContent = lineup.description;
   document.getElementById('ld-stand-desc').textContent = lineup.steps.stand_desc;
-  document.getElementById('ld-stand-img').src = lineup.steps.stand_img;
+  
+  const standContainer = document.getElementById('ld-stand-img-container');
+  const blueprintStand = getTacticalBlueprint(lineup.id, 1);
+  if (blueprintStand) {
+    standContainer.innerHTML = blueprintStand;
+  } else {
+    standContainer.innerHTML = `<img src="${lineup.steps.stand_img}" style="width: 100%; height: 100%; object-fit: cover;" />`;
+  }
+  
   document.getElementById('ld-aim-desc').textContent = lineup.steps.aim_desc;
-  document.getElementById('ld-aim-img').src = lineup.steps.aim_img;
+  
+  const aimContainer = document.getElementById('ld-aim-img-container');
+  const blueprintAim = getTacticalBlueprint(lineup.id, 2);
+  if (blueprintAim) {
+    aimContainer.innerHTML = blueprintAim;
+  } else {
+    aimContainer.innerHTML = `<img src="${lineup.steps.aim_img}" style="width: 100%; height: 100%; object-fit: cover;" />`;
+  }
+  
   document.getElementById('ld-charge').textContent = lineup.steps.charge;
   
   const videoWrap = document.getElementById('ld-video-wrap');
@@ -8907,7 +9037,8 @@ function selectLineup(lineup) {
     videoWrap.style.display = 'flex';
     if (lineup.steps.video_loop.includes('youtube.com/embed')) {
       const iframe = document.createElement('iframe');
-      iframe.src = lineup.steps.video_loop;
+      // Append standard and origin parameters to satisfy YouTube API and prevent Error 153
+      iframe.src = lineup.steps.video_loop + "&origin=" + window.location.origin + "&enablejsapi=1";
       iframe.style = "width: 100%; height: 100%; border: none;";
       iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
       iframe.allowFullscreen = true;
@@ -9075,30 +9206,37 @@ function parseRiotCode(code) {
   if (!code || typeof code !== 'string') return settings;
   
   const parts = code.split(';');
-  let isPrimary = false;
-  
   for (let i = 0; i < parts.length; i++) {
     const key = parts[i];
     const val = parts[i + 1];
+    if (val === undefined) break;
     
-    if (key === 'P') {
-      isPrimary = true;
-      continue;
-    }
-    
-    if (key === 'c') settings.color = val;
-    if (key === 'h') settings.outlines = (val === '1');
-    if (key === 'd') settings.centerDot = (val === '1');
-    if (key === '0l') settings.length = parseInt(val, 10);
-    if (key === '0t') settings.thickness = parseInt(val, 10);
-    if (key === '0o') settings.offset = parseInt(val, 10);
-    if (key === '0a') settings.opacity = parseFloat(val);
-    
-    if (key === '0b' && val === '0') {
+    if (key === 'c') {
+      settings.color = val;
+      i++;
+    } else if (key === 'h') {
+      settings.outlines = (val === '1');
+      i++;
+    } else if (key === 'd') {
+      settings.centerDot = (val === '1');
+      i++;
+    } else if (key === '0l' || key === '0v') {
+      settings.length = parseInt(val, 10);
+      i++;
+    } else if (key === '0t') {
+      settings.thickness = parseInt(val, 10);
+      i++;
+    } else if (key === '0o') {
+      settings.offset = parseInt(val, 10);
+      i++;
+    } else if (key === '0a') {
+      settings.opacity = parseFloat(val);
+      i++;
+    } else if (key === '0b' && val === '0') {
       settings.length = 0;
+      i++;
     }
   }
-  
   return settings;
 }
 
@@ -9233,6 +9371,23 @@ function initCrosshairsView() {
   const defaultCode = "0;s;1;P;c;5;h;0;m;1;0l;4;0v;4;0o;2;0a;1;0f;0;1b;0";
   document.getElementById('crosshair-code-input').value = defaultCode;
   importRiotCrosshairCode();
+  
+  const controls = [
+    'ch-color-select',
+    'ch-outlines-check',
+    'ch-center-dot-check',
+    'ch-inner-opacity',
+    'ch-inner-length',
+    'ch-inner-thickness',
+    'ch-inner-offset'
+  ];
+  controls.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.oninput = updateCrosshairFromSliders;
+      el.onchange = updateCrosshairFromSliders;
+    }
+  });
 }
 
 function importRiotCrosshairCode() {
