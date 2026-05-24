@@ -761,16 +761,32 @@
           <div>
             <div style="font-family:'DM Mono',monospace; font-size: 10px; font-weight: 800; color: var(--accent); margin-bottom: 4px;">STEP 1: WHERE TO STAND</div>
             <div style="font-size: 11px; color: #fff; margin-bottom: 6px; line-height: 1.3;" id="ld-stand-desc">Stand position...</div>
-            <div style="width: 100%; height: 100px; background: #000; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); cursor: pointer;" onclick="openExpandedImg(this.firstElementChild.src)">
-              <img id="ld-stand-img" src="" style="width: 100%; height: 100%; object-fit: cover;" />
+            <div style="position: relative; width: 100%; height: 110px; background: #070708; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); cursor: pointer;" onclick="openExpandedImg(this.firstElementChild.src)">
+              <img id="ld-stand-img" src="" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.75;" />
+              <!-- HUD Grid overlay -->
+              <div style="position: absolute; inset: 0; pointer-events: none; border: 1px solid rgba(250, 68, 84, 0.1); background: linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.6) 100%);"></div>
+              <div style="position: absolute; bottom: 8px; left: 8px; font-family:'DM Mono',monospace; font-size: 8px; color: rgba(255,255,255,0.4); text-transform: uppercase;">[ STAND_ALIGN_OK ]</div>
             </div>
           </div>
           <!-- Step 2 -->
           <div>
             <div style="font-family:'DM Mono',monospace; font-size: 10px; font-weight: 800; color: var(--accent); margin-bottom: 4px;">STEP 2: WHERE TO AIM</div>
             <div style="font-size: 11px; color: #fff; margin-bottom: 6px; line-height: 1.3;" id="ld-aim-desc">Aim position...</div>
-            <div style="width: 100%; height: 100px; background: #000; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); cursor: pointer;" onclick="openExpandedImg(this.firstElementChild.src)">
-              <img id="ld-aim-img" src="" style="width: 100%; height: 100%; object-fit: cover;" />
+            <div style="position: relative; width: 100%; height: 110px; background: #070708; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); cursor: pointer;" onclick="openExpandedImg(this.firstElementChild.src)">
+              <img id="ld-aim-img" src="" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.65;" />
+              <!-- Tactical HUD Targeting Blueprint -->
+              <div style="position: absolute; inset: 0; pointer-events: none; display: flex; align-items: center; justify-content: center;">
+                <!-- Crosshairs -->
+                <div style="position: absolute; width: 100%; height: 1px; background: linear-gradient(90deg, transparent, var(--accent) 30%, var(--accent) 70%, transparent); opacity: 0.8;"></div>
+                <div style="position: absolute; height: 100%; width: 1px; background: linear-gradient(180deg, transparent, var(--accent) 30%, var(--accent) 70%, transparent); opacity: 0.8;"></div>
+                <!-- Notched Dial -->
+                <div style="position: absolute; width: 34px; height: 34px; border: 1px dashed var(--accent); border-radius: 50%; opacity: 0.6;"></div>
+                <div style="position: absolute; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 8px var(--accent);"></div>
+                
+                <!-- Advanced Blueprint HUD HUD text details -->
+                <div style="position: absolute; bottom: 8px; right: 8px; font-family:'DM Mono',monospace; font-size: 7.5px; color: var(--accent); opacity: 0.8; letter-spacing: 0.5px;">AIM_LOCK_CALIBRATED</div>
+                <div style="position: absolute; top: 8px; left: 8px; font-family:'DM Mono',monospace; font-size: 7.5px; color: var(--accent); opacity: 0.8; letter-spacing: 0.5px;">COORDS_VERIFIED</div>
+              </div>
             </div>
           </div>
         </div>
@@ -781,8 +797,13 @@
         </div>
 
         <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px; display: flex; flex-direction: column; gap: 6px;" id="ld-video-wrap">
-          <div style="font-family:'DM Mono',monospace; font-size: 10px; font-weight: 800; color: var(--muted); margin-bottom: 4px;">📺 LANDING TRAJECTORY DEMO</div>
-          <div style="width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 6px; overflow: hidden; border: 1px solid var(--border);">
+          <div style="font-family:'DM Mono',monospace; font-size: 10px; font-weight: 800; color: var(--muted); margin-bottom: 4px;">📺 LANDING TRAJECTORY SIMULATION</div>
+          <div style="position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 6px; overflow: hidden; border: 1px solid var(--border);">
+            <!-- Sleek live REC deck badge -->
+            <div style="position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; padding: 4px 8px; display: flex; align-items: center; gap: 6px; pointer-events: none; z-index: 2;">
+              <span style="width: 5px; height: 5px; background: #ff4444; border-radius: 50%; display: inline-block; animation: pin-pulse 1s infinite alternate;"></span>
+              <span style="font-family:'DM Mono',monospace; font-size: 8px; font-weight: 800; color: #fff; letter-spacing: 0.5px; text-transform: uppercase;">TRAJECTORY ANALYTICS</span>
+            </div>
             <video id="ld-video" src="" autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: contain;"></video>
           </div>
         </div>
@@ -8871,15 +8892,32 @@ function selectLineup(lineup) {
   document.getElementById('ld-aim-img').src = lineup.steps.aim_img;
   document.getElementById('ld-charge').textContent = lineup.steps.charge;
   
-  const video = document.getElementById('ld-video');
   const videoWrap = document.getElementById('ld-video-wrap');
+  const videoFrame = videoWrap.querySelector('div'); // The aspect-ratio video card
+  videoFrame.innerHTML = ''; // Clear previous video/iframe
+  
   if (lineup.steps.video_loop) {
     videoWrap.style.display = 'flex';
-    video.src = lineup.steps.video_loop;
-    video.play().catch(() => {});
+    if (lineup.steps.video_loop.includes('youtube.com/embed')) {
+      const iframe = document.createElement('iframe');
+      iframe.src = lineup.steps.video_loop;
+      iframe.style = "width: 100%; height: 100%; border: none;";
+      iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+      iframe.allowFullscreen = true;
+      videoFrame.appendChild(iframe);
+    } else {
+      const video = document.createElement('video');
+      video.src = lineup.steps.video_loop;
+      video.autoplay = true;
+      video.loop = true;
+      video.muted = true;
+      video.playsInline = true;
+      video.style = "width: 100%; height: 100%; object-fit: contain;";
+      videoFrame.appendChild(video);
+      video.play().catch(() => {});
+    }
   } else {
     videoWrap.style.display = 'none';
-    video.src = '';
   }
 }
 
@@ -8955,7 +8993,33 @@ function renderProPresets(list = PRO_PRESETS) {
   list.forEach(p => {
     const card = document.createElement('div');
     card.className = 'card pro-preset-card';
-    card.style = "padding: 10px; border-radius: 8px; background: rgba(20,20,22,0.6); border: 1px solid var(--border); text-align: center; cursor: pointer; transition: var(--transition); display:flex; flex-direction:column; gap:4px;";
+    card.style = "padding: 12px 8px; border-radius: 10px; background: rgba(15,15,18,0.75); border: 1px solid var(--border); text-align: center; cursor: pointer; transition: var(--transition); display:flex; flex-direction:column; align-items:center; gap:8px; justify-content:space-between; position:relative; overflow:hidden; min-height: 105px;";
+    
+    // Dynamically compile a miniature live crosshair preview
+    const settings = parseRiotCode(p.code);
+    const colors = { "0": "#fff", "1": "#00ff00", "2": "#ffff00", "3": "#3b82f6", "4": "#ff4444", "5": "#00ffff", "6": "#ff66cc" };
+    const hexColor = colors[settings.color] || "#00ffff";
+    
+    let thumbHtml = '';
+    // Scale parameters down for 36px tiny canvas
+    const thickness = Math.max(1, Math.min(3, settings.thickness * 0.4));
+    const length = Math.max(2, Math.min(8, settings.length * 0.4));
+    const offset = Math.max(0, Math.min(4, settings.offset * 0.4));
+    
+    if (settings.centerDot) {
+      thumbHtml += `<div style="position:absolute; width:${thickness + 1}px; height:${thickness + 1}px; background:${hexColor}; border-radius:50%; z-index:2; box-shadow: 0 0 4px ${hexColor};"></div>`;
+    }
+    if (length > 0 && thickness > 0) {
+      // Left Line
+      thumbHtml += `<div style="position:absolute; width:${length}px; height:${thickness}px; background:${hexColor}; right:calc(50% + ${offset}px); top:calc(50% - ${thickness/2}px); box-shadow: 0 0 3px ${hexColor};"></div>`;
+      // Right Line
+      thumbHtml += `<div style="position:absolute; width:${length}px; height:${thickness}px; background:${hexColor}; left:calc(50% + ${offset}px); top:calc(50% - ${thickness/2}px); box-shadow: 0 0 3px ${hexColor};"></div>`;
+      // Top Line
+      thumbHtml += `<div style="position:absolute; width:${thickness}px; height:${length}px; background:${hexColor}; bottom:calc(50% + ${offset}px); left:calc(50% - ${thickness/2}px); box-shadow: 0 0 3px ${hexColor};"></div>`;
+      // Bottom Line
+      thumbHtml += `<div style="position:absolute; width:${thickness}px; height:${length}px; background:${hexColor}; top:calc(50% + ${offset}px); left:calc(50% - ${thickness/2}px); box-shadow: 0 0 3px ${hexColor};"></div>`;
+    }
+    
     card.onclick = () => {
       document.getElementById('crosshair-code-input').value = p.code;
       importRiotCrosshairCode();
@@ -8963,8 +9027,15 @@ function renderProPresets(list = PRO_PRESETS) {
     };
     
     card.innerHTML = `
-      <div style="font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:14px; color:#fff; text-transform:uppercase;">${p.name}</div>
-      <div style="font-family:'DM Mono',monospace; font-size:9px; color:var(--accent); font-weight:700;">${p.team}</div>
+      <!-- Tiny Live Crosshair Vector Frame -->
+      <div style="width: 40px; height: 40px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+        ${thumbHtml}
+      </div>
+      <!-- Text details -->
+      <div style="display:flex; flex-direction:column; gap:2px; text-align:center; width:100%;">
+        <div style="font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:12px; color:#fff; text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.name}</div>
+        <div style="font-family:'DM Mono',monospace; font-size:8px; color:var(--accent); font-weight:700;">${p.team}</div>
+      </div>
     `;
     container.appendChild(card);
   });
