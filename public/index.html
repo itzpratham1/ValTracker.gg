@@ -7283,7 +7283,8 @@ async function switchVctModalTab(stage, region) {
     winnersTitle.style.display = 'flex';
     winnersContainer.style.display = 'grid';
     winnersContainer.innerHTML = regData.winners.map(w => {
-      const logoHtml = w.logo ? `<img src="${w.logo}" style="width:20px;height:20px;object-fit:contain;" />` : '';
+      const logoUrl = w.logo ? (w.logo.startsWith('/api/image') ? w.logo : `/api/image?url=${encodeURIComponent(w.logo)}`) : '';
+      const logoHtml = logoUrl ? `<img src="${logoUrl}" style="width:20px;height:20px;object-fit:contain;" onerror="this.style.display='none';" />` : '';
       return `
         <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); padding:10px; border-radius:4px; display:flex; align-items:center; gap:10px;">
           <div style="font-size:10px; color:var(--muted); text-transform:uppercase;">${w.region}</div>
@@ -7302,6 +7303,14 @@ async function switchVctModalTab(stage, region) {
   // Render Teams
   const teamsContainer = document.getElementById('vct-modal-teams');
   const teamsTitle = document.getElementById('vct-modal-teams-title');
+  
+  const isInternational = stage.includes('masters') || stage === 'champions';
+  
+  if (!isInternational) {
+    teamsTitle.style.display = 'none';
+    teamsContainer.style.display = 'none';
+    return;
+  }
   
   teamsTitle.style.display = 'flex';
   teamsContainer.style.display = 'grid';
@@ -7329,7 +7338,6 @@ async function switchVctModalTab(stage, region) {
   }
   
   let vlrIds = [];
-  const isInternational = stage.includes('masters') || stage === 'champions';
   const stageEvents = VCT_VLR_EVENTS[stage];
   
   if (stageEvents) {
@@ -7516,31 +7524,41 @@ function getEspHTML(m, type) {
     } else {
       let datePart = '';
       if (m.date) {
-        const hasToday = /today/i.test(m.date);
-        const hasYesterday = /yesterday/i.test(m.date);
-        
-        datePart = m.date.replace(/\b\d{1,2}:\d{2}\s*(?:AM|PM)?/gi, '').trim();
-        datePart = datePart.replace(/(Today|Yesterday|Tomorrow|Recent)/i, '').trim();
-        datePart = datePart.replace(/^(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),\s*/gi, '').trim();
-        datePart = datePart.replace(/^[,\s]+|[,\s]+$/g, '').trim();
-        
-        if (hasToday || hasYesterday) {
-          const d = new Date();
-          if (hasYesterday) {
-            d.setDate(d.getDate() - 1);
-          }
-          const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-          datePart = `${months[d.getMonth()]} ${d.getDate()} ${d.getFullYear()}`;
-        } else if (!datePart) {
-          datePart = new Date().getFullYear().toString();
+        if (m.date.includes('T') && m.date.includes('-')) {
+          datePart = m.date.split('T')[0];
         } else {
-          if (!/\b\d{4}\b/.test(datePart)) {
-            datePart += ` ${new Date().getFullYear()}`;
+          const hasToday = /today/i.test(m.date);
+          const hasYesterday = /yesterday/i.test(m.date);
+          let temp = m.date.replace(/\b\d{1,2}:\d{2}\s*(?:AM|PM)?/gi, '').trim();
+          temp = temp.replace(/(Today|Yesterday|Tomorrow|Recent)/i, '').trim();
+          temp = temp.replace(/^(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),\s*/gi, '').trim();
+          temp = temp.replace(/^[,\s]+|[,\s]+$/g, '').trim();
+          
+          if (hasToday || hasYesterday) {
+            const d = new Date();
+            if (hasYesterday) {
+              d.setDate(d.getDate() - 1);
+            }
+            const y = d.getFullYear();
+            const mo = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            datePart = `${y}-${mo}-${day}`;
+          } else if (!temp) {
+            datePart = new Date().toISOString().split('T')[0];
+          } else {
+            const d = new Date(m.date);
+            if (!isNaN(d.getTime())) {
+              const y = d.getFullYear();
+              const mo = String(d.getMonth() + 1).padStart(2, '0');
+              const day = String(d.getDate()).padStart(2, '0');
+              datePart = `${y}-${mo}-${day}`;
+            } else {
+              datePart = new Date().toISOString().split('T')[0];
+            }
           }
-          datePart = datePart.replace(/,/g, '');
         }
       } else {
-        datePart = new Date().getFullYear().toString();
+        datePart = new Date().toISOString().split('T')[0];
       }
       
       let cleanEvent = event;
@@ -7559,7 +7577,7 @@ function getEspHTML(m, type) {
         cleanEvent = 'VCT China';
       }
       
-      const searchQ = `${cleanEvent} ${getTeamSearchName(t1)} vs ${getTeamSearchName(t2)} highlights ${datePart}`.trim();
+      const searchQ = `${cleanEvent} ${t1} vs ${t2} highlights ${datePart}`.trim();
       mediaBtn = `<a href="https://www.youtube.com/results?search_query=${encodeURIComponent(searchQ)}" target="_blank" class="esp-btn vod">📺 View Highlights</a>`;
     }
   } else {
@@ -7936,6 +7954,7 @@ function initScrollSpy() {
 // --- SKINS STORE & COSMETICS LOGIC ---
 let storeBundleTimer = null;
 let allSkinsList = [];
+let allBundlesList = [];
 let filteredSkinsList = [];
 let skinCatalogPageSize = 24;
 let currentSkinCatalogIndex = 0;
@@ -7960,6 +7979,19 @@ async function initStoreView() {
         <div style="font-family:'DM Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:1.5px;">LOADING VALORANT SKIN CATALOG...</div>
       </div>
     `;
+  }
+
+  // Load bundles metadata first
+  if (allBundlesList.length === 0) {
+    try {
+      const res = await fetch('https://valorant-api.com/v1/bundles');
+      const json = await res.json();
+      if (json.data && json.data.length > 0) {
+        allBundlesList = json.data;
+      }
+    } catch (err) {
+      console.error("Bundles metadata load failed:", err);
+    }
   }
 
   // 1. Fetch and render featured store bundles
@@ -8027,6 +8059,10 @@ function renderFeaturedBundles(bundles) {
       el.textContent = `${d}D ${h}H ${m}M ${s}S`;
     }, 1000);
 
+    // Look up bundle name dynamically from valorant-api bundles metadata
+    const bundleMeta = allBundlesList.find(x => x.uuid === b.bundle_uuid);
+    const bundleName = bundleMeta ? bundleMeta.displayName : "Featured Bundle Offer";
+
     const itemsList = (b.items || []).map(item => {
       const discountedPrice = item.discounted_price || item.base_price || 0;
       const discountPct = item.discount_percent ? Math.round(item.discount_percent * 100) : 0;
@@ -8067,7 +8103,7 @@ function renderFeaturedBundles(bundles) {
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
           <div>
             <div style="font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:18px; text-transform:uppercase; color:#fff; display:flex; align-items:center; gap:8px;">
-              <span style="width:8px; height:8px; background:var(--accent); border-radius:50%"></span> Bundle Offer
+              <span style="width:8px; height:8px; background:var(--accent); border-radius:50%"></span> ${bundleName}
             </div>
             <div style="font-size:11px; color:var(--muted); font-family:'DM Mono',monospace; margin-top:2px;">UUID: ${b.bundle_uuid.substring(0,8)}...</div>
           </div>
