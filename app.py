@@ -344,49 +344,6 @@ def clear_server_cache():
     cache.clear()
     return jsonify({"status": "ok", "message": "Server cache cleared"})
 
-@app.route("/api/db-debug")
-def db_debug():
-    name = request.args.get("name", "ItzPrathamエース")
-    tag = request.args.get("tag", "GEWin")
-    
-    env_info = {
-        "SUPABASE_URL_exists": bool(SUPABASE_URL),
-        "SUPABASE_URL_val": SUPABASE_URL[:15] + "..." if SUPABASE_URL else None,
-        "SUPABASE_KEY_exists": bool(SUPABASE_KEY),
-        "SUPABASE_KEY_val": SUPABASE_KEY[:10] + "..." if SUPABASE_KEY else None,
-        "HENRIKDEV_API_KEY_exists": bool(API_KEY),
-    }
-    
-    player = get_cached_player(name, tag)
-    
-    raw_players = None
-    if SUPABASE_URL and SUPABASE_KEY:
-        try:
-            url = f"{SUPABASE_URL.rstrip('/')}/rest/v1/players_cache"
-            params = {
-                "name": f"ilike.{name}",
-                "tag": f"ilike.{tag}"
-            }
-            headers = {
-                "apikey": SUPABASE_KEY,
-                "Authorization": f"Bearer {SUPABASE_KEY}",
-                "Content-Type": "application/json"
-            }
-            r = requests.get(url, headers=headers, params=params, timeout=4)
-            raw_players = {
-                "status_code": r.status_code,
-                "body_len": len(r.text),
-                "body": r.json() if r.status_code == 200 else r.text[:200]
-            }
-        except Exception as e:
-            raw_players = {"error": str(e)}
-            
-    return jsonify({
-        "env_info": env_info,
-        "player": player,
-        "raw_players": raw_players
-    })
-
 @app.route("/api/image")
 @rate_limit(requests_per_minute=300)
 def proxy_image():
