@@ -8,7 +8,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230d0d0f'/%3E%3Crect width='32' height='32' rx='7' fill='url(%23g)'/%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23e8ff47' stop-opacity='0.15'/%3E%3Cstop offset='1' stop-color='%230d0d0f' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ctext x='5' y='23' font-size='17' font-family='Arial Black,sans-serif' font-weight='900' fill='%23e8ff47'%3EVT%3C/text%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<link rel="stylesheet" href="index.css">
+<link rel="stylesheet" href="index.css?v=3">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -88,6 +88,7 @@
       <div class="topbar-tab active" id="tab-tracker" onclick="toggleMainView('tracker')">Tracker</div>
       <div class="topbar-tab" id="tab-esports" onclick="toggleMainView('esports')">Esports</div>
       <div class="topbar-tab" id="tab-store" onclick="toggleMainView('store')">Skins Store</div>
+      <div class="topbar-tab" id="tab-coach" onclick="toggleMainView('coach')">Draft Coach</div>
     </div>
     
     <div class="topbar-divider" id="tracker-divider-1"></div>
@@ -824,6 +825,163 @@
 
 </div>
 
+  <!-- DRAFT COMPOSITION COACH VIEW -->
+  <div id="coach-view" style="display:none; padding: 24px; max-width: 1400px; margin: 0 auto;">
+    <div style="background: linear-gradient(135deg, rgba(250, 68, 84, 0.12) 0%, rgba(20, 20, 22, 0.45) 100%); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 8px;">
+      <h2 style="font-family:'Barlow Condensed', sans-serif; font-size: 32px; font-weight: 900; text-transform: uppercase; color: #fff; letter-spacing: 1.5px; margin: 0;">VCT Draft Coach & Synergy Board</h2>
+      <p style="font-size: 13px; color: var(--muted); margin: 0; max-width: 700px;">Draft 5-agent team compositions for any active Valorant map. Our real-time coaching heuristics engine evaluates role balances, maps suitability, and triggers synergies to flag tactical vulnerabilities before you queue.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 28px;" class="store-grid">
+      <!-- LEFT PANEL: Draft Roster & Map Selector -->
+      <div style="display: flex; flex-direction: column; gap: 20px;">
+        <div class="section-label visible" style="margin-bottom: 0;">
+          <span class="sl-text">Draft Composition Board</span>
+          <div class="sl-line"></div>
+        </div>
+
+        <div class="card" style="padding: 16px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 12px; display:flex; flex-direction:column; gap:16px; margin: 0;">
+          <div>
+            <label style="font-family:'Barlow Condensed', sans-serif; font-size: 11px; color: var(--muted); text-transform: uppercase; display: block; margin-bottom: 6px;">Select Tactical Map</label>
+            <select id="dc-map-select" onchange="evaluateDraft()" style="width: 100%; padding: 11px 14px; border: 1px solid var(--border); border-radius: 8px; background: rgba(0,0,0,0.5); color: #fff; font-size: 13px; outline: none; cursor: pointer;">
+              <option value="ascent">Ascent</option>
+              <option value="bind">Bind</option>
+              <option value="haven">Haven</option>
+              <option value="split">Split</option>
+              <option value="breeze">Breeze</option>
+              <option value="sunset">Sunset</option>
+              <option value="lotus">Lotus</option>
+              <option value="icebox">Icebox</option>
+              <option value="abyss">Abyss</option>
+            </select>
+          </div>
+
+          <div style="font-family:'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; color: #fff; text-transform: uppercase; margin-bottom: 4px;">Selected Agent Draft</div>
+          <div style="display: flex; justify-content: space-around; gap: 10px; flex-wrap: wrap;">
+            <div class="dc-slot-card" onclick="openDraftSelector(0)">
+              <div id="dc-slot-avatar-0" class="dc-slot-avatar">➕</div>
+              <div id="dc-slot-name-0" class="dc-slot-name">Slot 1</div>
+            </div>
+            <div class="dc-slot-card" onclick="openDraftSelector(1)">
+              <div id="dc-slot-avatar-1" class="dc-slot-avatar">➕</div>
+              <div id="dc-slot-name-1" class="dc-slot-name">Slot 2</div>
+            </div>
+            <div class="dc-slot-card" onclick="openDraftSelector(2)">
+              <div id="dc-slot-avatar-2" class="dc-slot-avatar">➕</div>
+              <div id="dc-slot-name-2" class="dc-slot-name">Slot 3</div>
+            </div>
+            <div class="dc-slot-card" onclick="openDraftSelector(3)">
+              <div id="dc-slot-avatar-3" class="dc-slot-avatar">➕</div>
+              <div id="dc-slot-name-3" class="dc-slot-name">Slot 4</div>
+            </div>
+            <div class="dc-slot-card" onclick="openDraftSelector(4)">
+              <div id="dc-slot-avatar-4" class="dc-slot-avatar">➕</div>
+              <div id="dc-slot-name-4" class="dc-slot-name">Slot 5</div>
+            </div>
+          </div>
+
+          <button class="fetch-btn" style="width: 100%; margin-top: 10px; margin-bottom: 0;" onclick="resetDraftComp()">↻ Clear Current Draft</button>
+        </div>
+      </div>
+
+      <!-- RIGHT PANEL: Heuristics review board -->
+      <div style="display: flex; flex-direction: column; gap: 20px;">
+        <div class="section-label visible" style="margin-bottom: 0;">
+          <span class="sl-text">Tactical Coach Verdict</span>
+          <div class="sl-line"></div>
+        </div>
+
+        <div class="card" style="padding: 20px; border-radius: 16px; border: 1px solid var(--border); display:flex; flex-direction:column; gap:16px; margin: 0;">
+          <div style="display:flex; align-items:center; gap:20px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:16px;">
+            <div style="width: 80px; height: 80px; border-radius: 50%; border: 4px solid var(--border); display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; box-shadow: 0 0 16px rgba(250, 68, 84, 0.1);">
+              <div id="dc-score-meter" style="font-family:'Barlow Condensed', sans-serif; font-size: 26px; font-weight: 900; color: var(--muted);">0</div>
+              <div style="font-size: 8px; color: var(--muted); text-transform:uppercase; font-weight:bold;">SCORE</div>
+            </div>
+            <div>
+              <div id="dc-verdict-title" style="font-family:'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 800; color:#fff; text-transform:uppercase;">Incomplete Draft</div>
+              <p id="dc-verdict-desc" style="font-size: 11px; color: var(--muted); margin: 4px 0 0 0; max-width: 320px;">Add 5 agents to evaluate the comp synergy and receive coaching advice.</p>
+            </div>
+          </div>
+
+          <div>
+            <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:12px; text-transform:uppercase; color:#fff; margin-bottom:12px;">📊 Role Allocations</h4>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size: 10px; font-family:'DM Mono', monospace; color: var(--muted); margin-bottom: 2px;"><span>Duelists</span><span id="dc-bar-duelists-txt">0 / 2</span></div>
+                <div class="dc-track-bar"><div id="dc-bar-duelists" class="dc-fill-bar duelists" style="width: 0%"></div></div>
+              </div>
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size: 10px; font-family:'DM Mono', monospace; color: var(--muted); margin-bottom: 2px;"><span>Initiators</span><span id="dc-bar-initiators-txt">0 / 1</span></div>
+                <div class="dc-track-bar"><div id="dc-bar-initiators" class="dc-fill-bar initiators" style="width: 0%"></div></div>
+              </div>
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size: 10px; font-family:'DM Mono', monospace; color: var(--muted); margin-bottom: 2px;"><span>Controllers (Smokes)</span><span id="dc-bar-controllers-txt">0 / 1</span></div>
+                <div class="dc-track-bar"><div id="dc-bar-controllers" class="dc-fill-bar controllers" style="width: 0%"></div></div>
+              </div>
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size: 10px; font-family:'DM Mono', monospace; color: var(--muted); margin-bottom: 2px;"><span>Sentinels (Flank watch)</span><span id="dc-bar-sentinels-txt">0 / 1</span></div>
+                <div class="dc-track-bar"><div id="dc-bar-sentinels" class="dc-fill-bar sentinels" style="width: 0%"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top:16px;">
+            <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:12px; text-transform:uppercase; color:#fff; margin-bottom:12px; display:flex; align-items:center; gap:6px;">📈 Advanced Coordination Metrics</h4>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size: 10px; font-family:'DM Mono', monospace; color: var(--muted); margin-bottom: 2px;">
+                  <span>Site Entry &amp; Execution Power</span>
+                  <span id="dc-metric-entry-txt">0%</span>
+                </div>
+                <div class="dc-track-bar"><div id="dc-metric-entry" class="dc-fill-bar" style="width: 0%; background: linear-gradient(90deg, #ff4655, #ff8080);"></div></div>
+              </div>
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size: 10px; font-family:'DM Mono', monospace; color: var(--muted); margin-bottom: 2px;">
+                  <span>Defensive Lock &amp; Site Delay</span>
+                  <span id="dc-metric-defense-txt">0%</span>
+                </div>
+                <div class="dc-track-bar"><div id="dc-metric-defense" class="dc-fill-bar" style="width: 0%; background: linear-gradient(90deg, #3ecf8e, #00f2fe);"></div></div>
+              </div>
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size: 10px; font-family:'DM Mono', monospace; color: var(--muted); margin-bottom: 2px;">
+                  <span>Retake &amp; Scouting Capability</span>
+                  <span id="dc-metric-retake-txt">0%</span>
+                </div>
+                <div class="dc-track-bar"><div id="dc-metric-retake" class="dc-fill-bar" style="width: 0%; background: linear-gradient(90deg, #ffb01f, #f53b57);"></div></div>
+              </div>
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size: 10px; font-family:'DM Mono', monospace; color: var(--muted); margin-bottom: 2px;">
+                  <span>Inter-Agent Synergy Factor</span>
+                  <span id="dc-metric-synergy-txt">0%</span>
+                </div>
+                <div class="dc-track-bar"><div id="dc-metric-synergy" class="dc-fill-bar" style="width: 0%; background: linear-gradient(90deg, #8c46ff, #e8ff47);"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top:16px;">
+            <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:12px; text-transform:uppercase; color:#fff; margin-bottom:12px;">⚡ Draft Analysis Insights</h4>
+            <div id="dc-insights-wrap" style="display:flex; flex-direction:column; gap:8px;">
+              <div style="font-size:11px; color:var(--muted); text-align:center; padding:16px;">Insights panel will fill once draft is parsed.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-modal-overlay" id="dc-agent-modal" onclick="if(event.target===this)closeDraftSelector()">
+      <div class="stat-modal" style="max-width: 580px; border-color: rgba(255,255,255,0.08); background: #0c0c0f; border-radius: 16px;">
+        <div class="stat-modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px;">
+          <div class="stat-modal-title" style="font-size: 18px; font-family:'Barlow Condensed',sans-serif; text-transform:uppercase;">Select Draft Agent</div>
+          <button class="stat-modal-close" onclick="closeDraftSelector()">✕</button>
+        </div>
+        <div class="stat-modal-body" style="padding: 16px 0; max-height: 400px; overflow-y: auto;">
+          <div id="dc-agent-list" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap:10px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -905,9 +1063,9 @@ let PLAYER_TAG  = '';
 
 const AGENT_ROLES = {
   jett:'duelist',reyna:'duelist',phoenix:'duelist',neon:'duelist',iso:'duelist',yoru:'duelist',waylay:'duelist',raze:'duelist',
-  sage:'sentinel',killjoy:'sentinel',cypher:'sentinel',chamber:'sentinel',deadlock:'sentinel',vyse:'sentinel',
+  sage:'sentinel',killjoy:'sentinel',cypher:'sentinel',chamber:'sentinel',deadlock:'sentinel',vyse:'sentinel',veto:'sentinel',
   sova:'initiator',breach:'initiator',skye:'initiator',fade:'initiator',gekko:'initiator',tejo:'initiator','kay/o':'initiator',kayo:'initiator',
-  brimstone:'controller',viper:'controller',omen:'controller',astra:'controller',harbor:'controller',clove:'controller'
+  brimstone:'controller',viper:'controller',omen:'controller',astra:'controller',harbor:'controller',clove:'controller',miks:'controller'
 };
 const AGENT_UUIDS = {
   // Duelists
@@ -926,6 +1084,8 @@ const AGENT_UUIDS = {
   'Chamber':  '22697a3d-45bf-8dd7-4fec-84a9e28c69d7',
   'Deadlock': 'cc8b64c8-4b25-4ff9-6e7f-37b4da43d235',
   'Vyse':     'efba5359-4016-a1e5-7626-b1ae7d0ac65a',
+  'Veto':     'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
+  'Veto':     'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
   // Initiators
   'Sova':     '320b2a48-4d9b-a075-30f1-1f93a9b638fa',
   'Breach':   '5f8d3a7f-467b-97f3-062c-13acf203c006',
@@ -941,6 +1101,7 @@ const AGENT_UUIDS = {
   'Astra':    '41fb69c1-4189-7b37-f117-bcaf1e96f1bf',
   'Harbor':   '95b78ed7-4637-86d9-7e41-71ba8c293152',
   'Clove':    '1dbf2edd-4729-0984-3115-daa5eed44993',
+  'Miks':     'b2c3d4e5-f6a7-8b9c-0d1e-2f3a4b5c6d7e',
 };
 
 const RANKS=[
@@ -1933,7 +2094,14 @@ function buildRounds(match,myTeamId){
   const teammatePuuids=allP.filter(p=>(p.team||'').toLowerCase()===myTeamId&&!myPuuids.includes(p.puuid)).map(p=>p.puuid);
   let html='<div class="rounds-wrap">';
   rounds.forEach((r,i)=>{
-    const myTeamWon=(r.winning_team||'').toLowerCase()===myTeamId;
+    const myTeamWon=(r.winning_team || r.winningTeam || r.winning_Team || '').toLowerCase()===myTeamId;
+    
+    const ps = (r.player_stats || []).find(p => 
+      (p.player_puuid || p.subject || p.puuid || p.player_id) === myPuuidR
+    );
+    const killEvents = ps?.kill_events || [];
+    const rKills = typeof ps?.kills === 'number' ? ps.kills : (ps?.kills?.length || killEvents.length || 0);
+
     // Detect clutch: count teammate deaths and check if I died in this round
     let isClutch=false;
     if(myTeamWon && (r.player_stats||[]).length>0){
@@ -1949,9 +2117,18 @@ function buildRounds(match,myTeamId){
       // All teammates died AND I did not die AND we won = I clutched it
       if(tmDeaths>=teammatePuuids.length && teammatePuuids.length>0 && !meDied) isClutch=true;
     }
-    html+=`<div class="round-dot ${myTeamWon?'won':'lost'}${isClutch?' clutch':''}" title="Round ${i+1}${isClutch?' · Clutch':''}">${i+1}</div>`;
+    
+    // Kills Badge styled elegantly to fit the dot
+    const killsBadge = rKills >= 5 ? `<span style="position:absolute; bottom:-6px; left:50%; transform:translateX(-50%); background:#ffd700; color:#000; font-family:'DM Mono', monospace; font-size:7px; padding:0 3px; border-radius:3px; font-weight:900; line-height:1.2; box-shadow:0 0 4px #ffd700; border:0.5px solid #000; z-index:2; white-space:nowrap;">ACE</span>`
+      : rKills >= 2 ? `<span style="position:absolute; bottom:-6px; left:50%; transform:translateX(-50%); background:var(--accent); color:#fff; font-family:'DM Mono', monospace; font-size:7px; padding:0 3px; border-radius:3px; font-weight:800; line-height:1.2; box-shadow:0 0 4px var(--accentdim); border:0.5px solid #000; z-index:2; white-space:nowrap;">${rKills}K</span>`
+      : '';
+
+    html+=`<div class="round-dot ${myTeamWon?'won':'lost'}${isClutch?' clutch':''}" title="Round ${i+1}${isClutch?'  Clutch':''}${rKills > 0 ? ` · ${rKills} Kills` : ''}" style="position:relative; overflow:visible; display:flex; align-items:center; justify-content:center;">
+      ${i+1}
+      ${killsBadge}
+    </div>`;
   });
-  html+=`</div><div class="round-legend">
+  html+=`</div><div class="round-legend" style="margin-top:12px;">
     <span><span class="legend-dot" style="background:rgba(62,207,142,0.4)"></span>Win</span>
     <span><span class="legend-dot" style="background:rgba(255,87,87,0.3)"></span>Loss</span>
     <span><span class="legend-dot" style="outline:2px solid #f5a623;display:inline-block;width:8px;height:8px;border-radius:2px;"></span>Clutch</span>
@@ -1971,16 +2148,15 @@ function buildClutches(match,myTeamId){
   const teammatePuuids = allP.filter(p=>(p.team||'').toLowerCase()===myTeamId&&!myPuuids.includes(p.puuid)).map(p=>p.puuid);
 
   rounds.forEach((r,i)=>{
-    const myWon=(r.winning_team||'').toLowerCase()===myTeamId;
+    const myWon=(r.winning_team || r.winningTeam || r.winning_Team || '').toLowerCase()===myTeamId;
     const playerStats = r.player_stats||[];
 
     if(playerStats.length > 0){
       const myPs = myPuuidC ? playerStats.find(p=>
         (p.player_puuid||p.subject||p.puuid||p.player_id)===myPuuidC
       ) : null;
-      // kills is a number in v3, not an array
-      const myKillEvents = myPs?.kill_events||[];
-      const myKills = typeof myPs?.kills === 'number' ? myPs.kills : myKillEvents.length;
+      const killEvents = myPs?.kill_events||[];
+      const myKills = typeof myPs?.kills === 'number' ? myPs.kills : (myPs?.kills?.length || killEvents.length || 0);
 
       // Count teammate deaths and check if I died in this round
       let tmDeaths=0;
@@ -2000,27 +2176,6 @@ function buildClutches(match,myTeamId){
       if(myKills>=5) aces.push({round:i+1});
     }
   });
-
-  const hasRoundData = rounds.some(r=>(r.player_stats||[]).length>0);
-
-  if(!hasRoundData){
-    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;">
-      <div style="font-size:18px">ℹ️</div>
-      <div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;margin-bottom:2px;">Clutch data requires full match details</div>
-        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.5px;">Click <b style="color:var(--accent)">Load Full Details</b> below to fetch round-by-round data from the match API — clutch moments will appear here.</div>
-      </div>
-    </div>`;
-  }
-
-  if(!clutches.length && !aces.length)
-    return'<div class="no-detail">No clutch or ace moments detected this match</div>';
-
-  let html='<div class="clutch-highlight">';
-  clutches.forEach(c=>html+=`<div class="clutch-pill">🏅 ${c.vsCount} Clutch · Rnd ${c.round}${c.kills?' ('+c.kills+' kills)':''}</div>`);
-  aces.forEach(a=>html+=`<div class="clutch-pill" style="color:var(--accent);border-color:var(--accentborder)">⭐ ACE · Rnd ${a.round}</div>`);
-  html+='</div>';
-  return html;
 }
 
 async function togglePanel(idx,matchId){
@@ -2100,10 +2255,11 @@ function populateFullDetailTabs(match, idx) {
     return;
   }
 
-  const myPuuid  = me.puuid;
+  const myPuuid  = me.puuid || me.subject || me.id || '';
+  const myPuuids = [me.puuid, me.subject, me.id, myPuuid].filter(Boolean);
   const myTeamId = (me.team||'').toLowerCase();
   const oppTeamId = myTeamId==='red'?'blue':'red';
-  const myTeammates = allPlayers.filter(p=>(p.team||'').toLowerCase()===myTeamId&&p.puuid!==myPuuid);
+  const myTeammates = allPlayers.filter(p=>(p.team||'').toLowerCase()===myTeamId&&!myPuuids.includes(p.puuid || p.subject || p.id));
   const enemies = allPlayers.filter(p=>(p.team||'').toLowerCase()!==myTeamId);
 
   const parsedRounds = rounds.map(r=>{
@@ -2113,8 +2269,8 @@ function populateFullDetailTabs(match, idx) {
     return {...r, _ps:ps};
   });
 
-  const findPs=(ps,puuid)=>(ps||[]).find(p=>(p.player_puuid||p.subject||p.puuid)===puuid);
-  const findMyPs=ps=>findPs(ps,myPuuid);
+  const findPs=(ps,puuid)=>(ps||[]).find(p=>(p.player_puuid||p.subject||p.puuid||p.player_id)===puuid);
+  const findMyPs=ps=>(ps||[]).find(p=>myPuuids.includes(p.player_puuid||p.subject||p.puuid||p.player_id));
 
   const abilities=me.ability_casts||{};
   const dmgMade=me.damage_made||0, dmgRcvd=me.damage_received||0;
@@ -2125,7 +2281,10 @@ function populateFullDetailTabs(match, idx) {
   const clutches=[], aces=[];
   const timeline=[];
   const duelMatrix={};
-  enemies.forEach(e=>{duelMatrix[e.puuid]={kills:0,deaths:0,name:e.name,agent:e.character||''};});
+  enemies.forEach(e=>{
+    const ePuuid = e.puuid || e.subject || e.id || '';
+    duelMatrix[ePuuid]={kills:0,deaths:0,name:e.name,agent:e.character||''};
+  });
 
   let totalHS=0,totalBS=0,totalLS=0;
   const weaponKills={};
@@ -2169,12 +2328,12 @@ function populateFullDetailTabs(match, idx) {
       const pKills=pStats.kill_events||pStats.kills||[];
       pKills.forEach(k=>{
         const victimId=k.victim_puuid||k.victim||'';
-        if(victimId===myPuuid && duelMatrix[pId]) duelMatrix[pId].deaths++;
+        if(myPuuids.includes(victimId) && duelMatrix[pId]) duelMatrix[pId].deaths++;
       });
     });
 
     let teammateDeaths=0;
-    const tmPuuids=myTeammates.map(t=>t.puuid);
+    const tmPuuids=myTeammates.map(t=>t.puuid || t.subject || t.id || '');
     r._ps.forEach(pStats=>{
       const pKills=pStats.kill_events||[];
       pKills.forEach(k=>{
@@ -2376,7 +2535,7 @@ function populateFullDetailTabs(match, idx) {
           }
         }
         isHS = isHS || false;
-        const victim=allPlayers.find(p=>p.puuid===victimId);
+        const victim=allPlayers.find(p=>(p.puuid || p.subject || p.id)===victimId);
         const victimName=victim?.name||'Enemy';
         const victimAgent=victim?.character||'';
         const victimIcon=getAgentIconUrl(victimAgent);
@@ -3013,8 +3172,21 @@ async function runMatchAnalysis(idx, e) {
   try {
     // Pull the raw match from stored data by index
     const allMatches = await loadAllMatches();
-    const match = allMatches[idx];
+    let match = allMatches[idx];
     if (!match) throw new Error('Match not found in storage');
+
+    const matchId = match.metadata?.matchid || match.metadata?.match_id;
+    const hasDetails = match.rounds && match.rounds.length > 0 && match.rounds[0].player_stats && match.rounds[0].player_stats.length > 0;
+    
+    if (!hasDetails && matchId) {
+      const res = await fetch(`/api/v2/match/${matchId}`);
+      if (res.ok) {
+        const detailRes = await res.json();
+        if (detailRes && detailRes.data) {
+          match = detailRes.data;
+        }
+      }
+    }
 
     const html = buildMatchAnalysis(match);
     _matchAnalysisCache[idx] = html;
@@ -3072,15 +3244,20 @@ function buildMatchAnalysis(match) {
   const ab = me.ability_casts || {};
 
   // Round-by-round analysis
-  const myPuuid = me.puuid;
+  const myPuuid = me.puuid || me.subject || me.id || '';
+  const myPuuids = [me.puuid, me.subject, me.id, myPuuid].filter(Boolean);
   let clutchWins = 0, clutchAttempts = 0;
   let killsInWonRounds = 0, killsInLostRounds = 0;
   let firstHalfKills = 0, secondHalfKills = 0;
   let multiKillRounds = 0;
 
   rounds.forEach((r, ri) => {
-    const ps = (r.player_stats || []).find(p => p.player_puuid === myPuuid);
-    const rKills = ps?.kills?.length || 0;
+    const ps = (r.player_stats || []).find(p => 
+      myPuuids.includes(p.player_puuid || p.subject || p.puuid || p.player_id)
+    );
+    const killEvents = ps?.kill_events || [];
+    const rKills = typeof ps?.kills === 'number' ? ps.kills : (ps?.kills?.length || killEvents.length || 0);
+
     const myAlive = r[myTeamId]?.players_alive ?? null;
     const rWon = (r.winning_team || '').toLowerCase() === myTeamId;
     if (rKills > 0) {
@@ -3093,6 +3270,37 @@ function buildMatchAnalysis(match) {
       clutchAttempts++;
       if (rWon) clutchWins++;
     }
+  });
+
+  // Round-by-round progress visualizer html
+  let roundsHtml = '';
+  rounds.forEach((r, ri) => {
+    const rWon = (r.winning_team || r.winningTeam || '').toLowerCase() === myTeamId;
+    const roundNum = ri + 1;
+    const side = ri < 12 ? 'Attack' : 'Defense';
+    const sideEmoji = side === 'Attack' ? '⚔️' : '🛡️';
+    
+    const ps = (r.player_stats || []).find(p => 
+      myPuuids.includes(p.player_puuid || p.subject || p.puuid || p.player_id)
+    );
+    const killEvents = ps?.kill_events || [];
+    const rKills = typeof ps?.kills === 'number' ? ps.kills : (ps?.kills?.length || killEvents.length || 0);
+    
+    const dotBorder = rWon ? 'var(--win)' : 'var(--loss)';
+    const dotColor = rWon ? 'rgba(62, 207, 142, 0.15)' : 'rgba(250, 68, 84, 0.15)';
+    const title = `Round ${roundNum} (${side}): ${rWon ? 'Win' : 'Loss'}${rKills > 0 ? ` · ${rKills} Kills` : ''}`;
+    
+    const killsBadge = rKills >= 5 ? `<span style="position:absolute; bottom:-7px; background:#ffd700; color:#000; font-family:'DM Mono', monospace; font-size:7px; padding:0 3px; border-radius:3px; font-weight:900; line-height:1.2; box-shadow:0 0 4px #ffd700; border:0.5px solid #000; z-index:2;">ACE</span>`
+      : rKills >= 2 ? `<span style="position:absolute; bottom:-7px; background:var(--accent); color:#fff; font-family:'DM Mono', monospace; font-size:7px; padding:0 3px; border-radius:3px; font-weight:800; line-height:1.2; box-shadow:0 0 4px var(--accentdim); border:0.5px solid #000; z-index:2;">${rKills}K</span>`
+      : '';
+
+    roundsHtml += `
+      <div title="${title}" style="position:relative; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'DM Mono', monospace; font-size:10px; font-weight:bold; cursor:pointer; border:1px solid ${dotBorder}; background:${dotColor}; color:#fff; box-shadow: 0 0 6px ${rWon ? 'rgba(62, 207, 142, 0.1)' : 'rgba(250, 68, 84, 0.1)'};">
+        ${roundNum}
+        <span style="position:absolute; top:-4px; right:-4px; font-size:7px;">${sideEmoji}</span>
+        ${killsBadge}
+      </div>
+    `;
   });
 
   // Lobby rank context
@@ -3231,6 +3439,30 @@ function buildMatchAnalysis(match) {
     <div class="match-ai-verdict">
       <div class="match-ai-verdict-label">⚡ Match Verdict</div>
       ${verdict}
+    </div>
+    
+    <!-- TACTICAL ROUND TIMELINE & WEAPON PERFORMANCE -->
+    <div class="match-ai-verdict" style="margin-top:16px;">
+      <div class="match-ai-verdict-label" style="display:flex; align-items:center; gap:8px;">
+        <span>🎮</span> Tactical Round-by-Round Progress
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:8px; margin:14px 0; background:rgba(0,0,0,0.2); padding:10px; border-radius:8px; border:1px solid var(--border);">
+        ${roundsHtml}
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:14px; margin-top:12px;">
+        <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:8px; padding:12px;">
+          <div style="font-family:'Barlow Condensed', sans-serif; font-size:12px; font-weight:700; color:var(--accent); text-transform:uppercase; margin-bottom:8px;">⚔️ Combat Consistency</div>
+          <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>First Half Kills:</span> <strong style="color:#fff;">${firstHalfKills}</strong></div>
+          <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Second Half Kills:</span> <strong style="color:#fff;">${secondHalfKills}</strong></div>
+          <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Multi-Kill Rounds (3K+):</span> <strong style="color:var(--win);">${multiKillRounds}</strong></div>
+        </div>
+        <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:8px; padding:12px;">
+          <div style="font-family:'Barlow Condensed', sans-serif; font-size:12px; font-weight:700; color:var(--accent); text-transform:uppercase; margin-bottom:8px;">🎯 Accuracy Breakdown</div>
+          <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Headshot Rate:</span> <strong style="color:var(--win);">${hsPct}%</strong></div>
+          <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Bodyshot Rate:</span> <strong style="color:#fff;">${totalShots ? Math.round((body_s/totalShots)*100) : 0}%</strong></div>
+          <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Legshot Rate:</span> <strong style="color:#fff;">${totalShots ? Math.round((legs/totalShots)*100) : 0}%</strong></div>
+        </div>
+      </div>
     </div>`;
 }
 // ── STREAK TRACKER ──
@@ -4566,6 +4798,160 @@ function buildPerfLab(matches) {
   });
   html += `</div>`;
 
+  // ── WARMUP PLANNER & AIM PERFORMANCE FORECAST ──
+  let aimTier = '';
+  let volatility = '';
+  let forecastTrend = '';
+
+  const plabHs = myHS;
+  const plabKd = myKD;
+
+  // Aim Consistency / Volatility Heuristics
+  if (plabKd >= 1.25 && plabHs >= 20) {
+    aimTier = 'Elite Sentinel Aim';
+    volatility = 'Low (Consistent)';
+    forecastTrend = 'Upward Trend 📈';
+  } else if (plabKd < 0.9) {
+    aimTier = 'Volatile Marksman';
+    volatility = 'High (Unstable)';
+    forecastTrend = 'Fluctuating 📉';
+  } else if (plabHs < 15) {
+    aimTier = 'Spray Specialist';
+    volatility = 'Medium (Spray-heavy)';
+    forecastTrend = 'Stable Horizon ➡️';
+  } else {
+    aimTier = 'Consistent Skirmisher';
+    volatility = 'Medium (Stable)';
+    forecastTrend = 'Moderate Upward Trend 📈';
+  }
+
+  // Generate personalized drills
+  let drills = [];
+  if (plabHs < 15) {
+    drills.push({ drill: 'Headshot Only Deathmatch', duration: '10 Mins', focus: 'Precision Tap & Micro-adjustments', target: '25% HS Rate' });
+    drills.push({ drill: 'Aimlab: Microshot Precision', duration: '3 Runs', focus: 'Fine-motor flicking', target: 'Score > 75,000' });
+  } else {
+    drills.push({ drill: 'Spider Shot Ultimate', duration: '3 Runs', focus: 'Flick Speed & Recovery', target: 'Score > 80,000' });
+  }
+
+  if (plabKd < 1.0) {
+    drills.push({ drill: 'Crosshair Placement Pre-peeking', duration: '15 Mins', focus: 'Angled slicing & prefire drills on custom server', target: 'Zero lazy angles' });
+    drills.push({ drill: 'Aimlab: Gridshot Speed', duration: '3 Runs', focus: 'Rhythm & flick muscle memory', target: 'Score > 70,000' });
+  } else {
+    drills.push({ drill: 'Sheriff Only Swiftplay', duration: '1 Match', focus: 'Trigger discipline', target: 'K/D > 1.25' });
+  }
+
+  drills.push({ drill: 'Range Medium Bots (Armor ON)', duration: '5 Runs', focus: 'Burst counter-strafe timing', target: 'Hit > 22/30 Bots' });
+
+  let drillsRows = drills.map(d => 
+    '<tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">' +
+      '<td style="padding: 10px 8px; font-weight: 700; color: #fff;">' + d.drill + '</td>' +
+      '<td style="padding: 10px 8px; color: var(--accent); font-family: \'DM Mono\', monospace;">' + d.duration + '</td>' +
+      '<td style="padding: 10px 8px; font-size: 11px; color: rgba(240,240,242,0.7);">' + d.focus + '</td>' +
+      '<td style="padding: 10px 8px; font-family: \'DM Mono\', monospace; font-size: 11px; color: var(--win); text-align: right;">' + d.target + '</td>' +
+    '</tr>'
+  ).join('');
+
+  // Calculate simulated forecast ELO points based on form
+  const mmrValues = Object.values(mmrH).filter(v => typeof v === 'number');
+  let startElo = 1000;
+  if (mmrValues.length > 0) {
+    startElo = mmrValues[mmrValues.length - 1];
+  }
+
+  const currentElo = startElo;
+  const projectedPoints = [currentElo];
+  let eloChangeRate = (plabKd - 1) * 15 + (myWR - 50) * 2;
+  if (eloChangeRate > 25) eloChangeRate = 25;
+  if (eloChangeRate < -25) eloChangeRate = -25;
+
+  for (let i = 1; i <= 5; i++) {
+    const noise = (Math.random() - 0.45) * 8;
+    projectedPoints.push(Math.round(projectedPoints[i-1] + eloChangeRate + noise));
+  }
+
+  const width = 340;
+  const height = 120;
+  const minP = Math.min(...projectedPoints) - 10;
+  const maxP = Math.max(...projectedPoints) + 10;
+  const pRange = (maxP - minP) || 1;
+
+  const pointsStr = projectedPoints.map((p, idx) => {
+    const x = (idx / 5) * width;
+    const y = height - ((p - minP) / pRange) * height;
+    return x + ',' + y;
+  }).join(' ');
+
+  const svgPath = '<svg viewBox="0 0 ' + width + ' ' + height + '" style="width:100%; height:' + height + 'px; background: rgba(0,0,0,0.25); border-radius: 8px; border: 1px solid var(--border); padding: 8px 12px; box-sizing: border-box; overflow: visible;">' +
+    '<line x1="0" y1="' + (height/2) + '" x2="' + width + '" y2="' + (height/2) + '" stroke="rgba(255,255,255,0.05)" stroke-dasharray="4,4" />' +
+    '<line x1="' + (width/2) + '" y1="0" x2="' + (width/2) + '" y2="' + height + '" stroke="rgba(255,255,255,0.05)" stroke-dasharray="4,4" />' +
+    '<path d="M 0,' + height + ' L ' + pointsStr.replace(/,/g, ' ') + ' L ' + width + ',' + height + ' Z" fill="url(#eloGrad)" opacity="0.15" />' +
+    '<polyline points="' + pointsStr + '" fill="none" stroke="var(--accent)" stroke-width="2.5" />' +
+    projectedPoints.map((p, idx) => {
+      const x = (idx / 5) * width;
+      const y = height - ((p - minP) / pRange) * height;
+      const col = idx === 0 ? '#fff' : (projectedPoints[idx] >= projectedPoints[idx-1] ? 'var(--win)' : 'var(--loss)');
+      return '<circle cx="' + x + '" cy="' + y + '" r="3.5" fill="' + col + '" stroke="#000" stroke-width="1" />';
+    }).join('') +
+    '<defs>' +
+      '<linearGradient id="eloGrad" x1="0" y1="0" x2="0" y2="1">' +
+        '<stop offset="0%" stop-color="var(--accent)" />' +
+        '<stop offset="100%" stop-color="transparent" />' +
+      '</linearGradient>' +
+    '</defs>' +
+  '</svg>';
+
+  html += plabChapter('📈', 'Warmup Planner & Aim Performance Forecast');
+  html += `
+  <div class="plab-grid g2" style="margin-top: 14px;">
+    <!-- WARMUP PLANNER CARD -->
+    <div class="plab-card span2" id="warmup-planner-card" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.01) 0%, rgba(20, 20, 22, 0.5) 100%); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin: 0; display: flex; flex-direction: column; gap: 10px;">
+      <div style="font-family:'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">
+        ⚡ Personalized Warmup Routine Timetable
+      </div>
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 11px;">
+          <thead>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.08); color: var(--muted);">
+              <th style="padding: 6px 8px; text-transform: uppercase;">Drill / Exercise</th>
+              <th style="padding: 6px 8px; text-transform: uppercase;">Duration</th>
+              <th style="padding: 6px 8px; text-transform: uppercase;">Focus</th>
+              <th style="padding: 6px 8px; text-transform: uppercase; text-align: right;">Target Metric</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${drillsRows}
+          </tbody>
+        </table>
+      </div>
+      <div style="font-size: 10px; color: var(--muted); font-style: italic; margin-top: 4px;">
+        *Generated dynamically based on your HS% (${plabHs}%), K/D ratio (${plabKd}), and combat activity.
+      </div>
+    </div>
+
+    <!-- ELO FORECAST CARD -->
+    <div class="plab-card span2" id="elo-forecast-card" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.01) 0%, rgba(20, 20, 22, 0.5) 100%); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin: 0; display: flex; flex-direction: column; gap: 12px;">
+      <div style="font-family:'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">
+        📈 Aim Performance Tier & Forecast
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div>
+          <div style="font-size: 10px; color: var(--muted); text-transform: uppercase;">Aim Performance Tier</div>
+          <div style="font-family:'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 800; color: var(--accent);">${aimTier}</div>
+        </div>
+        <div>
+          <div style="font-size: 10px; color: var(--muted); text-transform: uppercase;">Volatility Index</div>
+          <div style="font-family:'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 800; color: #fff;">${volatility}</div>
+        </div>
+      </div>
+      
+      <div>
+        <div style="font-size: 10px; color: var(--muted); text-transform: uppercase; margin-bottom: 6px;">5-Match Rank ELO Forecast (${forecastTrend})</div>
+        ${svgPath}
+      </div>
+    </div>
+  </div>`;
+
   return html;
 }
 
@@ -5579,7 +5965,8 @@ function renderAdvancedAnalytics(matches) {
   matches.forEach(m => {
     const me = findMe(m);
     if (!me) return;
-    const myPuuid = me.puuid || me.subject;
+    const myPuuid = me.puuid || me.subject || me.id || '';
+    const myPuuids = [me.puuid, me.subject, me.id, myPuuid].filter(Boolean);
     const myTeamId = (me.team || '').toLowerCase();
     
     if (m.rounds && m.rounds.length > 0) {
@@ -5603,8 +5990,8 @@ function renderAdvancedAnalytics(matches) {
       }
       
       m.rounds.forEach(r => {
-        if (r.bomb_planted && r.plant_events?.planted_by?.puuid === myPuuid) plants++;
-        if (r.bomb_defused && r.defuse_events?.defused_by?.puuid === myPuuid) defuses++;
+        if (r.bomb_planted && myPuuids.includes(r.plant_events?.planted_by?.puuid || r.plant_events?.planted_by?.subject)) plants++;
+        if (r.bomb_defused && myPuuids.includes(r.defuse_events?.defused_by?.puuid || r.defuse_events?.defused_by?.subject)) defuses++;
       });
     }
     
@@ -5619,8 +6006,8 @@ function renderAdvancedAnalytics(matches) {
         rk.sort((a,b) => a.kill_time_in_round - b.kill_time_in_round);
         const firstKill = rk[0];
         if (firstKill) {
-          if (firstKill.killer_puuid === myPuuid) firstBloods++;
-          if (firstKill.victim_puuid === myPuuid) firstDeaths++;
+          if (myPuuids.includes(firstKill.killer_puuid || firstKill.killer)) firstBloods++;
+          if (myPuuids.includes(firstKill.victim_puuid || firstKill.victim)) firstDeaths++;
         }
       });
     }
@@ -5630,8 +6017,8 @@ function renderAdvancedAnalytics(matches) {
     if (myPartyId && plist.length) {
       const wonMatch = (m.teams && m.teams[myTeamId]?.has_won === true);
       plist.forEach(p => {
-        const pPuuid = p.puuid || p.subject;
-        if (pPuuid !== myPuuid && p.party_id === myPartyId) {
+        const pPuuid = p.puuid || p.subject || p.id || '';
+        if (!myPuuids.includes(pPuuid) && p.party_id === myPartyId) {
           const pName = p.name + '#' + p.tag;
           if(!duoMap[pName]) duoMap[pName] = { matches: 0, wins: 0 };
           duoMap[pName].matches++;
@@ -6305,6 +6692,8 @@ function toggleMainView(view) {
   document.getElementById('tracker-view').style.display = 'none';
   document.getElementById('esports-view').style.display = 'none';
   document.getElementById('store-view').style.display = 'none';
+  const cView = document.getElementById('coach-view');
+  if (cView) cView.style.display = 'none';
   
   if (view === 'tracker') {
     document.getElementById('tracker-view').style.display = 'block';
@@ -6334,6 +6723,13 @@ function toggleMainView(view) {
     if(esportsLiveInterval) clearInterval(esportsLiveInterval);
     if(esportsCountdownInterval) clearInterval(esportsCountdownInterval);
     initStoreView();
+  } else if (view === 'coach') {
+    if (cView) cView.style.display = 'block';
+    document.querySelector('.player-search-wrap').style.display = 'none';
+    document.getElementById('fetch-btn').style.display = 'none';
+    const h2hb = document.getElementById('h2h-trigger-btn');
+    if (h2hb) h2hb.style.display = 'none';
+    resetDraftComp();
   }
 }
 
@@ -7827,7 +8223,741 @@ function closeSkinModal() {
   }
 }
 
-// --- LINEUPS & CROSSHAIRS JS LOGIC REMOVED ---
+// ── TEAM DRAFT COACH ENGINE ──
+
+let draftSlots = [null, null, null, null, null];
+let activeSlotIndex = null;
+
+const draftMapRecommendations = {
+  ascent: { preferred: ['sova', 'killjoy', 'jett', 'omen'], note: 'Sova & Killjoy are top tier on Ascent due to wallbangable areas and clear lane angles.' },
+  bind: { preferred: ['brimstone', 'viper', 'raze', 'cypher'], note: 'Brimstone & Viper double controller provides excellent map control. Raze is phenomenal in hookey/showers.' },
+  haven: { preferred: ['killjoy', 'sova', 'jett', 'omen'], note: 'Cypher or Killjoy are essential to hold Haven three-site setup. Omen is highly favored for garage plays.' },
+  split: { preferred: ['raze', 'viper', 'cypher', 'omen'], note: 'Viper + Omen double controller excels at locking down mid.' },
+  breeze: { preferred: ['viper', 'sova', 'jett', 'cypher'], note: 'Viper is an absolute must-pick on Breeze. Sova is essential for open sites information.' },
+  sunset: { preferred: ['cypher', 'gekko', 'clove', 'breach'], note: 'Sunset favors heavy initiator utility setups. Gekko is incredibly strong for default plant coverage.' },
+  lotus: { preferred: ['killjoy', 'viper', 'omen', 'fade'], note: 'Double controller or heavy initiator pressure dominates Lotus three-site layout.' },
+  icebox: { preferred: ['viper', 'killjoy', 'jett', 'sova'], note: 'Viper is essential on Icebox A-screen control. Killjoy secures B yellow default anchors.' },
+  abyss: { preferred: ['omen', 'cypher', 'jett', 'sova'], note: 'Cypher traps excel on flank bridges. Omen teleports cross gaps easily.' }
+};
+
+function openDraftSelector(slotIndex) {
+  activeSlotIndex = slotIndex;
+  document.getElementById('dc-agent-modal').classList.add('open');
+  renderDraftAgentList();
+}
+
+function closeDraftSelector() {
+  document.getElementById('dc-agent-modal').classList.remove('open');
+  activeSlotIndex = null;
+}
+
+function renderDraftAgentList() {
+  const container = document.getElementById('dc-agent-list');
+  if (!container) return;
+  container.innerHTML = '';
+  
+  container.style.display = 'flex';
+  container.style.flexDirection = 'column';
+  container.style.gap = '24px';
+
+  const roles = {
+    duelist: { title: '⚔️ Duelists', color: '#ff5757', desc: 'Self-sufficient fraggers and space-creators', agents: [] },
+    initiator: { title: '🎯 Initiators', color: '#ffd700', desc: 'Information gatherers and flash/stun utilities', agents: [] },
+    controller: { title: '🌀 Controllers', color: '#00d4e0', desc: 'Smoke and territorial blocking experts', agents: [] },
+    sentinel: { title: '🛡️ Sentinels', color: '#3ecf8e', desc: 'Defensive area lockdown and flank watch anchors', agents: [] }
+  };
+
+  const allAgents = Object.keys(AGENT_UUIDS);
+  allAgents.forEach(ag => {
+    const agKey = ag.toLowerCase();
+    if (draftSlots.includes(agKey)) return;
+    
+    const role = getRoleClass(ag);
+    if (roles[role]) {
+      roles[role].agents.push(ag);
+    }
+  });
+
+  Object.entries(roles).forEach(([roleKey, roleInfo]) => {
+    if (roleInfo.agents.length === 0) return;
+
+    const section = document.createElement('div');
+    section.style.display = 'flex';
+    section.style.flexDirection = 'column';
+    section.style.gap = '10px';
+
+    const headerWrap = document.createElement('div');
+    headerWrap.style.borderBottom = '1px solid rgba(255, 255, 255, 0.08)';
+    headerWrap.style.paddingBottom = '6px';
+    headerWrap.style.display = 'flex';
+    headerWrap.style.flexDirection = 'column';
+    headerWrap.style.gap = '2px';
+
+    const header = document.createElement('div');
+    header.style.fontFamily = "'Barlow Condensed', sans-serif";
+    header.style.fontSize = '16px';
+    header.style.fontWeight = '900';
+    header.style.textTransform = 'uppercase';
+    header.style.color = roleInfo.color;
+    header.style.letterSpacing = '1px';
+    header.style.display = 'flex';
+    header.style.alignItems = 'center';
+    header.style.gap = '8px';
+    header.innerHTML = roleInfo.title;
+
+    const desc = document.createElement('div');
+    desc.style.fontSize = '10px';
+    desc.style.color = 'var(--muted)';
+    desc.style.fontStyle = 'italic';
+    desc.textContent = roleInfo.desc;
+
+    headerWrap.appendChild(header);
+    headerWrap.appendChild(desc);
+
+    const grid = document.createElement('div');
+    grid.style.display = 'grid';
+    grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(92px, 1fr))';
+    grid.style.gap = '12px';
+
+    roleInfo.agents.forEach(ag => {
+      const iconUrl = getAgentIconUrl(ag);
+      const agKey = ag.toLowerCase();
+
+      const div = document.createElement('div');
+      div.className = 'dc-slot-card';
+      div.style.minWidth = 'unset';
+      div.style.maxWidth = 'unset';
+      div.style.padding = '10px 6px';
+      div.style.borderRadius = '10px';
+      div.style.border = '1px solid var(--border)';
+      div.style.background = 'rgba(255, 255, 255, 0.01)';
+      div.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+      div.style.transition = 'all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1)';
+      
+      div.onmouseenter = () => {
+        div.style.borderColor = roleInfo.color;
+        div.style.background = 'rgba(255, 255, 255, 0.03)';
+        div.style.boxShadow = '0 0 12px ' + roleInfo.color + '33';
+        div.style.transform = 'translateY(-2px)';
+      };
+      div.onmouseleave = () => {
+        div.style.borderColor = 'var(--border)';
+        div.style.background = 'rgba(255, 255, 255, 0.01)';
+        div.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+        div.style.transform = 'translateY(0)';
+      };
+
+      div.onclick = () => selectDraftAgent(agKey);
+      div.innerHTML = `
+        <div class="dc-slot-avatar" style="width: 44px; height: 44px; border-color: rgba(255,255,255,0.08); transition: all 0.2s ease;">
+          ${iconUrl ? `<img class="dc-slot-avatar-img" src="${iconUrl}">` : '👤'}
+        </div>
+        <div style="font-family:'Barlow Condensed', sans-serif; font-size:11px; font-weight:800; color:#fff; text-transform:uppercase; text-align:center; overflow:hidden; text-overflow:ellipsis; width:100%; white-space:nowrap; letter-spacing:0.5px;">${ag}</div>
+      `;
+      grid.appendChild(div);
+    });
+
+    section.appendChild(headerWrap);
+    section.appendChild(grid);
+    container.appendChild(section);
+  });
+}
+
+function selectDraftAgent(agKey) {
+  if (activeSlotIndex === null) return;
+  draftSlots[activeSlotIndex] = agKey;
+  
+  const slotAvatar = document.getElementById(`dc-slot-avatar-${activeSlotIndex}`);
+  const slotName = document.getElementById(`dc-slot-name-${activeSlotIndex}`);
+  const iconUrl = getAgentIconUrl(agKey.charAt(0).toUpperCase() + agKey.slice(1));
+  
+  slotAvatar.innerHTML = iconUrl ? `<img class="dc-slot-avatar-img" src="${iconUrl}">` : '👤';
+  slotName.innerText = agKey.toUpperCase();
+  
+  closeDraftSelector();
+  evaluateDraft();
+}
+
+function resetDraftComp() {
+  draftSlots = [null, null, null, null, null];
+  for (let i = 0; i < 5; i++) {
+    document.getElementById(`dc-slot-avatar-${i}`).innerHTML = '➕';
+    document.getElementById(`dc-slot-name-${i}`).innerText = `Slot ${i+1}`;
+  }
+  evaluateDraft();
+}
+
+function evaluateDraft() {
+  const selected = draftSlots.filter(s => s !== null);
+  const total = selected.length;
+  
+  const scoreMeter = document.getElementById('dc-score-meter');
+  const verdictTitle = document.getElementById('dc-verdict-title');
+  const verdictDesc = document.getElementById('dc-verdict-desc');
+  const insightsWrap = document.getElementById('dc-insights-wrap');
+
+  let duelists = 0, initiators = 0, controllers = 0, sentinels = 0;
+  selected.forEach(ag => {
+    const role = getRoleClass(ag.charAt(0).toUpperCase() + ag.slice(1));
+    if (role === 'duelist') duelists++;
+    else if (role === 'initiator') initiators++;
+    else if (role === 'controller') controllers++;
+    else if (role === 'sentinel') sentinels++;
+  });
+
+  // Updated to show 1 duelist baseline satisfaction since 2 duelists aren't a necessity
+  document.getElementById('dc-bar-duelists-txt').innerText = `${duelists} / 1`;
+  document.getElementById('dc-bar-duelists').style.width = `${Math.min((duelists/1)*100, 100)}%`;
+  
+  document.getElementById('dc-bar-initiators-txt').innerText = `${initiators} / 1`;
+  document.getElementById('dc-bar-initiators').style.width = `${Math.min((initiators/1)*100, 100)}%`;
+  
+  document.getElementById('dc-bar-controllers-txt').innerText = `${controllers} / 1`;
+  document.getElementById('dc-bar-controllers').style.width = `${Math.min((controllers/1)*100, 100)}%`;
+  
+  document.getElementById('dc-bar-sentinels-txt').innerText = `${sentinels} / 1`;
+  document.getElementById('dc-bar-sentinels').style.width = `${Math.min((sentinels/1)*100, 100)}%`;
+
+  if (total < 5) {
+    scoreMeter.innerText = total * 10;
+    scoreMeter.style.color = 'var(--muted)';
+    verdictTitle.innerText = 'Drafting in progress...';
+    verdictDesc.innerText = `Selected ${total} out of 5 agents. Add more to get a full tactical evaluation.`;
+    insightsWrap.innerHTML = `<div style="font-size:11px; color:var(--muted); text-align:center; padding:16px;">Draft is incomplete. Fill slots to trigger composition analysis.</div>`;
+    
+    // Reset metrics
+    document.getElementById('dc-metric-entry-txt').innerText = '0%';
+    document.getElementById('dc-metric-entry').style.width = '0%';
+    document.getElementById('dc-metric-defense-txt').innerText = '0%';
+    document.getElementById('dc-metric-defense').style.width = '0%';
+    document.getElementById('dc-metric-retake-txt').innerText = '0%';
+    document.getElementById('dc-metric-retake').style.width = '0%';
+    document.getElementById('dc-metric-synergy-txt').innerText = '0%';
+    document.getElementById('dc-metric-synergy').style.width = '0%';
+    return;
+  }
+
+  let score = 65; // base score for complete team
+  const insights = [];
+  const mapKey = document.getElementById('dc-map-select').value;
+  const mapRecs = draftMapRecommendations[mapKey] || { preferred: [], note: '' };
+
+  // Helper variables for metrics
+  const agentKeys = selected.map(a => a.toLowerCase());
+  
+  // ── 1. SITE ENTRY & EXECUTION POWER ──
+  let entryScore = 30;
+  let entryMobility = 0;
+  if (agentKeys.includes('jett')) entryMobility += 15;
+  if (agentKeys.includes('neon')) entryMobility += 15;
+  if (agentKeys.includes('raze')) entryMobility += 15;
+  if (agentKeys.includes('yoru')) entryMobility += 15;
+  entryScore += Math.min(entryMobility, 25);
+
+  let entryFlashes = 0;
+  if (agentKeys.includes('breach')) entryFlashes += 10;
+  if (agentKeys.includes('skye')) entryFlashes += 10;
+  if (agentKeys.includes('gekko')) entryFlashes += 10;
+  if (agentKeys.includes('kay/o')) entryFlashes += 10;
+  if (agentKeys.includes('reyna')) entryFlashes += 10;
+  if (agentKeys.includes('phoenix')) entryFlashes += 10;
+  if (agentKeys.includes('omen')) entryFlashes += 10;
+  entryScore += Math.min(entryFlashes, 20);
+
+  let entrySmokes = 0;
+  if (agentKeys.includes('brimstone')) entrySmokes += 10;
+  if (agentKeys.includes('omen')) entrySmokes += 10;
+  if (agentKeys.includes('clove')) entrySmokes += 10;
+  if (agentKeys.includes('harbor')) entrySmokes += 10;
+  if (agentKeys.includes('astra')) entrySmokes += 10;
+  if (agentKeys.includes('viper')) entrySmokes += 10;
+  entryScore += Math.min(entrySmokes, 15);
+
+  // Synergy bonuses
+  if ((agentKeys.includes('jett') || agentKeys.includes('neon')) && agentKeys.includes('breach')) entryScore += 10;
+  if ((agentKeys.includes('jett') || agentKeys.includes('neon')) && agentKeys.includes('omen')) entryScore += 10;
+  entryScore = Math.min(entryScore, 100);
+
+  // ── 2. DEFENSIVE HOLD & SITE DELAY ──
+  let defenseScore = 30;
+  let defSentinels = 0;
+  if (agentKeys.includes('cypher')) defSentinels += 15;
+  if (agentKeys.includes('killjoy')) defSentinels += 15;
+  if (agentKeys.includes('deadlock')) defSentinels += 15;
+  if (agentKeys.includes('vyse')) defSentinels += 15;
+  if (agentKeys.includes('sage')) defSentinels += 15;
+  defenseScore += Math.min(defSentinels, 30);
+
+  let defSmokes = 0;
+  if (agentKeys.includes('viper')) defSmokes += 15;
+  if (agentKeys.includes('brimstone')) defSmokes += 10;
+  if (agentKeys.includes('omen')) defSmokes += 10;
+  if (agentKeys.includes('astra')) defSmokes += 10;
+  if (agentKeys.includes('sage')) defSmokes += 10; // Sage slow/wall
+  defenseScore += Math.min(defSmokes, 20);
+
+  let defMollies = 0;
+  if (agentKeys.includes('viper')) defMollies += 10;
+  if (agentKeys.includes('brimstone')) defMollies += 10;
+  if (agentKeys.includes('killjoy')) defMollies += 10;
+  if (agentKeys.includes('gekko')) defMollies += 10;
+  if (agentKeys.includes('phoenix')) defMollies += 10;
+  if (agentKeys.includes('raze')) defMollies += 10;
+  defenseScore += Math.min(defMollies, 15);
+
+  // Synergy bonuses
+  if (agentKeys.includes('viper') && (agentKeys.includes('brimstone') || agentKeys.includes('killjoy'))) defenseScore += 10;
+  if ((agentKeys.includes('cypher') || agentKeys.includes('deadlock')) && agentKeys.includes('raze')) defenseScore += 10;
+  if (agentKeys.includes('sage') && (agentKeys.includes('brimstone') || agentKeys.includes('breach'))) defenseScore += 10;
+  defenseScore = Math.min(defenseScore, 100);
+
+  // ── 3. RETAKE & SCOUTING CAPABILITY ──
+  let retakeScore = 30;
+  let retakeScouts = 0;
+  if (agentKeys.includes('sova')) retakeScouts += 15;
+  if (agentKeys.includes('fade')) retakeScouts += 15;
+  if (agentKeys.includes('cypher')) retakeScouts += 10; // camera
+  if (agentKeys.includes('skye')) retakeScouts += 10;
+  if (agentKeys.includes('gekko')) retakeScouts += 10;
+  retakeScore += Math.min(retakeScouts, 30);
+
+  let retakeFlashes = 0;
+  if (agentKeys.includes('breach')) retakeFlashes += 10;
+  if (agentKeys.includes('skye')) retakeFlashes += 10;
+  if (agentKeys.includes('gekko')) retakeFlashes += 10;
+  if (agentKeys.includes('kay/o')) retakeFlashes += 10;
+  if (agentKeys.includes('omen')) retakeFlashes += 10;
+  if (agentKeys.includes('yoru')) retakeFlashes += 10;
+  if (agentKeys.includes('phoenix')) retakeFlashes += 10;
+  retakeScore += Math.min(retakeFlashes, 20);
+
+  let retakeSmokes = 0;
+  if (agentKeys.includes('omen')) retakeSmokes += 10;
+  if (agentKeys.includes('astra')) retakeSmokes += 10;
+  if (agentKeys.includes('clove')) retakeSmokes += 10;
+  retakeScore += Math.min(retakeSmokes, 15);
+
+  let retakeUlts = 0;
+  if (agentKeys.includes('breach')) retakeUlts += 10;
+  if (agentKeys.includes('killjoy')) retakeUlts += 10;
+  if (agentKeys.includes('fade')) retakeUlts += 10;
+  if (agentKeys.includes('brimstone')) retakeUlts += 10;
+  if (agentKeys.includes('viper')) retakeUlts += 10;
+  retakeScore += Math.min(retakeUlts, 15);
+
+  if ((agentKeys.includes('sova') || agentKeys.includes('fade')) && agentKeys.includes('gekko')) retakeScore += 10;
+  retakeScore = Math.min(retakeScore, 100);
+
+  // ── 4. INTER-AGENT SYNERGY SCORE ──
+  let synergyScore = 0;
+  const synergyDetails = [];
+
+  // Pairwise checks
+  if ((agentKeys.includes('jett') || agentKeys.includes('neon')) && agentKeys.includes('breach')) {
+    synergyScore += 25;
+    synergyDetails.push('<strong>Entry Flash Combo (Breach + Jett/Neon):</strong> Breach\'s signature concuss or flash perfectly supports fast site entry dashes.');
+  }
+  if ((agentKeys.includes('jett') || agentKeys.includes('neon')) && agentKeys.includes('omen')) {
+    synergyScore += 25;
+    synergyDetails.push('<strong>Shrouded Entry Combo (Omen + Jett/Neon):</strong> Omen\'s Paranoia blind isolates site defenders, securing safe entry paths.');
+  }
+  if ((agentKeys.includes('cypher') || agentKeys.includes('deadlock')) && agentKeys.includes('raze')) {
+    synergyScore += 25;
+    synergyDetails.push('<strong>Trap-Grenade Execution (Cypher/Deadlock + Raze):</strong> Raze\'s paint shells deliver lethal damage on trapped targets.');
+  }
+  if ((agentKeys.includes('sova') || agentKeys.includes('fade')) && agentKeys.includes('gekko')) {
+    synergyScore += 25;
+    synergyDetails.push('<strong>Double Info-Flood (Fade/Sova + Gekko):</strong> Combines deep scout scanning with Gekko\'s targetable flashes to clear all corners.');
+  }
+  if (agentKeys.includes('viper') && (agentKeys.includes('brimstone') || agentKeys.includes('killjoy'))) {
+    synergyScore += 25;
+    synergyDetails.push('<strong>Toxic Post-Plant Delay (Viper + Brimstone/Killjoy):</strong> Poison decay and molly lines stall defuses from long range safely.');
+  }
+  if (agentKeys.includes('sage') && (agentKeys.includes('brimstone') || agentKeys.includes('breach'))) {
+    synergyScore += 25;
+    synergyDetails.push('<strong>Slow-Orb Blast Combo (Sage + Brimstone/Breach):</strong> Traps defenders in slow zones under lethal Orbital Strikes or Aftershocks.');
+  }
+  if (agentKeys.includes('yoru') && agentKeys.includes('kay/o')) {
+    synergyScore += 25;
+    synergyDetails.push('<strong>Suppressive Infiltration (Yoru + KAY/O):</strong> KAY/O suppresses site utilities while Yoru teleports behind defender lines.');
+  }
+  if (agentKeys.includes('viper') && (agentKeys.includes('harbor') || agentKeys.includes('omen') || agentKeys.includes('clove'))) {
+    synergyScore += 25;
+    synergyDetails.push('<strong>Double Smokes Control:</strong> Impassable visual blocks lock down large open lanes (elite Breeze/Icebox setup).');
+  }
+  if (agentKeys.includes('clove') && (agentKeys.includes('sage') || agentKeys.includes('reyna'))) {
+    synergyScore += 25;
+    synergyDetails.push('<strong>High Team Sustainability:</strong> Post-death smokes, heals, and resurrections maximize round durability.');
+  }
+
+  // Base co-ordination if no specific combo
+  if (synergyScore === 0) {
+    if (duelists >= 1 && initiators >= 1 && controllers >= 1 && sentinels >= 1) {
+      synergyScore = 30;
+      synergyDetails.push('<strong>Standard Role Balance:</strong> All 4 roles represented. A good stable blueprint for team play.');
+    } else {
+      synergyScore = 15;
+      synergyDetails.push('<strong>Basic Comp Coordination:</strong> Missing core role categories. Standard default plays are highly recommended.');
+    }
+  }
+  synergyScore = Math.min(synergyScore, 100);
+
+  // Set the 4 progress bars
+  document.getElementById('dc-metric-entry-txt').innerText = `${entryScore}%`;
+  document.getElementById('dc-metric-entry').style.width = `${entryScore}%`;
+  document.getElementById('dc-metric-defense-txt').innerText = `${defenseScore}%`;
+  document.getElementById('dc-metric-defense').style.width = `${defenseScore}%`;
+  document.getElementById('dc-metric-retake-txt').innerText = `${retakeScore}%`;
+  document.getElementById('dc-metric-retake').style.width = `${retakeScore}%`;
+  document.getElementById('dc-metric-synergy-txt').innerText = `${synergyScore}%`;
+  document.getElementById('dc-metric-synergy').style.width = `${synergyScore}%`;
+
+  // ── 5. DETAILED DRAWBACKS & PENALTIES ──
+  // Check missing roles
+  if (controllers === 0) {
+    score -= 20;
+    insights.push({ 
+      type: 'warn', 
+      icon: '⚠️', 
+      text: '<strong>Critical Deficit — No Controller Smokes:</strong> Smokes are the most fundamental utility in Valorant. Without smoke cover to block sightlines (e.g. A-main defenders, passive snipers), your entry duelists will be immediately picked off by crossfires when attempting to enter site chokepoints.' 
+    });
+  } else if (controllers === 2) {
+    score += 8;
+    insights.push({ 
+      type: 'good', 
+      icon: '💥', 
+      text: '<strong>Tactical Controller Synergy:</strong> Double smokes controller setups afford exceptional mid-round flexibility and delay utility.' 
+    });
+  } else if (controllers === 1) {
+    score += 5;
+  }
+
+  if (sentinels === 0) {
+    score -= 15;
+    insights.push({ 
+      type: 'warn', 
+      icon: '⚠️', 
+      text: '<strong>Deficit — Open Flanks (No Sentinel):</strong> Traps and visual anchors (Cypher traps, Killjoy alarms/turrets) automatically hold the flank. Without a Sentinel, your team is forced to leave a player holding backward sightlines, or face sudden mid-round flank attacks that split your team in two.' 
+    });
+  } else {
+    score += 5;
+    insights.push({ 
+      type: 'good', 
+      icon: '🛡️', 
+      text: '<strong>Sentinel Anchor Bonus:</strong> Solid defensive site locks. Passive traps defend flanks automatically.' 
+    });
+  }
+
+  if (duelists === 0) {
+    score -= 10;
+    insights.push({ 
+      type: 'warn', 
+      icon: '⚠️', 
+      text: '<strong>Deficit — No Entry Mobility (No Duelist):</strong> Duelists possess movement abilities (dashes, slides, blasts) that bypass defender crosshairs and draw defensive crosshair attention. Without a mobile entry agent, your pushes through tight chokepoints will stall, allowing defender mollies and utility to chew you down.' 
+    });
+  } else if (duelists > 2) {
+    score -= 10;
+    insights.push({ 
+      type: 'warn', 
+      icon: '⚠️', 
+      text: '<strong>Utility Deficit — Triple Duelists:</strong> Excess of entry agents trades off valuable initiator scans and control smokes. You have too much entry aggression but lack the utility to hold sites once planted.' 
+    });
+  } else if (duelists === 1 || duelists === 2) {
+    score += 5;
+  }
+
+  if (initiators === 0) {
+    score -= 15;
+    insights.push({ 
+      type: 'warn', 
+      icon: '⚠️', 
+      text: '<strong>Deficit — No Site Scouting (No Initiator Intel):</strong> Initiators scan sites to pinpoint exactly where defenders are playing. Without scanning arrows, sensor dogs, or flashes to force defenders off their angles, your team is playing completely blind, peeking directly into pre-aimed crosshairs.' 
+    });
+  } else if (initiators >= 1) {
+    score += 5;
+  }
+
+  // Check Flash and Delay capabilities
+  const hasFlash = agentKeys.some(a => ['breach','skye','gekko','kay/o','omen','yoru','phoenix','reyna'].includes(a));
+  if (!hasFlash) {
+    score -= 8;
+    insights.push({
+      type: 'warn',
+      icon: '⚠️',
+      text: '<strong>Drawback — Zero Flash Utility:</strong> Flashes are critical to force defenders holding tight angles or sniper lanes (such as Ascent A-main or Haven C-long) to reposition. Peeking these lanes raw without blinding defender vision yields an immediate disadvantage in duels.'
+    });
+  }
+
+  const hasDelay = agentKeys.some(a => ['viper','brimstone','sage','killjoy','deadlock','vyse'].includes(a));
+  if (!hasDelay) {
+    score -= 8;
+    insights.push({
+      type: 'warn',
+      icon: '⚠️',
+      text: '<strong>Drawback — Zero Area Denial / Delay:</strong> If the opposing team executes a fast site rush, you have no slowing spheres, toxic grids, or mollies to halt their momentum. Defenders will be easily overrun before rotations can possibly arrive to support.'
+    });
+  }
+
+  // ── 6. MAP-SPECIFIC DRAWBACKS & RECOMMENDATIONS ──
+  if (mapKey === 'breeze') {
+    if (!agentKeys.includes('viper')) {
+      score -= 15;
+      insights.push({
+        type: 'warn',
+        icon: '🗺️',
+        text: '<strong>Breeze Map Drawback — No Viper Screen:</strong> Breeze is exceptionally open with massive sightlines. Single-dome smokes (like Omen or Brimstone) cannot cover the wide entrances. Without Viper\'s Toxic Screen to slice sites in half, your team cannot safely plant or defend A/B sites.'
+      });
+    }
+    if (!agentKeys.includes('sova') && !agentKeys.includes('fade')) {
+      score -= 8;
+      insights.push({
+        type: 'warn',
+        icon: '🗺️',
+        text: '<strong>Breeze Map Recommendation — Lacking Long-Range Scouting:</strong> Because Breeze has massive sites, running short-range scouts (like Gekko or Skye) makes finding defenders difficult. Sova is highly recommended for massive open-field scanning.'
+      });
+    }
+  }
+
+  if (mapKey === 'icebox') {
+    if (!agentKeys.includes('sage')) {
+      score -= 8;
+      insights.push({
+        type: 'warn',
+        icon: '🗺️',
+        text: '<strong>Icebox Map Drawback — Lacking Sage Barrier:</strong> Icebox default B-site plant is completely exposed to sniper fire from Snowman/Top-site. Lacking Sage\'s wall means you cannot guarantee a safe plant, forcing high-risk raw executes under fire.'
+      });
+    }
+    if (!agentKeys.includes('viper')) {
+      score -= 10;
+      insights.push({
+        type: 'warn',
+        icon: '🗺️',
+        text: '<strong>Icebox Map Drawback — Lacking Viper Wall:</strong> Icebox A-site entries require screen coverage across screens and rafters. Without Viper\'s wall, entering A-site leaves you exposed to 4+ crossfire angles simultaneously.'
+      });
+    }
+  }
+
+  if (mapKey === 'ascent') {
+    if (!agentKeys.includes('sova')) {
+      score -= 8;
+      insights.push({
+        type: 'warn',
+        icon: '🗺️',
+        text: '<strong>Ascent Map Drawback — No Sova Wallbangs:</strong> Ascent\'s B-main and A-garden walls are paper-thin and highly wallbangable. Lacking Sova\'s Recon Bolt or Owl Drone means losing the ability to secure free wallbang kills or clear close corners safely.'
+      });
+    }
+  }
+
+  if (mapKey === 'bind') {
+    if (!agentKeys.includes('brimstone')) {
+      score -= 5;
+      insights.push({
+        type: 'warn',
+        icon: '🗺️',
+        text: '<strong>Bind Map Recommendation — Prefer Brimstone:</strong> Bind sites are compact with tight entries (Showers, Hookah). Brimstone\'s three simultaneous sky-smokes block all defender sightlines at once, which is far superior to slow reloadable smokes here.'
+      });
+    }
+    if (!agentKeys.includes('raze')) {
+      score -= 5;
+      insights.push({
+        type: 'warn',
+        icon: '🗺️',
+        text: '<strong>Bind Map Recommendation — Prefer Raze:</strong> Bind has extremely narrow chokepoints like Hookah and Showers. Lacking Raze\'s Paint Shells or Boom Bot makes clearing these dense defender hideouts highly dangerous.'
+      });
+    }
+  }
+
+  if (mapKey === 'haven') {
+    if (!agentKeys.includes('cypher') && !agentKeys.includes('killjoy')) {
+      score -= 10;
+      insights.push({
+        type: 'warn',
+        icon: '🗺️',
+        text: '<strong>Haven Map Drawback — Heavy 3-Site Rotation Risk:</strong> Lacking Cypher or Killjoy traps. Because Haven features three active bomb sites, rotating defenders have massive link corridors to flank. You will be constantly exposed to deep behind-the-back pushes unless you waste active player manpower watching flanks.'
+      });
+    }
+  }
+
+  if (mapKey === 'sunset') {
+    if (!agentKeys.includes('cypher')) {
+      score -= 5;
+      insights.push({
+        type: 'warn',
+        icon: '🗺️',
+        text: '<strong>Sunset Map Recommendation — Prefer Cypher:</strong> Sunset B-site is infamous for its narrow lane entries. Playing without Cypher means losing the ability to completely shut down B-main pushes using standard tripwire grids.'
+      });
+    }
+  }
+
+  if (mapKey === 'lotus') {
+    const hasFlashStun = agentKeys.some(a => ['breach','skye','gekko','kay/o'].includes(a));
+    if (!hasFlashStun) {
+      score -= 8;
+      insights.push({
+        type: 'warn',
+        icon: '🗺️',
+        text: '<strong>Lotus Map Drawback — Weak Control Uptime:</strong> Lotus\'s three sites have compact corners and reactive breakable doors. Without high-tempo flash/stun initiators (like Breach or Gekko), site entries will be quickly countered by immediate defender re-aggression.'
+      });
+    }
+  }
+
+  // ── 7. MAP META MATCHES ──
+  let mapMatches = 0;
+  selected.forEach(ag => {
+    if (mapRecs.preferred.includes(ag)) {
+      mapMatches++;
+    }
+  });
+
+  if (mapMatches >= 3) {
+    score += 15;
+    insights.push({ type: 'good', icon: '🗺️', text: `<strong>Elite Map Suitability:</strong> Matches the meta layout of ${mapKey.toUpperCase()}. ${mapRecs.note}` });
+  } else if (mapMatches >= 1) {
+    score += 5;
+    insights.push({ type: 'good', icon: '🗺️', text: `<strong>Decent Map Layout Suitability.</strong> ${mapRecs.note}` });
+  }
+
+  // ── 8. ACTIONABLE TACTICAL FILL RECOMMENDATIONS ──
+  if (controllers === 0) {
+    insights.push({
+      type: 'tip',
+      icon: '💡',
+      text: '<strong>Tactical Recommendation — Fill Controller:</strong> Add a Smokes agent (Brimstone, Omen, Clove, Harbor, Astra, Viper) to establish sightline blockages. On ' + mapKey.toUpperCase() + ', ' + (['breeze','icebox'].includes(mapKey) ? '<strong>Viper</strong>' : '<strong>Omen or Brimstone</strong>') + ' is highly recommended.'
+    });
+  }
+  if (sentinels === 0) {
+    insights.push({
+      type: 'tip',
+      icon: '💡',
+      text: '<strong>Tactical Recommendation — Add Sentinel Flank Watch:</strong> Pick Cypher, Killjoy, Deadlock, or Vyse to secure your flanks automatically. On ' + mapKey.toUpperCase() + ', ' + (['ascent', 'haven', 'icebox'].includes(mapKey) ? '<strong>Killjoy or Cypher</strong>' : '<strong>Cypher</strong>') + ' is highly recommended to hold sites.'
+    });
+  }
+  if (initiators === 0) {
+    insights.push({
+      type: 'tip',
+      icon: '💡',
+      text: '<strong>Tactical Recommendation — Bring an Initiator:</strong> Select Sova, Fade, Skye, Gekko, or KAY/O to scout defender setups. On ' + mapKey.toUpperCase() + ', ' + (['ascent','breeze'].includes(mapKey) ? '<strong>Sova</strong>' : '<strong>Gekko or Fade</strong>') + ' is highly recommended to gather info.'
+    });
+  }
+  if (duelists === 0) {
+    insights.push({
+      type: 'tip',
+      icon: '💡',
+      text: '<strong>Tactical Recommendation — Consider a Mobile Entry Agent:</strong> Select Jett, Raze, Neon, or Yoru for entry mobility to break defensive crossfires. <i>Note: 1 duelist is completely sufficient!</i>'
+    });
+  }
+  if (!hasFlash && total === 5) {
+    insights.push({
+      type: 'tip',
+      icon: '💡',
+      text: '<strong>Tactical Recommendation — Add Flashing Utility:</strong> Swap one agent for Breach, Skye, Gekko, KAY/O, or Omen to force defenders off high-ground pre-aim angles.'
+    });
+  }
+  if (!hasDelay && total === 5) {
+    insights.push({
+      type: 'tip',
+      icon: '💡',
+      text: '<strong>Tactical Recommendation — Add Delay/Molly:</strong> Swap an agent for Brimstone, Viper, Sage, Killjoy, Deadlock, or Vyse to stall fast site rushes.'
+    });
+  }
+
+  // Map-specific Elite Pick Swap suggestions (if map meta pick is missing)
+  if (mapKey === 'breeze' && !agentKeys.includes('viper')) {
+    insights.push({
+      type: 'tip',
+      icon: '💡',
+      text: '<strong>Breeze Optimization Recommendation:</strong> Swap one agent for **Viper**. Her Toxic Screen wall is the single most important utility on Breeze to block long-range defender sightlines.'
+    });
+  }
+  if (mapKey === 'icebox') {
+    if (!agentKeys.includes('sage')) {
+      insights.push({
+        type: 'tip',
+        icon: '💡',
+        text: '<strong>Icebox Optimization Recommendation:</strong> Swap one agent for **Sage**. Her Barrier Orb wall is crucial for securing safe B-default plants under top-snowman sniper cover.'
+      });
+    }
+    if (!agentKeys.includes('viper')) {
+      insights.push({
+        type: 'tip',
+        icon: '💡',
+        text: '<strong>Icebox Optimization Recommendation:</strong> Swap one agent for **Viper**. Her Toxic Screen slices rafters and screen sights for safe executes.'
+      });
+    }
+  }
+  if (mapKey === 'ascent' && !agentKeys.includes('sova')) {
+    insights.push({
+      type: 'tip',
+      icon: '💡',
+      text: '<strong>Ascent Wallbang Meta Pick:</strong> Swap one agent for **Sova**. His Recon Bolt is vital to scan paper-thin B-main and A-garden wallbang targets.'
+    });
+  }
+  if (mapKey === 'bind') {
+    if (!agentKeys.includes('brimstone')) {
+      insights.push({
+        type: 'tip',
+        icon: '💡',
+        text: '<strong>Bind Smoke Meta Pick:</strong> Swap one agent for **Brimstone**. Brim can drop three sky-smokes simultaneously to block Hookah, Showers, and site crossfires completely.'
+      });
+    }
+    if (!agentKeys.includes('raze')) {
+      insights.push({
+        type: 'tip',
+        icon: '💡',
+        text: '<strong>Bind Entry Meta Pick:</strong> Swap one agent for **Raze**. Her paint shells and boom bot are unmatched for clearing compact hookey and showers corners.'
+      });
+    }
+  }
+  if (mapKey === 'haven' && !agentKeys.includes('cypher') && !agentKeys.includes('killjoy')) {
+    insights.push({
+      type: 'tip',
+      icon: '💡',
+      text: '<strong>Haven 3-Site Flank Security:</strong> Swap one agent for **Cypher or Killjoy** to hold linking corridors automatically.'
+    });
+  }
+  if (mapKey === 'sunset' && !agentKeys.includes('cypher')) {
+    insights.push({
+      type: 'tip',
+      icon: '💡',
+      text: '<strong>Sunset B-Main Lockdown:</strong> Swap one agent for **Cypher** to establish standard B-main tripwire grids.'
+    });
+  }
+
+  // Inter-agent synergy score impact
+  score += Math.round(synergyScore * 0.15); // max +15 pts from inter-agent co-ordination
+
+  // Print all pairwise synergies
+  synergyDetails.forEach(sd => {
+    insights.push({ type: 'good', icon: '💥', text: sd });
+  });
+
+  score = Math.max(0, Math.min(score, 100));
+  
+  scoreMeter.innerText = score;
+  if (score >= 85) {
+    scoreMeter.style.color = 'var(--win)';
+    verdictTitle.innerText = 'Meta Composition';
+    verdictTitle.style.color = 'var(--win)';
+    verdictDesc.innerText = 'Exceptional draft. Balanced role allocations, strong synergies, and high suitability for this map outline.';
+  } else if (score >= 70) {
+    scoreMeter.style.color = 'var(--accent)';
+    verdictTitle.innerText = 'Decent Composition';
+    verdictTitle.style.color = 'var(--accent)';
+    verdictDesc.innerText = 'Good average balance. Solid role slots filled, though minor weaknesses or card tweaks can optimize entries.';
+  } else {
+    scoreMeter.style.color = 'var(--loss)';
+    verdictTitle.innerText = 'Sub-optimal Composition';
+    verdictTitle.style.color = 'var(--loss)';
+    verdictDesc.innerText = 'Weak draft stability. Missing controllers, Sentinels, or map picks makes site executes difficult.';
+  }
+
+  insightsWrap.innerHTML = insights.map(i => `
+    <div class="dc-insight-card ${i.type}">
+      <span class="dc-insight-card-icon">${i.icon}</span>
+      <div>${i.text}</div>
+    </div>
+  `).join('');
+}
 
 
 document.addEventListener('DOMContentLoaded', () => { 
@@ -8023,7 +9153,112 @@ input:checked + .slider:before { transform:translateX(14px); background-color:#f
 .skin-chroma-card:hover {
   background: rgba(255, 255, 255, 0.05);
 }
-/* lineups and crosshairs CSS removed */
+/* Draft Comp Coach Styles */
+.dc-slot-card {
+  flex: 1;
+  min-width: 90px;
+  max-width: 110px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.dc-slot-card:hover {
+  border-color: var(--accentborder);
+  background: rgba(250, 68, 84, 0.04);
+  transform: translateY(-2px);
+}
+.dc-slot-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+.dc-slot-card:hover .dc-slot-avatar {
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: 0 0 10px var(--accentdim);
+}
+.dc-slot-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.dc-slot-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Comp bar tracks */
+.dc-track-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.dc-fill-bar {
+  height: 100%;
+  border-radius: 3px;
+  width: 0;
+  transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.dc-fill-bar.duelists { background: #ff5757; box-shadow: 0 0 6px rgba(255,87,87,0.3); }
+.dc-fill-bar.initiators { background: #ffd700; box-shadow: 0 0 6px rgba(255,215,0,0.3); }
+.dc-fill-bar.controllers { background: #00d4e0; box-shadow: 0 0 6px rgba(0,212,224,0.3); }
+.dc-fill-bar.sentinels { background: #3ecf8e; box-shadow: 0 0 6px rgba(62,207,142,0.3); }
+
+.dc-insight-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 11px;
+  line-height: 1.4;
+  border-left: 3px solid transparent;
+}
+.dc-insight-card.good {
+  background: rgba(62, 207, 142, 0.04);
+  border-color: var(--win);
+  color: #fff;
+}
+.dc-insight-card.warn {
+  background: rgba(250, 68, 84, 0.04);
+  border-color: var(--loss);
+  color: #fff;
+}
+.dc-insight-card.tip {
+  background: rgba(232, 255, 71, 0.04);
+  border-color: #e8ff47;
+  color: #fff;
+}
+.dc-insight-card-icon {
+  font-size: 14px;
+}
 </style>
 <div class="glass-orb-2"></div>
 <!-- SESSION SUMMARY MODAL -->
