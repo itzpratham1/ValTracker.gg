@@ -160,11 +160,7 @@
     <a class="tracker-nav-item" onclick="smoothScrollTo('sec-weapons', event)"><span class="nav-icon">🔫</span> Weapons</a>
     <a class="tracker-nav-item" onclick="smoothScrollTo('sec-matches', event)"><span class="nav-icon">🎮</span> Matches</a>
   </div>
-    <!-- Live Intel button with embedded badge (hidden via CSS) -->
-    <button class="nav-btn accent" id="live-match-btn" onclick="fetchLiveMatch()">
-      <span class="live-chip-mini" id="live-badge" style="display: none;"><span class="live-dot"></span></span>
-      <span>🔴 Live Intel</span>
-    </button>
+
     
     <!-- Session Actions -->
     <div class="session-group">
@@ -250,8 +246,7 @@
 <!-- MAIN BENTO GRID -->
 <div class="main" id="main-grid">
 
-  <!-- LIVE SECTION (hidden by default) -->
-  <div id="live-section" style="display:none;grid-column:span 12;"></div>
+
 
   <!-- ── SECTION 01: COMBAT ── -->
   <div class="section-label" id="sec-combat"><span class="sl-text">Combat</span><span class="sl-line"></span><span class="sl-num">01</span></div>
@@ -1708,7 +1703,6 @@ async function fetchAll(){
   const btn=document.getElementById('fetch-btn');
   btn.disabled=true;btn.textContent='Fetching...';
   setStatus('Connecting...','');
-  document.getElementById('live-badge').style.display='none';
   showSkeletons();
 
   // Update hero immediately with input values
@@ -1720,18 +1714,16 @@ async function fetchAll(){
     setStatus('Loading data...','');
     const isRanked = mode === 'competitive';
     const _nc = Date.now();
-    const[mmrRes,matchRes,accountRes,mmrHistRes,liveRes]=await Promise.all([
+    const[mmrRes,matchRes,accountRes,mmrHistRes]=await Promise.all([
       isRanked ? fetch(`/api/v3/mmr/${region}/pc/${enc}/${PLAYER_TAG}?_nocache=${_nc}`) : Promise.resolve(null),
       fetch(`/api/v3/matches/${region}/${enc}/${PLAYER_TAG}?mode=${mode}&size=25&_nocache=${_nc}`),
       fetch(`/api/v1/account/${enc}/${PLAYER_TAG}?_nocache=${_nc}`),
       fetch(`/api/v1/stored-mmr-history/${region}/${enc}/${PLAYER_TAG}?_nocache=${_nc}`),
-      fetch(`/api/v1/live-match/${region}/${enc}/${PLAYER_TAG}`).catch(()=>null),
     ]);
     const mmrData=mmrRes?.ok?await mmrRes.json():null;
     const matchData=matchRes.ok?await matchRes.json():null;
     const accountData=accountRes.ok?await accountRes.json():null;
     const mmrHistData=mmrHistRes?.ok?await mmrHistRes.json():null;
-    const liveData=(liveRes?.ok)?await liveRes.json():null;
     if(!matchData)throw new Error(`API error — check player name/tag`);
 
     if(accountData?.data){
@@ -1774,12 +1766,6 @@ async function fetchAll(){
       mmrHistData.data.forEach(e=>{window._mmrHistory[e.match_id]=e.last_mmr_change;});
     }
 
-    if(liveData?.data){
-      renderLiveMatch(liveData.data);
-    }else{
-      document.getElementById('live-section').style.display='none';
-    }
-
     if(matchData?.data?.length){
       // Clear stale data for this player+mode — ensures new act data replaces old act data
       await clearPlayerMatches();
@@ -1791,7 +1777,6 @@ async function fetchAll(){
       const newCount = matchData.data.length;
       const totalCount = allMatches.length;
       setStatus(`${newCount} new · ${totalCount} total stored`,'ok');
-      document.getElementById('live-badge').style.display='flex';
       showToast(`${totalCount} matches total ✓`);
       dismissLanding();
     }else{
@@ -2655,41 +2640,7 @@ function populateFullDetailTabs(match, idx) {
 }
 
 
-function renderLiveMatch(data){
-  const sect=document.getElementById('live-section');
-  if(!data){sect.style.display='none';return;}
-  sect.style.display='block';
-  const players=data.players||[];
-  const me=players.find(p=>p.name?.toLowerCase()===PLAYER_NAME.toLowerCase());
-  const map=data.map||'Unknown';
-  const mode=data.mode||'Competitive';
-  const allied=players.filter(p=>(p.team||'').toLowerCase()===(me?.team||'').toLowerCase());
-  const enemy=players.filter(p=>(p.team||'').toLowerCase()!==(me?.team||'').toLowerCase());
-  const renderTeam=(team,label,cls)=>{
-    let t=`<div class="live-team ${cls}"><div class="live-team-title">${label}</div>`;
-    team.forEach(p=>{
-      const icon=getAgentIconUrl(p.character||p.agent||'');
-      const rankImg=getRankImgUrl(p.currenttier_patched||'');
-      t+=`<div class="live-player ${p.name?.toLowerCase()===PLAYER_NAME.toLowerCase()?'live-me':''}">
-        ${icon?`<img src="${icon}" style="width:28px;height:28px;object-fit:contain;" onerror="this.style.display='none'">`:``}
-        <div style="flex:1"><div class="live-player-name">${p.name||'?'}${p.name?.toLowerCase()===PLAYER_NAME.toLowerCase()?'<span style="color:var(--accent);font-family:\'DM Mono\',monospace;font-size:8px;margin-left:6px;letter-spacing:1px;">YOU</span>':''}</div><div class="live-player-agent-txt">${(p.character||p.agent||'').toUpperCase()}</div></div>
-        ${rankImg?`<img src="${rankImg}" style="width:22px;height:22px;object-fit:contain;" onerror="this.style.display='none'">`:``}
-        <div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--muted2)">${p.currenttier_patched||''}</div>
-      </div>`;
-    });
-    return t+'</div>';
-  };
-  sect.innerHTML=`<div class="live-banner">
-    <div class="live-header">
-      <div class="live-badge-label"><div class="live-dot"></div>Live Match Detected</div>
-      <div class="live-meta">${map.toUpperCase()} · ${mode}</div>
-    </div>
-    <div class="live-teams">
-      ${renderTeam(allied,'▲ Your Team','allied')}
-      ${renderTeam(enemy,'▼ Enemy Team','enemy')}
-    </div>
-  </div>`;
-}
+
 
 window._allRenderedMatches = []; // store for filtering
 window._activeFilter = 'all';
@@ -5823,507 +5774,11 @@ function getDemoRankScale(userRank) {
   ];
 }
 
-function generateLiveTacticalTips(enemyPlayers) {
-  const tips = [];
-  const enemyAgents = enemyPlayers.map(p => p.character).filter(Boolean);
-  
-  if (enemyAgents.length === 0) {
-    return [
-      "No enemy agents picked yet. Maintain default positioning and communicate early crosshair levels.",
-      "Stay grouped and call out utility usage as soon as agent selection finishes."
-    ];
-  }
-  
-  const agentTipsMap = {
-    'Reyna': "Aggressive Reyna in lobby. Avoid standard dry 1v1 duels; always call for teammate bait/trades to cancel her heal/dismiss.",
-    'Jett': "Jett picked. Expect high-velocity dash entries or early Operator angles. Use smokes early to block sight lines.",
-    'Omen': "Omen active. Listen closely for Shrouded Step sound cues and clear off-angles/back-chutes regularly.",
-    'Sage': "Sage holding. Keep a close ear on Barrier wall cracks, and rotate speed-first when main lanes are blocked.",
-    'Sova': "Sova present. Break Recon Darts instantly to deny them early site scanning.",
-    'Killjoy': "Killjoy defending. Use utility or spam angles to break her Alarmbot and Turret before scaling site.",
-    'Cypher': "Cypher setup active. Keep crosshair low to sweep knee-height Trapwires; avoid dry-pushing sites without utility clearing.",
-    'Breach': "Breach present. Avoid bundling up closely in chokepoints to mitigate heavy stun and rolling-thunder combo line-ups.",
-    'Neon': "Neon sprint-sliding. Pre-aim wider than usual to compensate for her high-velocity movement speed.",
-    'Raze': "Raze in lobby. Expect double blast-pack entries and early paint shells; play wider holding angles.",
-    'Viper': "Viper screen active. Wait out her toxic wall decay before executing; otherwise force flashes through it.",
-    'Clove': "Clove active. Watch out for post-death smoke zones and expect aggressive self-revives.",
-    'Gekko': "Gekko picked. Shoot Dizzy/Wingman instantly to deny them flashing or planting, and check for reclaimed globules.",
-    'Phoenix': "Phoenix active. Beware of curved corner flashes and look out for his Run It Back spawn-anchor point."
-  };
-  
-  enemyAgents.forEach(agent => {
-    const matchedKey = Object.keys(agentTipsMap).find(k => agent.toLowerCase().includes(k.toLowerCase()));
-    if (matchedKey && tips.length < 3) {
-      tips.push(agentTipsMap[matchedKey]);
-    }
-  });
-  
-  if (tips.length < 2) {
-    tips.push("Establish early crossfires to deny easy site entries.");
-  }
-  if (tips.length < 3) {
-    tips.push("Coordinate ultimate combos to secure critical weapon rounds.");
-  }
-  
-  return tips;
-}
 
-async function fetchLiveMatch(forceDemo = false) {
-  const modal = document.getElementById('live-modal');
-  const content = document.getElementById('live-content');
-  
-  const region = document.getElementById('region-select').value;
-  const enc = encodeURIComponent(PLAYER_NAME);
-  
-  content.innerHTML = '<div class="detail-loading" style="text-align:center;">SCANNING LIVE SESSION...</div>';
-  modal.style.display = 'flex';
-  
-  // Apply visual injection of styles
-  const existingStyles = document.getElementById('live-intel-animations');
-  if (!existingStyles) {
-    const s = document.createElement('style');
-    s.id = 'live-intel-animations';
-    s.textContent = `
-      @keyframes glowPulse {
-        0%, 100% { border-color: rgba(62,207,142,0.15); box-shadow: 0 0 5px rgba(62,207,142,0.05); }
-        50% { border-color: rgba(62,207,142,0.4); box-shadow: 0 0 15px rgba(62,207,142,0.15); }
-      }
-      @keyframes glowPulseAmber {
-        0%, 100% { border-color: rgba(245,166,35,0.15); box-shadow: 0 0 5px rgba(245,166,35,0.05); }
-        50% { border-color: rgba(245,166,35,0.4); box-shadow: 0 0 15px rgba(245,166,35,0.15); }
-      }
-      @keyframes pulseDot {
-        0%, 100% { transform: scale(1); opacity: 0.8; }
-        50% { transform: scale(1.25); opacity: 1; }
-      }
-      .intel-card-hover {
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      }
-      .intel-card-hover:hover {
-        transform: translateY(-2px);
-        background: rgba(255, 255, 255, 0.03) !important;
-        border-color: rgba(255, 255, 255, 0.15) !important;
-      }
-    `;
-    document.head.appendChild(s);
-  }
-  
-  if (forceDemo) {
-    setTimeout(() => { renderDemoLiveMatch(); }, 600);
-    return;
-  }
-  
-  try {
-    const res = await fetch(`/api/v1/live-match/${region}/${enc}/${PLAYER_TAG}`);
-    if(!res.ok) throw new Error('Scanner request failed');
-    const data = await res.json();
-    
-    // Redirect immediately to demo mode if backend says simulation / demo
-    if (data.status === 'demo') {
-      renderDemoLiveMatch();
-      return;
-    }
-    
-    // -------------------------------------------------------------
-    // CASE A: REAL-TIME ACTIVE LOCAL MATCH
-    // -------------------------------------------------------------
-    if (data.status === 'active') {
-      const matchDetails = data.data || {};
-      const players = matchDetails.players || [];
-      if(players.length === 0) throw new Error('Empty active lobby data');
-      
-      const red = players.filter(p => p.team === 'Red' || p.team === 'red');
-      const blue = players.filter(p => p.team === 'Blue' || p.team === 'blue');
-      const tacticalTips = generateLiveTacticalTips(red);
-      
-      content.innerHTML = `
-        <div style="background: rgba(62,207,142,0.05); border: 1px solid rgba(62,207,142,0.15); border-radius: var(--radius); padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; animation: glowPulse 2s infinite ease-in-out;">
-          <div style="font-family:'Barlow Condensed', sans-serif; font-size: 13px; font-weight:800; color: var(--win); display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing:0.5px;">
-            <div class="live-dot" style="position:static; background:var(--win); box-shadow:0 0 6px var(--win); width:8px; height:8px; border-radius:50%; animation: pulseDot 1.5s infinite;"></div>
-            REAL-TIME CLIENT SCAN ACTIVE (${matchDetails.match_type === 'pregame' ? 'AGENT SELECTION' : 'IN-GAME SESSION'})
-          </div>
-          <button class="nav-btn" onclick="fetchLiveMatch(true)" style="background:var(--surface3); border:1px solid var(--border); font-size:10px; padding:3px 8px; cursor:pointer;">Switch to Demo Mode</button>
-        </div>
-        
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;">
-          <!-- RED TEAM (DEFENDERS / ENEMIES) -->
-          <div>
-            <div style="font-family:'Barlow Condensed', sans-serif; font-weight:900; font-size:15px; color:var(--loss); letter-spacing:1px; margin-bottom:12px; border-bottom:1px solid rgba(255,70,85,0.2); padding-bottom:6px; text-transform:uppercase;">DEFENDERS (RED TEAM)</div>
-            ${red.map(p => {
-              const icon = getAgentIconUrl(p.character || '');
-              const rankImg = getRankImgUrl(p.currenttierpatched || '');
-              const isSmurf = p.account_level < 30 && p.currenttier >= 15;
-              const formattedName = p.tag ? `${p.name} <span style="color:var(--muted); font-size:11px;">#${p.tag}</span>` : p.name;
-              return `
-              <div class="intel-card-hover" style="background:var(--surface2); padding:12px; margin-bottom:8px; border-radius:var(--radius-sm); border:1px solid rgba(255,87,87,0.15); display: flex; align-items: center; gap: 12px;">
-                ${icon ? `<img src="${icon}" style="width:36px;height:36px;object-fit:contain;border-radius:4px;border:1px solid var(--border);" onerror="this.style.display='none'">` : ''}
-                <div style="flex:1">
-                  <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div style="font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:16px;">${formattedName}</div>
-                    <div style="font-family:'DM Mono', monospace; font-size:10px; color:var(--muted);">Lvl ${p.account_level || '—'}</div>
-                  </div>
-                  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
-                    <div style="font-family:'DM Mono', monospace; font-size:11px; color:var(--muted2);">${p.character || 'Unknown Agent'}</div>
-                    <div style="display:flex; align-items:center; gap:4px; font-family:'DM Mono', monospace; font-size:10px; color:var(--text);">
-                      ${rankImg ? `<img src="${rankImg}" style="width:16px;height:16px;object-fit:contain;" onerror="this.style.display='none'">` : ''}
-                      ${p.currenttierpatched || 'Unranked'}
-                    </div>
-                  </div>
-                  ${isSmurf ? `<div style="margin-top:6px; font-family:'DM Mono',monospace; font-size:8px; color:var(--accent); background:rgba(255,70,85,0.1); border: 1px solid rgba(255,70,85,0.2); display:inline-block; padding:2px 6px; border-radius:3px; font-weight:bold; letter-spacing:0.5px;">⚠️ SUSPECTED SMURF</div>` : ''}
-                </div>
-              </div>
-              `;
-            }).join('')}
-            ${red.length === 0 ? '<div style="font-family:\'DM Mono\',monospace; font-size:12px; color:var(--muted); text-align:center; padding:12px;">Waiting for enemies to lock in...</div>' : ''}
-          </div>
-          
-          <!-- BLUE TEAM (ATTACKERS / ALLIES) -->
-          <div>
-            <div style="font-family:'Barlow Condensed', sans-serif; font-weight:900; font-size:15px; color:var(--blue); letter-spacing:1px; margin-bottom:12px; border-bottom:1px solid rgba(0,180,255,0.2); padding-bottom:6px; text-transform:uppercase;">ATTACKERS (BLUE TEAM)</div>
-            ${blue.map(p => {
-              const icon = getAgentIconUrl(p.character || '');
-              const rankImg = getRankImgUrl(p.currenttierpatched || '');
-              const isSmurf = p.account_level < 30 && p.currenttier >= 15;
-              const isMe = p.name?.toLowerCase() === PLAYER_NAME.toLowerCase();
-              const formattedName = p.tag ? `${p.name} <span style="color:var(--muted); font-size:11px;">#${p.tag}</span>` : p.name;
-              return `
-              <div class="intel-card-hover" style="background:var(--surface2); padding:12px; margin-bottom:8px; border-radius:var(--radius-sm); border:1px solid ${isMe ? 'rgba(62,207,142,0.3)' : 'rgba(77,159,255,0.15)'}; display: flex; align-items: center; gap: 12px; ${isMe ? 'background: rgba(62,207,142,0.03);' : ''}">
-                ${icon ? `<img src="${icon}" style="width:36px;height:36px;object-fit:contain;border-radius:4px;border:1px solid var(--border);" onerror="this.style.display='none'">` : ''}
-                <div style="flex:1">
-                  <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div style="font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:16px;">
-                      ${formattedName} 
-                      ${isMe ? '<span style="color:var(--accent); font-size:9px; margin-left:4px; background:rgba(62,207,142,0.1); padding:1px 4px; border-radius:3px; font-weight:800;">YOU</span>' : ''}
-                    </div>
-                    <div style="font-family:'DM Mono', monospace; font-size:10px; color:var(--muted);">Lvl ${p.account_level || '—'}</div>
-                  </div>
-                  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
-                    <div style="font-family:'DM Mono', monospace; font-size:11px; color:var(--muted2);">${p.character || 'Unknown Agent'}</div>
-                    <div style="display:flex; align-items:center; gap:4px; font-family:'DM Mono', monospace; font-size:10px; color:var(--text);">
-                      ${rankImg ? `<img src="${rankImg}" style="width:16px;height:16px;object-fit:contain;" onerror="this.style.display='none'">` : ''}
-                      ${p.currenttierpatched || 'Unranked'}
-                    </div>
-                  </div>
-                  ${isSmurf ? `<div style="margin-top:6px; font-family:'DM Mono',monospace; font-size:8px; color:var(--accent); background:rgba(255,70,85,0.1); border: 1px solid rgba(255,70,85,0.2); display:inline-block; padding:2px 6px; border-radius:3px; font-weight:bold; letter-spacing:0.5px;">⚠️ SUSPECTED SMURF</div>` : ''}
-                </div>
-              </div>
-              `;
-            }).join('')}
-          </div>
-        </div>
-        
-        <!-- DYNAMIC LIVE TACTICS BENTO CARD -->
-        <div class="card" style="border:1px solid var(--border); background:rgba(255,255,255,0.01); padding:16px;">
-          <div style="font-family:'Barlow Condensed', sans-serif; font-weight:900; font-size:15px; letter-spacing:1px; color:#fff; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
-            ⚔️ TACTICAL COMBAT COUNTER-STRATEGIES
-          </div>
-          <div style="display:grid; grid-template-columns: 1fr 2fr; gap:20px; font-family:'DM Mono',monospace; font-size:11px;">
-            <div style="border-right: 1px solid var(--border); padding-right:12px;">
-              <div style="margin-bottom:8px;"><span style="color:var(--muted)">Lobby Level:</span> <span style="color:#fff;">Real Session</span></div>
-              <div style="margin-bottom:8px;"><span style="color:var(--muted)">Team Balance:</span> <span style="color:var(--win); font-weight:bold;">Analyzing...</span></div>
-              <div><span style="color:var(--muted)">Active Threat:</span> <span style="color:var(--accent); font-weight:bold;">${red.some(p => p.account_level < 30 && p.currenttier >= 15) ? 'Suspected Smurf (⚠️ Red Flag)' : 'Standard Lobby'}</span></div>
-            </div>
-            <div>
-              <div style="color:var(--muted); margin-bottom:6px; font-weight:bold; font-size:10px;">RECOMMENDED LIVE TACTICS:</div>
-              <div style="color:var(--text); line-height:1.6; font-size:11px;">
-                ${tacticalTips.map(tip => `• ${tip}`).join('<br>')}
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-      return;
-    }
-    
-    // -------------------------------------------------------------
-    // CASE B: RECENT POST-MATCH INTELLIGENCE FALLBACK
-    // -------------------------------------------------------------
-    if (data.status === 'recent') {
-      const matchDetails = data.data || {};
-      const players = matchDetails.players || [];
-      const red = players.filter(p => p.team === 'Red' || p.team === 'red');
-      const blue = players.filter(p => p.team === 'Blue' || p.team === 'blue');
-      
-      const blueScore = data.teams?.blue?.rounds_won ?? 0;
-      const redScore = data.teams?.red?.rounds_won ?? 0;
-      const myTeamWon = data.teams?.blue?.has_won ?? false;
-      const totalRounds = blueScore + redScore || 20;
-      
-      const me = players.find(p => p.name?.toLowerCase() === PLAYER_NAME.toLowerCase());
-      
-      // Generate AI Post-Match review text
-      let reviewHeadline = "Solid Performance!";
-      let reviewText = "You contributed consistently to your team's executes. Keep focusing on team coordination.";
-      if (me && me.stats) {
-        const kills = me.stats.kills || 0;
-        const deaths = me.stats.deaths || 0;
-        const assists = me.stats.assists || 0;
-        const kd = deaths > 0 ? (kills / deaths) : kills;
-        
-        if (kd >= 1.3) {
-          reviewHeadline = "Dominant Performance!";
-          reviewText = `Outstanding individual form with a ${kd.toFixed(2)} K/D! You successfully opened up entry duels and held your grounds. Carry this mechanical confidence directly into your next round!`;
-        } else if (kd < 0.9) {
-          reviewHeadline = "Tough Aiming Conditions";
-          reviewText = `You faced heavy mechanical resistance in this match (${kd.toFixed(2)} K/D). Lower your peeking aggression, hold supportive crossfires, and let teammate flash utility scale you in.`;
-        } else {
-          reviewHeadline = "Excellent Team Integration";
-          reviewText = `A balanced ${kd.toFixed(2)} K/D and stable performance. Your support/trade speed was fantastic. Focus on smoke/utility timing to give yourself even safer margins next game.`;
-        }
-        
-        // Agent specific review additions
-        const agent = me.character || 'Unknown';
-        const duelistGroup = ['Jett', 'Reyna', 'Neon', 'Raze', 'Phoenix', 'Iso'];
-        const sentinelGroup = ['Cypher', 'Killjoy', 'Sage', 'Deadlock', 'Vyse'];
-        const controllerGroup = ['Omen', 'Viper', 'Clove', 'Brimstone', 'Astra', 'Harbor'];
-        
-        if (duelistGroup.includes(agent)) {
-          reviewText += ` As a Duelist, double down on coordinating flash/recon initiators to clear corners before you jump-entry.`;
-        } else if (sentinelGroup.includes(agent)) {
-          reviewText += ` As a Sentinel, keep traps non-standard and prioritize staying alive to delay late post-plants.`;
-        } else if (controllerGroup.includes(agent)) {
-          reviewText += ` As a Controller, ensure your smokes completely plug the choke margins without leaking gaps.`;
-        } else {
-          reviewText += ` As an Initiator, make sure to flash or scout corners precisely for your Entry Duelists.`;
-        }
-      }
-      
-      content.innerHTML = `
-        <div style="background: rgba(245,166,35,0.05); border: 1px solid rgba(245,166,35,0.15); border-radius: var(--radius); padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; animation: glowPulseAmber 2s infinite ease-in-out;">
-          <div style="font-family:'Barlow Condensed', sans-serif; font-size: 13px; font-weight:800; color: #f5a623; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing:0.5px;">
-            ⚡ RECENT SESSION INTEL (COMPLETED ${data.time_ago_mins} MINS AGO)
-          </div>
-          <button class="nav-btn" onclick="fetchLiveMatch(true)" style="background:var(--surface3); border:1px solid var(--border); font-size:10px; padding:3px 8px; cursor:pointer;">Launch Demo Mode</button>
-        </div>
-        
-        <!-- RECENT OUTCOME OVERVIEW -->
-        <div style="background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; background-size: cover; background-position: center; position:relative; overflow:hidden;">
-          <div style="position:relative; z-index:2;">
-            <div style="font-family:'DM Mono', monospace; font-size:10px; color:var(--muted); text-transform:uppercase;">Map: ${data.map || 'Unknown Map'} · Mode: ${data.mode || 'Competitive'}</div>
-            <div style="font-family:'Barlow Condensed', sans-serif; font-size:32px; font-weight:900; color:${myTeamWon ? 'var(--win)' : 'var(--loss)'}; display:flex; align-items:center; gap:12px; margin-top:4px;">
-              <span>${myTeamWon ? 'VICTORY' : 'DEFEAT'}</span>
-              <span style="font-size:24px; color:#fff; font-family:'Barlow Condensed',sans-serif;">${blueScore} - ${redScore}</span>
-            </div>
-          </div>
-          <div style="text-align:right; position:relative; z-index:2; font-family:'DM Mono', monospace;">
-            <div style="font-size:10px; color:var(--muted);">YOUR STATS</div>
-            ${me && me.stats ? `
-              <div style="font-size:22px; font-weight:bold; color:#fff; font-family:'Barlow Condensed',sans-serif; margin-top:4px;">
-                ${me.stats.kills} <span style="font-size:12px; color:var(--muted);">K</span> / 
-                ${me.stats.deaths} <span style="font-size:12px; color:var(--muted);">D</span> / 
-                ${me.stats.assists} <span style="font-size:12px; color:var(--muted);">A</span>
-              </div>
-              <div style="font-size:10px; color:var(--muted2); margin-top:2px;">ACS: ${Math.round((me.stats.score || 0) / totalRounds)}</div>
-            ` : '<div style="color:var(--muted);">—</div>'}
-          </div>
-        </div>
-        
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;">
-          <!-- RED TEAM (DEFENDERS / ENEMIES) -->
-          <div>
-            <div style="font-family:'Barlow Condensed', sans-serif; font-weight:900; font-size:15px; color:var(--loss); letter-spacing:1px; margin-bottom:12px; border-bottom:1px solid rgba(255,70,85,0.2); padding-bottom:6px; text-transform:uppercase;">RED TEAM</div>
-            ${red.map(p => {
-              const icon = getAgentIconUrl(p.character || '');
-              const rankImg = getRankImgUrl(p.currenttierpatched || '');
-              const pACS = Math.round((p.stats?.score || 0) / totalRounds);
-              return `
-              <div class="intel-card-hover" style="background:var(--surface2); padding:10px 12px; margin-bottom:8px; border-radius:var(--radius-sm); border:1px solid rgba(255,87,87,0.12); display: flex; align-items: center; gap: 10px;">
-                ${icon ? `<img src="${icon}" style="width:30px;height:30px;object-fit:contain;border-radius:4px;border:1px solid var(--border);" onerror="this.style.display='none'">` : ''}
-                <div style="flex:1">
-                  <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div style="font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:15px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:180px;">${p.name}</div>
-                    <div style="font-family:'DM Mono', monospace; font-size:11px; color:#fff; font-weight:bold;">${p.stats?.kills}/${p.stats?.deaths}/${p.stats?.assists}</div>
-                  </div>
-                  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
-                    <div style="font-family:'DM Mono', monospace; font-size:10px; color:var(--muted2);">${p.character || 'Unknown'} · ACS ${pACS}</div>
-                    <div style="display:flex; align-items:center; gap:2px; font-family:'DM Mono', monospace; font-size:9px; color:var(--text);">
-                      ${rankImg ? `<img src="${rankImg}" style="width:12px;height:12px;object-fit:contain;" onerror="this.style.display='none'">` : ''}
-                      ${p.currenttierpatched || 'Unranked'}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              `;
-            }).join('')}
-          </div>
-          
-          <!-- BLUE TEAM (ATTACKERS / ALLIES) -->
-          <div>
-            <div style="font-family:'Barlow Condensed', sans-serif; font-weight:900; font-size:15px; color:var(--blue); letter-spacing:1px; margin-bottom:12px; border-bottom:1px solid rgba(0,180,255,0.2); padding-bottom:6px; text-transform:uppercase;">BLUE TEAM</div>
-            ${blue.map(p => {
-              const icon = getAgentIconUrl(p.character || '');
-              const rankImg = getRankImgUrl(p.currenttierpatched || '');
-              const isMe = p.name?.toLowerCase() === PLAYER_NAME.toLowerCase();
-              const pACS = Math.round((p.stats?.score || 0) / totalRounds);
-              return `
-              <div class="intel-card-hover" style="background:var(--surface2); padding:10px 12px; margin-bottom:8px; border-radius:var(--radius-sm); border:1px solid ${isMe ? 'rgba(62,207,142,0.3)' : 'rgba(77,159,255,0.12)'}; display: flex; align-items: center; gap: 10px; ${isMe ? 'background: rgba(62,207,142,0.03);' : ''}">
-                ${icon ? `<img src="${icon}" style="width:30px;height:30px;object-fit:contain;border-radius:4px;border:1px solid var(--border);" onerror="this.style.display='none'">` : ''}
-                <div style="flex:1">
-                  <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div style="font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:15px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:180px; color:${isMe ? 'var(--win)' : '#fff'};">
-                      ${p.name}
-                      ${isMe ? '<span style="color:var(--accent); font-size:8px; margin-left:4px; font-weight:800; background:rgba(62,207,142,0.1); padding:1px 3px; border-radius:2px;">YOU</span>' : ''}
-                    </div>
-                    <div style="font-family:'DM Mono', monospace; font-size:11px; color:#fff; font-weight:bold;">${p.stats?.kills}/${p.stats?.deaths}/${p.stats?.assists}</div>
-                  </div>
-                  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
-                    <div style="font-family:'DM Mono', monospace; font-size:10px; color:var(--muted2);">${p.character || 'Unknown'} · ACS ${pACS}</div>
-                    <div style="display:flex; align-items:center; gap:2px; font-family:'DM Mono', monospace; font-size:9px; color:var(--text);">
-                      ${rankImg ? `<img src="${rankImg}" style="width:12px;height:12px;object-fit:contain;" onerror="this.style.display='none'">` : ''}
-                      ${p.currenttierpatched || 'Unranked'}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              `;
-            }).join('')}
-          </div>
-        </div>
-        
-        <!-- AUTOMATED AI POST-MATCH REVIEW -->
-        <div class="card" style="border:1px solid rgba(245,166,35,0.25); background:rgba(255,255,255,0.01); padding:16px;">
-          <div style="font-family:'Barlow Condensed', sans-serif; font-weight:900; font-size:15px; letter-spacing:1px; color:#f5a623; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
-            🤖 AI POST-MATCH TACTICAL INTELLIGENCE
-          </div>
-          <div style="font-family:'DM Mono', monospace; font-size:11px; line-height:1.6; color:var(--text);">
-            <span style="color:#fff; font-weight:bold; font-size:12px; display:block; margin-bottom:6px;">💥 ${reviewHeadline}</span>
-            ${reviewText}
-          </div>
-        </div>
-      `;
-      return;
-    }
-    
-  } catch(e) {
-    console.error("[LIVE INTEL ERROR]", e);
-    // Safe fall-back: run the gorgeous simulator directly
-    renderDemoLiveMatch();
-  }
-}
 
-function renderDemoLiveMatch() {
-  const content = document.getElementById('live-content');
-  const identity = getPlayerIdentityInfo();
-  
-  const scaledRanks = getDemoRankScale(identity.rank);
-  
-  const mockPlayers = [
-    { name: 'ReynaGod99', account_level: 14, character: 'Reyna', currenttierpatched: scaledRanks[2], team: 'Red', isSmurf: true },
-    { name: 'ToxicJett', account_level: 182, character: 'Jett', currenttierpatched: scaledRanks[1], team: 'Red', isStreak: true },
-    { name: 'OmenShadow', account_level: 210, character: 'Omen', currenttierpatched: scaledRanks[0], team: 'Red' },
-    { name: 'SovaGod', account_level: 94, character: 'Sova', currenttierpatched: scaledRanks[1], team: 'Red' },
-    { name: 'BreachUser', account_level: 145, character: 'Breach', currenttierpatched: scaledRanks[3], team: 'Red', isOnTilt: true },
-    
-    { name: identity.name, account_level: identity.level, character: identity.agent, currenttierpatched: getTitleCasedRank(identity.rank), team: 'Blue', isMe: true },
-    { name: 'SageHealMe', account_level: 320, character: 'Sage', currenttierpatched: scaledRanks[0], team: 'Blue' },
-    { name: 'EntryNeon', account_level: 67, character: 'Neon', currenttierpatched: scaledRanks[1], team: 'Blue', isStreak: true },
-    { name: 'GekkoFriend', account_level: 112, character: 'Gekko', currenttierpatched: scaledRanks[2], team: 'Blue' },
-    { name: 'BrimDino', account_level: 154, character: 'Brimstone', currenttierpatched: scaledRanks[4], team: 'Blue' }
-  ];
-  
-  const red = mockPlayers.filter(p => p.team === 'Red');
-  const blue = mockPlayers.filter(p => p.team === 'Blue');
-  const tacticalTips = generateLiveTacticalTips(red);
-  
-  content.innerHTML = `
-    <!-- Demo Header Notice -->
-    <div style="background: rgba(245,166,35,0.05); border: 1px solid rgba(245,166,35,0.15); border-radius: var(--radius); padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; animation: glowPulseAmber 2s infinite ease-in-out;">
-      <div style="font-family:'Barlow Condensed', sans-serif; font-size: 13px; font-weight:800; color: #f5a623; display: flex; align-items: center; gap: 8px; text-transform: uppercase;">
-        🛠️ HIGH-FIDELITY LIVE INTEL SIMULATION RUNNING
-      </div>
-      <button class="nav-btn" onclick="fetchLiveMatch()" style="background:var(--surface3); border:1px solid var(--border); font-size:10px; padding:3px 8px; cursor:pointer;">Scan Real Session</button>
-    </div>
-    
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;">
-      <!-- RED TEAM -->
-      <div>
-        <div style="font-family:'Barlow Condensed', sans-serif; font-weight:900; font-size:15px; color:var(--loss); letter-spacing:1px; margin-bottom:12px; border-bottom:1px solid rgba(255,70,85,0.2); padding-bottom:6px; text-transform:uppercase;">DEFENDERS (RED TEAM)</div>
-        ${red.map(p => {
-          const icon = getAgentIconUrl(p.character);
-          const rankImg = getRankImgUrl(p.currenttierpatched);
-          return `
-          <div class="intel-card-hover" style="background:var(--surface2); padding:12px; margin-bottom:8px; border-radius:var(--radius-sm); border:1px solid rgba(255,87,87,0.15); display: flex; align-items: center; gap: 12px;">
-            ${icon ? `<img src="${icon}" style="width:36px;height:36px;object-fit:contain;border-radius:4px;border:1px solid var(--border);" onerror="this.style.display='none'">` : ''}
-            <div style="flex:1">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div style="font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:16px;">${p.name}</div>
-                <div style="font-family:'DM Mono', monospace; font-size:10px; color:var(--muted);">Lvl ${p.account_level}</div>
-              </div>
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
-                <div style="font-family:'DM Mono', monospace; font-size:11px; color:var(--muted2);">${p.character}</div>
-                <div style="display:flex; align-items:center; gap:4px; font-family:'DM Mono', monospace; font-size:10px; color:var(--text);">
-                  ${rankImg ? `<img src="${rankImg}" style="width:16px;height:16px;object-fit:contain;" onerror="this.style.display='none'">` : ''}
-                  ${p.currenttierpatched}
-                </div>
-              </div>
-              
-              <div style="margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;">
-                ${p.isSmurf ? `<span style="font-family:'DM Mono',monospace; font-size:8px; color:var(--accent); background:rgba(255,70,85,0.1); border: 1px solid rgba(255,70,85,0.2); padding:2px 6px; border-radius:3px; font-weight:bold;">⚠️ SUSPECTED SMURF</span>` : ''}
-                ${p.isStreak ? `<span style="font-family:'DM Mono',monospace; font-size:8px; color:var(--accent); background:rgba(255,70,85,0.1); border: 1px solid rgba(255,70,85,0.2); padding:2px 6px; border-radius:3px; font-weight:bold;">🔥 4 WIN STREAK</span>` : ''}
-                ${p.isOnTilt ? `<span style="font-family:'DM Mono',monospace; font-size:8px; color:#4facfe; background:rgba(79,172,254,0.1); border: 1px solid rgba(79,172,254,0.2); padding:2px 6px; border-radius:3px; font-weight:bold;">❄️ ON TILT (3L STREAK)</span>` : ''}
-              </div>
-            </div>
-          </div>
-          `;
-        }).join('')}
-      </div>
-      
-      <!-- BLUE TEAM -->
-      <div>
-        <div style="font-family:'Barlow Condensed', sans-serif; font-weight:900; font-size:15px; color:var(--blue); letter-spacing:1px; margin-bottom:12px; border-bottom:1px solid rgba(0,180,255,0.2); padding-bottom:6px; text-transform:uppercase;">ATTACKERS (BLUE TEAM)</div>
-        ${blue.map(p => {
-          const icon = getAgentIconUrl(p.character);
-          const rankImg = getRankImgUrl(p.currenttierpatched);
-          return `
-          <div class="intel-card-hover" style="background:var(--surface2); padding:12px; margin-bottom:8px; border-radius:var(--radius-sm); border:1px solid ${p.isMe ? 'rgba(62,207,142,0.3)' : 'rgba(77,159,255,0.15)'}; display: flex; align-items: center; gap: 12px; ${p.isMe ? 'background: rgba(62,207,142,0.03);' : ''}">
-            ${icon ? `<img src="${icon}" style="width:36px;height:36px;object-fit:contain;border-radius:4px;border:1px solid var(--border);" onerror="this.style.display='none'">` : ''}
-            <div style="flex:1">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div style="font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:16px;">
-                  ${p.name} ${p.isMe ? `<span style="color:var(--accent); font-size:9px; margin-left:4px; background:rgba(62,207,142,0.1); padding:1px 4px; border-radius:3px; font-weight:800;">YOU</span>` : ''}
-                </div>
-                <div style="font-family:'DM Mono', monospace; font-size:10px; color:var(--muted);">Lvl ${p.account_level}</div>
-              </div>
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
-                <div style="font-family:'DM Mono', monospace; font-size:11px; color:var(--muted2);">${p.character}</div>
-                <div style="display:flex; align-items:center; gap:4px; font-family:'DM Mono', monospace; font-size:10px; color:var(--text);">
-                  ${rankImg ? `<img src="${rankImg}" style="width:16px;height:16px;object-fit:contain;" onerror="this.style.display='none'">` : ''}
-                  ${p.currenttierpatched}
-                </div>
-              </div>
-              
-              <div style="margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;">
-                ${p.isMe ? `<span style="font-family:'DM Mono',monospace; font-size:8px; color:var(--win); background:rgba(62,207,142,0.1); border: 1px solid rgba(62,207,142,0.2); padding:2px 6px; border-radius:3px; font-weight:bold;">👑 IGL (SHOT CALLER)</span>` : ''}
-                ${p.isStreak ? `<span style="font-family:'DM Mono',monospace; font-size:8px; color:var(--win); background:rgba(62,207,142,0.1); border: 1px solid rgba(62,207,142,0.2); padding:2px 6px; border-radius:3px; font-weight:bold;">🔥 3 WIN STREAK</span>` : ''}
-              </div>
-            </div>
-          </div>
-          `;
-        }).join('')}
-      </div>
-    </div>
-    
-    <!-- TACTICAL BENTO OVERLAY -->
-    <div class="card" style="border:1px solid var(--border); background:rgba(255,255,255,0.01); padding:16px;">
-      <div style="font-family:'Barlow Condensed', sans-serif; font-weight:900; font-size:15px; letter-spacing:1px; color:#fff; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
-        ⚔️ TACTICAL COMBAT ANALYSIS & MATCH PREDICTION
-      </div>
-      <div style="display:grid; grid-template-columns: 1fr 2fr; gap:20px; font-family:'DM Mono',monospace; font-size:11px;">
-        <div style="border-right: 1px solid var(--border); padding-right:12px;">
-          <div style="margin-bottom:8px;"><span style="color:var(--muted)">Lobby Avg:</span> <span style="color:#fff;">${identity.rank}</span></div>
-          <div style="margin-bottom:8px;"><span style="color:var(--muted)">Win Probability:</span> <span style="color:var(--win); font-weight:bold;">54% (Blue)</span></div>
-          <div><span style="color:var(--muted)">Key Threat:</span> <span style="color:var(--accent); font-weight:bold;">VALORANT Smurf</span></div>
-        </div>
-        <div>
-          <div style="color:var(--muted); margin-bottom:6px; font-weight:bold; font-size:10px;">RECOMMENDED LIVE TACTICS:</div>
-          <div style="color:var(--text); line-height:1.6; font-size:11px;">
-            ${tacticalTips.map(tip => `• ${tip}`).join('<br>')}
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-}
+
+
+
 
 
 /* ── PHASE 1 V2 FEATURES: ANALYTICS & URL ROUTING ── */
@@ -9722,20 +9177,7 @@ input:checked + .slider:before { transform:translateX(14px); background-color:#f
   </div>
 </div>
 
-<!-- LIVE MATCH MODAL -->
-<div id="live-modal" style="display:none; position:fixed; inset:0; background:rgba(10,10,12,0.85); backdrop-filter:blur(10px); z-index:9999; align-items:center; justify-content:center;">
-  <div class="card" style="width:800px; max-width:95vw; max-height:90vh; overflow-y:auto; border:1px solid rgba(62,207,142,0.3); background:var(--surface);">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-      <div style="font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:24px; color:var(--win); text-transform:uppercase; display:flex; align-items:center; gap:8px;">
-        <div class="live-dot" style="position:static;"></div> Live Match Intel
-      </div>
-      <button onclick="document.getElementById('live-modal').style.display='none'" style="background:none; border:none; color:var(--muted); font-size:20px; cursor:pointer;">×</button>
-    </div>
-    <div id="live-content">
-      <!-- Populated by JS -->
-    </div>
-  </div>
-</div>
+
 
 
 <!-- LEADERBOARD MODAL -->
