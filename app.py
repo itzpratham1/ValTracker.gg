@@ -92,8 +92,8 @@ def get_cached_player(name, tag):
         return None
         
     params = {
-        "name": f"ieq.{name}",
-        "tag": f"ieq.{tag}"
+        "name": f"ilike.{name}",
+        "tag": f"ilike.{tag}"
     }
     r = supabase_request("GET", "players_cache", params=params)
     if r and r.status_code == 200:
