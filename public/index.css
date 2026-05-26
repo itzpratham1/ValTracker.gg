@@ -4263,7 +4263,7 @@ input:checked + .slider:before {
 }
 
 /* ── SYSTEM GRID & COACH VIEWS OVERRIDES ── */
-.coach-grid, .store-grid {
+.coach-grid, .store-grid, .esp-schedule-grid {
   display: grid !important;
   grid-template-columns: 1fr 1.2fr !important;
   gap: 28px !important;
@@ -4307,7 +4307,7 @@ input:checked + .slider:before {
     padding: 12px 16px !important;
   }
   
-  .coach-grid, .store-grid {
+  .coach-grid, .store-grid, .esp-schedule-grid {
     grid-template-columns: 1fr !important;
     gap: 20px !important;
   }

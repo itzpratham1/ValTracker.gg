@@ -960,8 +960,8 @@ def esports_upcoming():
 @rate_limit(requests_per_minute=30)
 def esports_news():
     cache_key = "vlr_news"
-    # Serve cached news if it's less than 10 minutes old
-    if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < 600:
+    # Serve cached news if it's less than 24 hours old
+    if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < 86400:
         return jsonify({"data": cache[cache_key]["data"]})
         
     news_items = []
