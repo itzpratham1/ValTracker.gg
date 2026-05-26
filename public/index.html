@@ -730,7 +730,7 @@
       <!-- Search & Filters Bar -->
       <div class="card" style="padding: 16px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; border-radius: 12px; background: rgba(20, 20, 22, 0.45); border: 1px solid var(--border);">
         <div style="flex: 1; min-width: 280px; position: relative;">
-          <input type="text" id="skin-search-input" placeholder="Search weapon skins (e.g. Prime, Reaver, RGX)..." style="width: 100%; padding: 11px 16px; border: 1px solid var(--border); border-radius: 8px; background: rgba(0,0,0,0.4); color: #fff; font-size: 13px; outline: none; transition: var(--transition);" onkeyup="filterSkins()">
+          <input type="text" id="skin-search-input" placeholder="Search weapon skins (e.g. Prime, Reaver, RGX)..." style="width: 100%; padding: 11px 16px; border: 1px solid var(--border); border-radius: 8px; background: rgba(0,0,0,0.4); color: #fff; font-size: 13px; outline: none; transition: var(--transition);" oninput="filterSkins()">
         </div>
         
         <div style="display: flex; gap: 12px; flex-wrap: wrap;">
@@ -832,7 +832,7 @@
       <p style="font-size: 13px; color: var(--muted); margin: 0; max-width: 700px;">Draft 5-agent team compositions for any active Valorant map. Our real-time coaching heuristics engine evaluates role balances, maps suitability, and triggers synergies to flag tactical vulnerabilities before you queue.</p>
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 28px;" class="store-grid">
+    <div class="coach-grid">
       <!-- LEFT PANEL: Draft Roster & Map Selector -->
       <div style="display: flex; flex-direction: column; gap: 20px;">
         <div class="section-label visible" style="margin-bottom: 0;">
@@ -891,7 +891,7 @@
 
         <div class="card" style="padding: 16px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 12px; display:flex; flex-direction:column; gap:16px; margin: 0;">
           <!-- Pro Compositions Side-by-Side -->
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="pro-compositions-grid">
             <!-- Meta Favorite -->
             <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
               <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -929,7 +929,7 @@
               <h4 style="font-family:'Barlow Condensed', sans-serif; font-size: 12px; text-transform: uppercase; color: #fff; margin: 0;">📈 VCT Agent Heatmap (<span id="dc-pro-patch-txt" style="color: var(--accent);">Patch --</span>)</h4>
               <span id="dc-pro-total-matches" style="font-family:'DM Mono', monospace; font-size: 9px; color: var(--muted);">0 maps parsed</span>
             </div>
-            <div id="dc-pro-heatmap-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-height: 220px; overflow-y: auto; padding-right: 4px;">
+            <div id="dc-pro-heatmap-list" style="max-height: 220px; overflow-y: auto; padding-right: 4px;">
               <div style="grid-column: 1 / -1; font-size: 11px; color: var(--muted); text-align: center; padding: 12px;">No pro stats available for this map.</div>
             </div>
           </div>
@@ -1756,6 +1756,12 @@ async function fetchAll(){
       // Load full history from DB and process all of it
       const allMatches = await loadAllMatches();
       processMatches(allMatches);
+      
+      // Asynchronously prefetch match details in background to populate weapons and rounds automatically
+      setTimeout(() => {
+        prefetchMatchDetails(allMatches.slice(0, 3));
+      }, 500);
+
       const newCount = matchData.data.length;
       const totalCount = allMatches.length;
       setStatus(`${newCount} new · ${totalCount} total stored`,'ok');
@@ -1771,6 +1777,39 @@ async function fetchAll(){
     showToast('Fetch failed');
   }
   btn.disabled=false;btn.textContent='↻ Fetch Stats';
+}
+
+async function prefetchMatchDetails(matchesToFetch) {
+  if (!matchesToFetch || !matchesToFetch.length) return;
+  console.log(`[Prefetch] Starting background detail fetch for ${matchesToFetch.length} matches...`);
+  let updatedAny = false;
+  for (const m of matchesToFetch) {
+    const matchId = m.metadata?.matchid || m.metadata?.match_id;
+    if (!matchId) continue;
+    
+    // Only prefetch if it doesn't already have rounds data
+    if (!m.rounds || m.rounds.length === 0) {
+      try {
+        console.log(`[Prefetch] Fetching full details for match ${matchId}...`);
+        const res = await fetch(`/api/v2/match/${matchId}`);
+        if (res.ok) {
+          const resJson = await res.json();
+          if (resJson?.data) {
+            // Save full detail match to database
+            await saveMatches([resJson.data]);
+            updatedAny = true;
+          }
+        }
+      } catch (e) {
+        console.error(`[Prefetch] Failed for match ${matchId}:`, e);
+      }
+    }
+  }
+  if (updatedAny) {
+    console.log(`[Prefetch] Prefetch completed. Reloading matches into UI...`);
+    const allMatches = await loadAllMatches();
+    processMatches(allMatches);
+  }
 }
 
 function findMe(match){
@@ -2465,9 +2504,38 @@ function populateFullDetailTabs(match, idx) {
       const ps=findMyPs(r._ps);
       const eco=ps?.economy||{};
       const won=(r.winning_team||'').toLowerCase()===myTeamId;
-      const weapon=eco.weapon?.name||eco.weapon||'—';
-      const armor=eco.armor?.name||eco.armor||'None';
-      perfHtml+=`<div class="eco-card ${won?'won':'lost'}"><div class="eco-rnd">R${ri+1}</div><div class="eco-weapon">${weapon}</div><div class="eco-val">${eco.loadout_value||0}cr<span class="eco-sub">LOADOUT</span></div><div class="eco-armor">${armor}</div></div>`;
+      
+      // Weapon & Armor resolution - safe from objects/uuid/fallbacks
+      const weapon=(eco.weapon && typeof eco.weapon === 'object') ? (eco.weapon.name || 'None') : (eco.weapon || 'None');
+      const armorName=(eco.armor && typeof eco.armor === 'object' && eco.armor.name) ? eco.armor.name : (typeof eco.armor === 'string' && eco.armor ? eco.armor : 'None');
+      
+      // Compute Buy Type
+      let buyType = 'ECO';
+      if (eco.loadout_value >= 3900 || weapon.toLowerCase() === 'vandal' || weapon.toLowerCase() === 'phantom' || weapon.toLowerCase() === 'operator') {
+        buyType = 'FULL BUY';
+      } else if (eco.loadout_value >= 2000) {
+        buyType = 'FORCE';
+      }
+      
+      perfHtml+=`
+        <div class="eco-card ${won?'won':'lost'}">
+          <div class="eco-card-header">
+            <span class="eco-round-num">Round ${ri+1}</span>
+            <span class="eco-outcome-badge ${won?'won':'lost'}">${won?'WIN':'LOSS'}</span>
+            <span class="eco-buy-badge ${buyType.toLowerCase().replace(' ', '-')}">${buyType}</span>
+          </div>
+          <div class="eco-card-body">
+            <div class="eco-weapon-section">
+              <span class="eco-weapon-name">${weapon}</span>
+              <span class="eco-armor-name">${armorName}</span>
+            </div>
+            <div class="eco-financials">
+              <div class="eco-fin-row"><span class="eco-lbl">Loadout:</span><span class="eco-val">${eco.loadout_value||0} cr</span></div>
+              <div class="eco-fin-row"><span class="eco-lbl">Spent:</span><span class="eco-val spent">${eco.spent||0} cr</span></div>
+              <div class="eco-fin-row"><span class="eco-lbl">Bank:</span><span class="eco-val bank">${eco.remaining||0} cr</span></div>
+            </div>
+          </div>
+        </div>`;
     });
     perfHtml+='</div>';
   }

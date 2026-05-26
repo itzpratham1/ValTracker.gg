@@ -3990,4 +3990,248 @@ input:checked + .slider:before {
   }
 }
 
+/* ==========================================================================
+   ValTracker.gg Economy Dashboard & Mobile Layout Overrides
+   ========================================================================== */
+
+/* ── STYLIZED ECONOMY PER ROUND ── */
+.eco-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important;
+  gap: 12px !important;
+  margin-top: 12px !important;
+}
+
+.eco-card {
+  background: rgba(13, 13, 16, 0.72) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 12px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  transition: var(--transition) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.eco-card:hover {
+  transform: translateY(-2px) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.eco-card.won {
+  border-left: 3px solid var(--win) !important;
+  background: rgba(16, 185, 129, 0.04) !important;
+}
+
+.eco-card.lost {
+  border-left: 3px solid var(--loss) !important;
+  background: rgba(244, 63, 94, 0.03) !important;
+}
+
+.eco-card-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  padding-bottom: 6px !important;
+}
+
+.eco-round-num {
+  font-family: 'Barlow Condensed', sans-serif !important;
+  font-weight: 800 !important;
+  font-size: 13px !important;
+  color: var(--text) !important;
+}
+
+.eco-outcome-badge {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 8px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  text-transform: uppercase !important;
+}
+
+.eco-outcome-badge.won {
+  color: var(--win) !important;
+  background: rgba(16, 185, 129, 0.12) !important;
+}
+
+.eco-outcome-badge.lost {
+  color: var(--loss) !important;
+  background: rgba(244, 63, 94, 0.12) !important;
+}
+
+.eco-buy-badge {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 8px !important;
+  font-weight: 700 !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  text-transform: uppercase !important;
+}
+
+.eco-buy-badge.eco {
+  color: var(--muted) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.eco-buy-badge.force {
+  color: #f5a623 !important;
+  background: rgba(245, 166, 35, 0.12) !important;
+}
+
+.eco-buy-badge.full-buy {
+  color: #00b2ff !important;
+  background: rgba(0, 178, 255, 0.12) !important;
+}
+
+.eco-card-body {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+}
+
+.eco-weapon-section {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+}
+
+.eco-weapon-name {
+  font-family: 'Exo 2', sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  color: #fff !important;
+}
+
+.eco-armor-name {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 9px !important;
+  color: var(--muted) !important;
+}
+
+.eco-financials {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  background: rgba(0, 0, 0, 0.2) !important;
+  padding: 6px 8px !important;
+  border-radius: 4px !important;
+}
+
+.eco-fin-row {
+  display: flex !important;
+  justify-content: space-between !important;
+  font-size: 9px !important;
+  font-family: 'DM Mono', monospace !important;
+}
+
+.eco-fin-row .eco-lbl {
+  color: var(--muted2) !important;
+}
+
+.eco-fin-row .eco-val {
+  color: var(--text) !important;
+  font-weight: 600 !important;
+}
+
+.eco-fin-row .eco-val.spent {
+  color: var(--loss) !important;
+}
+
+.eco-fin-row .eco-val.bank {
+  color: #ffd700 !important;
+}
+
+/* ── SYSTEM GRID & COACH VIEWS OVERRIDES ── */
+.coach-grid, .store-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1.2fr !important;
+  gap: 28px !important;
+}
+
+.pro-compositions-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 16px !important;
+}
+
+#dc-pro-heatmap-list {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 10px !important;
+}
+
+/* ── HIGH FIDELITY MOBILE RESPONSIVENESS OVERRIDES ── */
+
+@media (max-width: 992px) {
+  .hero {
+    grid-template-columns: 1fr !important;
+    padding: 20px 16px !important;
+    gap: 16px !important;
+  }
+  
+  .hero-right {
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+  
+  .player-banner-card,
+  .hero-rank-block,
+  .hero-streak-block {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: auto !important;
+    flex-shrink: 0 !important;
+    flex: none !important;
+    padding: 12px 16px !important;
+  }
+  
+  .coach-grid, .store-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .main {
+    padding: 0 12px 40px !important;
+    gap: 12px !important;
+  }
+  
+  /* Force Bento cards to fit full mobile width */
+  .span-2, .span-3, .span-4, .span-6, .span-7, .span-8 {
+    grid-column: span 12 !important;
+  }
+  
+  .pro-compositions-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  
+  /* Reduce giant title size on small viewport */
+  .hero-title {
+    font-size: 32px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  #dc-pro-heatmap-list {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+  
+  .eco-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+
 
