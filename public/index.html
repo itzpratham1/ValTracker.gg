@@ -1796,8 +1796,9 @@ async function prefetchMatchDetails(matchesToFetch) {
     const matchId = m.metadata?.matchid || m.metadata?.match_id;
     if (!matchId) continue;
     
-    // Only prefetch if it doesn't already have rounds data
-    if (!m.rounds || m.rounds.length === 0) {
+    // Only prefetch if it doesn't already have full rounds detail
+    const hasFullDetails = m.rounds && m.rounds.length > 0 && m.rounds[0].player_stats && m.rounds[0].player_stats.length > 0;
+    if (!hasFullDetails) {
       try {
         console.log(`[Prefetch] Fetching full details for match ${matchId}...`);
         const res = await fetch(`/api/v2/match/${matchId}`);
