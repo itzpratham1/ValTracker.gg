@@ -501,7 +501,12 @@ window.addEventListener('DOMContentLoaded', async () => {
       document.getElementById('player-name-input').value = savedProfile.name;
       document.getElementById('player-tag-input').value = savedProfile.tag;
       if (savedProfile.region) document.getElementById('region-select').value = savedProfile.region;
-      if (savedProfile.mode) document.getElementById('mode-select').value = savedProfile.mode;
+      if (savedProfile.mode) {
+        document.getElementById('mode-select').value = savedProfile.mode;
+        window._currentMode = savedProfile.mode;
+      } else {
+        window._currentMode = 'competitive';
+      }
       setStatus(`${count} matches stored — hit Fetch to update`, 'ok');
       const stored = await loadAllMatches();
       processMatches(stored);
@@ -4105,7 +4110,7 @@ function renderTopWeapons(matches) {
       if(!Array.isArray(ps)) ps=Object.values(ps);
       const myPs=ps.find(p=>(p.player_puuid||p.subject||p.puuid)===me.puuid);
       if(!myPs)return;
-      const kills=myPs.kill_events||myPs.kills||[];
+      const kills=Array.isArray(myPs.kill_events)?myPs.kill_events:[];
       kills.forEach(k=>{
         const raw=k.damage_weapon_name||k.finishing_damage?.damage_item||k.damage_weapon_id||'';
         const cachedWpn = _assetCache.weapons[raw.toLowerCase()];
