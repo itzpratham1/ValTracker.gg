@@ -744,7 +744,7 @@ def scrape_vlr_matches():
     import re
     from bs4 import BeautifulSoup
     cache_key = "vlr_scraped_matches"
-    if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < 120:
+    if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < 600:
         return cache[cache_key]["data"]
         
     try:
@@ -845,7 +845,7 @@ def scrape_vlr_results():
     import re
     from bs4 import BeautifulSoup
     cache_key = "vlr_scraped_results"
-    if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < 120:
+    if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < 600:
         return cache[cache_key]["data"]
         
     try:

@@ -7652,12 +7652,14 @@ function toggleTiers() {
 }
 
 function getEsportsTeamLogoHtml(name) {
-  if (!vctFranchiseData) return '';
+  const cleanName = name || 'TBD';
+  const fallback = `<div class="team-logo-fallback" style="width:20px; height:20px; border-radius:50%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-family:Barlow Condensed,sans-serif; font-size:9px; font-weight:700; color:var(--accent); margin-right:8px;">${cleanName.substring(0, 2).toUpperCase()}</div>`;
+  const fallbackEscaped = fallback.replace(/"/g, '&quot;');
+
+  if (!vctFranchiseData) return fallback;
   for (const region in vctFranchiseData) {
     for (const t of vctFranchiseData[region]) {
       if (t.name.toLowerCase() === name.toLowerCase() || t.tag?.toLowerCase() === name.toLowerCase()) {
-        const fallback = `<div class="team-logo-fallback" style="width:20px; height:20px; border-radius:50%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-family:Barlow Condensed,sans-serif; font-size:9px; font-weight:700; color:var(--accent); margin-right:8px;">${t.name.substring(0, 2).toUpperCase()}</div>`;
-        const fallbackEscaped = fallback.replace(/"/g, '&quot;');
         const teamLogoUrl = t.logo.startsWith('/api/image') ? t.logo : `/api/image?url=${encodeURIComponent(t.logo)}`;
         return `<img src="${teamLogoUrl}" style="width:20px;height:20px;object-fit:contain;margin-right:8px;" onerror="this.outerHTML='${fallbackEscaped}';" />`;
       }
@@ -7666,13 +7668,11 @@ function getEsportsTeamLogoHtml(name) {
   
   const match = allMatchesCache.find(m => m.match?.teams?.some(tm => tm.name.toLowerCase() === name.toLowerCase()))?.match?.teams?.find(tm => tm.name.toLowerCase() === name.toLowerCase());
   if (match && match.logo) {
-    const fallback = `<div class="team-logo-fallback" style="width:20px; height:20px; border-radius:50%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-family:Barlow Condensed,sans-serif; font-size:9px; font-weight:700; color:var(--accent); margin-right:8px;">${name.substring(0, 2).toUpperCase()}</div>`;
-    const fallbackEscaped = fallback.replace(/"/g, '&quot;');
     const teamLogoUrl = match.logo.startsWith('/api/image') ? match.logo : `/api/image?url=${encodeURIComponent(match.logo)}`;
     return `<img src="${teamLogoUrl}" style="width:20px;height:20px;object-fit:contain;margin-right:8px;" onerror="this.outerHTML='${fallbackEscaped}';" />`;
   }
   
-  return '';
+  return fallback;
 }
 
 function getEspHTML(m, type) {
@@ -10035,20 +10035,31 @@ body::after {
     height: 32px !important;
   }
   
+  .esports-subnav {
+    position: sticky !important;
+    top: 0 !important;
+    background: #0a0a0c !important; /* Matches solid body --bg */
+    padding: 8px 14px !important;
+    z-index: 9999 !important;
+    border-bottom: 1px solid var(--border) !important;
+  }
+  
   .esp-tname {
     order: 2 !important;
     font-size: 14px !important;
     font-weight: 700 !important;
     color: #fff !important;
-    max-width: 130px !important;
+    width: 100% !important;
+    max-width: 100% !important;
     text-align: center !important;
     line-height: 1.1 !important;
-    margin: 0 !important;
+    margin: 0 auto !important;
+    display: block !important;
   }
   
   .esp-team.t-right .esp-tname {
     text-align: center !important;
-    margin: 0 !important;
+    margin: 0 auto !important;
   }
   
   .esp-tscore {
@@ -10056,13 +10067,14 @@ body::after {
     font-size: 22px !important;
     font-weight: 900 !important;
     text-align: center !important;
-    margin: 0 !important;
-    width: auto !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+    display: block !important;
   }
   
   .esp-team.t-right .esp-tscore {
     text-align: center !important;
-    margin: 0 !important;
+    margin: 0 auto !important;
   }
   
   /* Teams section compact sidebar list on mobile */
