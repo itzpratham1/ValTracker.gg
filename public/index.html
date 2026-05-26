@@ -9563,8 +9563,10 @@ body::after {
 #mode-select { min-width: 82px !important; }
 #act-select { min-width: 82px !important; }
 
-.mobile-filter-toggle {
-  display: none !important;
+@media (min-width: 801px) {
+  .mobile-filter-toggle {
+    display: none !important;
+  }
 }
 
 .card, .agent-bento, .map-card-bento, .impact-bento, .match-row, .match-panel, .hero-rank-block, .player-banner-card, .ai-card, .deep-trigger-card, .deep-card, .live-banner, .stat-modal {
