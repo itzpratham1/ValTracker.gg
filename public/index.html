@@ -82,7 +82,7 @@
 <!-- TOP BAR -->
 <div class="topbar">
   <div class="topbar-left">
-    <div class="logo">ValTracker<span style="color:var(--accent)">.gg</span></div>
+    <div class="logo" onclick="toggleMainView('tracker')" style="cursor:pointer">ValTracker<span style="color:var(--accent)">.gg</span></div>
     
     <div class="topbar-tabs">
       <div class="topbar-tab active" id="tab-tracker" onclick="toggleMainView('tracker')">Tracker</div>
@@ -126,34 +126,51 @@
       </svg>
       <span>Copy ID</span>
     </button>
+    <button class="mobile-filter-toggle" id="mobile-filter-toggle" onclick="toggleMobileFilters()" title="Toggle Filters" style="display: none;">
+      <span class="toggle-icon">⚙️</span>
+      <span>Filters</span>
+    </button>
   </div>
-  <div class="topbar-right">
-    <select class="region-select" id="region-select">
-      <option value="ap">AP — Asia Pacific</option>
-      <option value="na">NA — North America</option>
-      <option value="eu">EU — Europe</option>
-      <option value="kr">KR — Korea</option>
-    </select>
-    <select class="region-select" id="mode-select" style="min-width:120px">
-      <option value="competitive">Competitive</option>
-      <option value="unrated">Unrated</option>
-      <option value="deathmatch">Deathmatch</option>
-      <option value="teamdeathmatch">Team DM</option>
-      <option value="swiftplay">Swiftplay</option>
-      <option value="spikerush">Spike Rush</option>
-    </select>
-    <select class="region-select" id="act-select" style="min-width:140px">
-      <option value="v26a3">V26 Act 3 (Current)</option>
-      <option value="v26a2">V26 Act 2</option>
-      <option value="v26a1">V26 Act 1</option>
-      <option value="v25a6">V25 Act 6</option>
-      <option value="v25a5">V25 Act 5</option>
-      <option value="v25a4">V25 Act 4</option>
-      <option value="v25a3">V25 Act 3</option>
-      <option value="v25a2">V25 Act 2</option>
-      <option value="v25a1">V25 Act 1</option>
-      <option value="all">Lifetime Overview</option>
-    </select>
+  <div class="topbar-right" id="topbar-filters-group">
+    <div class="topbar-filter-capsule">
+      <div class="filter-item">
+        <span class="filter-icon">🌐</span>
+        <select class="region-select" id="region-select">
+          <option value="ap">AP — Asia Pacific</option>
+          <option value="na">NA — North America</option>
+          <option value="eu">EU — Europe</option>
+          <option value="kr">KR — Korea</option>
+        </select>
+      </div>
+      <div class="filter-divider"></div>
+      <div class="filter-item">
+        <span class="filter-icon">🎮</span>
+        <select class="region-select" id="mode-select" style="min-width:120px">
+          <option value="competitive">Competitive</option>
+          <option value="unrated">Unrated</option>
+          <option value="deathmatch">Deathmatch</option>
+          <option value="teamdeathmatch">Team DM</option>
+          <option value="swiftplay">Swiftplay</option>
+          <option value="spikerush">Spike Rush</option>
+        </select>
+      </div>
+      <div class="filter-divider"></div>
+      <div class="filter-item">
+        <span class="filter-icon">📅</span>
+        <select class="region-select" id="act-select" style="min-width:140px">
+          <option value="v26a3">V26 Act 3 (Current)</option>
+          <option value="v26a2">V26 Act 2</option>
+          <option value="v26a1">V26 Act 1</option>
+          <option value="v25a6">V25 Act 6</option>
+          <option value="v25a5">V25 Act 5</option>
+          <option value="v25a4">V25 Act 4</option>
+          <option value="v25a3">V25 Act 3</option>
+          <option value="v25a2">V25 Act 2</option>
+          <option value="v25a1">V25 Act 1</option>
+          <option value="all">Lifetime Overview</option>
+        </select>
+      </div>
+    </div>
     <button class="fetch-btn" id="fetch-btn" onclick="fetchAll()">↻ Fetch Stats</button>
   </div>
 </div>
@@ -5343,6 +5360,8 @@ function dismissLanding() {
   // Hide search inputs and show premium player active pill
   toggleSearchMode(false);
   
+  const fg = document.getElementById('topbar-filters-group');
+  if (fg) fg.style.display = 'flex';
   const fb = document.getElementById('fetch-btn');
   if (fb) fb.style.display = 'inline-block';
   const h2hb = document.getElementById('h2h-trigger-btn');
@@ -5354,24 +5373,28 @@ function toggleSearchMode(showSearch) {
   const div2 = document.getElementById('tracker-divider-2');
   const copyBtn = document.getElementById('copy-riot-btn');
   const activePill = document.getElementById('player-active-pill');
+  const mft = document.getElementById('mobile-filter-toggle');
   
   if (showSearch) {
     if (psw) psw.style.display = 'flex';
     if (div2) div2.style.display = 'block';
     if (copyBtn) copyBtn.style.display = 'inline-flex';
     if (activePill) activePill.style.display = 'none';
+    if (mft) mft.style.display = 'none';
   } else {
     if (PLAYER_NAME) {
       if (psw) psw.style.display = 'none';
       if (div2) div2.style.display = 'none';
       if (copyBtn) copyBtn.style.display = 'none';
       if (activePill) activePill.style.display = 'flex';
+      if (mft) mft.style.display = 'inline-flex';
       updateActivePill();
     } else {
       if (psw) psw.style.display = 'flex';
       if (div2) div2.style.display = 'block';
       if (copyBtn) copyBtn.style.display = 'inline-flex';
       if (activePill) activePill.style.display = 'none';
+      if (mft) mft.style.display = 'none';
     }
   }
 }
@@ -6941,41 +6964,54 @@ function toggleMainView(view) {
   const cView = document.getElementById('coach-view');
   if (cView) cView.style.display = 'none';
   
+  const filterGroup = document.getElementById('topbar-filters-group');
+  const mft = document.getElementById('mobile-filter-toggle');
+  
   if (view === 'tracker') {
     document.getElementById('tracker-view').style.display = 'block';
     document.querySelector('.player-search-wrap').style.display = 'flex';
-    document.getElementById('fetch-btn').style.display = 'inline-block';
+    if (filterGroup) filterGroup.style.display = 'flex';
+    
+    // Only show mobile toggle on tracker view if stats have been loaded (active pill is displayed)
+    const activePill = document.getElementById('player-active-pill');
+    if (mft) {
+      mft.style.display = (activePill && activePill.style.display === 'flex') ? 'inline-flex' : 'none';
+    }
+    
     const h2hb = document.getElementById('h2h-trigger-btn');
     if (h2hb) h2hb.style.display = 'inline-block';
     if(esportsLiveInterval) clearInterval(esportsLiveInterval);
     if(esportsCountdownInterval) clearInterval(esportsCountdownInterval);
     dismissLanding();
-  } else if (view === 'esports') {
-    document.getElementById('esports-view').style.display = 'block';
+  } else {
+    // Hide tracker-specific filters and search on other tabs
     document.querySelector('.player-search-wrap').style.display = 'none';
-    document.getElementById('fetch-btn').style.display = 'none';
+    if (filterGroup) filterGroup.style.display = 'none';
+    if (mft) mft.style.display = 'none';
+    
     const h2hb = document.getElementById('h2h-trigger-btn');
     if (h2hb) h2hb.style.display = 'none';
     
-    const activeTab = document.querySelector('.esports-pill.active').textContent.toLowerCase();
-    switchEsportsTab(activeTab);
-  } else if (view === 'store') {
-    document.getElementById('store-view').style.display = 'block';
-    document.querySelector('.player-search-wrap').style.display = 'none';
-    document.getElementById('fetch-btn').style.display = 'none';
-    const h2hb = document.getElementById('h2h-trigger-btn');
-    if (h2hb) h2hb.style.display = 'none';
-    
-    if(esportsLiveInterval) clearInterval(esportsLiveInterval);
-    if(esportsCountdownInterval) clearInterval(esportsCountdownInterval);
-    initStoreView();
-  } else if (view === 'coach') {
-    if (cView) cView.style.display = 'block';
-    document.querySelector('.player-search-wrap').style.display = 'none';
-    document.getElementById('fetch-btn').style.display = 'none';
-    const h2hb = document.getElementById('h2h-trigger-btn');
-    if (h2hb) h2hb.style.display = 'none';
-    resetDraftComp();
+    if (view === 'esports') {
+      document.getElementById('esports-view').style.display = 'block';
+      const activeTab = document.querySelector('.esports-pill.active').textContent.toLowerCase();
+      switchEsportsTab(activeTab);
+    } else if (view === 'store') {
+      document.getElementById('store-view').style.display = 'block';
+      if(esportsLiveInterval) clearInterval(esportsLiveInterval);
+      if(esportsCountdownInterval) clearInterval(esportsCountdownInterval);
+      initStoreView();
+    } else if (view === 'coach') {
+      if (cView) cView.style.display = 'block';
+      resetDraftComp();
+    }
+  }
+}
+
+function toggleMobileFilters() {
+  const fg = document.getElementById('topbar-filters-group');
+  if (fg) {
+    fg.classList.toggle('mobile-expanded');
   }
 }
 
@@ -9446,6 +9482,70 @@ body::after {
 .topbar {
   background: rgba(10, 10, 12, 0.7);
   border-bottom: 1px solid var(--border);
+  padding: 10px 24px;
+}
+
+/* ── TOPBAR CAPSULE SELECTORS (DESKTOP REDESIGN) ── */
+.topbar-filter-capsule {
+  display: flex;
+  align-items: center;
+  background: rgba(26, 26, 29, 0.6);
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  padding: 2px 12px;
+  gap: 0;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.03), 0 4px 15px rgba(0,0,0,0.25);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.topbar-filter-capsule:focus-within,
+.topbar-filter-capsule:hover {
+  border-color: rgba(250, 68, 84, 0.35);
+  box-shadow: 0 0 15px rgba(250, 68, 84, 0.1), 0 4px 20px rgba(0,0,0,0.3);
+  background: rgba(32, 32, 36, 0.75);
+}
+.filter-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+}
+.filter-icon {
+  font-size: 11px;
+  opacity: 0.65;
+  transition: opacity 0.2s ease;
+}
+.filter-item:focus-within .filter-icon,
+.filter-item:hover .filter-icon {
+  opacity: 1;
+}
+.filter-divider {
+  width: 1px;
+  height: 16px;
+  background: rgba(255,255,255,0.08);
+  margin: 0 4px;
+}
+.topbar-filter-capsule select {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text);
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 6px 4px;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: color 0.2s ease;
+}
+.topbar-filter-capsule select:hover {
+  color: var(--accent);
+}
+
+.mobile-filter-toggle {
+  display: none !important;
 }
 
 .card, .agent-bento, .map-card-bento, .impact-bento, .match-row, .match-panel, .hero-rank-block, .player-banner-card, .ai-card, .deep-trigger-card, .deep-card, .live-banner, .stat-modal {
@@ -9508,17 +9608,170 @@ body::after {
   body::after { width: 150vw; height: 150vw; top: -15%; left: -25%; filter: blur(70px); }
   .glass-orb-2 { width: 180vw; height: 180vw; bottom: -20%; right: -30%; filter: blur(80px); border-radius: 50%; }
   
-  /* Topbar Inputs & Spacing - Force Wrapping! */
-  .topbar { padding: 12px; flex-wrap: wrap; gap: 10px; width: 100%; }
-  .topbar-left { flex-wrap: wrap; gap: 8px; width: 100%; justify-content: center; }
-  .player-search-wrap { display: flex; width: 100%; gap: 6px; }
-  .player-input { flex: 1; max-width: none !important; font-size: 14px; width: 100%; }
-  .player-input-tag { width: 80px; flex: none; max-width: none !important; font-size: 14px; }
-  .topbar-right { flex-wrap: wrap; justify-content: space-between; gap: 6px; width: 100%; }
-  /* Only topbar-right buttons should flex-grow, NOT action bar buttons */
-  .topbar-right .region-select,
-  .topbar-right .fetch-btn { flex: 1; min-width: 0; padding: 10px 6px; font-size: 12px; text-align: center; justify-content: center; white-space: nowrap; }
-  #mode-select { min-width: 0 !important; }
+  /* Topbar Inputs & Spacing - Premium Re-layout */
+  .topbar { 
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    padding: 10px 14px !important; 
+    gap: 8px !important; 
+    width: 100% !important; 
+    box-sizing: border-box !important;
+  }
+  .topbar-left { 
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    width: 100% !important; 
+    gap: 8px !important; 
+  }
+  
+  /* Logo and User stats in Header Row */
+  .logo {
+    order: 1 !important;
+    font-size: 18px !important;
+    align-self: flex-start !important;
+  }
+  
+  /* User profile active pill */
+  .player-active-pill {
+    order: 2 !important;
+    margin-left: auto !important;
+    font-size: 11px !important;
+    padding: 3px 8px 3px 4px !important;
+    border-radius: 20px !important;
+    max-width: 170px !important;
+  }
+  .active-pill-avatar-wrap {
+    width: 20px !important;
+    height: 20px !important;
+  }
+  .active-pill-name {
+    max-width: 110px !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  /* Sleek mobile filter toggle pill */
+  .mobile-filter-toggle {
+    display: inline-flex !important;
+    order: 2 !important;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: #0d0d0f;
+    background: var(--accent);
+    border: none;
+    border-radius: 20px;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 10px rgba(250, 68, 84, 0.25);
+    margin-left: 6px !important;
+    flex-shrink: 0 !important;
+  }
+  .mobile-filter-toggle:active {
+    transform: scale(0.95);
+  }
+  
+  .player-search-wrap { 
+    order: 3 !important;
+    display: flex !important; 
+    width: 100% !important; 
+    gap: 6px !important; 
+    margin-top: 4px !important;
+  }
+  .player-input { flex: 1; max-width: none !important; font-size: 13px !important; width: 100%; padding: 6px 8px !important; }
+  .player-input-tag { width: 60px; flex: none; max-width: none !important; font-size: 13px !important; }
+  
+  /* Horizontal swipeable tabs navigation */
+  .topbar-tabs {
+    order: 4 !important;
+    display: flex !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    width: 100% !important;
+    padding: 4px 0 !important;
+    gap: 6px !important;
+    background: transparent !important;
+    border: none !important;
+    box-sizing: border-box !important;
+  }
+  .topbar-tabs::-webkit-scrollbar {
+    display: none !important;
+  }
+  .topbar-tab {
+    flex: 0 0 auto !important;
+    font-size: 10px !important;
+    padding: 6px 10px !important;
+    border-radius: 6px !important;
+    background: rgba(255,255,255,0.02) !important;
+    border: 1px solid rgba(255,255,255,0.04) !important;
+  }
+  .topbar-tab.active {
+    background: rgba(250, 68, 84, 0.1) !important;
+    color: var(--accent) !important;
+    border: 1px solid rgba(250, 68, 84, 0.25) !important;
+  }
+  
+  /* Collapsible mobile filter bar drawer */
+  .topbar-right { 
+    display: none !important; /* Hide by default */
+  }
+  .topbar-right.mobile-expanded {
+    display: flex !important; 
+    flex-direction: column !important; 
+    width: 100% !important; 
+    gap: 8px !important;
+    animation: slideDownMobile 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  @keyframes slideDownMobile {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .topbar-right.mobile-expanded .topbar-filter-capsule {
+    display: flex !important;
+    width: 100% !important;
+    background: rgba(20, 20, 22, 0.85) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 12px !important;
+    padding: 4px 8px !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    box-sizing: border-box !important;
+  }
+  .topbar-right.mobile-expanded .filter-item {
+    flex: 1 !important;
+    justify-content: center !important;
+    padding: 4px 6px !important;
+  }
+  .topbar-right.mobile-expanded .filter-icon {
+    font-size: 10px !important;
+  }
+  .topbar-right.mobile-expanded select {
+    width: 100% !important;
+    text-align: center !important;
+    font-size: 10px !important;
+    padding: 4px 0 !important;
+  }
+  .topbar-right.mobile-expanded .fetch-btn {
+    width: 100% !important;
+    padding: 10px !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+    background: var(--accent) !important;
+    color: #0d0d0f !important;
+    letter-spacing: 1px !important;
+    margin-top: 4px !important;
+  }
   
   /* Prevent Header Text Overflow */
   .hero-title { font-size: clamp(26px, 8vw, 36px); line-height: 1.1; margin-bottom: 4px; }
