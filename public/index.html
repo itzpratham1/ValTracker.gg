@@ -136,16 +136,16 @@
       <div class="filter-item">
         <span class="filter-icon">🌐</span>
         <select class="region-select" id="region-select">
-          <option value="ap">AP — Asia Pacific</option>
-          <option value="na">NA — North America</option>
-          <option value="eu">EU — Europe</option>
-          <option value="kr">KR — Korea</option>
+          <option value="ap">AP</option>
+          <option value="na">NA</option>
+          <option value="eu">EU</option>
+          <option value="kr">KR</option>
         </select>
       </div>
       <div class="filter-divider"></div>
       <div class="filter-item">
         <span class="filter-icon">🎮</span>
-        <select class="region-select" id="mode-select" style="min-width:120px">
+        <select class="region-select" id="mode-select">
           <option value="competitive">Competitive</option>
           <option value="unrated">Unrated</option>
           <option value="deathmatch">Deathmatch</option>
@@ -157,8 +157,8 @@
       <div class="filter-divider"></div>
       <div class="filter-item">
         <span class="filter-icon">📅</span>
-        <select class="region-select" id="act-select" style="min-width:140px">
-          <option value="v26a3">V26 Act 3 (Current)</option>
+        <select class="region-select" id="act-select">
+          <option value="v26a3">V26 Act 3</option>
           <option value="v26a2">V26 Act 2</option>
           <option value="v26a1">V26 Act 1</option>
           <option value="v25a6">V25 Act 6</option>
@@ -167,7 +167,7 @@
           <option value="v25a3">V25 Act 3</option>
           <option value="v25a2">V25 Act 2</option>
           <option value="v25a1">V25 Act 1</option>
-          <option value="all">Lifetime Overview</option>
+          <option value="all">Lifetime</option>
         </select>
       </div>
     </div>
@@ -9482,7 +9482,17 @@ body::after {
 .topbar {
   background: rgba(10, 10, 12, 0.7);
   border-bottom: 1px solid var(--border);
-  padding: 10px 24px;
+  padding: 0 24px !important;
+  height: 60px !important;
+  display: flex !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
+}
+
+.tracker-nav {
+  position: sticky !important;
+  top: 60px !important;
+  z-index: 99 !important;
 }
 
 /* ── TOPBAR CAPSULE SELECTORS (DESKTOP REDESIGN) ── */
@@ -9544,6 +9554,10 @@ body::after {
   color: var(--accent);
 }
 
+#region-select { min-width: 42px !important; }
+#mode-select { min-width: 82px !important; }
+#act-select { min-width: 82px !important; }
+
 .mobile-filter-toggle {
   display: none !important;
 }
@@ -9580,6 +9594,66 @@ body::after {
 .card-val, .impact-val, .hero-title, .streak-val { text-shadow: 0 4px 12px rgba(0,0,0,0.5); }
 .map-splash { opacity: 0.8; mix-blend-mode: overlay; filter: saturate(1.2) brightness(0.6); }
 .map-card-bento:hover .map-splash { transform: scale(1.08); opacity: 1; filter: saturate(1.3) brightness(0.8); }
+
+/* ── COMPACT DESKTOP & TABLET SCALING (801PX TO 1350PX) ── */
+@media (max-width: 1350px) and (min-width: 801px) {
+  .topbar {
+    padding: 0 16px !important;
+    gap: 8px !important;
+  }
+  .topbar-left {
+    gap: 12px !important;
+  }
+  .logo {
+    font-size: 19px !important;
+    letter-spacing: 2px !important;
+  }
+  .topbar-tab {
+    padding: 5px 8px !important;
+    font-size: 10px !important;
+  }
+  .player-active-pill {
+    padding: 3px 8px 3px 4px !important;
+    font-size: 11px !important;
+    gap: 6px !important;
+    max-width: 180px !important;
+  }
+  .active-pill-name {
+    max-width: 100px !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .topbar-filter-capsule {
+    padding: 2px 8px !important;
+  }
+  .filter-item {
+    padding: 4px 4px !important;
+    gap: 4px !important;
+  }
+  .topbar-filter-capsule select {
+    font-size: 10px !important;
+    padding: 4px 2px !important;
+  }
+  #region-select {
+    min-width: 36px !important;
+  }
+  #mode-select {
+    min-width: 74px !important;
+  }
+  #act-select {
+    min-width: 74px !important;
+  }
+  .fetch-btn {
+    padding: 6px 12px !important;
+    font-size: 11px !important;
+  }
+  
+  /* Hide decorative divider on smaller screens */
+  #tracker-divider-1, #tracker-divider-2 {
+    display: none !important;
+  }
+}
 
 /* ── STRICT MOBILE & TABLET OVERRIDES ── */
 @media(max-width: 800px) {
