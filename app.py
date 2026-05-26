@@ -250,6 +250,16 @@ if not allowed_origins:
     ]
 CORS(app, origins=allowed_origins)
 
+# Enable high-performance HTTP Cache-Control header injection for fast subsequent loading
+@app.after_request
+def add_caching_headers(response):
+    path = request.path.lower()
+    if path.startswith('/api/v3/meta-comps') or path.startswith('/api/v2/') or path.endswith('.json'):
+        response.headers['Cache-Control'] = 'public, max-age=600' # 10 minutes
+    elif path.endswith('.css') or path.endswith('.js') or path.endswith('.html') or path.endswith('.svg') or path.endswith('.png') or path.endswith('.jpg'):
+        response.headers['Cache-Control'] = 'public, max-age=7200' # 2 hours
+    return response
+
 # Simple custom zero-dependency in-memory rate limiter
 rate_limit_records = {}
 
@@ -1236,6 +1246,145 @@ def store_featured():
     except Exception as e:
         print("[ERROR] Store Featured fetch failed:", e)
         return jsonify({"status": 500, "error": "Internal server error"}), 500
+
+@app.route("/api/v3/meta-comps")
+@rate_limit(requests_per_minute=60)
+def api_meta_comps():
+    import json
+    map_param = request.args.get("map", "").strip().lower()
+    patch_param = request.args.get("patch", "").strip()
+    
+    # 1. Load the database file
+    db_file = "public/vct_pro_comps.json"
+    if not os.path.exists(db_file):
+        return jsonify({
+            "map": map_param,
+            "patch": "latest",
+            "agent_stats": {},
+            "most_played_comp": {"agents": [], "picks": 0, "win_rate": 0},
+            "highest_winrate_comp": {"agents": [], "picks": 0, "win_rate": 0},
+            "total_matches": 0,
+            "message": "Scraper database has not been initialized yet."
+        })
+        
+    try:
+        with open(db_file, "r", encoding="utf-8") as f:
+            records = json.load(f)
+    except Exception as e:
+        print("[ERROR] Failed to load JSON database inside API:", e)
+        return jsonify({"error": "Failed to read database"}), 500
+        
+    # 2. Filter by map (if provided)
+    if map_param:
+        records = [r for r in records if r.get("map_name", "").lower() == map_param]
+        
+    if not records:
+        return jsonify({
+            "map": map_param,
+            "patch": "latest",
+            "agent_stats": {},
+            "most_played_comp": {"agents": [], "picks": 0, "win_rate": 0},
+            "highest_winrate_comp": {"agents": [], "picks": 0, "win_rate": 0},
+            "total_matches": 0,
+            "message": f"No pro compositions found for map: {map_param}"
+        })
+        
+    # 3. Dynamic patch filtering
+    # Find all available patches in filtered records
+    available_patches = sorted(list({r.get("patch_version", "12.08") for r in records if r.get("patch_version")}), reverse=True)
+    
+    selected_patch = patch_param
+    if not selected_patch or selected_patch.lower() == "latest":
+        selected_patch = available_patches[0] if available_patches else "12.08"
+        
+    # Filter by selected patch
+    patch_records = [r for r in records if r.get("patch_version") == selected_patch]
+    
+    # If the active patch has less than 5 records, fall back to the previous patch automatically!
+    if len(patch_records) < 5 and len(available_patches) > 1:
+        fallback_patch = available_patches[1]
+        print(f"[API PATCH FALLBACK] Sparse data for patch {selected_patch} (only {len(patch_records)} comps). Falling back to previous patch: {fallback_patch}")
+        selected_patch = fallback_patch
+        patch_records = [r for r in records if r.get("patch_version") == selected_patch]
+        
+    # If still empty, use all records for that map
+    if not patch_records:
+        patch_records = records
+        selected_patch = "all"
+        
+    # 4. Aggregate Pick & Win Rates for individual Agents
+    agent_appearances = {}  # agent -> count
+    agent_wins = {}         # agent -> win_count
+    total_compositions = len(patch_records)
+    
+    for r in patch_records:
+        has_won = r.get("has_won", False)
+        for agent in r.get("agents", []):
+            agent_appearances[agent] = agent_appearances.get(agent, 0) + 1
+            if has_won:
+                agent_wins[agent] = agent_wins.get(agent, 0) + 1
+                
+    agent_stats = {}
+    for agent, count in agent_appearances.items():
+        pick_rate = round((count / total_compositions) * 100, 1) if total_compositions > 0 else 0
+        win_rate = round((agent_wins.get(agent, 0) / count) * 100, 1) if count > 0 else 0
+        agent_stats[agent] = {
+            "pick_rate": pick_rate,
+            "win_rate": win_rate,
+            "raw_picks": count,
+            "raw_wins": agent_wins.get(agent, 0)
+        }
+        
+    # 5. Aggregate unique Compositions (lineups of 5 sorted agents)
+    comp_stats = {} # tuple of 5 agents -> {"picks": X, "wins": Y}
+    for r in patch_records:
+        agents_tuple = tuple(sorted(r.get("agents", [])))
+        if len(agents_tuple) != 5:
+            continue
+        if agents_tuple not in comp_stats:
+            comp_stats[agents_tuple] = {"picks": 0, "wins": 0}
+        comp_stats[agents_tuple]["picks"] += 1
+        if r.get("has_won", False):
+            comp_stats[agents_tuple]["wins"] += 1
+            
+    most_played_comp = []
+    highest_winrate_comp = []
+    
+    if comp_stats:
+        # Most played: sort by picks desc, then wins desc
+        sorted_by_played = sorted(comp_stats.items(), key=lambda x: (x[1]["picks"], x[1]["wins"]), reverse=True)
+        most_played_comp = list(sorted_by_played[0][0])
+        most_played_meta = {
+            "agents": most_played_comp,
+            "picks": sorted_by_played[0][1]["picks"],
+            "win_rate": round((sorted_by_played[0][1]["wins"] / sorted_by_played[0][1]["picks"]) * 100, 1) if sorted_by_played[0][1]["picks"] > 0 else 0
+        }
+        
+        # Highest winrate: filter to comps with at least 2 picks if possible, sort by winrate desc, then picks desc
+        min_picks = 2
+        wr_candidates = [x for x in comp_stats.items() if x[1]["picks"] >= min_picks]
+        if not wr_candidates:
+            wr_candidates = list(comp_stats.items())
+            
+        sorted_by_wr = sorted(wr_candidates, key=lambda x: (x[1]["wins"]/x[1]["picks"] if x[1]["picks"] > 0 else 0, x[1]["picks"]), reverse=True)
+        highest_winrate_comp = list(sorted_by_wr[0][0])
+        highest_winrate_meta = {
+            "agents": highest_winrate_comp,
+            "picks": sorted_by_wr[0][1]["picks"],
+            "win_rate": round((sorted_by_wr[0][1]["wins"] / sorted_by_wr[0][1]["picks"]) * 100, 1) if sorted_by_wr[0][1]["picks"] > 0 else 0
+        }
+    else:
+        most_played_meta = {"agents": [], "picks": 0, "win_rate": 0}
+        highest_winrate_meta = {"agents": [], "picks": 0, "win_rate": 0}
+        
+    return jsonify({
+        "map": map_param,
+        "patch": selected_patch,
+        "total_comps_parsed": total_compositions,
+        "agent_stats": agent_stats,
+        "most_played_comp": most_played_meta,
+        "highest_winrate_comp": highest_winrate_meta
+    })
 
 if __name__ == "__main__":
     if not API_KEY:

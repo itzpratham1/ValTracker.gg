@@ -1,0 +1,6302 @@
+[
+  {
+    "vlr_match_id": 678039,
+    "match_date": "Tuesday, May 26",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "FUEGO",
+    "opposing_team": "AB3 Esports",
+    "agents": [
+      "chamber",
+      "fade",
+      "jett",
+      "omen",
+      "phoenix"
+    ],
+    "has_won": true,
+    "score": "13-2",
+    "event_name": "Group Stage–Week 2 Challengers 2026: LATAM North ACE Stage 2"
+  },
+  {
+    "vlr_match_id": 678039,
+    "match_date": "Tuesday, May 26",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "AB3 Esports",
+    "opposing_team": "FUEGO",
+    "agents": [
+      "chamber",
+      "clove",
+      "jett",
+      "reyna",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "2-13",
+    "event_name": "Group Stage–Week 2 Challengers 2026: LATAM North ACE Stage 2"
+  },
+  {
+    "vlr_match_id": 681518,
+    "match_date": "Tuesday, May 26",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "M80",
+    "opposing_team": "ROSE",
+    "agents": [
+      "astra",
+      "chamber",
+      "kayo",
+      "neon",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-4",
+    "event_name": "Swiss Stage–Round 1 Challengers 2026: North America ACE Stage 3"
+  },
+  {
+    "vlr_match_id": 681518,
+    "match_date": "Tuesday, May 26",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "ROSE",
+    "opposing_team": "M80",
+    "agents": [
+      "astra",
+      "chamber",
+      "fade",
+      "neon",
+      "phoenix"
+    ],
+    "has_won": false,
+    "score": "4-13",
+    "event_name": "Swiss Stage–Round 1 Challengers 2026: North America ACE Stage 3"
+  },
+  {
+    "vlr_match_id": 681519,
+    "match_date": "Tuesday, May 26",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Shopify Rebellion Black",
+    "opposing_team": "Evictix",
+    "agents": [
+      "chamber",
+      "fade",
+      "omen",
+      "raze",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-8",
+    "event_name": "Swiss Stage–Round 1 Challengers 2026: North America ACE Stage 3"
+  },
+  {
+    "vlr_match_id": 681519,
+    "match_date": "Tuesday, May 26",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Evictix",
+    "opposing_team": "Shopify Rebellion Black",
+    "agents": [
+      "fade",
+      "omen",
+      "raze",
+      "viper",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "8-13",
+    "event_name": "Swiss Stage–Round 1 Challengers 2026: North America ACE Stage 3"
+  },
+  {
+    "vlr_match_id": 676903,
+    "match_date": "Tuesday, May 26",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "LEVIATÁN Academy",
+    "opposing_team": "BESTIA",
+    "agents": [
+      "astra",
+      "harbor",
+      "jett",
+      "kayo",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "7-13",
+    "event_name": "Group Stage–Week 2 Challengers 2026: LATAM South ACE Stage 2"
+  },
+  {
+    "vlr_match_id": 676903,
+    "match_date": "Tuesday, May 26",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "BESTIA",
+    "opposing_team": "LEVIATÁN Academy",
+    "agents": [
+      "harbor",
+      "neon",
+      "phoenix",
+      "sova",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-7",
+    "event_name": "Group Stage–Week 2 Challengers 2026: LATAM South ACE Stage 2"
+  },
+  {
+    "vlr_match_id": 678037,
+    "match_date": "Tuesday, May 26",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "FUSION",
+    "opposing_team": "LYON",
+    "agents": [
+      "cypher",
+      "omen",
+      "sova",
+      "vyse",
+      "waylay"
+    ],
+    "has_won": false,
+    "score": "11-13",
+    "event_name": "Group Stage–Week 2 Challengers 2026: LATAM North ACE Stage 2"
+  },
+  {
+    "vlr_match_id": 678037,
+    "match_date": "Tuesday, May 26",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "LYON",
+    "opposing_team": "FUSION",
+    "agents": [
+      "cypher",
+      "kayo",
+      "omen",
+      "sova",
+      "waylay"
+    ],
+    "has_won": true,
+    "score": "13-11",
+    "event_name": "Group Stage–Week 2 Challengers 2026: LATAM North ACE Stage 2"
+  },
+  {
+    "vlr_match_id": 681516,
+    "match_date": "Tuesday, May 26",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Evil Geniuses Academy",
+    "opposing_team": "NRG Academy",
+    "agents": [
+      "fade",
+      "omen",
+      "raze",
+      "skye",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "4-13",
+    "event_name": "Swiss Stage–Round 1 Challengers 2026: North America ACE Stage 3"
+  },
+  {
+    "vlr_match_id": 681516,
+    "match_date": "Tuesday, May 26",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "NRG Academy",
+    "opposing_team": "Evil Geniuses Academy",
+    "agents": [
+      "fade",
+      "omen",
+      "raze",
+      "viper",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-4",
+    "event_name": "Swiss Stage–Round 1 Challengers 2026: North America ACE Stage 3"
+  },
+  {
+    "vlr_match_id": 681517,
+    "match_date": "Tuesday, May 26",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "QoR",
+    "opposing_team": "Pigeons",
+    "agents": [
+      "cypher",
+      "omen",
+      "phoenix",
+      "sova",
+      "waylay"
+    ],
+    "has_won": true,
+    "score": "13-4",
+    "event_name": "Swiss Stage–Round 1 Challengers 2026: North America ACE Stage 3"
+  },
+  {
+    "vlr_match_id": 681517,
+    "match_date": "Tuesday, May 26",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "Pigeons",
+    "opposing_team": "QoR",
+    "agents": [
+      "cypher",
+      "deadlock",
+      "jett",
+      "omen",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "4-13",
+    "event_name": "Swiss Stage–Round 1 Challengers 2026: North America ACE Stage 3"
+  },
+  {
+    "vlr_match_id": 676902,
+    "match_date": "Tuesday, May 26",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "KRÜ BLAZE",
+    "opposing_team": "ShindeN",
+    "agents": [
+      "jett",
+      "kayo",
+      "omen",
+      "sova",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "1-13",
+    "event_name": "Group Stage–Week 2 Challengers 2026: LATAM South ACE Stage 2"
+  },
+  {
+    "vlr_match_id": 676902,
+    "match_date": "Tuesday, May 26",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "ShindeN",
+    "opposing_team": "KRÜ BLAZE",
+    "agents": [
+      "cypher",
+      "omen",
+      "phoenix",
+      "sova",
+      "waylay"
+    ],
+    "has_won": true,
+    "score": "13-1",
+    "event_name": "Group Stage–Week 2 Challengers 2026: LATAM South ACE Stage 2"
+  },
+  {
+    "vlr_match_id": 683766,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Joblife",
+    "opposing_team": "UCAM Esports Club",
+    "agents": [
+      "fade",
+      "omen",
+      "raze",
+      "viper",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "9-13",
+    "event_name": "Playoffs–Upper Semifinals Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 683766,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "UCAM Esports Club",
+    "opposing_team": "Joblife",
+    "agents": [
+      "fade",
+      "kayo",
+      "omen",
+      "raze",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-9",
+    "event_name": "Playoffs–Upper Semifinals Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 683765,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "REBORN",
+    "opposing_team": "Natus Vincere Junior",
+    "agents": [
+      "cypher",
+      "jett",
+      "neon",
+      "omen",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "11-13",
+    "event_name": "Playoffs–Upper Semifinals Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 683765,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "Natus Vincere Junior",
+    "opposing_team": "REBORN",
+    "agents": [
+      "cypher",
+      "neon",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-11",
+    "event_name": "Playoffs–Upper Semifinals Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 681303,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "Asterisk",
+    "opposing_team": "No Salary Peek",
+    "agents": [
+      "chamber",
+      "jett",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-8",
+    "event_name": "Group Stage–Week 2 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681303,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "No Salary Peek",
+    "opposing_team": "Asterisk",
+    "agents": [
+      "harbor",
+      "omen",
+      "sova",
+      "vyse",
+      "waylay"
+    ],
+    "has_won": false,
+    "score": "8-13",
+    "event_name": "Group Stage–Week 2 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681018,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "Trace Esports",
+    "opposing_team": "Titan Esports Club",
+    "agents": [
+      "harbor",
+      "jett",
+      "kayo",
+      "sova",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "11-13",
+    "event_name": "Playoffs–Quarterfinals China Evolution Series 2026: Act 2"
+  },
+  {
+    "vlr_match_id": 681018,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "Titan Esports Club",
+    "opposing_team": "Trace Esports",
+    "agents": [
+      "harbor",
+      "jett",
+      "phoenix",
+      "sova",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-11",
+    "event_name": "Playoffs–Quarterfinals China Evolution Series 2026: Act 2"
+  },
+  {
+    "vlr_match_id": 681785,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "IGZIST",
+    "opposing_team": "RIDDLE ORDER",
+    "agents": [
+      "fade",
+      "miks",
+      "omen",
+      "raze",
+      "tejo"
+    ],
+    "has_won": false,
+    "score": "3-13",
+    "event_name": "Main Stage–Week 1 Challengers 2026: Japan Split 2"
+  },
+  {
+    "vlr_match_id": 681785,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "RIDDLE ORDER",
+    "opposing_team": "IGZIST",
+    "agents": [
+      "fade",
+      "neon",
+      "omen",
+      "viper",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-3",
+    "event_name": "Main Stage–Week 1 Challengers 2026: Japan Split 2"
+  },
+  {
+    "vlr_match_id": 681785,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "IGZIST",
+    "opposing_team": "RIDDLE ORDER",
+    "agents": [
+      "astra",
+      "jett",
+      "kayo",
+      "sova",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "5-13",
+    "event_name": "Main Stage–Week 1 Challengers 2026: Japan Split 2"
+  },
+  {
+    "vlr_match_id": 681785,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "RIDDLE ORDER",
+    "opposing_team": "IGZIST",
+    "agents": [
+      "harbor",
+      "kayo",
+      "neon",
+      "sova",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-5",
+    "event_name": "Main Stage–Week 1 Challengers 2026: Japan Split 2"
+  },
+  {
+    "vlr_match_id": 681302,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "XØ IND",
+    "opposing_team": "The Rad Syndicate",
+    "agents": [
+      "astra",
+      "chamber",
+      "jett",
+      "sova",
+      "yoru"
+    ],
+    "has_won": false,
+    "score": "5-13",
+    "event_name": "Group Stage–Week 2 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681302,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "The Rad Syndicate",
+    "opposing_team": "XØ IND",
+    "agents": [
+      "astra",
+      "chamber",
+      "jett",
+      "kayo",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-5",
+    "event_name": "Group Stage–Week 2 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681302,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "XØ IND",
+    "opposing_team": "The Rad Syndicate",
+    "agents": [
+      "cypher",
+      "jett",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "6-13",
+    "event_name": "Group Stage–Week 2 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681302,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "The Rad Syndicate",
+    "opposing_team": "XØ IND",
+    "agents": [
+      "cypher",
+      "jett",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-6",
+    "event_name": "Group Stage–Week 2 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681017,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "All Gamers",
+    "opposing_team": "FunPlus Phoenix",
+    "agents": [
+      "fade",
+      "omen",
+      "raze",
+      "vyse",
+      "waylay"
+    ],
+    "has_won": true,
+    "score": "13-2",
+    "event_name": "Playoffs–Quarterfinals China Evolution Series 2026: Act 2"
+  },
+  {
+    "vlr_match_id": 681017,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "FunPlus Phoenix",
+    "opposing_team": "All Gamers",
+    "agents": [
+      "fade",
+      "neon",
+      "omen",
+      "phoenix",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "2-13",
+    "event_name": "Playoffs–Quarterfinals China Evolution Series 2026: Act 2"
+  },
+  {
+    "vlr_match_id": 681784,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "CREST GAMING Zst",
+    "opposing_team": "FENNEL",
+    "agents": [
+      "cypher",
+      "deadlock",
+      "fade",
+      "omen",
+      "sage"
+    ],
+    "has_won": false,
+    "score": "11-13",
+    "event_name": "Main Stage–Week 1 Challengers 2026: Japan Split 2"
+  },
+  {
+    "vlr_match_id": 681784,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "FENNEL",
+    "opposing_team": "CREST GAMING Zst",
+    "agents": [
+      "fade",
+      "omen",
+      "raze",
+      "viper",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-11",
+    "event_name": "Main Stage–Week 1 Challengers 2026: Japan Split 2"
+  },
+  {
+    "vlr_match_id": 681784,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "CREST GAMING Zst",
+    "opposing_team": "FENNEL",
+    "agents": [
+      "chamber",
+      "omen",
+      "raze",
+      "skye",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "11-13",
+    "event_name": "Main Stage–Week 1 Challengers 2026: Japan Split 2"
+  },
+  {
+    "vlr_match_id": 681784,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "FENNEL",
+    "opposing_team": "CREST GAMING Zst",
+    "agents": [
+      "fade",
+      "jett",
+      "omen",
+      "sage",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-11",
+    "event_name": "Main Stage–Week 1 Challengers 2026: Japan Split 2"
+  },
+  {
+    "vlr_match_id": 660374,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "LEVIATÁN",
+    "opposing_team": "G2 Esports",
+    "agents": [
+      "astra",
+      "chamber",
+      "neon",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-11",
+    "event_name": "Playoffs–Grand Final VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660374,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "G2 Esports",
+    "opposing_team": "LEVIATÁN",
+    "agents": [
+      "astra",
+      "chamber",
+      "fade",
+      "neon",
+      "phoenix"
+    ],
+    "has_won": false,
+    "score": "11-13",
+    "event_name": "Playoffs–Grand Final VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660374,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "LEVIATÁN",
+    "opposing_team": "G2 Esports",
+    "agents": [
+      "chamber",
+      "neon",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-9",
+    "event_name": "Playoffs–Grand Final VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660374,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "G2 Esports",
+    "opposing_team": "LEVIATÁN",
+    "agents": [
+      "astra",
+      "phoenix",
+      "sova",
+      "vyse",
+      "yoru"
+    ],
+    "has_won": false,
+    "score": "9-13",
+    "event_name": "Playoffs–Grand Final VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660374,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "LEVIATÁN",
+    "opposing_team": "G2 Esports",
+    "agents": [
+      "astra",
+      "chamber",
+      "neon",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "10-13",
+    "event_name": "Playoffs–Grand Final VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660374,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "G2 Esports",
+    "opposing_team": "LEVIATÁN",
+    "agents": [
+      "astra",
+      "fade",
+      "neon",
+      "phoenix",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-10",
+    "event_name": "Playoffs–Grand Final VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660374,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "LEVIATÁN",
+    "opposing_team": "G2 Esports",
+    "agents": [
+      "fade",
+      "neon",
+      "omen",
+      "phoenix",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "11-13",
+    "event_name": "Playoffs–Grand Final VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660374,
+    "match_date": "Monday, May 25",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "G2 Esports",
+    "opposing_team": "LEVIATÁN",
+    "agents": [
+      "astra",
+      "fade",
+      "raze",
+      "viper",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-11",
+    "event_name": "Playoffs–Grand Final VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 680958,
+    "match_date": "Sunday, May 24",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "Gentle Mates GC",
+    "opposing_team": "SK Nebula",
+    "agents": [
+      "astra",
+      "cypher",
+      "neon",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "10-13",
+    "event_name": "Playoffs–Grand Final Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680958,
+    "match_date": "Sunday, May 24",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "SK Nebula",
+    "opposing_team": "Gentle Mates GC",
+    "agents": [
+      "astra",
+      "killjoy",
+      "neon",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-10",
+    "event_name": "Playoffs–Grand Final Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680958,
+    "match_date": "Sunday, May 24",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Gentle Mates GC",
+    "opposing_team": "SK Nebula",
+    "agents": [
+      "cypher",
+      "fade",
+      "neon",
+      "omen",
+      "raze"
+    ],
+    "has_won": false,
+    "score": "5-13",
+    "event_name": "Playoffs–Grand Final Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680958,
+    "match_date": "Sunday, May 24",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "SK Nebula",
+    "opposing_team": "Gentle Mates GC",
+    "agents": [
+      "chamber",
+      "fade",
+      "omen",
+      "raze",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-5",
+    "event_name": "Playoffs–Grand Final Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 681760,
+    "match_date": "Sunday, May 24",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "XLB",
+    "opposing_team": "Xipto Esports",
+    "agents": [
+      "jett",
+      "omen",
+      "skye",
+      "vyse",
+      "waylay"
+    ],
+    "has_won": false,
+    "score": "4-13",
+    "event_name": "Group Stage–Day 3 Challengers 2026: Southeast Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681760,
+    "match_date": "Sunday, May 24",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Xipto Esports",
+    "opposing_team": "XLB",
+    "agents": [
+      "fade",
+      "killjoy",
+      "neon",
+      "omen",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-4",
+    "event_name": "Group Stage–Day 3 Challengers 2026: Southeast Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681760,
+    "match_date": "Sunday, May 24",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "XLB",
+    "opposing_team": "Xipto Esports",
+    "agents": [
+      "killjoy",
+      "neon",
+      "omen",
+      "sova",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-6",
+    "event_name": "Group Stage–Day 3 Challengers 2026: Southeast Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681760,
+    "match_date": "Sunday, May 24",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "Xipto Esports",
+    "opposing_team": "XLB",
+    "agents": [
+      "killjoy",
+      "neon",
+      "omen",
+      "sova",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "6-13",
+    "event_name": "Group Stage–Day 3 Challengers 2026: Southeast Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681759,
+    "match_date": "Sunday, May 24",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "Jade Lions",
+    "opposing_team": "ROY Esports",
+    "agents": [
+      "omen",
+      "raze",
+      "skye",
+      "viper",
+      "waylay"
+    ],
+    "has_won": true,
+    "score": "15-13",
+    "event_name": "Group Stage–Day 3 Challengers 2026: Southeast Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681759,
+    "match_date": "Sunday, May 24",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "ROY Esports",
+    "opposing_team": "Jade Lions",
+    "agents": [
+      "chamber",
+      "fade",
+      "omen",
+      "raze",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "13-15",
+    "event_name": "Group Stage–Day 3 Challengers 2026: Southeast Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681016,
+    "match_date": "Sunday, May 24",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "Bilibili Gaming",
+    "opposing_team": "Unsettled Resentment",
+    "agents": [
+      "astra",
+      "fade",
+      "jett",
+      "killjoy",
+      "phoenix"
+    ],
+    "has_won": true,
+    "score": "13-10",
+    "event_name": "Playoffs–Round of 16 China Evolution Series 2026: Act 2"
+  },
+  {
+    "vlr_match_id": 681016,
+    "match_date": "Sunday, May 24",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "Unsettled Resentment",
+    "opposing_team": "Bilibili Gaming",
+    "agents": [
+      "astra",
+      "cypher",
+      "jett",
+      "skye",
+      "tejo"
+    ],
+    "has_won": false,
+    "score": "10-13",
+    "event_name": "Playoffs–Round of 16 China Evolution Series 2026: Act 2"
+  },
+  {
+    "vlr_match_id": 681783,
+    "match_date": "Sunday, May 24",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Insomnia",
+    "opposing_team": "REJECT",
+    "agents": [
+      "fade",
+      "jett",
+      "omen",
+      "raze",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-9",
+    "event_name": "Main Stage–Week 1 Challengers 2026: Japan Split 2"
+  },
+  {
+    "vlr_match_id": 681783,
+    "match_date": "Sunday, May 24",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "REJECT",
+    "opposing_team": "Insomnia",
+    "agents": [
+      "chamber",
+      "fade",
+      "omen",
+      "raze",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "9-13",
+    "event_name": "Main Stage–Week 1 Challengers 2026: Japan Split 2"
+  },
+  {
+    "vlr_match_id": 681783,
+    "match_date": "Sunday, May 24",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "Insomnia",
+    "opposing_team": "REJECT",
+    "agents": [
+      "astra",
+      "fade",
+      "jett",
+      "phoenix",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "8-13",
+    "event_name": "Main Stage–Week 1 Challengers 2026: Japan Split 2"
+  },
+  {
+    "vlr_match_id": 681783,
+    "match_date": "Sunday, May 24",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "REJECT",
+    "opposing_team": "Insomnia",
+    "agents": [
+      "astra",
+      "jett",
+      "killjoy",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-8",
+    "event_name": "Main Stage–Week 1 Challengers 2026: Japan Split 2"
+  },
+  {
+    "vlr_match_id": 681015,
+    "match_date": "Sunday, May 24",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "TYLOO",
+    "opposing_team": "EDward Gaming",
+    "agents": [
+      "breach",
+      "cypher",
+      "jett",
+      "omen",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-4",
+    "event_name": "Playoffs–Round of 16 China Evolution Series 2026: Act 2"
+  },
+  {
+    "vlr_match_id": 681015,
+    "match_date": "Sunday, May 24",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "EDward Gaming",
+    "opposing_team": "TYLOO",
+    "agents": [
+      "cypher",
+      "fade",
+      "jett",
+      "omen",
+      "phoenix"
+    ],
+    "has_won": false,
+    "score": "4-13",
+    "event_name": "Playoffs–Round of 16 China Evolution Series 2026: Act 2"
+  },
+  {
+    "vlr_match_id": 660380,
+    "match_date": "Sunday, May 24",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "G2 Esports",
+    "opposing_team": "NRG",
+    "agents": [
+      "astra",
+      "harbor",
+      "neon",
+      "sova",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "6-13",
+    "event_name": "Playoffs–Lower Final VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660380,
+    "match_date": "Sunday, May 24",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "NRG",
+    "opposing_team": "G2 Esports",
+    "agents": [
+      "harbor",
+      "jett",
+      "kayo",
+      "sova",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-6",
+    "event_name": "Playoffs–Lower Final VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660380,
+    "match_date": "Sunday, May 24",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "G2 Esports",
+    "opposing_team": "NRG",
+    "agents": [
+      "astra",
+      "fade",
+      "neon",
+      "phoenix",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-7",
+    "event_name": "Playoffs–Lower Final VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660380,
+    "match_date": "Sunday, May 24",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "NRG",
+    "opposing_team": "G2 Esports",
+    "agents": [
+      "astra",
+      "killjoy",
+      "neon",
+      "sova",
+      "tejo"
+    ],
+    "has_won": false,
+    "score": "7-13",
+    "event_name": "Playoffs–Lower Final VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660380,
+    "match_date": "Sunday, May 24",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "G2 Esports",
+    "opposing_team": "NRG",
+    "agents": [
+      "astra",
+      "chamber",
+      "fade",
+      "neon",
+      "phoenix"
+    ],
+    "has_won": false,
+    "score": "10-13",
+    "event_name": "Playoffs–Lower Final VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660380,
+    "match_date": "Sunday, May 24",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "NRG",
+    "opposing_team": "G2 Esports",
+    "agents": [
+      "cypher",
+      "neon",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-10",
+    "event_name": "Playoffs–Lower Final VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660380,
+    "match_date": "Sunday, May 24",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "G2 Esports",
+    "opposing_team": "NRG",
+    "agents": [
+      "astra",
+      "phoenix",
+      "sova",
+      "vyse",
+      "yoru"
+    ],
+    "has_won": true,
+    "score": "13-10",
+    "event_name": "Playoffs–Lower Final VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660380,
+    "match_date": "Sunday, May 24",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "NRG",
+    "opposing_team": "G2 Esports",
+    "agents": [
+      "jett",
+      "omen",
+      "sage",
+      "sova",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "10-13",
+    "event_name": "Playoffs–Lower Final VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 680960,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "G2 Gozen",
+    "opposing_team": "SK Nebula",
+    "agents": [
+      "harbor",
+      "jett",
+      "kayo",
+      "sova",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-8",
+    "event_name": "Playoffs–Lower Final Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680960,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "SK Nebula",
+    "opposing_team": "G2 Gozen",
+    "agents": [
+      "astra",
+      "jett",
+      "neon",
+      "sova",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "8-13",
+    "event_name": "Playoffs–Lower Final Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680960,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "G2 Gozen",
+    "opposing_team": "SK Nebula",
+    "agents": [
+      "fade",
+      "omen",
+      "raze",
+      "viper",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "9-13",
+    "event_name": "Playoffs–Lower Final Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680960,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "SK Nebula",
+    "opposing_team": "G2 Gozen",
+    "agents": [
+      "chamber",
+      "fade",
+      "omen",
+      "raze",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-9",
+    "event_name": "Playoffs–Lower Final Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680960,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "G2 Gozen",
+    "opposing_team": "SK Nebula",
+    "agents": [
+      "cypher",
+      "fade",
+      "neon",
+      "omen",
+      "phoenix"
+    ],
+    "has_won": true,
+    "score": "13-11",
+    "event_name": "Playoffs–Lower Final Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680960,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "SK Nebula",
+    "opposing_team": "G2 Gozen",
+    "agents": [
+      "cypher",
+      "neon",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "11-13",
+    "event_name": "Playoffs–Lower Final Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680960,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "G2 Gozen",
+    "opposing_team": "SK Nebula",
+    "agents": [
+      "jett",
+      "kayo",
+      "omen",
+      "sova",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "9-13",
+    "event_name": "Playoffs–Lower Final Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680960,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "SK Nebula",
+    "opposing_team": "G2 Gozen",
+    "agents": [
+      "cypher",
+      "jett",
+      "kayo",
+      "omen",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-9",
+    "event_name": "Playoffs–Lower Final Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 681758,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "XLB",
+    "opposing_team": "555",
+    "agents": [
+      "jett",
+      "omen",
+      "skye",
+      "vyse",
+      "waylay"
+    ],
+    "has_won": true,
+    "score": "13-11",
+    "event_name": "Group Stage–Day 2 Challengers 2026: Southeast Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681758,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "555",
+    "opposing_team": "XLB",
+    "agents": [
+      "fade",
+      "omen",
+      "raze",
+      "vyse",
+      "waylay"
+    ],
+    "has_won": false,
+    "score": "11-13",
+    "event_name": "Group Stage–Day 2 Challengers 2026: Southeast Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681758,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "XLB",
+    "opposing_team": "555",
+    "agents": [
+      "neon",
+      "omen",
+      "skye",
+      "viper",
+      "waylay"
+    ],
+    "has_won": true,
+    "score": "15-13",
+    "event_name": "Group Stage–Day 2 Challengers 2026: Southeast Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681758,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "555",
+    "opposing_team": "XLB",
+    "agents": [
+      "jett",
+      "omen",
+      "raze",
+      "skye",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "13-15",
+    "event_name": "Group Stage–Day 2 Challengers 2026: Southeast Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681014,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "Nova Esports",
+    "opposing_team": "KeepBest Gaming",
+    "agents": [
+      "astra",
+      "deadlock",
+      "raze",
+      "skye",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-5",
+    "event_name": "Playoffs–Round of 16 China Evolution Series 2026: Act 2"
+  },
+  {
+    "vlr_match_id": 681014,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "KeepBest Gaming",
+    "opposing_team": "Nova Esports",
+    "agents": [
+      "omen",
+      "tejo",
+      "viper",
+      "waylay",
+      "yoru"
+    ],
+    "has_won": false,
+    "score": "5-13",
+    "event_name": "Playoffs–Round of 16 China Evolution Series 2026: Act 2"
+  },
+  {
+    "vlr_match_id": 681014,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "Nova Esports",
+    "opposing_team": "KeepBest Gaming",
+    "agents": [
+      "breach",
+      "brimstone",
+      "cypher",
+      "neon",
+      "raze"
+    ],
+    "has_won": true,
+    "score": "13-6",
+    "event_name": "Playoffs–Round of 16 China Evolution Series 2026: Act 2"
+  },
+  {
+    "vlr_match_id": 681014,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "KeepBest Gaming",
+    "opposing_team": "Nova Esports",
+    "agents": [
+      "brimstone",
+      "cypher",
+      "fade",
+      "phoenix",
+      "raze"
+    ],
+    "has_won": false,
+    "score": "6-13",
+    "event_name": "Playoffs–Round of 16 China Evolution Series 2026: Act 2"
+  },
+  {
+    "vlr_match_id": 681301,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "Asterisk",
+    "opposing_team": "Revenant XSpark",
+    "agents": [
+      "breach",
+      "brimstone",
+      "cypher",
+      "raze",
+      "tejo"
+    ],
+    "has_won": true,
+    "score": "13-9",
+    "event_name": "Group Stage–Week 1 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681301,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "Revenant XSpark",
+    "opposing_team": "Asterisk",
+    "agents": [
+      "breach",
+      "brimstone",
+      "cypher",
+      "fade",
+      "raze"
+    ],
+    "has_won": false,
+    "score": "9-13",
+    "event_name": "Group Stage–Week 1 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681301,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "Asterisk",
+    "opposing_team": "Revenant XSpark",
+    "agents": [
+      "astra",
+      "chamber",
+      "fade",
+      "phoenix",
+      "waylay"
+    ],
+    "has_won": false,
+    "score": "11-13",
+    "event_name": "Group Stage–Week 1 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681301,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "Revenant XSpark",
+    "opposing_team": "Asterisk",
+    "agents": [
+      "astra",
+      "cypher",
+      "fade",
+      "jett",
+      "phoenix"
+    ],
+    "has_won": true,
+    "score": "13-11",
+    "event_name": "Group Stage–Week 1 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681757,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "Oasis Gaming",
+    "opposing_team": "Fancy United Esports",
+    "agents": [
+      "breach",
+      "cypher",
+      "jett",
+      "omen",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "6-13",
+    "event_name": "Group Stage–Day 2 Challengers 2026: Southeast Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681757,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "Fancy United Esports",
+    "opposing_team": "Oasis Gaming",
+    "agents": [
+      "astra",
+      "breach",
+      "cypher",
+      "neon",
+      "omen"
+    ],
+    "has_won": true,
+    "score": "13-6",
+    "event_name": "Group Stage–Day 2 Challengers 2026: Southeast Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681781,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "AGELITE",
+    "opposing_team": "FENNEL",
+    "agents": [
+      "fade",
+      "neon",
+      "omen",
+      "raze",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "9-13",
+    "event_name": "Main Stage–Week 1 Challengers 2026: Japan Split 2"
+  },
+  {
+    "vlr_match_id": 681781,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "FENNEL",
+    "opposing_team": "AGELITE",
+    "agents": [
+      "fade",
+      "jett",
+      "omen",
+      "sage",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-9",
+    "event_name": "Main Stage–Week 1 Challengers 2026: Japan Split 2"
+  },
+  {
+    "vlr_match_id": 681300,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "The Rad Syndicate",
+    "opposing_team": "Leosun Esports",
+    "agents": [
+      "fade",
+      "neon",
+      "omen",
+      "raze",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-7",
+    "event_name": "Group Stage–Week 1 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681300,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Leosun Esports",
+    "opposing_team": "The Rad Syndicate",
+    "agents": [
+      "chamber",
+      "fade",
+      "omen",
+      "raze",
+      "reyna"
+    ],
+    "has_won": false,
+    "score": "7-13",
+    "event_name": "Group Stage–Week 1 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681013,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "JDG Esports",
+    "opposing_team": "Xi Lai Gaming",
+    "agents": [
+      "fade",
+      "killjoy",
+      "omen",
+      "raze",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-11",
+    "event_name": "Playoffs–Round of 16 China Evolution Series 2026: Act 2"
+  },
+  {
+    "vlr_match_id": 681013,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Xi Lai Gaming",
+    "opposing_team": "JDG Esports",
+    "agents": [
+      "fade",
+      "omen",
+      "raze",
+      "veto",
+      "waylay"
+    ],
+    "has_won": false,
+    "score": "11-13",
+    "event_name": "Playoffs–Round of 16 China Evolution Series 2026: Act 2"
+  },
+  {
+    "vlr_match_id": 681013,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "JDG Esports",
+    "opposing_team": "Xi Lai Gaming",
+    "agents": [
+      "astra",
+      "fade",
+      "jett",
+      "killjoy",
+      "phoenix"
+    ],
+    "has_won": true,
+    "score": "13-5",
+    "event_name": "Playoffs–Round of 16 China Evolution Series 2026: Act 2"
+  },
+  {
+    "vlr_match_id": 681013,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "Xi Lai Gaming",
+    "opposing_team": "JDG Esports",
+    "agents": [
+      "astra",
+      "fade",
+      "killjoy",
+      "neon",
+      "phoenix"
+    ],
+    "has_won": false,
+    "score": "5-13",
+    "event_name": "Playoffs–Round of 16 China Evolution Series 2026: Act 2"
+  },
+  {
+    "vlr_match_id": 681756,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "BOOM Esports",
+    "opposing_team": "Jade Lions",
+    "agents": [
+      "cypher",
+      "jett",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "10-13",
+    "event_name": "Group Stage–Day 2 Challengers 2026: Southeast Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681756,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "Jade Lions",
+    "opposing_team": "BOOM Esports",
+    "agents": [
+      "jett",
+      "killjoy",
+      "omen",
+      "sage",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-10",
+    "event_name": "Group Stage–Day 2 Challengers 2026: Southeast Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681756,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "BOOM Esports",
+    "opposing_team": "Jade Lions",
+    "agents": [
+      "chamber",
+      "fade",
+      "omen",
+      "raze",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-8",
+    "event_name": "Group Stage–Day 2 Challengers 2026: Southeast Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681756,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Jade Lions",
+    "opposing_team": "BOOM Esports",
+    "agents": [
+      "fade",
+      "omen",
+      "raze",
+      "viper",
+      "waylay"
+    ],
+    "has_won": false,
+    "score": "8-13",
+    "event_name": "Group Stage–Day 2 Challengers 2026: Southeast Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681780,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "CREST GAMING Zst",
+    "opposing_team": "IGZIST",
+    "agents": [
+      "jett",
+      "killjoy",
+      "omen",
+      "sova",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-6",
+    "event_name": "Main Stage–Week 1 Challengers 2026: Japan Split 2"
+  },
+  {
+    "vlr_match_id": 681780,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "IGZIST",
+    "opposing_team": "CREST GAMING Zst",
+    "agents": [
+      "chamber",
+      "neon",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "6-13",
+    "event_name": "Main Stage–Week 1 Challengers 2026: Japan Split 2"
+  },
+  {
+    "vlr_match_id": 660379,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "NRG",
+    "opposing_team": "100 Thieves",
+    "agents": [
+      "harbor",
+      "jett",
+      "kayo",
+      "sova",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-11",
+    "event_name": "Playoffs–Lower Round 3 VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660379,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "100 Thieves",
+    "opposing_team": "NRG",
+    "agents": [
+      "cypher",
+      "harbor",
+      "neon",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "11-13",
+    "event_name": "Playoffs–Lower Round 3 VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660373,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "LEVIATÁN",
+    "opposing_team": "G2 Esports",
+    "agents": [
+      "astra",
+      "chamber",
+      "neon",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "9-13",
+    "event_name": "Playoffs–Upper Final VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660373,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "G2 Esports",
+    "opposing_team": "LEVIATÁN",
+    "agents": [
+      "astra",
+      "fade",
+      "neon",
+      "phoenix",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-9",
+    "event_name": "Playoffs–Upper Final VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660373,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "LEVIATÁN",
+    "opposing_team": "G2 Esports",
+    "agents": [
+      "fade",
+      "neon",
+      "omen",
+      "phoenix",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-5",
+    "event_name": "Playoffs–Upper Final VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660373,
+    "match_date": "Saturday, May 23",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "G2 Esports",
+    "opposing_team": "LEVIATÁN",
+    "agents": [
+      "astra",
+      "fade",
+      "raze",
+      "viper",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "5-13",
+    "event_name": "Playoffs–Upper Final VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 680959,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "GIANTX GC",
+    "opposing_team": "SK Nebula",
+    "agents": [
+      "killjoy",
+      "neon",
+      "omen",
+      "sova",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-8",
+    "event_name": "Playoffs–Lower Round 1 Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680959,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "SK Nebula",
+    "opposing_team": "GIANTX GC",
+    "agents": [
+      "cypher",
+      "neon",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "8-13",
+    "event_name": "Playoffs–Lower Round 1 Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680959,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "GIANTX GC",
+    "opposing_team": "SK Nebula",
+    "agents": [
+      "harbor",
+      "jett",
+      "neon",
+      "sova",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "8-13",
+    "event_name": "Playoffs–Lower Round 1 Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680959,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "SK Nebula",
+    "opposing_team": "GIANTX GC",
+    "agents": [
+      "astra",
+      "jett",
+      "neon",
+      "sova",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-8",
+    "event_name": "Playoffs–Lower Round 1 Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680285,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "AlQadsiah Esports",
+    "opposing_team": "WIP Esports",
+    "agents": [
+      "astra",
+      "killjoy",
+      "sova",
+      "tejo",
+      "waylay"
+    ],
+    "has_won": true,
+    "score": "14-12",
+    "event_name": "Group Stage–Group C Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680285,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "WIP Esports",
+    "opposing_team": "AlQadsiah Esports",
+    "agents": [
+      "astra",
+      "cypher",
+      "sova",
+      "tejo",
+      "waylay"
+    ],
+    "has_won": false,
+    "score": "12-14",
+    "event_name": "Group Stage–Group C Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680292,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "Joblife",
+    "opposing_team": "Team Liquid Academy",
+    "agents": [
+      "cypher",
+      "jett",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-5",
+    "event_name": "Group Stage–Group D Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680292,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "Team Liquid Academy",
+    "opposing_team": "Joblife",
+    "agents": [
+      "cypher",
+      "jett",
+      "kayo",
+      "omen",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "5-13",
+    "event_name": "Group Stage–Group D Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680957,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "Gentle Mates GC",
+    "opposing_team": "G2 Gozen",
+    "agents": [
+      "breach",
+      "brimstone",
+      "cypher",
+      "neon",
+      "tejo"
+    ],
+    "has_won": true,
+    "score": "14-12",
+    "event_name": "Playoffs–Upper Final Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680957,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "G2 Gozen",
+    "opposing_team": "Gentle Mates GC",
+    "agents": [
+      "brimstone",
+      "cypher",
+      "fade",
+      "phoenix",
+      "waylay"
+    ],
+    "has_won": false,
+    "score": "12-14",
+    "event_name": "Playoffs–Upper Final Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 681755,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "555",
+    "opposing_team": "Xipto Esports",
+    "agents": [
+      "fade",
+      "omen",
+      "raze",
+      "vyse",
+      "waylay"
+    ],
+    "has_won": true,
+    "score": "13-0",
+    "event_name": "Group Stage–Day 1 Challengers 2026: Southeast Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681755,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Xipto Esports",
+    "opposing_team": "555",
+    "agents": [
+      "fade",
+      "killjoy",
+      "neon",
+      "omen",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "0-13",
+    "event_name": "Group Stage–Day 1 Challengers 2026: Southeast Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681755,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "555",
+    "opposing_team": "Xipto Esports",
+    "agents": [
+      "jett",
+      "omen",
+      "raze",
+      "skye",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "16-14",
+    "event_name": "Group Stage–Day 1 Challengers 2026: Southeast Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681755,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "Xipto Esports",
+    "opposing_team": "555",
+    "agents": [
+      "neon",
+      "omen",
+      "raze",
+      "skye",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "14-16",
+    "event_name": "Group Stage–Day 1 Challengers 2026: Southeast Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681298,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "SIGN Esports",
+    "opposing_team": "S8UL Esports",
+    "agents": [
+      "fade",
+      "omen",
+      "raze",
+      "vyse",
+      "waylay"
+    ],
+    "has_won": true,
+    "score": "13-5",
+    "event_name": "Group Stage–Week 1 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681298,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "S8UL Esports",
+    "opposing_team": "SIGN Esports",
+    "agents": [
+      "fade",
+      "omen",
+      "raze",
+      "viper",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "5-13",
+    "event_name": "Group Stage–Week 1 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681298,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "SIGN Esports",
+    "opposing_team": "S8UL Esports",
+    "agents": [
+      "fade",
+      "omen",
+      "raze",
+      "viper",
+      "waylay"
+    ],
+    "has_won": false,
+    "score": "8-13",
+    "event_name": "Group Stage–Week 1 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681298,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "S8UL Esports",
+    "opposing_team": "SIGN Esports",
+    "agents": [
+      "jett",
+      "omen",
+      "raze",
+      "skye",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-8",
+    "event_name": "Group Stage–Week 1 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681012,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "Titan Esports Club",
+    "opposing_team": "Weibo Gaming",
+    "agents": [
+      "astra",
+      "fade",
+      "jett",
+      "killjoy",
+      "phoenix"
+    ],
+    "has_won": false,
+    "score": "6-13",
+    "event_name": "Playoffs–Round of 16 China Evolution Series 2026: Act 2"
+  },
+  {
+    "vlr_match_id": 681012,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "Weibo Gaming",
+    "opposing_team": "Titan Esports Club",
+    "agents": [
+      "astra",
+      "fade",
+      "killjoy",
+      "neon",
+      "waylay"
+    ],
+    "has_won": true,
+    "score": "13-6",
+    "event_name": "Playoffs–Round of 16 China Evolution Series 2026: Act 2"
+  },
+  {
+    "vlr_match_id": 681012,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "Titan Esports Club",
+    "opposing_team": "Weibo Gaming",
+    "agents": [
+      "brimstone",
+      "cypher",
+      "fade",
+      "phoenix",
+      "waylay"
+    ],
+    "has_won": true,
+    "score": "13-8",
+    "event_name": "Playoffs–Round of 16 China Evolution Series 2026: Act 2"
+  },
+  {
+    "vlr_match_id": 681012,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "Weibo Gaming",
+    "opposing_team": "Titan Esports Club",
+    "agents": [
+      "breach",
+      "brimstone",
+      "cypher",
+      "tejo",
+      "waylay"
+    ],
+    "has_won": false,
+    "score": "8-13",
+    "event_name": "Playoffs–Round of 16 China Evolution Series 2026: Act 2"
+  },
+  {
+    "vlr_match_id": 681297,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "XØ IND",
+    "opposing_team": "No Salary Peek",
+    "agents": [
+      "chamber",
+      "fade",
+      "omen",
+      "raze",
+      "skye"
+    ],
+    "has_won": false,
+    "score": "4-13",
+    "event_name": "Group Stage–Week 1 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681297,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "No Salary Peek",
+    "opposing_team": "XØ IND",
+    "agents": [
+      "deadlock",
+      "omen",
+      "raze",
+      "skye",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-4",
+    "event_name": "Group Stage–Week 1 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681754,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "Sharper Esports",
+    "opposing_team": "Alter Ego",
+    "agents": [
+      "astra",
+      "jett",
+      "killjoy",
+      "sage",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-8",
+    "event_name": "Group Stage–Day 1 Challengers 2026: Southeast Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681754,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "Alter Ego",
+    "opposing_team": "Sharper Esports",
+    "agents": [
+      "astra",
+      "fade",
+      "neon",
+      "raze",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "8-13",
+    "event_name": "Group Stage–Day 1 Challengers 2026: Southeast Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681011,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "Trace Esports",
+    "opposing_team": "Any Questions Gaming",
+    "agents": [
+      "astra",
+      "fade",
+      "jett",
+      "phoenix",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-6",
+    "event_name": "Playoffs–Round of 16 China Evolution Series 2026: Act 2"
+  },
+  {
+    "vlr_match_id": 681011,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "Any Questions Gaming",
+    "opposing_team": "Trace Esports",
+    "agents": [
+      "astra",
+      "fade",
+      "jett",
+      "killjoy",
+      "phoenix"
+    ],
+    "has_won": false,
+    "score": "6-13",
+    "event_name": "Playoffs–Round of 16 China Evolution Series 2026: Act 2"
+  },
+  {
+    "vlr_match_id": 681753,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "BOOM Esports",
+    "opposing_team": "ROY Esports",
+    "agents": [
+      "cypher",
+      "jett",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-3",
+    "event_name": "Group Stage–Day 1 Challengers 2026: Southeast Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681753,
+    "match_date": "Friday, May 22",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "ROY Esports",
+    "opposing_team": "BOOM Esports",
+    "agents": [
+      "cypher",
+      "jett",
+      "omen",
+      "sova",
+      "waylay"
+    ],
+    "has_won": false,
+    "score": "3-13",
+    "event_name": "Group Stage–Day 1 Challengers 2026: Southeast Asia Split 2"
+  },
+  {
+    "vlr_match_id": 680956,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "SK Nebula",
+    "opposing_team": "G2 Gozen",
+    "agents": [
+      "astra",
+      "fade",
+      "neon",
+      "skye",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "7-13",
+    "event_name": "Playoffs–Upper Semifinals Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680956,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "G2 Gozen",
+    "opposing_team": "SK Nebula",
+    "agents": [
+      "fade",
+      "neon",
+      "omen",
+      "viper",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-7",
+    "event_name": "Playoffs–Upper Semifinals Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680290,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "Team Liquid Academy",
+    "opposing_team": "Ghools Esports",
+    "agents": [
+      "cypher",
+      "jett",
+      "kayo",
+      "omen",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-2",
+    "event_name": "Group Stage–Group D Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680290,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "Ghools Esports",
+    "opposing_team": "Team Liquid Academy",
+    "agents": [
+      "jett",
+      "omen",
+      "phoenix",
+      "sova",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "2-13",
+    "event_name": "Group Stage–Group D Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680291,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "Joblife",
+    "opposing_team": "Barça eSports",
+    "agents": [
+      "cypher",
+      "jett",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-7",
+    "event_name": "Group Stage–Group D Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680291,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "Barça eSports",
+    "opposing_team": "Joblife",
+    "agents": [
+      "cypher",
+      "jett",
+      "kayo",
+      "omen",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "7-13",
+    "event_name": "Group Stage–Group D Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680283,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "MIR",
+    "opposing_team": "AlQadsiah Esports",
+    "agents": [
+      "iso",
+      "neon",
+      "omen",
+      "sova",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "5-13",
+    "event_name": "Group Stage–Group C Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680283,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "AlQadsiah Esports",
+    "opposing_team": "MIR",
+    "agents": [
+      "harbor",
+      "jett",
+      "kayo",
+      "sova",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-5",
+    "event_name": "Group Stage–Group C Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680283,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "MIR",
+    "opposing_team": "AlQadsiah Esports",
+    "agents": [
+      "neon",
+      "omen",
+      "raze",
+      "skye",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "14-12",
+    "event_name": "Group Stage–Group C Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680283,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "AlQadsiah Esports",
+    "opposing_team": "MIR",
+    "agents": [
+      "fade",
+      "omen",
+      "phoenix",
+      "raze",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "12-14",
+    "event_name": "Group Stage–Group C Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680284,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "UCAM Esports Club",
+    "opposing_team": "WIP Esports",
+    "agents": [
+      "brimstone",
+      "cypher",
+      "fade",
+      "phoenix",
+      "raze"
+    ],
+    "has_won": true,
+    "score": "13-10",
+    "event_name": "Group Stage–Group C Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680284,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "WIP Esports",
+    "opposing_team": "UCAM Esports Club",
+    "agents": [
+      "breach",
+      "brimstone",
+      "cypher",
+      "fade",
+      "raze"
+    ],
+    "has_won": false,
+    "score": "10-13",
+    "event_name": "Group Stage–Group C Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680955,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "Gentle Mates GC",
+    "opposing_team": "GIANTX GC",
+    "agents": [
+      "cypher",
+      "neon",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "8-13",
+    "event_name": "Playoffs–Upper Semifinals Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680955,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "GIANTX GC",
+    "opposing_team": "Gentle Mates GC",
+    "agents": [
+      "killjoy",
+      "neon",
+      "omen",
+      "sova",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-8",
+    "event_name": "Playoffs–Upper Semifinals Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680955,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "Gentle Mates GC",
+    "opposing_team": "GIANTX GC",
+    "agents": [
+      "cypher",
+      "jett",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-1",
+    "event_name": "Playoffs–Upper Semifinals Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680955,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "GIANTX GC",
+    "opposing_team": "Gentle Mates GC",
+    "agents": [
+      "cypher",
+      "jett",
+      "kayo",
+      "omen",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "1-13",
+    "event_name": "Playoffs–Upper Semifinals Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 681296,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "The Rad Syndicate",
+    "opposing_team": "Revenant XSpark",
+    "agents": [
+      "fade",
+      "neon",
+      "omen",
+      "raze",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "14-12",
+    "event_name": "Group Stage–Week 1 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681296,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Revenant XSpark",
+    "opposing_team": "The Rad Syndicate",
+    "agents": [
+      "breach",
+      "chamber",
+      "fade",
+      "omen",
+      "waylay"
+    ],
+    "has_won": false,
+    "score": "12-14",
+    "event_name": "Group Stage–Week 1 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681296,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "The Rad Syndicate",
+    "opposing_team": "Revenant XSpark",
+    "agents": [
+      "cypher",
+      "kayo",
+      "omen",
+      "raze",
+      "skye"
+    ],
+    "has_won": false,
+    "score": "10-13",
+    "event_name": "Group Stage–Week 1 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681296,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "Revenant XSpark",
+    "opposing_team": "The Rad Syndicate",
+    "agents": [
+      "omen",
+      "raze",
+      "skye",
+      "viper",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-10",
+    "event_name": "Group Stage–Week 1 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681010,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "FunPlus Phoenix",
+    "opposing_team": "Wolves Esports",
+    "agents": [
+      "fade",
+      "neon",
+      "omen",
+      "phoenix",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "15-13",
+    "event_name": "Playoffs–Round of 16 China Evolution Series 2026: Act 2"
+  },
+  {
+    "vlr_match_id": 681010,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "Wolves Esports",
+    "opposing_team": "FunPlus Phoenix",
+    "agents": [
+      "deadlock",
+      "omen",
+      "raze",
+      "viper",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "13-15",
+    "event_name": "Playoffs–Round of 16 China Evolution Series 2026: Act 2"
+  },
+  {
+    "vlr_match_id": 681295,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "SIGN Esports",
+    "opposing_team": "No Salary Peek",
+    "agents": [
+      "cypher",
+      "deadlock",
+      "omen",
+      "sova",
+      "waylay"
+    ],
+    "has_won": false,
+    "score": "11-13",
+    "event_name": "Group Stage–Week 1 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681295,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "No Salary Peek",
+    "opposing_team": "SIGN Esports",
+    "agents": [
+      "harbor",
+      "omen",
+      "sova",
+      "vyse",
+      "waylay"
+    ],
+    "has_won": true,
+    "score": "13-11",
+    "event_name": "Group Stage–Week 1 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681295,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "SIGN Esports",
+    "opposing_team": "No Salary Peek",
+    "agents": [
+      "fade",
+      "omen",
+      "viper",
+      "vyse",
+      "waylay"
+    ],
+    "has_won": false,
+    "score": "6-13",
+    "event_name": "Group Stage–Week 1 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681295,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "No Salary Peek",
+    "opposing_team": "SIGN Esports",
+    "agents": [
+      "deadlock",
+      "omen",
+      "raze",
+      "skye",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-6",
+    "event_name": "Group Stage–Week 1 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681009,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "All Gamers",
+    "opposing_team": "Dragon Ranger Gaming",
+    "agents": [
+      "astra",
+      "fade",
+      "jett",
+      "killjoy",
+      "phoenix"
+    ],
+    "has_won": true,
+    "score": "13-5",
+    "event_name": "Playoffs–Round of 16 China Evolution Series 2026: Act 2"
+  },
+  {
+    "vlr_match_id": 681009,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "Dragon Ranger Gaming",
+    "opposing_team": "All Gamers",
+    "agents": [
+      "astra",
+      "fade",
+      "jett",
+      "killjoy",
+      "phoenix"
+    ],
+    "has_won": false,
+    "score": "5-13",
+    "event_name": "Playoffs–Round of 16 China Evolution Series 2026: Act 2"
+  },
+  {
+    "vlr_match_id": 680982,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": ":3",
+    "opposing_team": "MVSK Treasure",
+    "agents": [
+      "fade",
+      "jett",
+      "omen",
+      "raze",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-5",
+    "event_name": "Swiss Stage–Round 7 (3-3) Game Changers 2026: North America Stage 1"
+  },
+  {
+    "vlr_match_id": 680982,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "MVSK Treasure",
+    "opposing_team": ":3",
+    "agents": [
+      "clove",
+      "neon",
+      "skye",
+      "viper",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "5-13",
+    "event_name": "Swiss Stage–Round 7 (3-3) Game Changers 2026: North America Stage 1"
+  },
+  {
+    "vlr_match_id": 668492,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "2Game Esports",
+    "opposing_team": "RED Canids",
+    "agents": [
+      "jett",
+      "neon",
+      "omen",
+      "sova",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "10-13",
+    "event_name": "Regular Phase–Week 3 Challengers 2026: Brazil Gamers Club Stage 2"
+  },
+  {
+    "vlr_match_id": 668492,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "RED Canids",
+    "opposing_team": "2Game Esports",
+    "agents": [
+      "harbor",
+      "jett",
+      "kayo",
+      "sova",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-10",
+    "event_name": "Regular Phase–Week 3 Challengers 2026: Brazil Gamers Club Stage 2"
+  },
+  {
+    "vlr_match_id": 680981,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "Ghost Gaming",
+    "opposing_team": "SaD GC",
+    "agents": [
+      "fade",
+      "neon",
+      "omen",
+      "viper",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-4",
+    "event_name": "Swiss Stage–Round 7 (3-3) Game Changers 2026: North America Stage 1"
+  },
+  {
+    "vlr_match_id": 680981,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "SaD GC",
+    "opposing_team": "Ghost Gaming",
+    "agents": [
+      "jett",
+      "omen",
+      "raze",
+      "skye",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "4-13",
+    "event_name": "Swiss Stage–Round 7 (3-3) Game Changers 2026: North America Stage 1"
+  },
+  {
+    "vlr_match_id": 680981,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "Ghost Gaming",
+    "opposing_team": "SaD GC",
+    "agents": [
+      "astra",
+      "chamber",
+      "fade",
+      "neon",
+      "phoenix"
+    ],
+    "has_won": true,
+    "score": "13-6",
+    "event_name": "Swiss Stage–Round 7 (3-3) Game Changers 2026: North America Stage 1"
+  },
+  {
+    "vlr_match_id": 680981,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "SaD GC",
+    "opposing_team": "Ghost Gaming",
+    "agents": [
+      "chamber",
+      "neon",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "6-13",
+    "event_name": "Swiss Stage–Round 7 (3-3) Game Changers 2026: North America Stage 1"
+  },
+  {
+    "vlr_match_id": 668490,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "ELEVATE",
+    "opposing_team": "TEAM EGO",
+    "agents": [
+      "chamber",
+      "omen",
+      "raze",
+      "skye",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "1-13",
+    "event_name": "Regular Phase–Week 3 Challengers 2026: Brazil Gamers Club Stage 2"
+  },
+  {
+    "vlr_match_id": 668490,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "TEAM EGO",
+    "opposing_team": "ELEVATE",
+    "agents": [
+      "fade",
+      "neon",
+      "omen",
+      "viper",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-1",
+    "event_name": "Regular Phase–Week 3 Challengers 2026: Brazil Gamers Club Stage 2"
+  },
+  {
+    "vlr_match_id": 668491,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "INTZ",
+    "opposing_team": "LA MASIA",
+    "agents": [
+      "fade",
+      "neon",
+      "omen",
+      "viper",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "5-13",
+    "event_name": "Regular Phase–Week 3 Challengers 2026: Brazil Gamers Club Stage 2"
+  },
+  {
+    "vlr_match_id": 668491,
+    "match_date": "Thursday, May 21",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "LA MASIA",
+    "opposing_team": "INTZ",
+    "agents": [
+      "fade",
+      "neon",
+      "omen",
+      "vyse",
+      "waylay"
+    ],
+    "has_won": true,
+    "score": "13-5",
+    "event_name": "Regular Phase–Week 3 Challengers 2026: Brazil Gamers Club Stage 2"
+  },
+  {
+    "vlr_match_id": 680282,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "UCAM Esports Club",
+    "opposing_team": "MIR",
+    "agents": [
+      "astra",
+      "cypher",
+      "fade",
+      "jett",
+      "phoenix"
+    ],
+    "has_won": true,
+    "score": "13-6",
+    "event_name": "Group Stage–Group C Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680282,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "MIR",
+    "opposing_team": "UCAM Esports Club",
+    "agents": [
+      "astra",
+      "chamber",
+      "kayo",
+      "raze",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "6-13",
+    "event_name": "Group Stage–Group C Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680954,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "G2 Gozen",
+    "opposing_team": "Barça eSports GC",
+    "agents": [
+      "cypher",
+      "fade",
+      "neon",
+      "omen",
+      "phoenix"
+    ],
+    "has_won": true,
+    "score": "13-7",
+    "event_name": "Playoffs–Knockout Round Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680954,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "Barça eSports GC",
+    "opposing_team": "G2 Gozen",
+    "agents": [
+      "killjoy",
+      "neon",
+      "omen",
+      "sova",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "7-13",
+    "event_name": "Playoffs–Knockout Round Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680279,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "FOKUS",
+    "opposing_team": "Enterprise Esports",
+    "agents": [
+      "cypher",
+      "neon",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-11",
+    "event_name": "Group Stage–Group B Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680279,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "Enterprise Esports",
+    "opposing_team": "FOKUS",
+    "agents": [
+      "cypher",
+      "jett",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "11-13",
+    "event_name": "Group Stage–Group B Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680289,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "Ghools Esports",
+    "opposing_team": "Barça eSports",
+    "agents": [
+      "brimstone",
+      "fade",
+      "phoenix",
+      "raze",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "17-15",
+    "event_name": "Group Stage–Group D Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680289,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "Barça eSports",
+    "opposing_team": "Ghools Esports",
+    "agents": [
+      "breach",
+      "brimstone",
+      "cypher",
+      "raze",
+      "tejo"
+    ],
+    "has_won": false,
+    "score": "15-17",
+    "event_name": "Group Stage–Group D Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680289,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "Ghools Esports",
+    "opposing_team": "Barça eSports",
+    "agents": [
+      "jett",
+      "omen",
+      "phoenix",
+      "sova",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "14-12",
+    "event_name": "Group Stage–Group D Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680289,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "Barça eSports",
+    "opposing_team": "Ghools Esports",
+    "agents": [
+      "cypher",
+      "jett",
+      "kayo",
+      "omen",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "12-14",
+    "event_name": "Group Stage–Group D Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680953,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "GIANTX GC",
+    "opposing_team": "Twisted Minds Orchid",
+    "agents": [
+      "fade",
+      "killjoy",
+      "neon",
+      "omen",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-5",
+    "event_name": "Playoffs–Knockout Round Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680953,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Twisted Minds Orchid",
+    "opposing_team": "GIANTX GC",
+    "agents": [
+      "fade",
+      "omen",
+      "raze",
+      "viper",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "5-13",
+    "event_name": "Playoffs–Knockout Round Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 681294,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "The Rad Syndicate",
+    "opposing_team": "S8UL Esports",
+    "agents": [
+      "cypher",
+      "jett",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "9-13",
+    "event_name": "Group Stage–Week 1 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681294,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "S8UL Esports",
+    "opposing_team": "The Rad Syndicate",
+    "agents": [
+      "cypher",
+      "jett",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-9",
+    "event_name": "Group Stage–Week 1 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 660478,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "Fancy United Esports",
+    "opposing_team": "ROY Esports",
+    "agents": [
+      "astra",
+      "breach",
+      "cypher",
+      "neon",
+      "omen"
+    ],
+    "has_won": true,
+    "score": "13-5",
+    "event_name": "Regionals–Grand Final Challengers 2026: SEA Split 2 - Vietnam Qualifier"
+  },
+  {
+    "vlr_match_id": 660478,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "ROY Esports",
+    "opposing_team": "Fancy United Esports",
+    "agents": [
+      "cypher",
+      "jett",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "5-13",
+    "event_name": "Regionals–Grand Final Challengers 2026: SEA Split 2 - Vietnam Qualifier"
+  },
+  {
+    "vlr_match_id": 660478,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "Fancy United Esports",
+    "opposing_team": "ROY Esports",
+    "agents": [
+      "astra",
+      "breach",
+      "cypher",
+      "neon",
+      "omen"
+    ],
+    "has_won": true,
+    "score": "13-9",
+    "event_name": "Regionals–Grand Final Challengers 2026: SEA Split 2 - Vietnam Qualifier"
+  },
+  {
+    "vlr_match_id": 660478,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "ROY Esports",
+    "opposing_team": "Fancy United Esports",
+    "agents": [
+      "chamber",
+      "fade",
+      "omen",
+      "raze",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "9-13",
+    "event_name": "Regionals–Grand Final Challengers 2026: SEA Split 2 - Vietnam Qualifier"
+  },
+  {
+    "vlr_match_id": 681293,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "Asterisk",
+    "opposing_team": "Leosun Esports",
+    "agents": [
+      "breach",
+      "brimstone",
+      "cypher",
+      "raze",
+      "tejo"
+    ],
+    "has_won": true,
+    "score": "13-2",
+    "event_name": "Group Stage–Week 1 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 681293,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "Leosun Esports",
+    "opposing_team": "Asterisk",
+    "agents": [
+      "brimstone",
+      "chamber",
+      "fade",
+      "jett",
+      "phoenix"
+    ],
+    "has_won": false,
+    "score": "2-13",
+    "event_name": "Group Stage–Week 1 Challengers 2026: South Asia Split 2"
+  },
+  {
+    "vlr_match_id": 678029,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "AB3 Esports",
+    "opposing_team": "Grizzly Gang",
+    "agents": [
+      "chamber",
+      "clove",
+      "raze",
+      "reyna",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "10-13",
+    "event_name": "Group Stage–Week 1 Challengers 2026: LATAM North ACE Stage 2"
+  },
+  {
+    "vlr_match_id": 678029,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Grizzly Gang",
+    "opposing_team": "AB3 Esports",
+    "agents": [
+      "clove",
+      "fade",
+      "raze",
+      "viper",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-10",
+    "event_name": "Group Stage–Week 1 Challengers 2026: LATAM North ACE Stage 2"
+  },
+  {
+    "vlr_match_id": 668489,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "Team Solid",
+    "opposing_team": "PEEK",
+    "agents": [
+      "killjoy",
+      "neon",
+      "omen",
+      "sova",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-5",
+    "event_name": "Regular Phase–Week 3 Challengers 2026: Brazil Gamers Club Stage 2"
+  },
+  {
+    "vlr_match_id": 668489,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "PEEK",
+    "opposing_team": "Team Solid",
+    "agents": [
+      "cypher",
+      "neon",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "5-13",
+    "event_name": "Regular Phase–Week 3 Challengers 2026: Brazil Gamers Club Stage 2"
+  },
+  {
+    "vlr_match_id": 676899,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "KRÜ BLAZE",
+    "opposing_team": "KRÜ SPARK",
+    "agents": [
+      "omen",
+      "raze",
+      "skye",
+      "viper",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "7-13",
+    "event_name": "Group Stage–Week 1 Challengers 2026: LATAM South ACE Stage 2"
+  },
+  {
+    "vlr_match_id": 676899,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "KRÜ SPARK",
+    "opposing_team": "KRÜ BLAZE",
+    "agents": [
+      "fade",
+      "omen",
+      "raze",
+      "viper",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-7",
+    "event_name": "Group Stage–Week 1 Challengers 2026: LATAM South ACE Stage 2"
+  },
+  {
+    "vlr_match_id": 678028,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "STREAMER ARENA",
+    "opposing_team": "LYON",
+    "agents": [
+      "breach",
+      "fade",
+      "omen",
+      "raze",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "6-13",
+    "event_name": "Group Stage–Week 1 Challengers 2026: LATAM North ACE Stage 2"
+  },
+  {
+    "vlr_match_id": 678028,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "LYON",
+    "opposing_team": "STREAMER ARENA",
+    "agents": [
+      "fade",
+      "omen",
+      "phoenix",
+      "raze",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-6",
+    "event_name": "Group Stage–Week 1 Challengers 2026: LATAM North ACE Stage 2"
+  },
+  {
+    "vlr_match_id": 668487,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "TBK Esports",
+    "opposing_team": "F4TALITY",
+    "agents": [
+      "breach",
+      "brimstone",
+      "cypher",
+      "neon",
+      "tejo"
+    ],
+    "has_won": true,
+    "score": "13-7",
+    "event_name": "Regular Phase–Week 3 Challengers 2026: Brazil Gamers Club Stage 2"
+  },
+  {
+    "vlr_match_id": 668487,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "F4TALITY",
+    "opposing_team": "TBK Esports",
+    "agents": [
+      "breach",
+      "brimstone",
+      "cypher",
+      "neon",
+      "tejo"
+    ],
+    "has_won": false,
+    "score": "7-13",
+    "event_name": "Regular Phase–Week 3 Challengers 2026: Brazil Gamers Club Stage 2"
+  },
+  {
+    "vlr_match_id": 668488,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "MIBR Academy",
+    "opposing_team": "FURIA Academy",
+    "agents": [
+      "astra",
+      "cypher",
+      "fade",
+      "neon",
+      "phoenix"
+    ],
+    "has_won": false,
+    "score": "8-13",
+    "event_name": "Regular Phase–Week 3 Challengers 2026: Brazil Gamers Club Stage 2"
+  },
+  {
+    "vlr_match_id": 668488,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "FURIA Academy",
+    "opposing_team": "MIBR Academy",
+    "agents": [
+      "astra",
+      "chamber",
+      "neon",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-8",
+    "event_name": "Regular Phase–Week 3 Challengers 2026: Brazil Gamers Club Stage 2"
+  },
+  {
+    "vlr_match_id": 668488,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "MIBR Academy",
+    "opposing_team": "FURIA Academy",
+    "agents": [
+      "brimstone",
+      "cypher",
+      "neon",
+      "raze",
+      "skye"
+    ],
+    "has_won": true,
+    "score": "13-8",
+    "event_name": "Regular Phase–Week 3 Challengers 2026: Brazil Gamers Club Stage 2"
+  },
+  {
+    "vlr_match_id": 668488,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "FURIA Academy",
+    "opposing_team": "MIBR Academy",
+    "agents": [
+      "breach",
+      "brimstone",
+      "chamber",
+      "fade",
+      "neon"
+    ],
+    "has_won": false,
+    "score": "8-13",
+    "event_name": "Regular Phase–Week 3 Challengers 2026: Brazil Gamers Club Stage 2"
+  },
+  {
+    "vlr_match_id": 676898,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "OXEN",
+    "opposing_team": "BESTIA",
+    "agents": [
+      "astra",
+      "fade",
+      "jett",
+      "killjoy",
+      "phoenix"
+    ],
+    "has_won": false,
+    "score": "0-13",
+    "event_name": "Group Stage–Week 1 Challengers 2026: LATAM South ACE Stage 2"
+  },
+  {
+    "vlr_match_id": 676898,
+    "match_date": "Wednesday, May 20",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "BESTIA",
+    "opposing_team": "OXEN",
+    "agents": [
+      "astra",
+      "fade",
+      "killjoy",
+      "neon",
+      "phoenix"
+    ],
+    "has_won": true,
+    "score": "13-0",
+    "event_name": "Group Stage–Week 1 Challengers 2026: LATAM South ACE Stage 2"
+  },
+  {
+    "vlr_match_id": 680275,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "Natus Vincere Junior",
+    "opposing_team": "CGN Esports",
+    "agents": [
+      "neon",
+      "omen",
+      "phoenix",
+      "sova",
+      "veto"
+    ],
+    "has_won": false,
+    "score": "10-13",
+    "event_name": "Group Stage–Group A Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680275,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "CGN Esports",
+    "opposing_team": "Natus Vincere Junior",
+    "agents": [
+      "astra",
+      "cypher",
+      "jett",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-10",
+    "event_name": "Group Stage–Group A Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680275,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "Natus Vincere Junior",
+    "opposing_team": "CGN Esports",
+    "agents": [
+      "astra",
+      "cypher",
+      "fade",
+      "neon",
+      "phoenix"
+    ],
+    "has_won": true,
+    "score": "13-11",
+    "event_name": "Group Stage–Group A Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680275,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "CGN Esports",
+    "opposing_team": "Natus Vincere Junior",
+    "agents": [
+      "breach",
+      "brimstone",
+      "cypher",
+      "raze",
+      "tejo"
+    ],
+    "has_won": false,
+    "score": "11-13",
+    "event_name": "Group Stage–Group A Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680288,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "Team Liquid Academy",
+    "opposing_team": "Barça eSports",
+    "agents": [
+      "neon",
+      "omen",
+      "raze",
+      "skye",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-8",
+    "event_name": "Group Stage–Group D Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680288,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "Barça eSports",
+    "opposing_team": "Team Liquid Academy",
+    "agents": [
+      "omen",
+      "raze",
+      "sage",
+      "skye",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "8-13",
+    "event_name": "Group Stage–Group D Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680278,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "FOKUS",
+    "opposing_team": "REBORN",
+    "agents": [
+      "astra",
+      "raze",
+      "skye",
+      "vyse",
+      "waylay"
+    ],
+    "has_won": false,
+    "score": "12-14",
+    "event_name": "Group Stage–Group B Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680278,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "REBORN",
+    "opposing_team": "FOKUS",
+    "agents": [
+      "astra",
+      "omen",
+      "raze",
+      "skye",
+      "waylay"
+    ],
+    "has_won": true,
+    "score": "14-12",
+    "event_name": "Group Stage–Group B Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680278,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "FOKUS",
+    "opposing_team": "REBORN",
+    "agents": [
+      "harbor",
+      "jett",
+      "kayo",
+      "sova",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "12-14",
+    "event_name": "Group Stage–Group B Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680278,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "REBORN",
+    "opposing_team": "FOKUS",
+    "agents": [
+      "chamber",
+      "harbor",
+      "jett",
+      "sova",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "14-12",
+    "event_name": "Group Stage–Group B Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680281,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "MIR",
+    "opposing_team": "WIP Esports",
+    "agents": [
+      "astra",
+      "chamber",
+      "kayo",
+      "raze",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "14-12",
+    "event_name": "Group Stage–Group C Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680281,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "WIP Esports",
+    "opposing_team": "MIR",
+    "agents": [
+      "astra",
+      "cypher",
+      "sova",
+      "tejo",
+      "waylay"
+    ],
+    "has_won": false,
+    "score": "12-14",
+    "event_name": "Group Stage–Group C Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680281,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "MIR",
+    "opposing_team": "WIP Esports",
+    "agents": [
+      "jett",
+      "omen",
+      "raze",
+      "skye",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "12-14",
+    "event_name": "Group Stage–Group C Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680281,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "WIP Esports",
+    "opposing_team": "MIR",
+    "agents": [
+      "astra",
+      "fade",
+      "raze",
+      "viper",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "14-12",
+    "event_name": "Group Stage–Group C Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 660484,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "ROY Esports",
+    "opposing_team": "1Tap Esports",
+    "agents": [
+      "fade",
+      "omen",
+      "raze",
+      "viper",
+      "waylay"
+    ],
+    "has_won": false,
+    "score": "3-13",
+    "event_name": "Regionals–Lower Final Challengers 2026: SEA Split 2 - Vietnam Qualifier"
+  },
+  {
+    "vlr_match_id": 660484,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "1Tap Esports",
+    "opposing_team": "ROY Esports",
+    "agents": [
+      "jett",
+      "omen",
+      "raze",
+      "skye",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-3",
+    "event_name": "Regionals–Lower Final Challengers 2026: SEA Split 2 - Vietnam Qualifier"
+  },
+  {
+    "vlr_match_id": 660484,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "ROY Esports",
+    "opposing_team": "1Tap Esports",
+    "agents": [
+      "iso",
+      "jett",
+      "omen",
+      "sova",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-6",
+    "event_name": "Regionals–Lower Final Challengers 2026: SEA Split 2 - Vietnam Qualifier"
+  },
+  {
+    "vlr_match_id": 660484,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "1Tap Esports",
+    "opposing_team": "ROY Esports",
+    "agents": [
+      "harbor",
+      "jett",
+      "phoenix",
+      "sova",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "6-13",
+    "event_name": "Regionals–Lower Final Challengers 2026: SEA Split 2 - Vietnam Qualifier"
+  },
+  {
+    "vlr_match_id": 660484,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "bind",
+    "team_name": "ROY Esports",
+    "opposing_team": "1Tap Esports",
+    "agents": [
+      "brimstone",
+      "raze",
+      "skye",
+      "viper",
+      "waylay"
+    ],
+    "has_won": false,
+    "score": "9-13",
+    "event_name": "Regionals–Lower Final Challengers 2026: SEA Split 2 - Vietnam Qualifier"
+  },
+  {
+    "vlr_match_id": 660484,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "bind",
+    "team_name": "1Tap Esports",
+    "opposing_team": "ROY Esports",
+    "agents": [
+      "brimstone",
+      "jett",
+      "raze",
+      "skye",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-9",
+    "event_name": "Regionals–Lower Final Challengers 2026: SEA Split 2 - Vietnam Qualifier"
+  },
+  {
+    "vlr_match_id": 660484,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "ROY Esports",
+    "opposing_team": "1Tap Esports",
+    "agents": [
+      "astra",
+      "chamber",
+      "fade",
+      "jett",
+      "phoenix"
+    ],
+    "has_won": true,
+    "score": "13-7",
+    "event_name": "Regionals–Lower Final Challengers 2026: SEA Split 2 - Vietnam Qualifier"
+  },
+  {
+    "vlr_match_id": 660484,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "1Tap Esports",
+    "opposing_team": "ROY Esports",
+    "agents": [
+      "astra",
+      "fade",
+      "jett",
+      "killjoy",
+      "phoenix"
+    ],
+    "has_won": false,
+    "score": "7-13",
+    "event_name": "Regionals–Lower Final Challengers 2026: SEA Split 2 - Vietnam Qualifier"
+  },
+  {
+    "vlr_match_id": 678027,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Contra",
+    "opposing_team": "LAZER",
+    "agents": [
+      "fade",
+      "omen",
+      "raze",
+      "vyse",
+      "waylay"
+    ],
+    "has_won": false,
+    "score": "12-14",
+    "event_name": "Group Stage–Week 1 Challengers 2026: LATAM North ACE Stage 2"
+  },
+  {
+    "vlr_match_id": 678027,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "LAZER",
+    "opposing_team": "Contra",
+    "agents": [
+      "fade",
+      "omen",
+      "raze",
+      "viper",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "14-12",
+    "event_name": "Group Stage–Week 1 Challengers 2026: LATAM North ACE Stage 2"
+  },
+  {
+    "vlr_match_id": 676022,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "Monarch-X GC",
+    "opposing_team": "MVSK Treasure",
+    "agents": [
+      "fade",
+      "omen",
+      "raze",
+      "viper",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "7-13",
+    "event_name": "Swiss Stage–Round 6 (2-3) Game Changers 2026: North America Stage 1"
+  },
+  {
+    "vlr_match_id": 676022,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "MVSK Treasure",
+    "opposing_team": "Monarch-X GC",
+    "agents": [
+      "clove",
+      "neon",
+      "skye",
+      "viper",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-7",
+    "event_name": "Swiss Stage–Round 6 (2-3) Game Changers 2026: North America Stage 1"
+  },
+  {
+    "vlr_match_id": 678026,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "FUEGO",
+    "opposing_team": "Chivas Esports",
+    "agents": [
+      "chamber",
+      "fade",
+      "jett",
+      "omen",
+      "phoenix"
+    ],
+    "has_won": true,
+    "score": "13-7",
+    "event_name": "Group Stage–Week 1 Challengers 2026: LATAM North ACE Stage 2"
+  },
+  {
+    "vlr_match_id": 678026,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "Chivas Esports",
+    "opposing_team": "FUEGO",
+    "agents": [
+      "cypher",
+      "jett",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "7-13",
+    "event_name": "Group Stage–Week 1 Challengers 2026: LATAM North ACE Stage 2"
+  },
+  {
+    "vlr_match_id": 676897,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "University War",
+    "opposing_team": "ShindeN",
+    "agents": [
+      "harbor",
+      "neon",
+      "phoenix",
+      "sova",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "14-12",
+    "event_name": "Group Stage–Week 1 Challengers 2026: LATAM South ACE Stage 2"
+  },
+  {
+    "vlr_match_id": 676897,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "ShindeN",
+    "opposing_team": "University War",
+    "agents": [
+      "astra",
+      "jett",
+      "kayo",
+      "sova",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "12-14",
+    "event_name": "Group Stage–Week 1 Challengers 2026: LATAM South ACE Stage 2"
+  },
+  {
+    "vlr_match_id": 676020,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "FlyQuest RED",
+    "opposing_team": "Ghost Gaming",
+    "agents": [
+      "astra",
+      "fade",
+      "jett",
+      "kayo",
+      "killjoy"
+    ],
+    "has_won": true,
+    "score": "13-8",
+    "event_name": "Swiss Stage–Round 6 (3-2) Game Changers 2026: North America Stage 1"
+  },
+  {
+    "vlr_match_id": 676020,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "Ghost Gaming",
+    "opposing_team": "FlyQuest RED",
+    "agents": [
+      "astra",
+      "chamber",
+      "fade",
+      "neon",
+      "phoenix"
+    ],
+    "has_won": false,
+    "score": "8-13",
+    "event_name": "Swiss Stage–Round 6 (3-2) Game Changers 2026: North America Stage 1"
+  },
+  {
+    "vlr_match_id": 676896,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "9z Globant",
+    "opposing_team": "LEVIATÁN Academy",
+    "agents": [
+      "fade",
+      "omen",
+      "raze",
+      "viper",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-4",
+    "event_name": "Group Stage–Week 1 Challengers 2026: LATAM South ACE Stage 2"
+  },
+  {
+    "vlr_match_id": 676896,
+    "match_date": "Tuesday, May 19",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "LEVIATÁN Academy",
+    "opposing_team": "9z Globant",
+    "agents": [
+      "fade",
+      "killjoy",
+      "omen",
+      "raze",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "4-13",
+    "event_name": "Group Stage–Week 1 Challengers 2026: LATAM South ACE Stage 2"
+  },
+  {
+    "vlr_match_id": 680277,
+    "match_date": "Monday, May 18",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "REBORN",
+    "opposing_team": "Enterprise Esports",
+    "agents": [
+      "astra",
+      "omen",
+      "raze",
+      "skye",
+      "waylay"
+    ],
+    "has_won": true,
+    "score": "15-13",
+    "event_name": "Group Stage–Group B Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680277,
+    "match_date": "Monday, May 18",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "Enterprise Esports",
+    "opposing_team": "REBORN",
+    "agents": [
+      "omen",
+      "tejo",
+      "viper",
+      "waylay",
+      "yoru"
+    ],
+    "has_won": false,
+    "score": "13-15",
+    "event_name": "Group Stage–Group B Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680287,
+    "match_date": "Monday, May 18",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Joblife",
+    "opposing_team": "Ghools Esports",
+    "agents": [
+      "fade",
+      "omen",
+      "raze",
+      "viper",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-3",
+    "event_name": "Group Stage–Group D Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680287,
+    "match_date": "Monday, May 18",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Ghools Esports",
+    "opposing_team": "Joblife",
+    "agents": [
+      "fade",
+      "jett",
+      "omen",
+      "raze",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "3-13",
+    "event_name": "Group Stage–Group D Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680280,
+    "match_date": "Monday, May 18",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "UCAM Esports Club",
+    "opposing_team": "AlQadsiah Esports",
+    "agents": [
+      "breach",
+      "jett",
+      "killjoy",
+      "omen",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-9",
+    "event_name": "Group Stage–Group C Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 680280,
+    "match_date": "Monday, May 18",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "AlQadsiah Esports",
+    "opposing_team": "UCAM Esports Club",
+    "agents": [
+      "killjoy",
+      "neon",
+      "omen",
+      "sova",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "9-13",
+    "event_name": "Group Stage–Group C Challengers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 660483,
+    "match_date": "Monday, May 18",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "1Tap Esports",
+    "opposing_team": "God Chosen",
+    "agents": [
+      "jett",
+      "omen",
+      "raze",
+      "skye",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-8",
+    "event_name": "Regionals–Lower Round 3 Challengers 2026: SEA Split 2 - Vietnam Qualifier"
+  },
+  {
+    "vlr_match_id": 660483,
+    "match_date": "Monday, May 18",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "God Chosen",
+    "opposing_team": "1Tap Esports",
+    "agents": [
+      "fade",
+      "omen",
+      "raze",
+      "viper",
+      "waylay"
+    ],
+    "has_won": false,
+    "score": "8-13",
+    "event_name": "Regionals–Lower Round 3 Challengers 2026: SEA Split 2 - Vietnam Qualifier"
+  },
+  {
+    "vlr_match_id": 660477,
+    "match_date": "Monday, May 18",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Fancy United Esports",
+    "opposing_team": "ROY Esports",
+    "agents": [
+      "chamber",
+      "fade",
+      "neon",
+      "omen",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-5",
+    "event_name": "Regionals–Upper Final Challengers 2026: SEA Split 2 - Vietnam Qualifier"
+  },
+  {
+    "vlr_match_id": 660477,
+    "match_date": "Monday, May 18",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "ROY Esports",
+    "opposing_team": "Fancy United Esports",
+    "agents": [
+      "fade",
+      "omen",
+      "raze",
+      "vyse",
+      "waylay"
+    ],
+    "has_won": false,
+    "score": "5-13",
+    "event_name": "Regionals–Upper Final Challengers 2026: SEA Split 2 - Vietnam Qualifier"
+  },
+  {
+    "vlr_match_id": 660378,
+    "match_date": "Monday, May 18",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "MIBR",
+    "opposing_team": "100 Thieves",
+    "agents": [
+      "astra",
+      "harbor",
+      "jett",
+      "neon",
+      "skye"
+    ],
+    "has_won": false,
+    "score": "7-13",
+    "event_name": "Playoffs–Lower Round 2 VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660378,
+    "match_date": "Monday, May 18",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "100 Thieves",
+    "opposing_team": "MIBR",
+    "agents": [
+      "cypher",
+      "harbor",
+      "neon",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-7",
+    "event_name": "Playoffs–Lower Round 2 VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660377,
+    "match_date": "Monday, May 18",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "KRÜ Esports",
+    "opposing_team": "NRG",
+    "agents": [
+      "cypher",
+      "fade",
+      "neon",
+      "omen",
+      "phoenix"
+    ],
+    "has_won": false,
+    "score": "4-13",
+    "event_name": "Playoffs–Lower Round 2 VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660377,
+    "match_date": "Monday, May 18",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "NRG",
+    "opposing_team": "KRÜ Esports",
+    "agents": [
+      "cypher",
+      "neon",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-4",
+    "event_name": "Playoffs–Lower Round 2 VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660386,
+    "match_date": "Sunday, May 17",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Team Vitality",
+    "opposing_team": "Team Heretics",
+    "agents": [
+      "fade",
+      "omen",
+      "raze",
+      "viper",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "13-15",
+    "event_name": "Playoffs–Grand Final VCT 2026: EMEA Stage 1"
+  },
+  {
+    "vlr_match_id": 660386,
+    "match_date": "Sunday, May 17",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Team Heretics",
+    "opposing_team": "Team Vitality",
+    "agents": [
+      "fade",
+      "neon",
+      "omen",
+      "raze",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "15-13",
+    "event_name": "Playoffs–Grand Final VCT 2026: EMEA Stage 1"
+  },
+  {
+    "vlr_match_id": 660386,
+    "match_date": "Sunday, May 17",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "Team Vitality",
+    "opposing_team": "Team Heretics",
+    "agents": [
+      "fade",
+      "neon",
+      "omen",
+      "raze",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "11-13",
+    "event_name": "Playoffs–Grand Final VCT 2026: EMEA Stage 1"
+  },
+  {
+    "vlr_match_id": 660386,
+    "match_date": "Sunday, May 17",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "Team Heretics",
+    "opposing_team": "Team Vitality",
+    "agents": [
+      "astra",
+      "fade",
+      "neon",
+      "raze",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-11",
+    "event_name": "Playoffs–Grand Final VCT 2026: EMEA Stage 1"
+  },
+  {
+    "vlr_match_id": 660386,
+    "match_date": "Sunday, May 17",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "Team Vitality",
+    "opposing_team": "Team Heretics",
+    "agents": [
+      "cypher",
+      "neon",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "13-15",
+    "event_name": "Playoffs–Grand Final VCT 2026: EMEA Stage 1"
+  },
+  {
+    "vlr_match_id": 660386,
+    "match_date": "Sunday, May 17",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "Team Heretics",
+    "opposing_team": "Team Vitality",
+    "agents": [
+      "cypher",
+      "jett",
+      "neon",
+      "omen",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "15-13",
+    "event_name": "Playoffs–Grand Final VCT 2026: EMEA Stage 1"
+  },
+  {
+    "vlr_match_id": 660386,
+    "match_date": "Sunday, May 17",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "Team Vitality",
+    "opposing_team": "Team Heretics",
+    "agents": [
+      "astra",
+      "chamber",
+      "kayo",
+      "neon",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-7",
+    "event_name": "Playoffs–Grand Final VCT 2026: EMEA Stage 1"
+  },
+  {
+    "vlr_match_id": 660386,
+    "match_date": "Sunday, May 17",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "Team Heretics",
+    "opposing_team": "Team Vitality",
+    "agents": [
+      "astra",
+      "cypher",
+      "fade",
+      "jett",
+      "neon"
+    ],
+    "has_won": false,
+    "score": "7-13",
+    "event_name": "Playoffs–Grand Final VCT 2026: EMEA Stage 1"
+  },
+  {
+    "vlr_match_id": 666493,
+    "match_date": "Sunday, May 17",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "FULL SENSE",
+    "opposing_team": "Paper Rex",
+    "agents": [
+      "jett",
+      "omen",
+      "raze",
+      "skye",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "9-13",
+    "event_name": "Playoffs–Grand Final VCT 2026: Pacific Stage 1"
+  },
+  {
+    "vlr_match_id": 666493,
+    "match_date": "Sunday, May 17",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Paper Rex",
+    "opposing_team": "FULL SENSE",
+    "agents": [
+      "jett",
+      "omen",
+      "raze",
+      "skye",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-9",
+    "event_name": "Playoffs–Grand Final VCT 2026: Pacific Stage 1"
+  },
+  {
+    "vlr_match_id": 666493,
+    "match_date": "Sunday, May 17",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "FULL SENSE",
+    "opposing_team": "Paper Rex",
+    "agents": [
+      "brimstone",
+      "cypher",
+      "fade",
+      "neon",
+      "phoenix"
+    ],
+    "has_won": false,
+    "score": "10-13",
+    "event_name": "Playoffs–Grand Final VCT 2026: Pacific Stage 1"
+  },
+  {
+    "vlr_match_id": 666493,
+    "match_date": "Sunday, May 17",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "Paper Rex",
+    "opposing_team": "FULL SENSE",
+    "agents": [
+      "breach",
+      "brimstone",
+      "killjoy",
+      "neon",
+      "raze"
+    ],
+    "has_won": true,
+    "score": "13-10",
+    "event_name": "Playoffs–Grand Final VCT 2026: Pacific Stage 1"
+  },
+  {
+    "vlr_match_id": 660376,
+    "match_date": "Sunday, May 17",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "100 Thieves",
+    "opposing_team": "LOUD",
+    "agents": [
+      "omen",
+      "raze",
+      "sage",
+      "skye",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-4",
+    "event_name": "Playoffs–Lower Round 1 VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660376,
+    "match_date": "Sunday, May 17",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "LOUD",
+    "opposing_team": "100 Thieves",
+    "agents": [
+      "neon",
+      "omen",
+      "raze",
+      "skye",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "4-13",
+    "event_name": "Playoffs–Lower Round 1 VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660375,
+    "match_date": "Sunday, May 17",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "FURIA",
+    "opposing_team": "NRG",
+    "agents": [
+      "cypher",
+      "jett",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "8-13",
+    "event_name": "Playoffs–Lower Round 1 VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660375,
+    "match_date": "Sunday, May 17",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "NRG",
+    "opposing_team": "FURIA",
+    "agents": [
+      "cypher",
+      "neon",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-8",
+    "event_name": "Playoffs–Lower Round 1 VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660392,
+    "match_date": "Saturday, May 16",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "FUT Esports",
+    "opposing_team": "Team Heretics",
+    "agents": [
+      "fade",
+      "neon",
+      "omen",
+      "viper",
+      "waylay"
+    ],
+    "has_won": false,
+    "score": "4-13",
+    "event_name": "Playoffs–Lower Final VCT 2026: EMEA Stage 1"
+  },
+  {
+    "vlr_match_id": 660392,
+    "match_date": "Saturday, May 16",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Team Heretics",
+    "opposing_team": "FUT Esports",
+    "agents": [
+      "fade",
+      "neon",
+      "omen",
+      "raze",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-4",
+    "event_name": "Playoffs–Lower Final VCT 2026: EMEA Stage 1"
+  },
+  {
+    "vlr_match_id": 660392,
+    "match_date": "Saturday, May 16",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "FUT Esports",
+    "opposing_team": "Team Heretics",
+    "agents": [
+      "cypher",
+      "neon",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "6-13",
+    "event_name": "Playoffs–Lower Final VCT 2026: EMEA Stage 1"
+  },
+  {
+    "vlr_match_id": 660392,
+    "match_date": "Saturday, May 16",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "Team Heretics",
+    "opposing_team": "FUT Esports",
+    "agents": [
+      "cypher",
+      "jett",
+      "neon",
+      "omen",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-6",
+    "event_name": "Playoffs–Lower Final VCT 2026: EMEA Stage 1"
+  },
+  {
+    "vlr_match_id": 660392,
+    "match_date": "Saturday, May 16",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "FUT Esports",
+    "opposing_team": "Team Heretics",
+    "agents": [
+      "jett",
+      "neon",
+      "omen",
+      "sova",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "1-13",
+    "event_name": "Playoffs–Lower Final VCT 2026: EMEA Stage 1"
+  },
+  {
+    "vlr_match_id": 660392,
+    "match_date": "Saturday, May 16",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "Team Heretics",
+    "opposing_team": "FUT Esports",
+    "agents": [
+      "chamber",
+      "neon",
+      "sage",
+      "sova",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-1",
+    "event_name": "Playoffs–Lower Final VCT 2026: EMEA Stage 1"
+  },
+  {
+    "vlr_match_id": 666499,
+    "match_date": "Saturday, May 16",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Global Esports",
+    "opposing_team": "Paper Rex",
+    "agents": [
+      "cypher",
+      "deadlock",
+      "fade",
+      "omen",
+      "sage"
+    ],
+    "has_won": false,
+    "score": "4-13",
+    "event_name": "Playoffs–Lower Final VCT 2026: Pacific Stage 1"
+  },
+  {
+    "vlr_match_id": 666499,
+    "match_date": "Saturday, May 16",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Paper Rex",
+    "opposing_team": "Global Esports",
+    "agents": [
+      "jett",
+      "omen",
+      "raze",
+      "skye",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-4",
+    "event_name": "Playoffs–Lower Final VCT 2026: Pacific Stage 1"
+  },
+  {
+    "vlr_match_id": 666499,
+    "match_date": "Saturday, May 16",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "Global Esports",
+    "opposing_team": "Paper Rex",
+    "agents": [
+      "kayo",
+      "omen",
+      "phoenix",
+      "sage",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "11-13",
+    "event_name": "Playoffs–Lower Final VCT 2026: Pacific Stage 1"
+  },
+  {
+    "vlr_match_id": 666499,
+    "match_date": "Saturday, May 16",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "Paper Rex",
+    "opposing_team": "Global Esports",
+    "agents": [
+      "omen",
+      "sage",
+      "sova",
+      "vyse",
+      "yoru"
+    ],
+    "has_won": true,
+    "score": "13-11",
+    "event_name": "Playoffs–Lower Final VCT 2026: Pacific Stage 1"
+  },
+  {
+    "vlr_match_id": 660372,
+    "match_date": "Saturday, May 16",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "KRÜ Esports",
+    "opposing_team": "G2 Esports",
+    "agents": [
+      "harbor",
+      "kayo",
+      "neon",
+      "sova",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "7-13",
+    "event_name": "Playoffs–Upper Semifinals VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660372,
+    "match_date": "Saturday, May 16",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "G2 Esports",
+    "opposing_team": "KRÜ Esports",
+    "agents": [
+      "astra",
+      "harbor",
+      "neon",
+      "sova",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-7",
+    "event_name": "Playoffs–Upper Semifinals VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660371,
+    "match_date": "Saturday, May 16",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "MIBR",
+    "opposing_team": "LEVIATÁN",
+    "agents": [
+      "brimstone",
+      "cypher",
+      "jett",
+      "neon",
+      "skye"
+    ],
+    "has_won": true,
+    "score": "13-4",
+    "event_name": "Playoffs–Upper Semifinals VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660371,
+    "match_date": "Saturday, May 16",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "LEVIATÁN",
+    "opposing_team": "MIBR",
+    "agents": [
+      "breach",
+      "brimstone",
+      "neon",
+      "tejo",
+      "waylay"
+    ],
+    "has_won": false,
+    "score": "4-13",
+    "event_name": "Playoffs–Upper Semifinals VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660371,
+    "match_date": "Saturday, May 16",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "MIBR",
+    "opposing_team": "LEVIATÁN",
+    "agents": [
+      "jett",
+      "omen",
+      "sage",
+      "sova",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "7-13",
+    "event_name": "Playoffs–Upper Semifinals VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660371,
+    "match_date": "Saturday, May 16",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "LEVIATÁN",
+    "opposing_team": "MIBR",
+    "agents": [
+      "chamber",
+      "neon",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-7",
+    "event_name": "Playoffs–Upper Semifinals VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660391,
+    "match_date": "Saturday, May 16",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "Team Heretics",
+    "opposing_team": "Eternal Fire",
+    "agents": [
+      "brimstone",
+      "cypher",
+      "fade",
+      "neon",
+      "raze"
+    ],
+    "has_won": true,
+    "score": "13-10",
+    "event_name": "Playoffs–Lower Round 3 VCT 2026: EMEA Stage 1"
+  },
+  {
+    "vlr_match_id": 660391,
+    "match_date": "Saturday, May 16",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "Eternal Fire",
+    "opposing_team": "Team Heretics",
+    "agents": [
+      "astra",
+      "cypher",
+      "fade",
+      "neon",
+      "raze"
+    ],
+    "has_won": false,
+    "score": "10-13",
+    "event_name": "Playoffs–Lower Round 3 VCT 2026: EMEA Stage 1"
+  },
+  {
+    "vlr_match_id": 660391,
+    "match_date": "Saturday, May 16",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "Team Heretics",
+    "opposing_team": "Eternal Fire",
+    "agents": [
+      "cypher",
+      "jett",
+      "neon",
+      "omen",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-10",
+    "event_name": "Playoffs–Lower Round 3 VCT 2026: EMEA Stage 1"
+  },
+  {
+    "vlr_match_id": 660391,
+    "match_date": "Saturday, May 16",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "Eternal Fire",
+    "opposing_team": "Team Heretics",
+    "agents": [
+      "astra",
+      "cypher",
+      "jett",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "10-13",
+    "event_name": "Playoffs–Lower Round 3 VCT 2026: EMEA Stage 1"
+  },
+  {
+    "vlr_match_id": 660385,
+    "match_date": "Friday, May 15",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "FUT Esports",
+    "opposing_team": "Team Vitality",
+    "agents": [
+      "cypher",
+      "neon",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-8",
+    "event_name": "Playoffs–Upper Final VCT 2026: EMEA Stage 1"
+  },
+  {
+    "vlr_match_id": 660385,
+    "match_date": "Friday, May 15",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "Team Vitality",
+    "opposing_team": "FUT Esports",
+    "agents": [
+      "neon",
+      "omen",
+      "phoenix",
+      "sova",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "8-13",
+    "event_name": "Playoffs–Upper Final VCT 2026: EMEA Stage 1"
+  },
+  {
+    "vlr_match_id": 660385,
+    "match_date": "Friday, May 15",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "FUT Esports",
+    "opposing_team": "Team Vitality",
+    "agents": [
+      "neon",
+      "omen",
+      "raze",
+      "skye",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "12-14",
+    "event_name": "Playoffs–Upper Final VCT 2026: EMEA Stage 1"
+  },
+  {
+    "vlr_match_id": 660385,
+    "match_date": "Friday, May 15",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "Team Vitality",
+    "opposing_team": "FUT Esports",
+    "agents": [
+      "fade",
+      "neon",
+      "omen",
+      "raze",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "14-12",
+    "event_name": "Playoffs–Upper Final VCT 2026: EMEA Stage 1"
+  },
+  {
+    "vlr_match_id": 666498,
+    "match_date": "Friday, May 15",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "T1",
+    "opposing_team": "Paper Rex",
+    "agents": [
+      "jett",
+      "kayo",
+      "killjoy",
+      "omen",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-10",
+    "event_name": "Playoffs–Lower Round 3 VCT 2026: Pacific Stage 1"
+  },
+  {
+    "vlr_match_id": 666498,
+    "match_date": "Friday, May 15",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "Paper Rex",
+    "opposing_team": "T1",
+    "agents": [
+      "omen",
+      "sage",
+      "sova",
+      "vyse",
+      "yoru"
+    ],
+    "has_won": false,
+    "score": "10-13",
+    "event_name": "Playoffs–Lower Round 3 VCT 2026: Pacific Stage 1"
+  },
+  {
+    "vlr_match_id": 666498,
+    "match_date": "Friday, May 15",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "T1",
+    "opposing_team": "Paper Rex",
+    "agents": [
+      "harbor",
+      "kayo",
+      "neon",
+      "sova",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "8-13",
+    "event_name": "Playoffs–Lower Round 3 VCT 2026: Pacific Stage 1"
+  },
+  {
+    "vlr_match_id": 666498,
+    "match_date": "Friday, May 15",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "Paper Rex",
+    "opposing_team": "T1",
+    "agents": [
+      "jett",
+      "neon",
+      "omen",
+      "sova",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-8",
+    "event_name": "Playoffs–Lower Round 3 VCT 2026: Pacific Stage 1"
+  },
+  {
+    "vlr_match_id": 666492,
+    "match_date": "Friday, May 15",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "Global Esports",
+    "opposing_team": "FULL SENSE",
+    "agents": [
+      "chamber",
+      "neon",
+      "sage",
+      "sova",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "8-13",
+    "event_name": "Playoffs–Upper Final VCT 2026: Pacific Stage 1"
+  },
+  {
+    "vlr_match_id": 666492,
+    "match_date": "Friday, May 15",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "FULL SENSE",
+    "opposing_team": "Global Esports",
+    "agents": [
+      "jett",
+      "neon",
+      "omen",
+      "sova",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-8",
+    "event_name": "Playoffs–Upper Final VCT 2026: Pacific Stage 1"
+  },
+  {
+    "vlr_match_id": 660370,
+    "match_date": "Friday, May 15",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "G2 Esports",
+    "opposing_team": "100 Thieves",
+    "agents": [
+      "fade",
+      "omen",
+      "raze",
+      "viper",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-7",
+    "event_name": "Playoffs–Upper Round 1 VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660370,
+    "match_date": "Friday, May 15",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "100 Thieves",
+    "opposing_team": "G2 Esports",
+    "agents": [
+      "cypher",
+      "fade",
+      "neon",
+      "omen",
+      "raze"
+    ],
+    "has_won": false,
+    "score": "7-13",
+    "event_name": "Playoffs–Upper Round 1 VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660369,
+    "match_date": "Friday, May 15",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "FURIA",
+    "opposing_team": "LEVIATÁN",
+    "agents": [
+      "fade",
+      "neon",
+      "omen",
+      "viper",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "5-13",
+    "event_name": "Playoffs–Upper Round 1 VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660369,
+    "match_date": "Friday, May 15",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "LEVIATÁN",
+    "opposing_team": "FURIA",
+    "agents": [
+      "fade",
+      "neon",
+      "omen",
+      "phoenix",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-5",
+    "event_name": "Playoffs–Upper Round 1 VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660369,
+    "match_date": "Friday, May 15",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "FURIA",
+    "opposing_team": "LEVIATÁN",
+    "agents": [
+      "astra",
+      "fade",
+      "killjoy",
+      "neon",
+      "phoenix"
+    ],
+    "has_won": false,
+    "score": "1-13",
+    "event_name": "Playoffs–Upper Round 1 VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 660369,
+    "match_date": "Friday, May 15",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "LEVIATÁN",
+    "opposing_team": "FURIA",
+    "agents": [
+      "astra",
+      "chamber",
+      "neon",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-1",
+    "event_name": "Playoffs–Upper Round 1 VCT 2026: Americas Stage 1"
+  },
+  {
+    "vlr_match_id": 671715,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "ALTERNATE aTTaX Ruby",
+    "opposing_team": "SK Nebula",
+    "agents": [
+      "harbor",
+      "jett",
+      "reyna",
+      "sova",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "13-15",
+    "event_name": "Group Stage–Week 3 Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 671715,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "breeze",
+    "team_name": "SK Nebula",
+    "opposing_team": "ALTERNATE aTTaX Ruby",
+    "agents": [
+      "astra",
+      "jett",
+      "neon",
+      "sova",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "15-13",
+    "event_name": "Group Stage–Week 3 Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 671715,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "ALTERNATE aTTaX Ruby",
+    "opposing_team": "SK Nebula",
+    "agents": [
+      "chamber",
+      "fade",
+      "neon",
+      "omen",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "9-13",
+    "event_name": "Group Stage–Week 3 Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 671715,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "SK Nebula",
+    "opposing_team": "ALTERNATE aTTaX Ruby",
+    "agents": [
+      "chamber",
+      "fade",
+      "omen",
+      "raze",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-9",
+    "event_name": "Group Stage–Week 3 Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 671716,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "Twisted Minds Orchid",
+    "opposing_team": "FOKUS Sakura",
+    "agents": [
+      "breach",
+      "brimstone",
+      "chamber",
+      "raze",
+      "tejo"
+    ],
+    "has_won": false,
+    "score": "8-13",
+    "event_name": "Group Stage–Week 3 Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 671716,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "FOKUS Sakura",
+    "opposing_team": "Twisted Minds Orchid",
+    "agents": [
+      "brimstone",
+      "cypher",
+      "fade",
+      "neon",
+      "phoenix"
+    ],
+    "has_won": true,
+    "score": "13-8",
+    "event_name": "Group Stage–Week 3 Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 671716,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Twisted Minds Orchid",
+    "opposing_team": "FOKUS Sakura",
+    "agents": [
+      "fade",
+      "omen",
+      "raze",
+      "viper",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-1",
+    "event_name": "Group Stage–Week 3 Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 671716,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "FOKUS Sakura",
+    "opposing_team": "Twisted Minds Orchid",
+    "agents": [
+      "chamber",
+      "neon",
+      "omen",
+      "skye",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "1-13",
+    "event_name": "Group Stage–Week 3 Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 664809,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Ghools Esports",
+    "opposing_team": "BAAM Esports",
+    "agents": [
+      "fade",
+      "neon",
+      "omen",
+      "raze",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "5-13",
+    "event_name": "Playoffs–Grand Final Challengers 2026: MENA Resilience Pulse Stage - North Africa"
+  },
+  {
+    "vlr_match_id": 664809,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "BAAM Esports",
+    "opposing_team": "Ghools Esports",
+    "agents": [
+      "breach",
+      "fade",
+      "omen",
+      "raze",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-5",
+    "event_name": "Playoffs–Grand Final Challengers 2026: MENA Resilience Pulse Stage - North Africa"
+  },
+  {
+    "vlr_match_id": 664809,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "Ghools Esports",
+    "opposing_team": "BAAM Esports",
+    "agents": [
+      "breach",
+      "brimstone",
+      "neon",
+      "phoenix",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-11",
+    "event_name": "Playoffs–Grand Final Challengers 2026: MENA Resilience Pulse Stage - North Africa"
+  },
+  {
+    "vlr_match_id": 664809,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "BAAM Esports",
+    "opposing_team": "Ghools Esports",
+    "agents": [
+      "breach",
+      "brimstone",
+      "cypher",
+      "tejo",
+      "waylay"
+    ],
+    "has_won": false,
+    "score": "11-13",
+    "event_name": "Playoffs–Grand Final Challengers 2026: MENA Resilience Pulse Stage - North Africa"
+  },
+  {
+    "vlr_match_id": 664809,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "Ghools Esports",
+    "opposing_team": "BAAM Esports",
+    "agents": [
+      "neon",
+      "omen",
+      "phoenix",
+      "sova",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-2",
+    "event_name": "Playoffs–Grand Final Challengers 2026: MENA Resilience Pulse Stage - North Africa"
+  },
+  {
+    "vlr_match_id": 664809,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "ascent",
+    "team_name": "BAAM Esports",
+    "opposing_team": "Ghools Esports",
+    "agents": [
+      "cypher",
+      "omen",
+      "skye",
+      "tejo",
+      "waylay"
+    ],
+    "has_won": false,
+    "score": "2-13",
+    "event_name": "Playoffs–Grand Final Challengers 2026: MENA Resilience Pulse Stage - North Africa"
+  },
+  {
+    "vlr_match_id": 657972,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "Enterprise Esports",
+    "opposing_team": "Team Liquid Academy",
+    "agents": [
+      "cypher",
+      "jett",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-10",
+    "event_name": "Playoffs–Grand Final Challengers 2026: NORTH//EAST Stage 2"
+  },
+  {
+    "vlr_match_id": 657972,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "Team Liquid Academy",
+    "opposing_team": "Enterprise Esports",
+    "agents": [
+      "cypher",
+      "neon",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "10-13",
+    "event_name": "Playoffs–Grand Final Challengers 2026: NORTH//EAST Stage 2"
+  },
+  {
+    "vlr_match_id": 657972,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "bind",
+    "team_name": "Enterprise Esports",
+    "opposing_team": "Team Liquid Academy",
+    "agents": [
+      "brimstone",
+      "chamber",
+      "skye",
+      "viper",
+      "waylay"
+    ],
+    "has_won": true,
+    "score": "13-7",
+    "event_name": "Playoffs–Grand Final Challengers 2026: NORTH//EAST Stage 2"
+  },
+  {
+    "vlr_match_id": 657972,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "bind",
+    "team_name": "Team Liquid Academy",
+    "opposing_team": "Enterprise Esports",
+    "agents": [
+      "brimstone",
+      "gekko",
+      "iso",
+      "neon",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "7-13",
+    "event_name": "Playoffs–Grand Final Challengers 2026: NORTH//EAST Stage 2"
+  },
+  {
+    "vlr_match_id": 657972,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Enterprise Esports",
+    "opposing_team": "Team Liquid Academy",
+    "agents": [
+      "jett",
+      "omen",
+      "raze",
+      "skye",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "9-13",
+    "event_name": "Playoffs–Grand Final Challengers 2026: NORTH//EAST Stage 2"
+  },
+  {
+    "vlr_match_id": 657972,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Team Liquid Academy",
+    "opposing_team": "Enterprise Esports",
+    "agents": [
+      "fade",
+      "neon",
+      "omen",
+      "viper",
+      "vyse"
+    ],
+    "has_won": true,
+    "score": "13-9",
+    "event_name": "Playoffs–Grand Final Challengers 2026: NORTH//EAST Stage 2"
+  },
+  {
+    "vlr_match_id": 657972,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "Enterprise Esports",
+    "opposing_team": "Team Liquid Academy",
+    "agents": [
+      "brimstone",
+      "jett",
+      "killjoy",
+      "raze",
+      "skye"
+    ],
+    "has_won": true,
+    "score": "13-6",
+    "event_name": "Playoffs–Grand Final Challengers 2026: NORTH//EAST Stage 2"
+  },
+  {
+    "vlr_match_id": 657972,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "fracture",
+    "team_name": "Team Liquid Academy",
+    "opposing_team": "Enterprise Esports",
+    "agents": [
+      "breach",
+      "brimstone",
+      "cypher",
+      "raze",
+      "tejo"
+    ],
+    "has_won": false,
+    "score": "6-13",
+    "event_name": "Playoffs–Grand Final Challengers 2026: NORTH//EAST Stage 2"
+  },
+  {
+    "vlr_match_id": 671712,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "GIANTX GC",
+    "opposing_team": "Karmine Corp GC",
+    "agents": [
+      "astra",
+      "kayo",
+      "killjoy",
+      "neon",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-6",
+    "event_name": "Group Stage–Week 3 Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 671712,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "pearl",
+    "team_name": "Karmine Corp GC",
+    "opposing_team": "GIANTX GC",
+    "agents": [
+      "astra",
+      "cypher",
+      "fade",
+      "neon",
+      "phoenix"
+    ],
+    "has_won": false,
+    "score": "6-13",
+    "event_name": "Group Stage–Week 3 Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 671712,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "GIANTX GC",
+    "opposing_team": "Karmine Corp GC",
+    "agents": [
+      "fade",
+      "killjoy",
+      "neon",
+      "omen",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-4",
+    "event_name": "Group Stage–Week 3 Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 671712,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "lotus",
+    "team_name": "Karmine Corp GC",
+    "opposing_team": "GIANTX GC",
+    "agents": [
+      "breach",
+      "cypher",
+      "neon",
+      "omen",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "4-13",
+    "event_name": "Group Stage–Week 3 Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 671714,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "Gentle Mates GC",
+    "opposing_team": "Barça eSports GC",
+    "agents": [
+      "cypher",
+      "neon",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "12-14",
+    "event_name": "Group Stage–Week 3 Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 671714,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "haven",
+    "team_name": "Barça eSports GC",
+    "opposing_team": "Gentle Mates GC",
+    "agents": [
+      "killjoy",
+      "neon",
+      "omen",
+      "sova",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "14-12",
+    "event_name": "Group Stage–Week 3 Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 671714,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "Gentle Mates GC",
+    "opposing_team": "Barça eSports GC",
+    "agents": [
+      "breach",
+      "cypher",
+      "omen",
+      "raze",
+      "skye"
+    ],
+    "has_won": true,
+    "score": "13-7",
+    "event_name": "Group Stage–Week 3 Game Changers 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 671714,
+    "match_date": "Thursday, May 14",
+    "patch_version": "12.08",
+    "map_name": "split",
+    "team_name": "Barça eSports GC",
+    "opposing_team": "Gentle Mates GC",
+    "agents": [
+      "omen",
+      "raze",
+      "sage",
+      "skye",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "7-13",
+    "event_name": "Group Stage–Week 3 Game Changers 2026: EMEA Stage 2"
+  }
+]
