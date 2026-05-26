@@ -1695,10 +1695,20 @@ window.addEventListener('DOMContentLoaded', async () => {
       if (e.key === 'Enter') landingFetch();
     });
   });
+  // Region selector
+  document.getElementById('region-select')?.addEventListener('change', () => {
+    updateFilterToggleText();
+  });
   // Mode selector — auto-fetch on change
-  document.getElementById('mode-select')?.addEventListener('change', () => { updateHeroName(); applyModeUI(); fetchAll(); });
+  document.getElementById('mode-select')?.addEventListener('change', () => { 
+    updateFilterToggleText();
+    updateHeroName(); 
+    applyModeUI(); 
+    fetchAll(); 
+  });
   // Act selector — dynamic local reprocess on change
   document.getElementById('act-select')?.addEventListener('change', () => {
+    updateFilterToggleText();
     loadAllMatches().then(stored => {
       processMatches(stored);
     });
@@ -5361,11 +5371,16 @@ function dismissLanding() {
   toggleSearchMode(false);
   
   const fg = document.getElementById('topbar-filters-group');
-  if (fg) fg.style.display = 'flex';
+  if (fg) {
+    fg.style.display = 'flex';
+    fg.classList.add('mobile-expanded'); // Open drawer by default on mobile on first load
+  }
   const fb = document.getElementById('fetch-btn');
   if (fb) fb.style.display = 'inline-block';
   const h2hb = document.getElementById('h2h-trigger-btn');
   if (h2hb) h2hb.style.display = 'inline-block';
+  
+  setTimeout(updateFilterToggleText, 50); // Initialize mobile filter text indicators!
 }
 
 function toggleSearchMode(showSearch) {
@@ -7012,6 +7027,37 @@ function toggleMobileFilters() {
   const fg = document.getElementById('topbar-filters-group');
   if (fg) {
     fg.classList.toggle('mobile-expanded');
+  }
+}
+
+function updateFilterToggleText() {
+  const regionSelect = document.getElementById('region-select');
+  const modeSelect = document.getElementById('mode-select');
+  const actSelect = document.getElementById('act-select');
+  const toggleBtn = document.getElementById('mobile-filter-toggle');
+  
+  if (regionSelect && modeSelect && actSelect && toggleBtn) {
+    const region = regionSelect.options[regionSelect.selectedIndex]?.text || '';
+    const mode = modeSelect.options[modeSelect.selectedIndex]?.text || '';
+    const act = actSelect.options[actSelect.selectedIndex]?.text || '';
+    
+    const rText = region.toUpperCase();
+    
+    let mText = mode;
+    if (mode.toLowerCase() === 'competitive') mText = 'Comp';
+    else if (mode.toLowerCase() === 'unrated') mText = 'Unrated';
+    else if (mode.toLowerCase() === 'deathmatch') mText = 'DM';
+    else if (mode.toLowerCase() === 'team dm') mText = 'Team DM';
+    else if (mode.toLowerCase() === 'swiftplay') mText = 'Swift';
+    else if (mode.toLowerCase() === 'spike rush') mText = 'Spike';
+    
+    let aText = act;
+    if (act.toLowerCase() === 'lifetime') aText = 'Lifetime';
+    
+    const textSpan = toggleBtn.querySelector('span:not(.toggle-icon)');
+    if (textSpan) {
+      textSpan.textContent = `${rText} • ${mText} • ${aText}`;
+    }
   }
 }
 
