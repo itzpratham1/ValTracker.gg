@@ -171,6 +171,7 @@ def compress_match_json(match_data):
         "matchid": raw_meta.get("matchid") or raw_meta.get("match_id"),
         "mode": raw_meta.get("mode"),
         "queue": raw_meta.get("queue"),
+        "season": raw_meta.get("season"),
         "rounds_played": raw_meta.get("rounds_played")
     }
     

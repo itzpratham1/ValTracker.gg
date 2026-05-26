@@ -142,6 +142,18 @@
       <option value="swiftplay">Swiftplay</option>
       <option value="spikerush">Spike Rush</option>
     </select>
+    <select class="region-select" id="act-select" style="min-width:140px">
+      <option value="v26a3">V26 Act 3 (Current)</option>
+      <option value="v26a2">V26 Act 2</option>
+      <option value="v26a1">V26 Act 1</option>
+      <option value="v25a6">V25 Act 6</option>
+      <option value="v25a5">V25 Act 5</option>
+      <option value="v25a4">V25 Act 4</option>
+      <option value="v25a3">V25 Act 3</option>
+      <option value="v25a2">V25 Act 2</option>
+      <option value="v25a1">V25 Act 1</option>
+      <option value="all">Lifetime Overview</option>
+    </select>
     <button class="fetch-btn" id="fetch-btn" onclick="fetchAll()">↻ Fetch Stats</button>
   </div>
 </div>
@@ -1113,6 +1125,30 @@ function getPlayerList(match) {
 let PLAYER_NAME = '';
 let PLAYER_TAG  = '';
 
+const ACTS_TIMELINE = {
+  'v26a3': { name: 'V26 Act 3', start: new Date('2026-04-29T00:00:00Z').getTime(), end: new Date('2026-06-24T00:00:00Z').getTime() },
+  'v26a2': { name: 'V26 Act 2', start: new Date('2026-03-17T00:00:00Z').getTime(), end: new Date('2026-04-29T00:00:00Z').getTime() },
+  'v26a1': { name: 'V26 Act 1', start: new Date('2026-01-07T00:00:00Z').getTime(), end: new Date('2026-03-17T00:00:00Z').getTime() },
+  'v25a6': { name: 'V25 Act 6', start: new Date('2025-10-15T00:00:00Z').getTime(), end: new Date('2026-01-07T00:00:00Z').getTime() },
+  'v25a5': { name: 'V25 Act 5', start: new Date('2025-08-20T00:00:00Z').getTime(), end: new Date('2025-10-15T00:00:00Z').getTime() },
+  'v25a4': { name: 'V25 Act 4', start: new Date('2025-06-24T00:00:00Z').getTime(), end: new Date('2025-08-20T00:00:00Z').getTime() },
+  'v25a3': { name: 'V25 Act 3', start: new Date('2025-04-30T00:00:00Z').getTime(), end: new Date('2025-06-24T00:00:00Z').getTime() },
+  'v25a2': { name: 'V25 Act 2', start: new Date('2025-03-05T00:00:00Z').getTime(), end: new Date('2025-04-30T00:00:00Z').getTime() },
+  'v25a1': { name: 'V25 Act 1', start: new Date('2025-01-08T00:00:00Z').getTime(), end: new Date('2025-03-05T00:00:00Z').getTime() }
+};
+
+const SEASONS_MAP = {
+  'v26a3': 'e12a3',
+  'v26a2': 'e12a2',
+  'v26a1': 'e12a1',
+  'v25a6': 'e11a3',
+  'v25a5': 'e11a2',
+  'v25a4': 'e11a1',
+  'v25a3': 'e10a3',
+  'v25a2': 'e10a2',
+  'v25a1': 'e10a1'
+};
+
 const AGENT_ROLES = {
   jett:'duelist',reyna:'duelist',phoenix:'duelist',neon:'duelist',iso:'duelist',yoru:'duelist',waylay:'duelist',raze:'duelist',
   sage:'sentinel',killjoy:'sentinel',cypher:'sentinel',chamber:'sentinel',deadlock:'sentinel',vyse:'sentinel',veto:'sentinel',
@@ -1606,6 +1642,8 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (count > 0 && savedProfile) {
       PLAYER_NAME = savedProfile.name;
       PLAYER_TAG = savedProfile.tag;
+      const mmrKey = `vt_mmr_${PLAYER_NAME.toLowerCase()}_${PLAYER_TAG.toLowerCase()}`;
+      try { window._rawMmrData = JSON.parse(localStorage.getItem(mmrKey)); } catch(e) {}
       document.getElementById('player-name-input').value = savedProfile.name;
       document.getElementById('player-tag-input').value = savedProfile.tag;
       if (savedProfile.region) document.getElementById('region-select').value = savedProfile.region;
@@ -1642,6 +1680,12 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
   // Mode selector — auto-fetch on change
   document.getElementById('mode-select')?.addEventListener('change', () => { updateHeroName(); applyModeUI(); fetchAll(); });
+  // Act selector — dynamic local reprocess on change
+  document.getElementById('act-select')?.addEventListener('change', () => {
+    loadAllMatches().then(stored => {
+      processMatches(stored);
+    });
+  });
   // Init hero
   updateHeroName();
   applyModeUI();
@@ -1737,6 +1781,9 @@ async function fetchAll(){
     }
 
     if(isRanked && mmrData?.data){
+      window._rawMmrData = mmrData.data;
+      const mmrKey = `vt_mmr_${PLAYER_NAME.toLowerCase()}_${PLAYER_TAG.toLowerCase()}`;
+      try { localStorage.setItem(mmrKey, JSON.stringify(mmrData.data)); } catch(e) {}
       const d=mmrData.data;
       const rankName=(d.current?.tier?.name||'—');
       const rankImgUrl=getRankImgUrl(d.current?.tier?.name||'');
@@ -1829,10 +1876,28 @@ function findMe(match){
 
 let _lastAgentMap = {}, _lastMapData = {}, _lastAllMatches = [];
 function processMatches(matches){
+  const selectedAct = document.getElementById('act-select')?.value || 'v26a3';
+  let matchesToProcess = matches;
+  
+  if (selectedAct !== 'all') {
+    const actData = ACTS_TIMELINE[selectedAct];
+    if (actData) {
+      matchesToProcess = matches.filter(m => {
+        const gameStart = m.metadata?.game_start || m.metadata?.gameStart || null;
+        if (!gameStart) return false;
+        const ts = gameStart * 1000;
+        return ts >= actData.start && ts < actData.end;
+      });
+    }
+  }
+
+  // Update Rank card dynamically to show achieved rank for the selected Act
+  updateRankDisplayForAct(selectedAct);
+
   let tK=0,tD=0,tA=0,tS=0,tHS=0,tShots=0,wins=0,losses=0,counted=0;
   const agentMap={},mapData={},rrHistory=[],recentMatches=[];
 
-  matches.forEach(match=>{
+  matchesToProcess.forEach(match=>{
     const me=findMe(match);
     if(!me)return;
     counted++;
@@ -5795,6 +5860,49 @@ function renderTopWeapons(matches) {
 
   wrap.innerHTML = showcaseHtml;
 }
+
+function updateRankDisplayForAct(selectedAct) {
+  const d = window._rawMmrData;
+  if (!d) return;
+  
+  let rankName = '—';
+  let rankImgUrl = null;
+  let rr = 0;
+  
+  if (selectedAct === 'all' || selectedAct === 'v26a3') {
+    // Show current live rating
+    rankName = d.current?.tier?.name || '—';
+    rankImgUrl = getRankImgUrl(d.current?.tier?.name || '');
+    rr = d.current?.rr || 0;
+  } else {
+    // Show rating for the selected past Act
+    const apiSeason = SEASONS_MAP[selectedAct];
+    const seasonData = d.by_season?.[apiSeason];
+    if (seasonData && !seasonData.error) {
+      rankName = seasonData.final_rank_patched || '—';
+      rankImgUrl = getRankImgUrl(rankName);
+      rr = 0;
+    }
+  }
+  
+  const rankDisplayEl = document.getElementById('rank-display');
+  if (rankDisplayEl) rankDisplayEl.textContent = rankName.toUpperCase();
+  
+  const rankRrTxtEl = document.getElementById('rank-rr-txt');
+  if (rankRrTxtEl) {
+    rankRrTxtEl.textContent = (selectedAct === 'all' || selectedAct === 'v26a3')
+      ? `${rr} RR · Peak: ${d.peak?.tier?.name||'—'}`
+      : `Season Concluded`;
+  }
+    
+  const rankIconEl = document.getElementById('rank-icon');
+  if (rankIconEl) {
+    rankIconEl.innerHTML = rankImgUrl 
+      ? `<img src="${rankImgUrl}" style="width:64px;height:64px;object-fit:contain;" onerror="this.style.display='none'">`
+      : `<div style="width:64px;height:64px;background:var(--surface2);border-radius:8px;"></div>`;
+  }
+}
+
 /* ── CORE FEATURES LOGIC ── */
 
 // 1. Rank Prediction
