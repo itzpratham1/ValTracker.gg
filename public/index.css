@@ -2468,7 +2468,7 @@ body::before {
 .topbar-tab { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); padding: 6px 12px; border-radius: 4px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: var(--transition); }
 .topbar-tab.active { background: var(--surface); color: var(--accent); border: 1px solid var(--border); }
 
-.esports-subnav { display: flex; gap: 8px; padding: 12px 28px; background: rgba(10, 10, 12, 0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); overflow-x: auto; white-space: nowrap; scrollbar-width: none; position: sticky; top: 65px; z-index: 90; }
+.esports-subnav { display: flex; gap: 8px; padding: 12px 28px; background: rgba(10, 10, 12, 0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); overflow-x: auto; white-space: nowrap; scrollbar-width: none; position: sticky; top: 60px; z-index: 90; }
 .esports-pill { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); padding: 8px 16px; border-radius: 20px; background: var(--surface2); border: 1px solid transparent; cursor: pointer; transition: var(--transition); }
 .esports-pill:hover { color: var(--text); background: var(--surface3); }
 .esports-pill.active { background: rgba(232, 255, 71, 0.1); color: var(--accent); border-color: var(--accentborder); }
