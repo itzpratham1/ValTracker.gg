@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="referrer" content="no-referrer">
 <title>ValTracker.gg — Valorant Stats Tracker</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230d0d0f'/%3E%3Crect width='32' height='32' rx='7' fill='url(%23g)'/%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23e8ff47' stop-opacity='0.15'/%3E%3Cstop offset='1' stop-color='%230d0d0f' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ctext x='5' y='23' font-size='17' font-family='Arial Black,sans-serif' font-weight='900' fill='%23e8ff47'%3EVT%3C/text%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23030304'/%3E%3Cpolygon points='16,4 28,11 28,21 16,28 4,21 4,11' stroke='%23e8ff47' stroke-width='2' fill='none'/%3E%3Cpath d='M11,12 L16,20 L21,12' stroke='%23ff4655' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3Ccircle cx='16' cy='8' r='1.5' fill='%23ff4655'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
 <link rel="stylesheet" href="index.css?v=12.10">
@@ -24,7 +24,20 @@
     <div class="landing-corner br"></div>
   </div>
 
-  <div class="landing-logo">ValTracker<span style="color:var(--accent)">.gg</span></div>
+  <div class="landing-logo" style="display:flex; align-items:center; justify-content:center;">
+    <svg class="logo-icon" viewBox="0 0 32 32" style="width:36px; height:36px; display:inline-block; vertical-align:middle; fill:none; margin-right:12px;">
+      <defs>
+        <linearGradient id="logo-grad-lg" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#e8ff47" />
+          <stop offset="100%" stop-color="#ff4655" />
+        </linearGradient>
+      </defs>
+      <polygon points="16,2 30,10 30,22 16,30 2,22 2,10" stroke="url(#logo-grad-lg)" stroke-width="2.5" />
+      <path d="M10,12 L16,20 L22,12" stroke="#e8ff47" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+      <circle cx="16" cy="7" r="1.5" fill="#ff4655" />
+    </svg>
+    <span>ValTracker<span style="color:var(--accent)">.gg</span></span>
+  </div>
   <div class="landing-tagline">Valorant Performance Tracker</div>
 
   <div class="landing-columns-wrap">
@@ -135,7 +148,20 @@
 <!-- TOP BAR -->
 <div class="topbar">
   <div class="topbar-left">
-    <div class="logo" onclick="toggleMainView('tracker')" style="cursor:pointer">ValTracker<span style="color:var(--accent)">.gg</span></div>
+    <div class="logo" onclick="toggleMainView('tracker')" style="cursor:pointer; display:flex; align-items:center;">
+      <svg class="logo-icon" viewBox="0 0 32 32" style="width:20px; height:20px; display:inline-block; vertical-align:middle; fill:none; margin-right:6px; flex-shrink:0;">
+        <defs>
+          <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#e8ff47" />
+            <stop offset="100%" stop-color="#ff4655" />
+          </linearGradient>
+        </defs>
+        <polygon points="16,2 30,10 30,22 16,30 2,22 2,10" stroke="url(#logo-grad)" stroke-width="2.5" />
+        <path d="M10,12 L16,20 L22,12" stroke="#e8ff47" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+        <circle cx="16" cy="7" r="1.5" fill="#ff4655" />
+      </svg>
+      <span>ValTracker<span style="color:var(--accent)">.gg</span></span>
+    </div>
     
     <div class="topbar-tabs">
       <div class="topbar-tab active" id="tab-tracker" onclick="toggleMainView('tracker')">Tracker</div>
@@ -572,32 +598,7 @@
   </div> <!-- END PLAB WRAP -->
 </div> <!-- END MAIN GRID -->
 
-<!-- TRACKER VIEW FOOTER -->
-<div style="width: calc(100% - 56px); max-width: 1200px; margin: 40px auto 20px; border-top:1px solid rgba(255,255,255,0.05); padding-top:24px; display:flex; flex-direction:column; align-items:center; gap:12px; box-sizing:border-box;">
-  <!-- Riot Games Legal Disclaimer -->
-  <div style="font-family:'DM Mono',monospace; font-size:9px; color:var(--muted2); text-align:center; max-width:760px; line-height:1.6; text-transform:uppercase; letter-spacing:0.5px;">
-    VALTRACKER.GG IS NOT ENDORSED BY RIOT GAMES AND DOES NOT REFLECT THE VIEWS OR OPINIONS OF RIOT GAMES OR ANYONE OFFICIALLY INVOLVED IN PRODUCING OR MANAGING VALORANT. VALORANT AND RIOT GAMES ARE TRADEMARKS OR REGISTERED TRADEMARKS OF RIOT GAMES, INC. VALORANT © RIOT GAMES, INC.
-  </div>
-  
-  <!-- Developer socials -->
-  <div style="display:flex; align-items:center; justify-content:center; gap:16px; margin-top:8px;">
-    <span style="font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:800; color:var(--muted); letter-spacing:1px; text-transform:uppercase;">Developed by Pratham</span>
-    <div style="display:flex; align-items:center; gap:12px;">
-      <!-- GitHub -->
-      <a href="https://github.com/itzpratham1" target="_blank" title="GitHub" style="color:var(--muted); display:inline-block; transition:color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="display:block;">
-          <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.646.64.699 1.026 1.592 1.026 2.683 0 3.842-2.337 4.687-4.565 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.579.688.481C19.137 20.162 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
-        </svg>
-      </a>
-      <!-- Twitter/X -->
-      <a href="https://x.com/itzpratham01" target="_blank" title="Twitter / X" style="color:var(--muted); display:inline-block; transition:color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="display:block;">
-          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-        </svg>
-      </a>
-    </div>
-  </div>
-</div>
+
 </div> <!-- END TRACKER VIEW -->
 
 <!-- ESPORTS VIEW -->
@@ -1199,6 +1200,33 @@
         <div class="stat-modal-body" style="padding: 16px 0; max-height: 400px; overflow-y: auto;">
           <div id="dc-agent-list" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap:10px;"></div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GLOBAL FOOTER -->
+  <div id="global-footer" style="display: none; width: calc(100% - 56px); max-width: 1200px; margin: 40px auto 20px; border-top:1px solid rgba(255,255,255,0.05); padding-top:24px; flex-direction:column; align-items:center; gap:12px; box-sizing:border-box;">
+    <!-- Riot Games Legal Disclaimer -->
+    <div style="font-family:'DM Mono',monospace; font-size:9px; color:var(--muted2); text-align:center; max-width:760px; line-height:1.6; text-transform:uppercase; letter-spacing:0.5px;">
+      VALTRACKER.GG IS NOT ENDORSED BY RIOT GAMES AND DOES NOT REFLECT THE VIEWS OR OPINIONS OF RIOT GAMES OR ANYONE OFFICIALLY INVOLVED IN PRODUCING OR MANAGING VALORANT. VALORANT AND RIOT GAMES ARE TRADEMARKS OR REGISTERED TRADEMARKS OF RIOT GAMES, INC. VALORANT © RIOT GAMES, INC.
+    </div>
+    
+    <!-- Developer socials -->
+    <div style="display:flex; align-items:center; justify-content:center; gap:16px; margin-top:8px;">
+      <span style="font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:800; color:var(--muted); letter-spacing:1px; text-transform:uppercase;">Developed by Pratham</span>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <!-- GitHub -->
+        <a href="https://github.com/itzpratham1" target="_blank" title="GitHub" style="color:var(--muted); display:inline-block; transition:color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="display:block;">
+            <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.646.64.699 1.026 1.592 1.026 2.683 0 3.842-2.337 4.687-4.565 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.579.688.481C19.137 20.162 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+          </svg>
+        </a>
+        <!-- Twitter/X -->
+        <a href="https://x.com/itzpratham01" target="_blank" title="Twitter / X" style="color:var(--muted); display:inline-block; transition:color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="display:block;">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+        </a>
       </div>
     </div>
   </div>
@@ -5648,6 +5676,9 @@ function dismissLanding() {
   const tv = document.getElementById('tracker-view');
   if (tv) tv.style.display = 'block';
   
+  const gf = document.getElementById('global-footer');
+  if (gf) gf.style.display = 'flex';
+  
   // Hide search inputs and show premium player active pill
   toggleSearchMode(false);
   
@@ -6618,13 +6649,21 @@ function showSessionSummary() {
   const modal = document.getElementById('session-modal');
   const content = document.getElementById('session-content');
   
-  const matchesToUse = sessionMatches.length > 0 ? sessionMatches : _lastAllMatches.slice(0, 5);
-  
-  if (!matchesToUse || matchesToUse.length === 0) {
-    content.innerHTML = `<div style="text-align:center; color:var(--muted); padding:20px;">No matches found.</div>`;
+  if (!sessionMatches || sessionMatches.length === 0) {
+    content.innerHTML = `
+      <div style="text-align:center; padding:30px 16px; display:flex; flex-direction:column; align-items:center; gap:16px;">
+        <div style="font-size:42px; filter:drop-shadow(0 0 12px var(--accent));">🎮</div>
+        <div style="font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:22px; text-transform:uppercase; letter-spacing:1px; color:var(--text);">No session matches recorded</div>
+        <p style="font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); max-width:320px; line-height:1.6; margin:0;">
+          You haven't played any new matches since starting this session. Play a match, click "Fetch Stats" to load it, then view your summary!
+        </p>
+      </div>
+    `;
     modal.style.display = 'flex';
     return;
   }
+  
+  const matchesToUse = sessionMatches;
   
   let wins = 0, losses = 0;
   let totalKills = 0, totalDeaths = 0;
@@ -7538,6 +7577,9 @@ function toggleMainView(view) {
     landing.classList.add('hidden');
     landing.style.display = 'none';
   }
+  
+  const gf = document.getElementById('global-footer');
+  if (gf) gf.style.display = 'flex';
   
   // Hide all views first
   document.getElementById('tracker-view').style.display = 'none';
@@ -10796,6 +10838,14 @@ body::after {
     order: 1 !important;
     font-size: 18px !important;
     align-self: center !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+  }
+  .logo svg {
+    width: 18px !important;
+    height: 18px !important;
+    margin-right: 2px !important;
   }
   
   /* User profile active pill */
