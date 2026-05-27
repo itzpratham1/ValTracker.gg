@@ -3954,15 +3954,15 @@ async function exportStatsCard() {
 
   // Get active avatar
   const playerTopAgentIcon = getAgentIconUrl(topAgent);
-  const avatarHtml = playerTopAgentIcon ? `<img src="${playerTopAgentIcon}" style="width:100%; height:100%; object-fit:cover;">` : `<div style="font-size:24px; color:rgba(255,255,255,0.4)">👤</div>`;
+  const avatarHtml = playerTopAgentIcon ? `<img src="${playerTopAgentIcon}" crossorigin="anonymous" style="width:100%; height:100%; object-fit:cover;">` : `<div style="font-size:24px; color:rgba(255,255,255,0.4)">👤</div>`;
 
   // Get rank icon
   const rImg = getRankImgUrl(rank);
-  const rankImgHtml = rImg ? `<img src="${rImg}" style="width:32px; height:32px; object-fit:contain;">` : `<div style="font-size:16px; color:#ffd700;">🏆</div>`;
+  const rankImgHtml = rImg ? `<img src="${rImg}" crossorigin="anonymous" style="width:32px; height:32px; object-fit:contain;">` : `<div style="font-size:16px; color:#ffd700;">🏆</div>`;
 
   // Get top agent icon
   const taImg = getAgentIconUrl(topAgent);
-  const topAgentIconHtml = taImg ? `<img src="${taImg}" style="width:20px; height:20px; border-radius:50%; border:1px solid rgba(255, 70, 85, 0.4); display:block;">` : '';
+  const topAgentIconHtml = taImg ? `<img src="${taImg}" crossorigin="anonymous" style="width:20px; height:20px; border-radius:50%; border:1px solid rgba(255, 70, 85, 0.4); display:block;">` : '';
 
   // Get up to 10 most recent matches
   const formMatches = matches.slice(0, 10);
@@ -3976,107 +3976,121 @@ async function exportStatsCard() {
     return `
       <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; padding:8px 4px; background:${isWin ? 'rgba(62,207,142,0.06)' : 'rgba(255,87,87,0.05)'}; border:1px solid ${isWin ? 'rgba(62,207,142,0.25)' : 'rgba(255,87,87,0.18)'}; border-radius:10px; min-width:48px; box-sizing:border-box; transition:all 0.2s ease;">
         <span style="font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:900; color:${isWin ? '#3ecf8e' : '#ff5757'}; line-height:1;">${isWin ? 'W' : 'L'}</span>
-        ${aIcon ? `<img src="${aIcon}" style="width:22px; height:22px; border-radius:50%; border:1.5px solid rgba(255,255,255,0.08); box-shadow:0 2px 6px rgba(0,0,0,0.3);">` : `<div style="width:22px; height:22px; background:rgba(255,255,255,0.05); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; color:rgba(255,255,255,0.4)">👤</div>`}
+        ${aIcon ? `<img src="${aIcon}" crossorigin="anonymous" style="width:22px; height:22px; border-radius:50%; border:1.5px solid rgba(255,255,255,0.08); box-shadow:0 2px 6px rgba(0,0,0,0.3);">` : `<div style="width:22px; height:22px; background:rgba(255,255,255,0.05); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; color:rgba(255,255,255,0.4)">👤</div>`}
         <span style="font-family:'DM Mono',monospace; font-size:7px; color:rgba(255,255,255,0.4); text-transform:uppercase; overflow:hidden; text-overflow:ellipsis; max-width:100%; white-space:nowrap; text-align:center;">${(m.agentName || '').substring(0, 4)}</span>
         ${rrDisplay ? `<span style="font-family:'DM Mono',monospace; font-size:8px; font-weight:700; color:${rrColor}; line-height:1;">${rrDisplay}</span>` : `<span style="font-family:'DM Mono',monospace; font-size:8px; color:rgba(255,255,255,0.15); line-height:1;">--</span>`}
       </div>
     `;
   }).join('');
 
+  // Get active banner background if any
+  const bannerImgEl = document.getElementById('player-banner-img');
+  const cardUrl = (bannerImgEl && bannerImgEl.src && bannerImgEl.src !== window.location.href) ? bannerImgEl.src : '';
+
   const exportContainer = document.getElementById('stats-export-container');
   exportContainer.innerHTML = `
-    <div id="stats-capture-target" style="width: 720px; padding: 28px; background: linear-gradient(135deg, #0f0f12 0%, #060608 100%); border: 2px solid rgba(255, 70, 85, 0.45); border-radius: 20px; color: #fff; font-family:'Barlow Condensed', sans-serif; box-sizing:border-box; position:relative; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.6);">
+    <div id="stats-capture-target" style="width: 720px; padding: 28px; background: #060608; border: 2px solid rgba(255, 70, 85, 0.45); border-radius: 20px; color: #fff; font-family:'Barlow Condensed', sans-serif; box-sizing:border-box; position:relative; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.6);">
+      
+      <!-- Premium Player Card Background -->
+      ${cardUrl ? `<img src="${cardUrl}" crossorigin="anonymous" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.35; filter: blur(0.5px); pointer-events:none; z-index:0;">` : ''}
+      
+      <!-- Dark Glassmorphic Gradient Overlay -->
+      ${cardUrl ? `<div style="position:absolute; inset:0; background: linear-gradient(135deg, rgba(12, 12, 16, 0.84) 0%, rgba(6, 6, 8, 0.94) 100%); z-index:1; pointer-events:none;"></div>` : ''}
+      
       <!-- Accent top right design -->
-      <div style="position:absolute; top:-40px; right:-40px; width:120px; height:120px; background:rgba(255, 70, 85, 0.08); border-radius:50%; filter:blur(20px);"></div>
+      <div style="position:absolute; top:-40px; right:-40px; width:120px; height:120px; background:rgba(255, 70, 85, 0.08); border-radius:50%; filter:blur(20px); z-index:1;"></div>
       
       <!-- Outer glowing frame -->
-      <div style="position:absolute; inset:0; border:1px solid rgba(255,255,255,0.03); border-radius:18px; pointer-events:none;"></div>
+      <div style="position:absolute; inset:0; border:1px solid rgba(255,255,255,0.03); border-radius:18px; pointer-events:none; z-index:1;"></div>
       
       <!-- LEFT LOGO & BRAND STRIPE -->
-      <div style="position:absolute; left:0; top:0; bottom:0; width:6px; background:#ff4655; border-radius:20px 0 0 20px;"></div>
+      <div style="position:absolute; left:0; top:0; bottom:0; width:6px; background:#ff4655; border-radius:20px 0 0 20px; z-index:2;"></div>
       
-      <!-- HEADER ROW -->
-      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid rgba(255, 70, 85, 0.15); padding-bottom:14px; margin-bottom:20px;">
-        <div style="display:flex; align-items:center; gap:16px;">
-          <!-- Player Avatar -->
-          <div style="width:52px; height:52px; border-radius:50%; border:2px solid #ff4655; display:flex; align-items:center; justify-content:center; background:rgba(255, 70, 85, 0.05); overflow:hidden; flex-shrink:0;">
-            ${avatarHtml}
-          </div>
-          <div>
-            <div style="display:flex; align-items:baseline; gap:6px;">
-              <span style="font-size:26px; font-weight:900; letter-spacing:0.5px; text-transform:uppercase; color:#fff; line-height:1;">${playerName}</span>
-              <span style="font-family:'DM Mono',monospace; font-size:14px; color:#ff4655; font-weight:700;">#${playerTag}</span>
+      <!-- Content Container -->
+      <div style="position:relative; z-index:2;">
+        <!-- HEADER ROW -->
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid rgba(255, 70, 85, 0.15); padding-bottom:14px; margin-bottom:20px;">
+          <div style="display:flex; align-items:center; gap:16px;">
+            <!-- Player Avatar -->
+            <div style="width:52px; height:52px; border-radius:50%; border:2px solid #ff4655; display:flex; align-items:center; justify-content:center; background:rgba(255, 70, 85, 0.05); overflow:hidden; flex-shrink:0;">
+              ${avatarHtml}
             </div>
-            <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
-              <span style="font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.4); text-transform:uppercase; border:1px solid rgba(255,255,255,0.1); padding:1px 6px; border-radius:4px; line-height:1;">${region} Region</span>
-              <span style="font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.4); text-transform:uppercase; border:1px solid rgba(255,255,255,0.1); padding:1px 6px; border-radius:4px; line-height:1;">${modeName}</span>
+            <div>
+              <div style="display:flex; align-items:baseline; gap:6px;">
+                <span style="font-size:26px; font-weight:900; letter-spacing:0.5px; text-transform:uppercase; color:#fff; line-height:1;">${playerName}</span>
+                <span style="font-family:'DM Mono',monospace; font-size:14px; color:#ff4655; font-weight:700;">#${playerTag}</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
+                <span style="font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.4); text-transform:uppercase; border:1px solid rgba(255,255,255,0.1); padding:1px 6px; border-radius:4px; line-height:1;">${region} Region</span>
+                <span style="font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.4); text-transform:uppercase; border:1px solid rgba(255,255,255,0.1); padding:1px 6px; border-radius:4px; line-height:1;">${modeName}</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Rank Badge -->
+          <div style="display:flex; align-items:center; gap:10px; background:${cardUrl ? 'rgba(10, 10, 14, 0.65)' : 'rgba(255,255,255,0.02)'}; border:1px solid ${cardUrl ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255,255,255,0.05)'}; padding:6px 14px; border-radius:30px;">
+            ${rankImgHtml}
+            <div style="text-align:left;">
+              <div style="font-size:13px; font-weight:800; text-transform:uppercase; color:#fff; line-height:1.1;">${rank}</div>
+              ${rrTxt ? `<div style="font-family:'DM Mono',monospace; font-size:9px; color:#ffb01f; font-weight:bold; margin-top:2px; line-height:1;">${rrTxt}</div>` : ''}
             </div>
           </div>
         </div>
         
-        <!-- Rank Badge -->
-        <div style="display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); padding:6px 14px; border-radius:30px;">
-          ${rankImgHtml}
-          <div style="text-align:left;">
-            <div style="font-size:13px; font-weight:800; text-transform:uppercase; color:#fff; line-height:1.1;">${rank}</div>
-            ${rrTxt ? `<div style="font-family:'DM Mono',monospace; font-size:9px; color:#ffb01f; font-weight:bold; margin-top:2px; line-height:1;">${rrTxt}</div>` : ''}
+        <!-- STATS GRID -->
+        <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:12px; margin-bottom:24px;">
+          <!-- K/D -->
+          <div style="background:${cardUrl ? 'rgba(10, 10, 14, 0.65)' : 'rgba(255,255,255,0.015)'}; border:1px solid ${cardUrl ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255,255,255,0.04)'}; padding:12px 10px; border-radius:12px; text-align:center;">
+            <div style="font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.4); letter-spacing:1px; text-transform:uppercase; margin-bottom:4px;">K / D Ratio</div>
+            <div style="font-size:26px; font-weight:900; color:#ff4655; line-height:1;">${kd}</div>
+            <div style="font-family:'DM Mono',monospace; font-size:8px; color:rgba(255,255,255,0.2); margin-top:4px;">${totalK} K / ${totalD} D</div>
+          </div>
+          
+          <!-- Win Rate -->
+          <div style="background:${cardUrl ? 'rgba(10, 10, 14, 0.65)' : 'rgba(255,255,255,0.015)'}; border:1px solid ${cardUrl ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255,255,255,0.04)'}; padding:12px 10px; border-radius:12px; text-align:center;">
+            <div style="font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.4); letter-spacing:1px; text-transform:uppercase; margin-bottom:4px;">Win Rate</div>
+            <div style="font-size:26px; font-weight:900; color:${wr >= 50 ? '#3ecf8e' : '#ff5757'}; line-height:1;">${wr}%</div>
+            <div style="font-family:'DM Mono',monospace; font-size:8px; color:rgba(255,255,255,0.2); margin-top:4px;">${wins}W - ${losses}L</div>
+          </div>
+          
+          <!-- AVG ACS -->
+          <div style="background:${cardUrl ? 'rgba(10, 10, 14, 0.65)' : 'rgba(255,255,255,0.015)'}; border:1px solid ${cardUrl ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255,255,255,0.04)'}; padding:12px 10px; border-radius:12px; text-align:center;">
+            <div style="font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.4); letter-spacing:1px; text-transform:uppercase; margin-bottom:4px;">AVG ACS</div>
+            <div style="font-size:26px; font-weight:900; color:#fff; line-height:1;">${avgACS}</div>
+            <div style="font-family:'DM Mono',monospace; font-size:8px; color:rgba(255,255,255,0.2); margin-top:4px;">Per Match</div>
+          </div>
+          
+          <!-- HS% -->
+          <div style="background:${cardUrl ? 'rgba(10, 10, 14, 0.65)' : 'rgba(255,255,255,0.015)'}; border:1px solid ${cardUrl ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255,255,255,0.04)'}; padding:12px 10px; border-radius:12px; text-align:center;">
+            <div style="font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.4); letter-spacing:1px; text-transform:uppercase; margin-bottom:4px;">Headshot %</div>
+            <div style="font-size:26px; font-weight:900; color:${avgHS >= 25 ? '#3ecf8e' : avgHS >= 15 ? '#ffd700' : '#ff5757'}; line-height:1;">${avgHS}%</div>
+            <div style="font-family:'DM Mono',monospace; font-size:8px; color:rgba(255,255,255,0.2); margin-top:4px;">Hit Accuracy</div>
+          </div>
+          
+          <!-- Top Agent -->
+          <div style="background:${cardUrl ? 'rgba(10, 10, 14, 0.65)' : 'rgba(255,255,255,0.015)'}; border:1px solid ${cardUrl ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255,255,255,0.04)'}; padding:12px 10px; border-radius:12px; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:68px;">
+            <div style="font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.4); letter-spacing:1px; text-transform:uppercase; margin-bottom:4px;">Top Agent</div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              ${topAgentIconHtml}
+              <span style="font-size:16px; font-weight:900; color:#fff; text-transform:uppercase;">${topAgent}</span>
+            </div>
+            <div style="font-family:'DM Mono',monospace; font-size:8px; color:rgba(255,255,255,0.2); margin-top:2px;">${agentCount[topAgent] || 0} Matches</div>
           </div>
         </div>
-      </div>
-      
-      <!-- STATS GRID -->
-      <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:12px; margin-bottom:24px;">
-        <!-- K/D -->
-        <div style="background:rgba(255,255,255,0.015); border:1px solid rgba(255,255,255,0.04); padding:12px 10px; border-radius:12px; text-align:center;">
-          <div style="font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.4); letter-spacing:1px; text-transform:uppercase; margin-bottom:4px;">K / D Ratio</div>
-          <div style="font-size:26px; font-weight:900; color:#ff4655; line-height:1;">${kd}</div>
-          <div style="font-family:'DM Mono',monospace; font-size:8px; color:rgba(255,255,255,0.2); margin-top:4px;">${totalK} K / ${totalD} D</div>
-        </div>
         
-        <!-- Win Rate -->
-        <div style="background:rgba(255,255,255,0.015); border:1px solid rgba(255,255,255,0.04); padding:12px 10px; border-radius:12px; text-align:center;">
-          <div style="font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.4); letter-spacing:1px; text-transform:uppercase; margin-bottom:4px;">Win Rate</div>
-          <div style="font-size:26px; font-weight:900; color:${wr >= 50 ? '#3ecf8e' : '#ff5757'}; line-height:1;">${wr}%</div>
-          <div style="font-family:'DM Mono',monospace; font-size:8px; color:rgba(255,255,255,0.2); margin-top:4px;">${wins}W - ${losses}L</div>
-        </div>
-        
-        <!-- AVG ACS -->
-        <div style="background:rgba(255,255,255,0.015); border:1px solid rgba(255,255,255,0.04); padding:12px 10px; border-radius:12px; text-align:center;">
-          <div style="font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.4); letter-spacing:1px; text-transform:uppercase; margin-bottom:4px;">AVG ACS</div>
-          <div style="font-size:26px; font-weight:900; color:#fff; line-height:1;">${avgACS}</div>
-          <div style="font-family:'DM Mono',monospace; font-size:8px; color:rgba(255,255,255,0.2); margin-top:4px;">Per Match</div>
-        </div>
-        
-        <!-- HS% -->
-        <div style="background:rgba(255,255,255,0.015); border:1px solid rgba(255,255,255,0.04); padding:12px 10px; border-radius:12px; text-align:center;">
-          <div style="font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.4); letter-spacing:1px; text-transform:uppercase; margin-bottom:4px;">Headshot %</div>
-          <div style="font-size:26px; font-weight:900; color:${avgHS >= 25 ? '#3ecf8e' : avgHS >= 15 ? '#ffd700' : '#ff5757'}; line-height:1;">${avgHS}%</div>
-          <div style="font-family:'DM Mono',monospace; font-size:8px; color:rgba(255,255,255,0.2); margin-top:4px;">Hit Accuracy</div>
-        </div>
-        
-        <!-- Top Agent -->
-        <div style="background:rgba(255,255,255,0.015); border:1px solid rgba(255,255,255,0.04); padding:12px 10px; border-radius:12px; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:68px;">
-          <div style="font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.4); letter-spacing:1px; text-transform:uppercase; margin-bottom:4px;">Top Agent</div>
-          <div style="display:flex; align-items:center; gap:6px;">
-            ${topAgentIconHtml}
-            <span style="font-size:16px; font-weight:900; color:#fff; text-transform:uppercase;">${topAgent}</span>
+        <!-- RECENT FORM ROW -->
+        <div style="background:${cardUrl ? 'rgba(255, 70, 85, 0.05)' : 'rgba(255, 70, 85, 0.03)'}; border:1px solid ${cardUrl ? 'rgba(255, 70, 85, 0.18)' : 'rgba(255, 70, 85, 0.1)'}; padding:16px; border-radius:14px; box-sizing:border-box;">
+          <div style="font-family:'DM Mono',monospace; font-size:9px; color:rgba(255, 70, 85, 0.7); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:12px; font-weight:700;">RECENT PERFORMANCE (LAST ${formMatches.length} MATCHES)</div>
+          <div style="display:flex; gap:6px; justify-content:space-between;">
+            ${recentFormHtml}
           </div>
-          <div style="font-family:'DM Mono',monospace; font-size:8px; color:rgba(255,255,255,0.2); margin-top:2px;">${agentCount[topAgent] || 0} Matches</div>
         </div>
-      </div>
-      
-      <!-- RECENT FORM ROW -->
-      <div style="background:rgba(255, 70, 85, 0.03); border:1px solid rgba(255, 70, 85, 0.1); padding:16px; border-radius:14px; box-sizing:border-box;">
-        <div style="font-family:'DM Mono',monospace; font-size:9px; color:rgba(255, 70, 85, 0.7); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:12px; font-weight:700;">RECENT PERFORMANCE (LAST ${formMatches.length} MATCHES)</div>
-        <div style="display:flex; gap:6px; justify-content:space-between;">
-          ${recentFormHtml}
+        
+        <!-- FOOTER -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.30);">
+          <div>Generated by VALTRACKER.GG · ${now}</div>
+          <div style="color:rgba(255, 70, 85, 0.45); font-weight:bold; letter-spacing:0.5px;">TRACK. ANALYZE. CONQUER.</div>
         </div>
-      </div>
-      
-      <!-- FOOTER -->
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.18);">
-        <div>Generated by VALTRACKER.GG · ${now}</div>
-        <div style="color:rgba(255, 70, 85, 0.35); font-weight:bold; letter-spacing:0.5px;">TRACK. ANALYZE. CONQUER.</div>
       </div>
     </div>
   `;
