@@ -190,35 +190,38 @@
   </div>
 
     
-    <!-- Session Actions -->
-    <div class="session-group">
-      <button class="nav-btn action" id="session-btn" onclick="toggleSession()">▶ Start Session</button>
-      <button class="nav-btn success" id="session-summary-btn" onclick="showSessionSummary()" style="display: none;">📊 Summary</button>
-    </div>
-    
-    <!-- Tools Dropdown -->
-    <div class="nav-dropdown" id="nav-tools-dropdown">
-      <button class="nav-btn dropdown-trigger" onclick="toggleToolsDropdown(event)" title="More Tools">
-        <span>⚡ Utilities</span>
-        <span class="dropdown-arrow">▼</span>
-      </button>
-      <div class="dropdown-menu" id="tools-dropdown-menu">
-        <button class="dropdown-item" id="share-profile-btn" onclick="shareProfile()">
-          <span class="dropdown-item-icon">🔗</span> Share Profile
+    <!-- Session Actions & Utilities Grouped on Right -->
+    <div class="tracker-nav-right">
+      <!-- Session Actions -->
+      <div class="session-group">
+        <button class="nav-btn action" id="session-btn" onclick="toggleSession()">▶ Start Session</button>
+        <button class="nav-btn success" id="session-summary-btn" onclick="showSessionSummary()" style="display: none;">📊 Summary</button>
+      </div>
+      
+      <!-- Tools Dropdown -->
+      <div class="nav-dropdown" id="nav-tools-dropdown">
+        <button class="nav-btn dropdown-trigger" onclick="toggleToolsDropdown(event)" title="More Tools">
+          <span>⚡ Utilities</span>
+          <span class="dropdown-arrow">▼</span>
         </button>
-        <button class="dropdown-item" onclick="fetchLeaderboard()">
-          <span class="dropdown-item-icon">🏆</span> Top 500
-        </button>
-        <button class="dropdown-item" onclick="toggleHeadToHead()">
-          <span class="dropdown-item-icon">⚔️</span> Compare (Vs)
-        </button>
-        <button class="dropdown-item" id="export-btn" onclick="exportStatsCard()">
-          <span class="dropdown-item-icon">📤</span> Export Stats Card
-        </button>
-        <div class="dropdown-divider"></div>
-        <button class="dropdown-item danger" id="clear-btn" onclick="handleClear()" title="Clear all stored matches">
-          <span class="dropdown-item-icon">🗑️</span> Clear Stored Matches
-        </button>
+        <div class="dropdown-menu" id="tools-dropdown-menu">
+          <button class="dropdown-item" id="share-profile-btn" onclick="shareProfile()">
+            <span class="dropdown-item-icon">🔗</span> Share Profile
+          </button>
+          <button class="dropdown-item" onclick="fetchLeaderboard()">
+            <span class="dropdown-item-icon">🏆</span> Top 500
+          </button>
+          <button class="dropdown-item" onclick="toggleHeadToHead()">
+            <span class="dropdown-item-icon">⚔️</span> Compare (Vs)
+          </button>
+          <button class="dropdown-item" id="export-btn" onclick="exportStatsCard()">
+            <span class="dropdown-item-icon">📤</span> Export Stats Card
+          </button>
+          <div class="dropdown-divider"></div>
+          <button class="dropdown-item danger" id="clear-btn" onclick="handleClear()" title="Clear all stored matches">
+            <span class="dropdown-item-icon">🗑️</span> Clear Stored Matches
+          </button>
+        </div>
       </div>
     </div>
   </div>
