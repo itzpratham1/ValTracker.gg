@@ -5,6 +5,8 @@ import base64
 import urllib3
 import urllib.parse
 import concurrent.futures
+import gzip
+import io
 from datetime import datetime
 from functools import wraps
 from flask import Flask, request, jsonify, send_from_directory, make_response, send_file
@@ -251,14 +253,61 @@ if not allowed_origins:
     ]
 CORS(app, origins=allowed_origins)
 
-# Enable high-performance HTTP Cache-Control header injection for fast subsequent loading
+# Enable high-performance HTTP Cache-Control header injection & on-the-fly Gzip compression
 @app.after_request
-def add_caching_headers(response):
+def optimize_response(response):
     path = request.path.lower()
+    
+    # 1. Apply premium Caching Headers
     if path.startswith('/api/v3/meta-comps') or path.startswith('/api/v2/') or path.endswith('.json'):
         response.headers['Cache-Control'] = 'public, max-age=600' # 10 minutes
-    elif path.endswith('.css') or path.endswith('.js') or path.endswith('.html') or path.endswith('.svg') or path.endswith('.png') or path.endswith('.jpg'):
-        response.headers['Cache-Control'] = 'public, max-age=7200' # 2 hours
+    elif path.endswith('.css') or path.endswith('.js'):
+        # Client-side static assets are immutable and cache-busted, cache for 1 year
+        response.headers['Cache-Control'] = 'public, max-age=31536000, immutable'
+    elif path.endswith('.html') or path.endswith('.svg') or path.endswith('.png') or path.endswith('.jpg'):
+        response.headers['Cache-Control'] = 'public, max-age=86400' # 24 hours
+        
+    # 2. Apply on-the-fly Gzip compression to compressible text resources
+    if response.status_code < 200 or response.status_code >= 300:
+        return response
+        
+    accept_encoding = request.headers.get("Accept-Encoding", "")
+    if "gzip" not in accept_encoding.lower():
+        return response
+        
+    content_type = response.headers.get("Content-Type", "")
+    compressible = [
+        "text/html",
+        "text/css",
+        "application/javascript",
+        "application/json",
+        "text/javascript"
+    ]
+    is_compressible = False
+    for mime in compressible:
+        if mime in content_type:
+            is_compressible = True
+            break
+            
+    if not is_compressible:
+        return response
+        
+    response.direct_passthrough = False
+    data = response.get_data()
+    
+    # Don't compress very small responses
+    if len(data) < 500:
+        return response
+        
+    gzip_buffer = io.BytesIO()
+    with gzip.GzipFile(mode="wb", fileobj=gzip_buffer) as gzip_file:
+        gzip_file.write(data)
+        
+    response.set_data(gzip_buffer.getvalue())
+    response.headers["Content-Encoding"] = "gzip"
+    response.headers["Content-Length"] = len(response.get_data())
+    response.headers["Vary"] = "Accept-Encoding"
+    
     return response
 
 # Simple custom zero-dependency in-memory rate limiter
