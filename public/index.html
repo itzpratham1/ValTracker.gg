@@ -1907,7 +1907,7 @@ async function fetchAll(){
     const _nc = Date.now();
     const[mmrRes,matchRes,accountRes,mmrHistRes]=await Promise.all([
       isRanked ? fetch(`/api/v3/mmr/${region}/pc/${enc}/${PLAYER_TAG}?_nocache=${_nc}`) : Promise.resolve(null),
-      fetch(`/api/v3/matches/${region}/${enc}/${PLAYER_TAG}?mode=${mode}&size=25&_nocache=${_nc}`),
+      fetch(`/api/v3/matches/${region}/${enc}/${PLAYER_TAG}?mode=${mode}&size=100&_nocache=${_nc}`),
       fetch(`/api/v1/account/${enc}/${PLAYER_TAG}?_nocache=${_nc}`),
       fetch(`/api/v1/stored-mmr-history/${region}/${enc}/${PLAYER_TAG}?_nocache=${_nc}`),
     ]);
@@ -2012,8 +2012,8 @@ async function prefetchMatchDetails(matchesToFetch) {
   }
 
   let updatedAny = false;
-  // Process in chunks of 4 parallel requests to prevent server or browser rate limits
-  const chunkSize = 4;
+  // Process in chunks of 8 parallel requests to prevent server or browser rate limits
+  const chunkSize = 8;
   for (let i = 0; i < queue.length; i += chunkSize) {
     const chunk = queue.slice(i, i + chunkSize);
     const promises = chunk.map(async (matchId) => {
