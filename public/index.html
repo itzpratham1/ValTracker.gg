@@ -161,17 +161,37 @@
   <div class="topbar-right" id="topbar-filters-group">
     <div class="topbar-filter-capsule">
       <div class="filter-item">
-        <span class="filter-icon">🌐</span>
+        <span class="filter-icon">
+          <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="filter-icon-svg">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          </svg>
+        </span>
         <select class="region-select" id="region-select">
           <option value="ap">AP</option>
           <option value="na">NA</option>
           <option value="eu">EU</option>
           <option value="kr">KR</option>
         </select>
+        <span class="chevron-icon">
+          <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </span>
       </div>
       <div class="filter-divider"></div>
       <div class="filter-item">
-        <span class="filter-icon">🎮</span>
+        <span class="filter-icon">
+          <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="filter-icon-svg">
+            <rect x="2" y="6" width="20" height="12" rx="3"></rect>
+            <line x1="6" y1="12" x2="10" y2="12"></line>
+            <line x1="8" y1="10" x2="8" y2="14"></line>
+            <circle cx="15.5" cy="10.5" r="1" fill="currentColor"></circle>
+            <circle cx="15.5" cy="13.5" r="1" fill="currentColor"></circle>
+            <circle cx="18.5" cy="12" r="1" fill="currentColor"></circle>
+          </svg>
+        </span>
         <select class="region-select" id="mode-select">
           <option value="competitive">Competitive</option>
           <option value="unrated">Unrated</option>
@@ -180,10 +200,22 @@
           <option value="swiftplay">Swiftplay</option>
           <option value="spikerush">Spike Rush</option>
         </select>
+        <span class="chevron-icon">
+          <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </span>
       </div>
       <div class="filter-divider"></div>
       <div class="filter-item">
-        <span class="filter-icon">📅</span>
+        <span class="filter-icon">
+          <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="filter-icon-svg">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+        </span>
         <select class="region-select" id="act-select">
           <option value="v26a3">V26 Act 3</option>
           <option value="v26a2">V26 Act 2</option>
@@ -196,6 +228,11 @@
           <option value="v25a1">V25 Act 1</option>
           <option value="all">Lifetime</option>
         </select>
+        <span class="chevron-icon">
+          <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </span>
       </div>
     </div>
     <button class="fetch-btn" id="fetch-btn" onclick="fetchAll()">↻ Fetch Stats</button>
@@ -1705,28 +1742,43 @@ window.addEventListener('DOMContentLoaded', async () => {
   try {
     const count = await getMatchCount();
     const savedProfile = loadMyProfile();
-    if (count > 0 && savedProfile) {
+    
+    // Always render landing stats history and personal profile card
+    renderLandingHistory();
+    renderLandingProfile();
+    
+    if (savedProfile) {
+      // Prefill landing lookup input fields
+      if (document.getElementById('l-name')) document.getElementById('l-name').value = savedProfile.name;
+      if (document.getElementById('l-tag')) document.getElementById('l-tag').value = savedProfile.tag;
+      if (document.getElementById('l-region') && savedProfile.region) document.getElementById('l-region').value = savedProfile.region;
+      if (document.getElementById('l-mode') && savedProfile.mode) document.getElementById('l-mode').value = savedProfile.mode;
+      
+      // Prefill topbar header input fields
+      if (document.getElementById('player-name-input')) document.getElementById('player-name-input').value = savedProfile.name;
+      if (document.getElementById('player-tag-input')) document.getElementById('player-tag-input').value = savedProfile.tag;
+      if (document.getElementById('region-select') && savedProfile.region) document.getElementById('region-select').value = savedProfile.region;
+      if (document.getElementById('mode-select') && savedProfile.mode) document.getElementById('mode-select').value = savedProfile.mode;
+      
       PLAYER_NAME = savedProfile.name;
       PLAYER_TAG = savedProfile.tag;
+      window._currentMode = savedProfile.mode || 'competitive';
+      
       const mmrKey = `vt_mmr_${PLAYER_NAME.toLowerCase()}_${PLAYER_TAG.toLowerCase()}`;
       try { window._rawMmrData = JSON.parse(localStorage.getItem(mmrKey)); } catch(e) {}
-      document.getElementById('player-name-input').value = savedProfile.name;
-      document.getElementById('player-tag-input').value = savedProfile.tag;
-      if (savedProfile.region) document.getElementById('region-select').value = savedProfile.region;
-      if (savedProfile.mode) {
-        document.getElementById('mode-select').value = savedProfile.mode;
-        window._currentMode = savedProfile.mode;
-      } else {
-        window._currentMode = 'competitive';
+      
+      if (count > 0) {
+        setStatus(`${count} matches stored — hit Fetch to update`, 'ok');
+        const stored = await loadAllMatches();
+        processMatches(stored);
+        // Asynchronously prefetch match details in background on startup to populate weapons and rounds automatically
+        setTimeout(() => {
+          prefetchMatchDetails(stored.slice(0, 3));
+        }, 500);
       }
-      setStatus(`${count} matches stored — hit Fetch to update`, 'ok');
-      const stored = await loadAllMatches();
-      processMatches(stored);
-      // Asynchronously prefetch match details in background on startup to populate weapons and rounds automatically
-      setTimeout(() => {
-        prefetchMatchDetails(stored.slice(0, 3));
-      }, 500);
-      dismissLanding();
+      // Note: We deliberately do NOT call dismissLanding() here anymore! 
+      // The user now lands on the Login page with their last profile Riot ID elegantly prefilled,
+      // letting them explicitly click "Fetch Stats" or look up other players easily.
     } else if (count > 0) {
       setStatus(`${count} matches cached — fetch to view`, 'ok');
     }
@@ -6782,14 +6834,6 @@ function checkUrlParams() {
   let pRegion = params.get('region');
   let pMode = params.get('mode');
   
-  // Default to ItzPrathamエース#GEWin to automatically fetch stats on first load!
-  if (!pName || !pTag) {
-    pName = "ItzPrathamエース";
-    pTag = "GEWin";
-    pRegion = "ap";
-    pMode = "competitive";
-  }
-  
   if (pName && pTag) {
     if(document.getElementById('player-name-input')) document.getElementById('player-name-input').value = pName;
     if(document.getElementById('player-tag-input')) document.getElementById('player-tag-input').value = pTag;
@@ -10294,7 +10338,23 @@ body::after {
 }
 
 .topbar-tab {
+  font-family: 'Barlow Condensed', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.8px !important;
+  text-transform: uppercase !important;
   white-space: nowrap !important;
+  transition: all 0.25s ease !important;
+}
+.topbar-tab.active {
+  background: rgba(250, 68, 84, 0.1) !important;
+  color: var(--accent) !important;
+  border: 1px solid rgba(250, 68, 84, 0.3) !important;
+  box-shadow: 0 0 10px rgba(250, 68, 84, 0.15) !important;
+}
+.topbar-tab:hover:not(.active) {
+  color: var(--text) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
 }
 
 @media (min-width: 801px) {
@@ -10317,10 +10377,10 @@ body::after {
 .topbar-filter-capsule {
   display: flex;
   align-items: center;
-  background: rgba(26, 26, 29, 0.6);
+  background: linear-gradient(135deg, rgba(20, 20, 25, 0.65) 0%, rgba(10, 10, 12, 0.85) 100%) !important;
   border: 1px solid var(--border);
   border-radius: 30px;
-  padding: 2px 12px;
+  padding: 2px 14px;
   gap: 0;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.03), 0 4px 15px rgba(0,0,0,0.25);
@@ -10338,15 +10398,35 @@ body::after {
   align-items: center;
   gap: 6px;
   padding: 4px 8px;
+  cursor: pointer;
 }
 .filter-icon {
-  font-size: 11px;
-  opacity: 0.65;
-  transition: opacity 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
-.filter-item:focus-within .filter-icon,
+.filter-icon-svg {
+  color: var(--accent);
+  filter: drop-shadow(0 0 4px rgba(250, 68, 84, 0.25));
+}
 .filter-item:hover .filter-icon {
   opacity: 1;
+  transform: scale(1.05);
+}
+.chevron-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.4;
+  color: var(--muted);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.filter-item:hover .chevron-icon {
+  opacity: 0.8;
+  color: var(--accent);
+  transform: translateY(0.5px);
 }
 .filter-divider {
   width: 1px;
@@ -10355,15 +10435,17 @@ body::after {
   margin: 0 4px;
 }
 .topbar-filter-capsule select {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  font-weight: 500;
+  font-family: 'Barlow Condensed', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
   color: var(--text);
   background: transparent;
   border: none;
   outline: none;
   cursor: pointer;
-  padding: 6px 4px;
+  padding: 6px 2px;
   appearance: none;
   -webkit-appearance: none;
   transition: color 0.2s ease;
@@ -10375,6 +10457,19 @@ body::after {
 #region-select { min-width: 42px !important; }
 #mode-select { min-width: 82px !important; }
 #act-select { min-width: 82px !important; }
+
+.player-active-pill {
+  font-family: 'Barlow Condensed', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
+}
+.active-pill-name {
+  font-family: 'Barlow Condensed', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
+}
 
 @media (min-width: 801px) {
   .mobile-filter-toggle {

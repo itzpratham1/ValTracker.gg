@@ -83,7 +83,7 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 24px;
+  padding: 10px 20px;
   border-bottom: 1px solid var(--border);
   position: sticky; top: 0; z-index: 100;
   background: rgba(3, 3, 4, 0.85);
@@ -91,7 +91,7 @@ body::before {
   -webkit-backdrop-filter: blur(20px);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
 }
-.topbar-left { display: flex; align-items: center; gap: 20px; }
+.topbar-left { display: flex; align-items: center; gap: 12px; }
 .logo {
   font-family: 'Rajdhani', sans-serif;
   font-weight: 700;
@@ -111,7 +111,7 @@ body::before {
   letter-spacing: 0.5px;
 }
 
-.topbar-right { display: flex; align-items: center; gap: 10px; }
+.topbar-right { display: flex; align-items: center; gap: 8px; }
 .region-select {
   font-family: 'DM Mono', monospace;
   font-size: 11px;
