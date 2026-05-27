@@ -3854,6 +3854,16 @@ function addRRAnnotations(chart, rankLabels) {
   return annotations;
 }
 
+// ── SKELETON SHOW/HIDE ──
+function showSkeletons() {
+  const sk = document.getElementById('v-kd-sk');
+  if (sk) sk.style.display = 'block';
+}
+function hideSkeletons() {
+  document.querySelectorAll('.skeleton-val').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.card .card-val').forEach(el => el.style.opacity = '1');
+}
+
 // ── EXPORT STATS CARD ──
 async function exportStatsCard() {
   const matches = window._allRenderedMatches || [];
