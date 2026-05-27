@@ -399,6 +399,50 @@ def index():
     resp.headers["Expires"] = "0"
     return resp
 
+@app.errorhandler(404)
+def page_not_found(e):
+    resp = make_response(send_from_directory(app.static_folder, "404.html"))
+    resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    return resp, 404
+
+@app.route("/api/feedback", methods=["POST"])
+@rate_limit(requests_per_minute=20)
+def submit_feedback():
+    try:
+        data = request.get_json() or {}
+        feedback_text = data.get("feedback", "").strip()
+        contact = data.get("contact", "").strip()
+        
+        if not feedback_text:
+            return jsonify({"status": "error", "message": "Feedback content is empty"}), 400
+            
+        import json
+        feedback_record = {
+            "timestamp": datetime.now().isoformat(),
+            "feedback": feedback_text,
+            "contact": contact,
+            "ip": request.headers.get("X-Forwarded-For", request.remote_addr or "127.0.0.1").split(",")[0].strip()
+        }
+        
+        filepath = os.path.join(os.path.dirname(__file__), "feedback.json")
+        records = []
+        if os.path.exists(filepath):
+            try:
+                with open(filepath, "r", encoding="utf-8") as f:
+                    records = json.load(f)
+            except:
+                records = []
+                
+        records.append(feedback_record)
+        with open(filepath, "w", encoding="utf-8") as f:
+            json.dump(records, f, indent=2, ensure_ascii=False)
+            
+        print(f"[FEEDBACK SUBMITTED] Successfully stored feedback from contact: {contact}")
+        return jsonify({"status": "ok", "message": "Feedback submitted successfully! Thank you agent."})
+    except Exception as e:
+        print(f"[FEEDBACK ERROR] Failed to save feedback: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+
 @app.route("/api/clear-cache", methods=["POST"])
 def clear_server_cache():
     cache.clear()

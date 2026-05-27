@@ -10354,6 +10354,45 @@ function injectProRecommendations(data) {
 }
 
 
+// ── FEEDBACK SYSTEM ──
+function openFeedbackModal() {
+  document.getElementById('feedback-modal').style.display = 'flex';
+  document.getElementById('feedback-text').focus();
+}
+function closeFeedbackModal() {
+  document.getElementById('feedback-modal').style.display = 'none';
+  document.getElementById('feedback-text').value = '';
+  document.getElementById('feedback-contact').value = '';
+}
+async function submitFeedbackForm() {
+  const fbText = document.getElementById('feedback-text').value.trim();
+  const fbContact = document.getElementById('feedback-contact').value.trim();
+  if (!fbText) {
+    showToast('Feedback message cannot be empty');
+    return;
+  }
+  
+  showToast('Transmitting feedback...');
+  try {
+    const res = await fetch('/api/feedback', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ feedback: fbText, contact: fbContact })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showToast('Transmission complete! Thank you, agent.');
+      closeFeedbackModal();
+    } else {
+      showToast(data.message || 'Transmission failed.');
+    }
+  } catch (e) {
+    showToast('Network error — please check connection');
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => { 
   setTimeout(checkUrlParams, 200); 
   setTimeout(initScrollSpy, 500);
@@ -11304,5 +11343,37 @@ input:checked + .slider:before { transform:translateX(14px); background-color:#f
 </div>
 
 <button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
+
+<!-- GLOBAL FEEDBACK SYSTEM -->
+<button id="feedback-trigger-btn" onclick="openFeedbackModal()" style="position:fixed; bottom:20px; left:20px; background:rgba(18,20,26,0.85); border:1px solid rgba(255, 70, 85, 0.4); border-radius:30px; color:#fff; font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:900; letter-spacing:1px; text-transform:uppercase; padding:10px 18px; cursor:pointer; z-index:9998; box-shadow:0 6px 15px rgba(0,0,0,0.4); display:flex; align-items:center; gap:8px; backdrop-filter:blur(8px); transition:all 0.3s ease;" onmouseover="this.style.background='var(--accent)'; this.style.color='#0d0d0f'; this.style.borderColor='var(--accent)'; this.style.boxShadow='0 0 15px var(--accent)'" onmouseout="this.style.background='rgba(18,20,26,0.85)'; this.style.color='#fff'; this.style.borderColor='rgba(255, 70, 85, 0.4)'; this.style.boxShadow='0 6px 15px rgba(0,0,0,0.4)'">
+  <span>⚡</span> FEEDBACK
+</button>
+
+<div id="feedback-modal" style="display:none; position:fixed; inset:0; background:rgba(10,10,12,0.85); backdrop-filter:blur(15px); -webkit-backdrop-filter:blur(15px); z-index:9999; align-items:center; justify-content:center;" onclick="if(event.target===this)closeFeedbackModal()">
+  <div class="card" style="width:400px; max-width:95vw; border:1px solid rgba(255,70,85,0.3); background:linear-gradient(135deg, #121216 0%, #08080a 100%); border-radius:16px; padding:24px; box-sizing:border-box; box-shadow:0 8px 32px rgba(0,0,0,0.5); position:relative;">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,70,85,0.15); padding-bottom:14px; margin-bottom:16px;">
+      <div style="font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:24px; color:var(--accent); text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; gap:8px;">
+        <span>⚡</span> Feedback Transmission
+      </div>
+      <button onclick="closeFeedbackModal()" style="background:none; border:none; color:var(--muted); font-size:24px; cursor:pointer; transition:color 0.2s;" onmouseover="this.style.color='#ff4655'" onmouseout="this.style.color='var(--muted)'">×</button>
+    </div>
+    
+    <div style="display:flex; flex-direction:column; gap:14px;">
+      <div style="text-align:left;">
+        <label style="font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:11px; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; display:block; margin-bottom:6px;">MESSAGE // REPORT CONTENT</label>
+        <textarea id="feedback-text" placeholder="Found a bug? Have an idea? Tell us here..." style="width:100%; height:120px; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:10px; font-family:sans-serif; font-size:13px; color:#fff; resize:none; box-sizing:border-box; outline:none; transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--accent)'"></textarea>
+      </div>
+      
+      <div style="text-align:left;">
+        <label style="font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:11px; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; display:block; margin-bottom:6px;">CONTACT INFO // DISCORD OR EMAIL (OPTIONAL)</label>
+        <input id="feedback-contact" type="text" placeholder="RiotID#TAG, Discord tag, or email" style="width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:10px; font-family:sans-serif; font-size:13px; color:#fff; box-sizing:border-box; outline:none; transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--accent)'">
+      </div>
+      
+      <button class="fetch-btn" onclick="submitFeedbackForm()" style="width:100%; background:var(--accent); color:#0d0d0f; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:15px; letter-spacing:1px; border:none; padding:12px 0; border-radius:8px; cursor:pointer; box-shadow:0 4px 15px rgba(255,70,85,0.2); transition:all 0.2s ease;">
+        TRANSMIT REPORT
+      </button>
+    </div>
+  </div>
+</div>
 </body>
 </html>

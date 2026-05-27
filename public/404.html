@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 // AGENT DE-SYNCHRONIZED</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0e12;
+    --accent: #ff4655;
+    --text: #ffffff;
+    --muted: rgba(255, 255, 255, 0.4);
+    --border: rgba(255, 70, 85, 0.25);
+    --glow: rgba(255, 70, 85, 0.5);
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow Condensed', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Cyber Grid Background */
+  .grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    background-position: center;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Scanline Overlay */
+  .scanlines {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+    background-size: 100% 4px;
+    z-index: 10;
+    pointer-events: none;
+    opacity: 0.3;
+  }
+
+  /* Neon Ambient Glare */
+  .glare {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(255, 70, 85, 0.08) 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 1;
+    filter: blur(50px);
+  }
+
+  /* Error Container */
+  .error-container {
+    text-align: center;
+    z-index: 2;
+    padding: 40px;
+    max-width: 640px;
+    width: 90%;
+    background: rgba(18, 20, 26, 0.7);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(255, 70, 85, 0.05);
+    backdrop-filter: blur(12px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Glowing corners in Valorant style */
+  .corner {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-color: var(--accent);
+    border-style: solid;
+    opacity: 0.8;
+  }
+  .top-left { top: 12px; left: 12px; border-width: 2px 0 0 2px; }
+  .top-right { top: 12px; right: 12px; border-width: 2px 2px 0 0; }
+  .bottom-left { bottom: 12px; left: 12px; border-width: 0 0 2px 2px; }
+  .bottom-right { bottom: 12px; right: 12px; border-width: 0 2px 2px 0; }
+
+  /* Glitch Text Effect */
+  .error-code {
+    font-size: 110px;
+    font-weight: 900;
+    color: var(--accent);
+    line-height: 0.9;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    position: relative;
+    display: inline-block;
+    text-shadow: 0 0 20px var(--glow);
+    animation: pulse 2s infinite alternate;
+  }
+
+  .error-code::after {
+    content: '404';
+    position: absolute;
+    left: 2px;
+    text-shadow: -1px 0 #00ffff;
+    top: 0;
+    color: var(--text);
+    background: transparent;
+    overflow: hidden;
+    clip: rect(0, 900px, 0, 0);
+    animation: noise-anim 2s infinite linear alternate-reverse;
+  }
+
+  .error-code::before {
+    content: '404';
+    position: absolute;
+    left: -2px;
+    text-shadow: -1px 0 #ffff00;
+    top: 0;
+    color: var(--accent);
+    background: transparent;
+    overflow: hidden;
+    clip: rect(0, 900px, 0, 0);
+    animation: noise-anim-2 3s infinite linear alternate-reverse;
+  }
+
+  .error-title {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #fff;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 12px;
+  }
+
+  .error-msg {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 35px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .error-msg strong {
+    color: var(--accent);
+  }
+
+  /* Respawn Button */
+  .btn-respawn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 14px 32px;
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 6px 20px rgba(255, 70, 85, 0.35);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-respawn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: all 0.5s ease;
+  }
+
+  .btn-respawn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(255, 70, 85, 0.5), 0 0 15px var(--accent);
+  }
+
+  .btn-respawn:hover::before {
+    left: 100%;
+  }
+
+  .btn-respawn:active {
+    transform: translateY(1px);
+    box-shadow: 0 4px 15px rgba(255, 70, 85, 0.3);
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); text-shadow: 0 0 15px var(--glow); }
+    100% { transform: scale(1.03); text-shadow: 0 0 25px var(--accent); }
+  }
+
+  @keyframes noise-anim {
+    0% { clip: rect(10px, 9999px, 20px, 0); }
+    10% { clip: rect(30px, 9999px, 80px, 0); }
+    20% { clip: rect(50px, 9999px, 12px, 0); }
+    30% { clip: rect(5px, 9999px, 45px, 0); }
+    40% { clip: rect(85px, 9999px, 92px, 0); }
+    50% { clip: rect(60px, 9999px, 5px, 0); }
+    60% { clip: rect(20px, 9999px, 75px, 0); }
+    70% { clip: rect(95px, 9999px, 30px, 0); }
+    80% { clip: rect(15px, 9999px, 55px, 0); }
+    90% { clip: rect(40px, 9999px, 18px, 0); }
+    100% { clip: rect(70px, 9999px, 85px, 0); }
+  }
+
+  @keyframes noise-anim-2 {
+    0% { clip: rect(5px, 9999px, 35px, 0); }
+    15% { clip: rect(65px, 9999px, 10px, 0); }
+    30% { clip: rect(12px, 9999px, 75px, 0); }
+    45% { clip: rect(90px, 9999px, 40px, 0); }
+    60% { clip: rect(22px, 9999px, 85px, 0); }
+    75% { clip: rect(50px, 9999px, 15px, 0); }
+    90% { clip: rect(80px, 9999px, 60px, 0); }
+    100% { clip: rect(30px, 9999px, 95px, 0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<div class="scanlines"></div>
+<div class="glare"></div>
+
+<div class="error-container">
+  <div class="corner top-left"></div>
+  <div class="corner top-right"></div>
+  <div class="corner bottom-left"></div>
+  <div class="corner bottom-right"></div>
+  
+  <div class="error-code">404</div>
+  <div class="error-title">Agent De-Synchronized</div>
+  <div class="error-msg">
+    SYSTEM WARNING: The coordinates you requested point outside the active spike site zone.<br>
+    Status: <strong>OUT_OF_BOUNDS_ERROR</strong> // Roster: Empty.
+  </div>
+  
+  <a href="/" class="btn-respawn">
+    <span>⚡ RESPAWN AT HOME</span>
+  </a>
+</div>
+
+</body>
+</html>
