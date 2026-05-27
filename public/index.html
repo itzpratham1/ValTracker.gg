@@ -244,6 +244,9 @@
           <button class="dropdown-item" id="export-btn" onclick="exportStatsCard()">
             <span class="dropdown-item-icon">📤</span> Export Stats Card
           </button>
+          <button class="dropdown-item" onclick="showBookmarksModal()">
+            <span class="dropdown-item-icon" style="color:#ffd700;">★</span> Bookmarked Players
+          </button>
           <div class="dropdown-divider"></div>
           <button class="dropdown-item danger" id="clear-btn" onclick="handleClear()" title="Clear all stored matches">
             <span class="dropdown-item-icon">🗑️</span> Clear Stored Matches
@@ -3845,21 +3848,10 @@ function addRRAnnotations(chart, rankLabels) {
     const currTier = curr.rank?.split(' ')[0];
     if (prevTier && currTier && prevTier !== currTier) {
       const isUp = rankLabels[i].rr > rankLabels[i-1].rr;
-      annotations.push({ x: i, label: isUp ? `▲ ${curr.rank}` : `▼ ${curr.rank}`, up: isUp });
+      annotations.push({ x: i, label: `▲ ${curr.rank}`, up: isUp });
     }
   }
   return annotations;
-}
-
-// ── SKELETON SHOW/HIDE ──
-function showSkeletons() {
-  // Just show the shimmer on the one card that has it - don't hide real values
-  const sk = document.getElementById('v-kd-sk');
-  if (sk) sk.style.display = 'block';
-}
-function hideSkeletons() {
-  document.querySelectorAll('.skeleton-val').forEach(el => el.style.display = 'none');
-  document.querySelectorAll('.card .card-val').forEach(el => el.style.opacity = '1');
 }
 
 // ── EXPORT STATS CARD ──
@@ -3867,13 +3859,19 @@ async function exportStatsCard() {
   const matches = window._allRenderedMatches || [];
   if (!matches.length) { showToast('Fetch your stats first'); return; }
 
+  if (typeof html2canvas === 'undefined') {
+    showToast('Export library not loaded.');
+    return;
+  }
+
+  showToast('Generating infographic card...');
+
   const mmrH  = window._mmrHistory || {};
   const wins   = matches.filter(m => m.won).length;
   const losses = matches.length - wins;
   const wr     = Math.round((wins / matches.length) * 100);
   const totalK = matches.reduce((s, m) => s + m.kills, 0);
   const totalD = matches.reduce((s, m) => s + m.deaths, 0);
-  const totalA = matches.reduce((s, m) => s + m.assists, 0);
   const kd     = totalD ? (totalK / totalD).toFixed(2) : totalK.toString();
   const avgACS = Math.round(matches.reduce((s, m) => s + (m.acs || 0), 0) / matches.length);
   const avgHS  = Math.round(matches.reduce((s, m) => s + (m.hs || 0), 0) / Math.max(1, totalK) * 100);
@@ -3882,6 +3880,8 @@ async function exportStatsCard() {
   const playerName = document.getElementById('player-name-input')?.value.trim() || '—';
   const playerTag  = document.getElementById('player-tag-input')?.value.trim().replace(/^#/, '') || '—';
   const region     = (document.getElementById('region-select')?.value || 'ap').toUpperCase();
+  const modeVal    = document.getElementById('mode-select')?.value || 'competitive';
+  const modeName   = modeVal === 'competitive' ? 'Competitive' : modeVal.toUpperCase();
 
   // Agent most played
   const agentCount = {};
@@ -3890,102 +3890,155 @@ async function exportStatsCard() {
 
   const now = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
-  // Dynamic font size for player name — shrink if long
-  const nameLen = playerName.length;
-  const nameFontSize = nameLen > 20 ? 22 : nameLen > 14 ? 28 : nameLen > 10 ? 34 : 40;
+  // Get active avatar
+  const playerTopAgentIcon = getAgentIconUrl(topAgent);
+  const avatarHtml = playerTopAgentIcon ? `<img src="${playerTopAgentIcon}" style="width:100%; height:100%; object-fit:cover;">` : `<div style="font-size:24px; color:rgba(255,255,255,0.4)">👤</div>`;
 
-  // Card dimensions — taller to give everything room
-  const W = 700, H = 380;
+  // Get rank icon
+  const rImg = getRankImgUrl(rank);
+  const rankImgHtml = rImg ? `<img src="${rImg}" style="width:32px; height:32px; object-fit:contain;">` : `<div style="font-size:16px; color:#ffd700;">🏆</div>`;
 
-  // Layout y-anchors
-  const Y = {
-    brandTxt:   20,   // "VALTRACKER.GG"
-    accentLine: 28,   // horizontal accent line under brand
-    nameBase:   80,   // player name baseline
-    tagBase:    104,  // #tag · rank line
-    divider1:   124,  // horizontal divider
-    statLabel:  158,  // stat category label
-    statVal:    194,  // stat big number
-    statSub:    212,  // stat sub-line (e.g. 4W/5L)
-    divider2:   232,  // horizontal divider
-    formLabel:  254,  // "RECENT FORM" label
-    formBox:    264,  // form boxes top
-    footer:     366,  // footer text
-  };
+  // Get top agent icon
+  const taImg = getAgentIconUrl(topAgent);
+  const topAgentIconHtml = taImg ? `<img src="${taImg}" style="width:20px; height:20px; border-radius:50%; border:1px solid rgba(255, 70, 85, 0.4); display:block;">` : '';
 
-  const COL = [32, 170, 300, 430, 560]; // 5 stat columns
-
-  // Recent form — up to 10 most recent
+  // Get up to 10 most recent matches
   const formMatches = matches.slice(0, 10);
-  const boxW = 54, boxH = 52, boxGap = 4;
-  const formStartX = 32;
-
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0d0d0f"/>
-      <stop offset="100%" stop-color="#181820"/>
-    </linearGradient>
-    <linearGradient id="acl" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#e8ff47"/>
-      <stop offset="100%" stop-color="#e8ff4700"/>
-    </linearGradient>
-  </defs>
-  <!-- Background -->
-  <rect width="${W}" height="${H}" rx="16" fill="url(#bg)"/>
-  <rect width="${W}" height="${H}" rx="16" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
-  <!-- Left accent bar -->
-  <rect x="0" y="0" width="5" height="${H}" rx="2" fill="#e8ff47"/>
-  <!-- Brand -->
-  <text x="32" y="${Y.brandTxt}" font-family="monospace" font-size="10" fill="#e8ff47" letter-spacing="4" font-weight="700">VALTRACKER.GG</text>
-  <rect x="32" y="${Y.accentLine}" width="180" height="1.5" fill="url(#acl)"/>
-  <!-- Player Name -->
-  <text x="32" y="${Y.nameBase}" font-family="Arial Black, sans-serif" font-size="${nameFontSize}" fill="#f0f0f2" font-weight="900">${playerName}</text>
-  <text x="32" y="${Y.tagBase}" font-family="monospace" font-size="11" fill="#6e6e7a" letter-spacing="1">#${playerTag}  ·  ${rank}  ·  ${rrTxt}</text>
-  <!-- Divider 1 -->
-  <rect x="32" y="${Y.divider1}" width="${W - 64}" height="1" fill="rgba(255,255,255,0.07)"/>
-  <!-- K/D -->
-  <text x="${COL[0]}" y="${Y.statLabel}" font-family="monospace" font-size="9" fill="#6e6e7a" letter-spacing="2">K / D</text>
-  <text x="${COL[0]}" y="${Y.statVal}" font-family="Arial Black, sans-serif" font-size="38" fill="#e8ff47" font-weight="900">${kd}</text>
-  <!-- WIN RATE -->
-  <text x="${COL[1]}" y="${Y.statLabel}" font-family="monospace" font-size="9" fill="#6e6e7a" letter-spacing="2">WIN RATE</text>
-  <text x="${COL[1]}" y="${Y.statVal}" font-family="Arial Black, sans-serif" font-size="38" fill="${wr >= 50 ? '#3ecf8e' : '#ff5757'}" font-weight="900">${wr}%</text>
-  <text x="${COL[1]}" y="${Y.statSub}" font-family="monospace" font-size="9" fill="#4a4a54">${wins}W / ${losses}L</text>
-  <!-- AVG ACS -->
-  <text x="${COL[2]}" y="${Y.statLabel}" font-family="monospace" font-size="9" fill="#6e6e7a" letter-spacing="2">AVG ACS</text>
-  <text x="${COL[2]}" y="${Y.statVal}" font-family="Arial Black, sans-serif" font-size="38" fill="#f0f0f2" font-weight="900">${avgACS}</text>
-  <!-- HS% -->
-  <text x="${COL[3]}" y="${Y.statLabel}" font-family="monospace" font-size="9" fill="#6e6e7a" letter-spacing="2">HS%</text>
-  <text x="${COL[3]}" y="${Y.statVal}" font-family="Arial Black, sans-serif" font-size="38" fill="${avgHS >= 25 ? '#3ecf8e' : avgHS >= 15 ? '#e8ff47' : '#ff5757'}" font-weight="900">${avgHS}%</text>
-  <!-- TOP AGENT -->
-  <text x="${COL[4]}" y="${Y.statLabel}" font-family="monospace" font-size="9" fill="#6e6e7a" letter-spacing="2">TOP AGENT</text>
-  <text x="${COL[4]}" y="${Y.statVal}" font-family="Arial Black, sans-serif" font-size="${topAgent.length > 8 ? 22 : 28}" fill="#f0f0f2" font-weight="900">${topAgent.toUpperCase()}</text>
-  <text x="${COL[4]}" y="${Y.statSub}" font-family="monospace" font-size="9" fill="#4a4a54">${agentCount[topAgent]} matches</text>
-  <!-- Divider 2 -->
-  <rect x="32" y="${Y.divider2}" width="${W - 64}" height="1" fill="rgba(255,255,255,0.07)"/>
-  <!-- Recent Form -->
-  <text x="32" y="${Y.formLabel}" font-family="monospace" font-size="9" fill="#6e6e7a" letter-spacing="2">RECENT FORM  (${formMatches.length} MATCHES)</text>
-  ${formMatches.map((m, i) => {
-    const bx = formStartX + i * (boxW + boxGap);
+  const recentFormHtml = formMatches.map(m => {
+    const isWin = m.won;
+    const aIcon = getAgentIconUrl(m.agentName);
     const rr = mmrH[m.matchId];
-    const rrTx = rr !== undefined ? `<text x="${bx + boxW/2}" y="${Y.formBox + boxH - 6}" text-anchor="middle" font-family="monospace" font-size="8" fill="${rr > 0 ? '#3ecf8e' : '#ff5757'}">${rr > 0 ? '+' : ''}${rr}</text>` : '';
-    return `<rect x="${bx}" y="${Y.formBox}" width="${boxW}" height="${boxH}" rx="6" fill="${m.won ? 'rgba(62,207,142,0.09)' : 'rgba(255,87,87,0.08)'}" stroke="${m.won ? 'rgba(62,207,142,0.28)' : 'rgba(255,87,87,0.22)'}" stroke-width="1"/>
-    <text x="${bx + boxW/2}" y="${Y.formBox + 20}" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="13" font-weight="900" fill="${m.won ? '#3ecf8e' : '#ff5757'}">${m.won ? 'W' : 'L'}</text>
-    <text x="${bx + boxW/2}" y="${Y.formBox + 34}" text-anchor="middle" font-family="monospace" font-size="7" fill="#4a4a54">${(m.agentName || '').substring(0, 4).toUpperCase()}</text>
-    ${rrTx}`;
-  }).join('')}
-  <!-- Footer -->
-  <text x="32" y="${Y.footer}" font-family="monospace" font-size="9" fill="#2e2e38" letter-spacing="1">Generated by ValTracker.gg  ·  ${now}</text>
-  <text x="${W - 32}" y="${Y.footer}" text-anchor="end" font-family="monospace" font-size="9" fill="#2e2e38" letter-spacing="1">${region} Region  ·  ${matches.length} matches tracked</text>
-</svg>`;
+    const rrDisplay = rr !== undefined ? (rr > 0 ? `+${rr}` : `${rr}`) : '';
+    const rrColor = rr > 0 ? '#3ecf8e' : '#ff5757';
+    
+    return `
+      <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; padding:8px 4px; background:${isWin ? 'rgba(62,207,142,0.06)' : 'rgba(255,87,87,0.05)'}; border:1px solid ${isWin ? 'rgba(62,207,142,0.25)' : 'rgba(255,87,87,0.18)'}; border-radius:10px; min-width:48px; box-sizing:border-box; transition:all 0.2s ease;">
+        <span style="font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:900; color:${isWin ? '#3ecf8e' : '#ff5757'}; line-height:1;">${isWin ? 'W' : 'L'}</span>
+        ${aIcon ? `<img src="${aIcon}" style="width:22px; height:22px; border-radius:50%; border:1.5px solid rgba(255,255,255,0.08); box-shadow:0 2px 6px rgba(0,0,0,0.3);">` : `<div style="width:22px; height:22px; background:rgba(255,255,255,0.05); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; color:rgba(255,255,255,0.4)">👤</div>`}
+        <span style="font-family:'DM Mono',monospace; font-size:7px; color:rgba(255,255,255,0.4); text-transform:uppercase; overflow:hidden; text-overflow:ellipsis; max-width:100%; white-space:nowrap; text-align:center;">${(m.agentName || '').substring(0, 4)}</span>
+        ${rrDisplay ? `<span style="font-family:'DM Mono',monospace; font-size:8px; font-weight:700; color:${rrColor}; line-height:1;">${rrDisplay}</span>` : `<span style="font-family:'DM Mono',monospace; font-size:8px; color:rgba(255,255,255,0.15); line-height:1;">--</span>`}
+      </div>
+    `;
+  }).join('');
 
-  const blob = new Blob([svg], { type: 'image/svg+xml' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url; a.download = 'valtracker-card.svg';
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('Stats card exported! ✓');
+  const exportContainer = document.getElementById('stats-export-container');
+  exportContainer.innerHTML = `
+    <div id="stats-capture-target" style="width: 720px; padding: 28px; background: linear-gradient(135deg, #0f0f12 0%, #060608 100%); border: 2px solid rgba(255, 70, 85, 0.45); border-radius: 20px; color: #fff; font-family:'Barlow Condensed', sans-serif; box-sizing:border-box; position:relative; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.6);">
+      <!-- Accent top right design -->
+      <div style="position:absolute; top:-40px; right:-40px; width:120px; height:120px; background:rgba(255, 70, 85, 0.08); border-radius:50%; filter:blur(20px);"></div>
+      
+      <!-- Outer glowing frame -->
+      <div style="position:absolute; inset:0; border:1px solid rgba(255,255,255,0.03); border-radius:18px; pointer-events:none;"></div>
+      
+      <!-- LEFT LOGO & BRAND STRIPE -->
+      <div style="position:absolute; left:0; top:0; bottom:0; width:6px; background:#ff4655; border-radius:20px 0 0 20px;"></div>
+      
+      <!-- HEADER ROW -->
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid rgba(255, 70, 85, 0.15); padding-bottom:14px; margin-bottom:20px;">
+        <div style="display:flex; align-items:center; gap:16px;">
+          <!-- Player Avatar -->
+          <div style="width:52px; height:52px; border-radius:50%; border:2px solid #ff4655; display:flex; align-items:center; justify-content:center; background:rgba(255, 70, 85, 0.05); overflow:hidden; flex-shrink:0;">
+            ${avatarHtml}
+          </div>
+          <div>
+            <div style="display:flex; align-items:baseline; gap:6px;">
+              <span style="font-size:26px; font-weight:900; letter-spacing:0.5px; text-transform:uppercase; color:#fff; line-height:1;">${playerName}</span>
+              <span style="font-family:'DM Mono',monospace; font-size:14px; color:#ff4655; font-weight:700;">#${playerTag}</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
+              <span style="font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.4); text-transform:uppercase; border:1px solid rgba(255,255,255,0.1); padding:1px 6px; border-radius:4px; line-height:1;">${region} Region</span>
+              <span style="font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.4); text-transform:uppercase; border:1px solid rgba(255,255,255,0.1); padding:1px 6px; border-radius:4px; line-height:1;">${modeName}</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Rank Badge -->
+        <div style="display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); padding:6px 14px; border-radius:30px;">
+          ${rankImgHtml}
+          <div style="text-align:left;">
+            <div style="font-size:13px; font-weight:800; text-transform:uppercase; color:#fff; line-height:1.1;">${rank}</div>
+            ${rrTxt ? `<div style="font-family:'DM Mono',monospace; font-size:9px; color:#ffb01f; font-weight:bold; margin-top:2px; line-height:1;">${rrTxt}</div>` : ''}
+          </div>
+        </div>
+      </div>
+      
+      <!-- STATS GRID -->
+      <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:12px; margin-bottom:24px;">
+        <!-- K/D -->
+        <div style="background:rgba(255,255,255,0.015); border:1px solid rgba(255,255,255,0.04); padding:12px 10px; border-radius:12px; text-align:center;">
+          <div style="font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.4); letter-spacing:1px; text-transform:uppercase; margin-bottom:4px;">K / D Ratio</div>
+          <div style="font-size:26px; font-weight:900; color:#ff4655; line-height:1;">${kd}</div>
+          <div style="font-family:'DM Mono',monospace; font-size:8px; color:rgba(255,255,255,0.2); margin-top:4px;">${totalK} K / ${totalD} D</div>
+        </div>
+        
+        <!-- Win Rate -->
+        <div style="background:rgba(255,255,255,0.015); border:1px solid rgba(255,255,255,0.04); padding:12px 10px; border-radius:12px; text-align:center;">
+          <div style="font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.4); letter-spacing:1px; text-transform:uppercase; margin-bottom:4px;">Win Rate</div>
+          <div style="font-size:26px; font-weight:900; color:${wr >= 50 ? '#3ecf8e' : '#ff5757'}; line-height:1;">${wr}%</div>
+          <div style="font-family:'DM Mono',monospace; font-size:8px; color:rgba(255,255,255,0.2); margin-top:4px;">${wins}W - ${losses}L</div>
+        </div>
+        
+        <!-- AVG ACS -->
+        <div style="background:rgba(255,255,255,0.015); border:1px solid rgba(255,255,255,0.04); padding:12px 10px; border-radius:12px; text-align:center;">
+          <div style="font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.4); letter-spacing:1px; text-transform:uppercase; margin-bottom:4px;">AVG ACS</div>
+          <div style="font-size:26px; font-weight:900; color:#fff; line-height:1;">${avgACS}</div>
+          <div style="font-family:'DM Mono',monospace; font-size:8px; color:rgba(255,255,255,0.2); margin-top:4px;">Per Match</div>
+        </div>
+        
+        <!-- HS% -->
+        <div style="background:rgba(255,255,255,0.015); border:1px solid rgba(255,255,255,0.04); padding:12px 10px; border-radius:12px; text-align:center;">
+          <div style="font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.4); letter-spacing:1px; text-transform:uppercase; margin-bottom:4px;">Headshot %</div>
+          <div style="font-size:26px; font-weight:900; color:${avgHS >= 25 ? '#3ecf8e' : avgHS >= 15 ? '#ffd700' : '#ff5757'}; line-height:1;">${avgHS}%</div>
+          <div style="font-family:'DM Mono',monospace; font-size:8px; color:rgba(255,255,255,0.2); margin-top:4px;">Hit Accuracy</div>
+        </div>
+        
+        <!-- Top Agent -->
+        <div style="background:rgba(255,255,255,0.015); border:1px solid rgba(255,255,255,0.04); padding:12px 10px; border-radius:12px; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:68px;">
+          <div style="font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.4); letter-spacing:1px; text-transform:uppercase; margin-bottom:4px;">Top Agent</div>
+          <div style="display:flex; align-items:center; gap:6px;">
+            ${topAgentIconHtml}
+            <span style="font-size:16px; font-weight:900; color:#fff; text-transform:uppercase;">${topAgent}</span>
+          </div>
+          <div style="font-family:'DM Mono',monospace; font-size:8px; color:rgba(255,255,255,0.2); margin-top:2px;">${agentCount[topAgent] || 0} Matches</div>
+        </div>
+      </div>
+      
+      <!-- RECENT FORM ROW -->
+      <div style="background:rgba(255, 70, 85, 0.03); border:1px solid rgba(255, 70, 85, 0.1); padding:16px; border-radius:14px; box-sizing:border-box;">
+        <div style="font-family:'DM Mono',monospace; font-size:9px; color:rgba(255, 70, 85, 0.7); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:12px; font-weight:700;">RECENT PERFORMANCE (LAST ${formMatches.length} MATCHES)</div>
+        <div style="display:flex; gap:6px; justify-content:space-between;">
+          ${recentFormHtml}
+        </div>
+      </div>
+      
+      <!-- FOOTER -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.18);">
+        <div>Generated by VALTRACKER.GG · ${now}</div>
+        <div style="color:rgba(255, 70, 85, 0.35); font-weight:bold; letter-spacing:0.5px;">TRACK. ANALYZE. CONQUER.</div>
+      </div>
+    </div>
+  `;
+
+  setTimeout(async () => {
+    try {
+      const el = document.getElementById('stats-capture-target');
+      const canvas = await html2canvas(el, {
+        backgroundColor: null,
+        scale: 2,
+        logging: false,
+        useCORS: true
+      });
+      
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL('image/png');
+      a.download = `valtracker_stats_${playerName}_${new Date().getTime()}.png`;
+      a.click();
+      showToast('Stats PNG card downloaded! ✓');
+    } catch(e) {
+      console.error(e);
+      showToast('Export failed.');
+    }
+  }, 120);
 }
 
 
@@ -4618,7 +4671,14 @@ function closeStatModal() {
 }
 
 // Close on Escape
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeStatModal(); });
+document.addEventListener('keydown', e => { 
+  if (e.key === 'Escape') {
+    closeStatModal();
+    closeBookmarksModal();
+    if (document.getElementById('leaderboard-modal')) document.getElementById('leaderboard-modal').style.display = 'none';
+    if (document.getElementById('h2h-modal')) document.getElementById('h2h-modal').style.display = 'none';
+  }
+});
 
 
 // ══════════════════════════════════════════
@@ -5631,6 +5691,67 @@ function removeBookmarkDirect(name, tag) {
   localStorage.setItem('valtracker_bookmarks', JSON.stringify(bookmarks));
   renderActiveBookmarkButton();
   renderLandingHistory();
+}
+
+function showBookmarksModal() {
+  const modal = document.getElementById('bookmarks-modal');
+  if (!modal) return;
+  
+  // Close dropdown if open
+  const dropdown = document.getElementById('tools-dropdown-menu');
+  if (dropdown) dropdown.style.display = 'none';
+  
+  let bookmarks = [];
+  try { bookmarks = JSON.parse(localStorage.getItem('valtracker_bookmarks')) || []; } catch(e) { bookmarks = []; }
+  
+  const listContainer = document.getElementById('bookmarks-modal-list');
+  if (!listContainer) return;
+  
+  if (bookmarks.length === 0) {
+    listContainer.innerHTML = `
+      <div style="font-size:11px; color:var(--muted2); text-align:center; padding:32px 16px; font-family:'DM Mono',monospace; border:1px dashed rgba(255,215,0,0.15); border-radius:12px; background:rgba(255,215,0,0.01); line-height:1.4;">
+        No bookmarked players yet.<br><br>
+        Search for a player, then click the <span style="color:#ffd700">★</span> next to their name in the active profile header pill to bookmark them!
+      </div>
+    `;
+  } else {
+    listContainer.innerHTML = bookmarks.map(p => {
+      const escapedName = p.name.replace(/'/g, "\\'");
+      return `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 16px; border:1px solid rgba(255,255,255,0.04); background:rgba(255,255,255,0.015); border-radius:10px; transition:all 0.2s ease;">
+          <div onclick="bookmarksModalJump('${escapedName}','${p.tag}','${p.region}','${p.mode}')" style="display:flex; align-items:center; gap:12px; flex:1; cursor:pointer;">
+            ${p.rankImg ? `<img src="${p.rankImg}" style="width:24px; height:24px; object-fit:contain;">` : `<div style="width:24px; height:24px; background:rgba(255,255,255,0.05); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; color:var(--muted2)">👤</div>`}
+            <div style="display:flex; flex-direction:column; gap:2px;">
+              <div style="font-family:'Barlow Condensed',sans-serif; font-size:15px; font-weight:800; color:#fff; text-transform:uppercase; line-height:1.2;">
+                ${p.name}<span style="color:var(--muted2); font-weight:normal; font-size:11px;">#${p.tag}</span>
+              </div>
+              <div style="font-family:'DM Mono',monospace; font-size:9px; color:var(--muted); text-transform:uppercase; line-height:1;">
+                ${p.region} Region · ${p.mode === 'competitive' ? 'Competitive' : p.mode.toUpperCase()}
+              </div>
+            </div>
+          </div>
+          <button onclick="removeBookmarkModal('${escapedName}','${p.tag}')" style="background:none; border:none; color:#ffd700; font-size:18px; cursor:pointer; padding:4px 8px; transition:all 0.2s; display:flex; align-items:center; justify-content:center;" onmouseover="this.style.color='#ff4655'; this.style.transform='scale(1.2)'" onmouseout="this.style.color='#ffd700'; this.style.transform='none'">★</button>
+        </div>
+      `;
+    }).join('');
+  }
+  
+  modal.style.display = 'flex';
+}
+
+function closeBookmarksModal() {
+  const modal = document.getElementById('bookmarks-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+function bookmarksModalJump(name, tag, region, mode) {
+  closeBookmarksModal();
+  landingQuick(name, tag, region, mode);
+}
+
+function removeBookmarkModal(name, tag) {
+  removeBookmarkDirect(name, tag);
+  showBookmarksModal(); // refresh list
 }
 
 function clearRecentSearches() {
@@ -10301,6 +10422,21 @@ body::after {
     padding: 5px 8px !important;
     font-size: 10px !important;
   }
+  .player-search-wrap {
+    gap: 4px !important;
+  }
+  .player-input {
+    width: 110px !important;
+    font-size: 11px !important;
+    padding: 5px 8px !important;
+  }
+  .player-input-tag {
+    width: 50px !important;
+    font-size: 11px !important;
+  }
+  .copy-riot-btn#copy-riot-btn {
+    display: none !important;
+  }
   .player-active-pill {
     padding: 3px 8px 3px 4px !important;
     font-size: 11px !important;
@@ -10334,8 +10470,11 @@ body::after {
     min-width: 74px !important;
   }
   .fetch-btn {
-    padding: 6px 12px !important;
+    padding: 0 12px !important;
+    height: 32px !important;
     font-size: 11px !important;
+    white-space: nowrap !important;
+    box-sizing: border-box !important;
   }
   
   /* Hide decorative divider on smaller screens */
@@ -10972,6 +11111,29 @@ input:checked + .slider:before { transform:translateX(14px); background-color:#f
 </div>
 <!-- hidden container for high-density draft comp PNG export -->
 <div id="dc-export-container" style="position: absolute; left: -9999px; top: -9999px; pointer-events: none; z-index: -9999;"></div>
+
+<!-- hidden container for high-density player stats PNG export -->
+<div id="stats-export-container" style="position: absolute; left: -9999px; top: -9999px; pointer-events: none; z-index: -9999;"></div>
+
+<!-- GLOBAL BOOKMARKS NAV MODAL -->
+<div id="bookmarks-modal" style="display:none; position:fixed; inset:0; background:rgba(10,10,12,0.85); backdrop-filter:blur(15px); -webkit-backdrop-filter:blur(15px); z-index:9999; align-items:center; justify-content:center;" onclick="if(event.target===this)closeBookmarksModal()">
+  <div class="card" style="width:480px; max-width:95vw; max-height:80vh; display:flex; flex-direction:column; border:1px solid rgba(255,215,0,0.3); background:linear-gradient(135deg, #121216 0%, #08080a 100%); border-radius:16px; padding:24px; box-sizing:border-box; box-shadow:0 8px 32px rgba(0,0,0,0.5);">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,215,0,0.15); padding-bottom:14px; margin-bottom:16px; flex-shrink:0;">
+      <div style="font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:24px; color:#ffd700; text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; gap:8px;">
+        <span style="color:#ffd700; text-shadow:0 0 10px rgba(255,215,0,0.4);">★</span> Bookmarked Players
+      </div>
+      <button onclick="closeBookmarksModal()" style="background:none; border:none; color:var(--muted); font-size:24px; cursor:pointer; transition:color 0.2s;" onmouseover="this.style.color='#ff4655'" onmouseout="this.style.color='var(--muted)'">×</button>
+    </div>
+    
+    <div id="bookmarks-modal-list" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:10px; padding-right:4px;">
+      <!-- Populated by JS -->
+    </div>
+    
+    <div style="margin-top:16px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.05); font-family:'DM Mono',monospace; font-size:9px; color:var(--muted); text-align:center; flex-shrink:0;">
+      Click a player card to load stats directly · Click ★ to delete
+    </div>
+  </div>
+</div>
 
 <button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
 </body>
