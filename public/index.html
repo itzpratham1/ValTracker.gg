@@ -1773,7 +1773,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         processMatches(stored);
         // Asynchronously prefetch match details in background on startup to populate weapons and rounds automatically
         setTimeout(() => {
-          prefetchMatchDetails(stored.slice(0, 3));
+          prefetchMatchDetails(stored.slice(0, 15));
         }, 500);
       }
       // Note: We deliberately do NOT call dismissLanding() here anymore! 
@@ -1945,7 +1945,7 @@ async function fetchAll(){
       
       // Asynchronously prefetch match details in background to populate weapons and rounds automatically
       setTimeout(() => {
-        prefetchMatchDetails(allMatches.slice(0, 3));
+        prefetchMatchDetails(allMatches.slice(0, 15));
       }, 500);
 
       const newCount = matchData.data.length;
@@ -1970,14 +1970,29 @@ async function fetchAll(){
 async function prefetchMatchDetails(matchesToFetch) {
   if (!matchesToFetch || !matchesToFetch.length) return;
   console.log(`[Prefetch] Starting background detail fetch for ${matchesToFetch.length} matches...`);
-  let updatedAny = false;
+  
+  // Filter matches that actually need details prefetching
+  const queue = [];
   for (const m of matchesToFetch) {
     const matchId = m.metadata?.matchid || m.metadata?.match_id;
     if (!matchId) continue;
-    
-    // Only prefetch if it doesn't already have full rounds detail
     const hasFullDetails = m.rounds && m.rounds.length > 0 && m.rounds[0].player_stats && m.rounds[0].player_stats.length > 0;
     if (!hasFullDetails) {
+      queue.push(matchId);
+    }
+  }
+
+  if (!queue.length) {
+    console.log(`[Prefetch] All matches already have full details loaded.`);
+    return;
+  }
+
+  let updatedAny = false;
+  // Process in chunks of 4 parallel requests to prevent server or browser rate limits
+  const chunkSize = 4;
+  for (let i = 0; i < queue.length; i += chunkSize) {
+    const chunk = queue.slice(i, i + chunkSize);
+    const promises = chunk.map(async (matchId) => {
       try {
         console.log(`[Prefetch] Fetching full details for match ${matchId}...`);
         const res = await fetch(`/api/v2/match/${matchId}`);
@@ -1992,8 +2007,10 @@ async function prefetchMatchDetails(matchesToFetch) {
       } catch (e) {
         console.error(`[Prefetch] Failed for match ${matchId}:`, e);
       }
-    }
+    });
+    await Promise.all(promises);
   }
+
   if (updatedAny) {
     console.log(`[Prefetch] Prefetch completed. Reloading matches into UI...`);
     const allMatches = await loadAllMatches();
@@ -6180,7 +6197,7 @@ function renderTopWeapons(matches) {
   }
 
   if(!entries.length){
-    wrap.innerHTML='<div class="placeholder-txt" style="padding:16px 0">Weapon data loads from full match details — expand matches and click Load Full Details on a few games, then re-fetch.</div>';
+    wrap.innerHTML='<div class="placeholder-txt" style="padding:16px 0">Compiling your top weapons from background match details...</div>';
     return;
   }
 
