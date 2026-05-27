@@ -1,0 +1,1252 @@
+[
+  {
+    "id": "678041",
+    "date": "2026-05-27T06:12:43.758023+00:00",
+    "state": "in_progress",
+    "league": {
+      "name": "Challengers 2026: LATAM North ACE Stage 2",
+      "region": "Group Stage\u2013Week 2"
+    },
+    "match": {
+      "id": "678041",
+      "teams": [
+        {
+          "name": "STREAMER ARENA",
+          "game_wins": 1,
+          "has_won": false
+        },
+        {
+          "name": "LAZER",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681306",
+    "date": "2026-05-27T09:29:43.758250+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: South Asia Split 2",
+      "region": "Group Stage\u2013Week 2"
+    },
+    "match": {
+      "id": "681306",
+      "teams": [
+        {
+          "name": "SIGN Esports",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "The Rad Syndicate",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681307",
+    "date": "2026-05-27T12:29:43.758452+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: South Asia Split 2",
+      "region": "Group Stage\u2013Week 2"
+    },
+    "match": {
+      "id": "681307",
+      "teams": [
+        {
+          "name": "Leosun Esports",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "Revenant XSpark",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "683770",
+    "date": "2026-05-27T14:59:43.758641+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: EMEA Stage 2",
+      "region": "Playoffs\u2013Lower Final"
+    },
+    "match": {
+      "id": "683770",
+      "teams": [
+        {
+          "name": "UCAM Esports Club",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "REBORN",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "676906",
+    "date": "2026-05-27T18:59:43.759123+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: LATAM South ACE Stage 2",
+      "region": "Group Stage\u2013Week 2"
+    },
+    "match": {
+      "id": "676906",
+      "teams": [
+        {
+          "name": "9z Globant",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "KR\u00dc BLAZE",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681911",
+    "date": "2026-05-27T19:59:43.759306+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: Brazil Gamers Club Stage 2",
+      "region": "Regular Phase\u2013Week 4"
+    },
+    "match": {
+      "id": "681911",
+      "teams": [
+        {
+          "name": "2Game Esports",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "LA MASIA",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681912",
+    "date": "2026-05-27T19:59:43.759487+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: Brazil Gamers Club Stage 2",
+      "region": "Regular Phase\u2013Week 4"
+    },
+    "match": {
+      "id": "681912",
+      "teams": [
+        {
+          "name": "RED Canids",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "TEAM EGO",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "685246",
+    "date": "2026-05-27T19:59:43.759666+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: North America ACE Stage 3",
+      "region": "Swiss Stage\u2013Round 2 (0-1)"
+    },
+    "match": {
+      "id": "685246",
+      "teams": [
+        {
+          "name": "Pigeons",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "Evil Geniuses Academy",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "685247",
+    "date": "2026-05-27T19:59:43.759845+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: North America ACE Stage 3",
+      "region": "Swiss Stage\u2013Round 2 (0-1)"
+    },
+    "match": {
+      "id": "685247",
+      "teams": [
+        {
+          "name": "Evictix",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "Alliance Guardians",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "676907",
+    "date": "2026-05-27T21:59:43.760029+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: LATAM South ACE Stage 2",
+      "region": "Group Stage\u2013Week 2"
+    },
+    "match": {
+      "id": "676907",
+      "teams": [
+        {
+          "name": "OXEN",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "KR\u00dc SPARK",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "678042",
+    "date": "2026-05-27T21:59:43.760235+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: LATAM North ACE Stage 2",
+      "region": "Group Stage\u2013Week 2"
+    },
+    "match": {
+      "id": "678042",
+      "teams": [
+        {
+          "name": "AB3 Esports",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "LYON",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681913",
+    "date": "2026-05-27T22:59:43.760416+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: Brazil Gamers Club Stage 2",
+      "region": "Regular Phase\u2013Week 4"
+    },
+    "match": {
+      "id": "681913",
+      "teams": [
+        {
+          "name": "INTZ",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "Team Liquid Brazil",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "685248",
+    "date": "2026-05-27T22:59:43.760598+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: North America ACE Stage 3",
+      "region": "Swiss Stage\u2013Round 2 (0-1)"
+    },
+    "match": {
+      "id": "685248",
+      "teams": [
+        {
+          "name": "ROSE",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "YFP",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "685249",
+    "date": "2026-05-27T22:59:43.760795+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: North America ACE Stage 3",
+      "region": "Swiss Stage\u2013Round 2 (0-1)"
+    },
+    "match": {
+      "id": "685249",
+      "teams": [
+        {
+          "name": "Nightblood Gaming",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "Dynamo",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681328",
+    "date": "2026-05-27T23:59:43.760984+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Esports World Cup 2026: Americas Qualifier",
+      "region": "Stage 2\u2013Upper Quarterfinals"
+    },
+    "match": {
+      "id": "681328",
+      "teams": [
+        {
+          "name": "LEVIAT\u00c1N",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "Sentinels",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681329",
+    "date": "2026-05-27T23:59:43.761167+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Esports World Cup 2026: Americas Qualifier",
+      "region": "Stage 2\u2013Upper Quarterfinals"
+    },
+    "match": {
+      "id": "681329",
+      "teams": [
+        {
+          "name": "MIBR",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "KR\u00dc Esports",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681330",
+    "date": "2026-05-27T23:59:43.761344+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Esports World Cup 2026: Americas Qualifier",
+      "region": "Stage 2\u2013Upper Quarterfinals"
+    },
+    "match": {
+      "id": "681330",
+      "teams": [
+        {
+          "name": "100 Thieves",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "FURIA",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681331",
+    "date": "2026-05-27T23:59:43.761521+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Esports World Cup 2026: Americas Qualifier",
+      "region": "Stage 2\u2013Upper Quarterfinals"
+    },
+    "match": {
+      "id": "681331",
+      "teams": [
+        {
+          "name": "LOUD",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "NRG",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "678043",
+    "date": "2026-05-28T00:59:43.761699+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: LATAM North ACE Stage 2",
+      "region": "Group Stage\u2013Week 2"
+    },
+    "match": {
+      "id": "678043",
+      "teams": [
+        {
+          "name": "FUEGO",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "LAZER",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "683768",
+    "date": "2026-05-28T14:12:43.761882+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: EMEA Stage 2",
+      "region": "Playoffs\u2013Grand Final"
+    },
+    "match": {
+      "id": "683768",
+      "teams": [
+        {
+          "name": "Natus Vincere Junior",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "676908",
+    "date": "2026-05-28T18:12:43.762380+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: LATAM South ACE Stage 2",
+      "region": "Group Stage\u2013Week 2"
+    },
+    "match": {
+      "id": "676908",
+      "teams": [
+        {
+          "name": "University War",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "LEVIAT\u00c1N Academy",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681915",
+    "date": "2026-05-28T19:12:43.762552+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: Brazil Gamers Club Stage 2",
+      "region": "Regular Phase\u2013Week 5"
+    },
+    "match": {
+      "id": "681915",
+      "teams": [
+        {
+          "name": "Team Solid",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "F4TALITY",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681916",
+    "date": "2026-05-28T19:12:43.762813+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: Brazil Gamers Club Stage 2",
+      "region": "Regular Phase\u2013Week 5"
+    },
+    "match": {
+      "id": "681916",
+      "teams": [
+        {
+          "name": "FURIA Academy",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "ABACATUDOS",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681917",
+    "date": "2026-05-28T19:12:43.762995+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: Brazil Gamers Club Stage 2",
+      "region": "Regular Phase\u2013Week 5"
+    },
+    "match": {
+      "id": "681917",
+      "teams": [
+        {
+          "name": "TBK Esports",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "MIBR Academy",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "685250",
+    "date": "2026-05-28T19:12:43.763251+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: North America ACE Stage 3",
+      "region": "Swiss Stage\u2013Round 2 (1-0)"
+    },
+    "match": {
+      "id": "685250",
+      "teams": [
+        {
+          "name": "M80",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "Shopify Rebellion Black",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "685251",
+    "date": "2026-05-28T19:12:43.763437+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: North America ACE Stage 3",
+      "region": "Swiss Stage\u2013Round 2 (1-0)"
+    },
+    "match": {
+      "id": "685251",
+      "teams": [
+        {
+          "name": "QoR",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "NRG Academy",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "676909",
+    "date": "2026-05-28T21:12:43.763619+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: LATAM South ACE Stage 2",
+      "region": "Group Stage\u2013Week 2"
+    },
+    "match": {
+      "id": "676909",
+      "teams": [
+        {
+          "name": "BESTIA",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "ShindeN",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "678044",
+    "date": "2026-05-28T21:12:43.763798+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: LATAM North ACE Stage 2",
+      "region": "Group Stage\u2013Week 2"
+    },
+    "match": {
+      "id": "678044",
+      "teams": [
+        {
+          "name": "STREAMER ARENA",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "Contra",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "685252",
+    "date": "2026-05-28T22:12:43.763975+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: North America ACE Stage 3",
+      "region": "Swiss Stage\u2013Round 2 (1-0)"
+    },
+    "match": {
+      "id": "685252",
+      "teams": [
+        {
+          "name": "Division One",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "Azure Dragon Gaming",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "685253",
+    "date": "2026-05-28T22:12:43.764155+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: North America ACE Stage 3",
+      "region": "Swiss Stage\u2013Round 2 (1-0)"
+    },
+    "match": {
+      "id": "685253",
+      "teams": [
+        {
+          "name": "SaD Esports",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "FlyQuest",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681332",
+    "date": "2026-05-28T23:12:43.764331+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Esports World Cup 2026: Americas Qualifier",
+      "region": "Stage 2\u2013Upper Semifinals"
+    },
+    "match": {
+      "id": "681332",
+      "teams": [
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681335",
+    "date": "2026-05-28T23:12:43.764515+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Esports World Cup 2026: Americas Qualifier",
+      "region": "Stage 2\u2013Lower Round 1"
+    },
+    "match": {
+      "id": "681335",
+      "teams": [
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "678045",
+    "date": "2026-05-29T00:12:43.764695+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: LATAM North ACE Stage 2",
+      "region": "Group Stage\u2013Week 2"
+    },
+    "match": {
+      "id": "678045",
+      "teams": [
+        {
+          "name": "Chivas Esports",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "FUSION",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681786",
+    "date": "2026-05-29T06:12:43.764875+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: Japan Split 2",
+      "region": "Main Stage\u2013Week 2"
+    },
+    "match": {
+      "id": "681786",
+      "teams": [
+        {
+          "name": "AGELITE",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "REJECT",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681021",
+    "date": "2026-05-29T08:12:43.765051+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "China Evolution Series 2026: Act 2",
+      "region": "Playoffs\u2013Semifinals"
+    },
+    "match": {
+      "id": "681021",
+      "teams": [
+        {
+          "name": "All Gamers",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "Titan Esports Club",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681787",
+    "date": "2026-05-29T09:12:43.765229+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: Japan Split 2",
+      "region": "Main Stage\u2013Week 2"
+    },
+    "match": {
+      "id": "681787",
+      "teams": [
+        {
+          "name": "QT DIG\u221e",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "Insomnia",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681022",
+    "date": "2026-05-29T10:12:43.765404+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "China Evolution Series 2026: Act 2",
+      "region": "Playoffs\u2013Semifinals"
+    },
+    "match": {
+      "id": "681022",
+      "teams": [
+        {
+          "name": "Nova Esports",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "TYLOO",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681761",
+    "date": "2026-05-29T10:12:43.765574+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: Southeast Asia Split 2",
+      "region": "Group Stage\u2013Day 4"
+    },
+    "match": {
+      "id": "681761",
+      "teams": [
+        {
+          "name": "Oasis Gaming",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "Looking For Home",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681762",
+    "date": "2026-05-29T12:12:43.765748+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: Southeast Asia Split 2",
+      "region": "Group Stage\u2013Day 4"
+    },
+    "match": {
+      "id": "681762",
+      "teams": [
+        {
+          "name": "Sharper Esports",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "Trinity",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681918",
+    "date": "2026-05-29T19:12:43.766115+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: Brazil Gamers Club Stage 2",
+      "region": "Regular Phase\u2013Week 5"
+    },
+    "match": {
+      "id": "681918",
+      "teams": [
+        {
+          "name": "2Game Esports",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "TEAM EGO",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681919",
+    "date": "2026-05-29T19:12:43.766303+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: Brazil Gamers Club Stage 2",
+      "region": "Regular Phase\u2013Week 5"
+    },
+    "match": {
+      "id": "681919",
+      "teams": [
+        {
+          "name": "LA MASIA",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "Team Liquid Brazil",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681920",
+    "date": "2026-05-29T19:12:43.766480+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: Brazil Gamers Club Stage 2",
+      "region": "Regular Phase\u2013Week 5"
+    },
+    "match": {
+      "id": "681920",
+      "teams": [
+        {
+          "name": "ELEVATE",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "INTZ",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681333",
+    "date": "2026-05-29T23:12:43.766655+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Esports World Cup 2026: Americas Qualifier",
+      "region": "Stage 2\u2013Upper Semifinals"
+    },
+    "match": {
+      "id": "681333",
+      "teams": [
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681334",
+    "date": "2026-05-29T23:12:43.766833+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Esports World Cup 2026: Americas Qualifier",
+      "region": "Stage 2\u2013Lower Round 1"
+    },
+    "match": {
+      "id": "681334",
+      "teams": [
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681788",
+    "date": "2026-05-30T06:12:43.767011+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: Japan Split 2",
+      "region": "Main Stage\u2013Week 2"
+    },
+    "match": {
+      "id": "681788",
+      "teams": [
+        {
+          "name": "FENNEL",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "REJECT",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "675209",
+    "date": "2026-05-30T07:12:43.767188+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Esports World Cup 2026: Pacific Qualifier",
+      "region": "Stage 2\u2013Lower Round 2"
+    },
+    "match": {
+      "id": "675209",
+      "teams": [
+        {
+          "name": "Nongshim RedForce",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "Kiwoom DRX",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681024",
+    "date": "2026-05-30T08:12:43.767366+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "China Evolution Series 2026: Act 2",
+      "region": "Playoffs\u2013Consolation Final"
+    },
+    "match": {
+      "id": "681024",
+      "teams": [
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681308",
+    "date": "2026-05-30T09:12:43.767541+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: South Asia Split 2",
+      "region": "Group Stage\u2013Week 2"
+    },
+    "match": {
+      "id": "681308",
+      "teams": [
+        {
+          "name": "X\u00d8 IND",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "Revenant XSpark",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681789",
+    "date": "2026-05-30T09:12:43.767717+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Challengers 2026: Japan Split 2",
+      "region": "Main Stage\u2013Week 2"
+    },
+    "match": {
+      "id": "681789",
+      "teams": [
+        {
+          "name": "CREST GAMING Zst",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "RIDDLE ORDER",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "675210",
+    "date": "2026-05-30T10:12:43.767899+00:00",
+    "state": "unstarted",
+    "league": {
+      "name": "Esports World Cup 2026: Pacific Qualifier",
+      "region": "Stage 2\u2013Lower Round 2"
+    },
+    "match": {
+      "id": "675210",
+      "teams": [
+        {
+          "name": "Gen.G",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "T1",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  }
+]

@@ -742,6 +742,7 @@ def parse_vlr_time(date_str, time_str, eta_str=""):
 
 def scrape_vlr_matches():
     import re
+    import json
     from bs4 import BeautifulSoup
     cache_key = "vlr_scraped_matches"
     if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < 600:
@@ -751,6 +752,17 @@ def scrape_vlr_matches():
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
         r = requests.get('https://www.vlr.gg/matches', headers=headers, timeout=10)
         if r.status_code != 200:
+            if cache_key in cache:
+                print("[VLR MATCHES CLOUDFLARE FALLBACK] Serving expired memory cache.")
+                return cache[cache_key]["data"]
+            try:
+                with open("vlr_matches_backup.json", "r", encoding="utf-8") as f:
+                    print("[VLR MATCHES PERSISTENT FALLBACK] Serving VLR matches backup file.")
+                    backup_data = json.load(f)
+                    cache[cache_key] = {"data": backup_data, "timestamp": time.time()}
+                    return backup_data
+            except Exception as e_back:
+                print("Failed to load matches backup:", e_back)
             return []
             
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -835,14 +847,32 @@ def scrape_vlr_matches():
                     },
                     "vod": None
                 })
+        try:
+            with open("vlr_matches_backup.json", "w", encoding="utf-8") as f:
+                json.dump(matches, f, indent=2)
+        except Exception as ef:
+            print("Failed to save matches backup file:", ef)
+            
         cache[cache_key] = {"data": matches, "timestamp": time.time()}
         return matches
     except Exception as e:
         print("[ERROR] fetch_vlr_matches failed:", e)
+        if cache_key in cache:
+            print("[VLR MATCHES MEMORY FALLBACK] Serving expired memory cache.")
+            return cache[cache_key]["data"]
+        try:
+            with open("vlr_matches_backup.json", "r", encoding="utf-8") as f:
+                print("[VLR MATCHES PERSISTENT FALLBACK] Serving VLR matches backup file.")
+                backup_data = json.load(f)
+                cache[cache_key] = {"data": backup_data, "timestamp": time.time()}
+                return backup_data
+        except Exception as e_back:
+            print("Failed to load matches backup:", e_back)
         return []
 
 def scrape_vlr_results():
     import re
+    import json
     from bs4 import BeautifulSoup
     cache_key = "vlr_scraped_results"
     if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < 600:
@@ -852,6 +882,17 @@ def scrape_vlr_results():
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
         r = requests.get('https://www.vlr.gg/matches/results', headers=headers, timeout=10)
         if r.status_code != 200:
+            if cache_key in cache:
+                print("[VLR RESULTS CLOUDFLARE FALLBACK] Serving expired memory cache.")
+                return cache[cache_key]["data"]
+            try:
+                with open("vlr_results_backup.json", "r", encoding="utf-8") as f:
+                    print("[VLR RESULTS PERSISTENT FALLBACK] Serving VLR results backup file.")
+                    backup_data = json.load(f)
+                    cache[cache_key] = {"data": backup_data, "timestamp": time.time()}
+                    return backup_data
+            except Exception as e_back:
+                print("Failed to load results backup:", e_back)
             return []
             
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -931,10 +972,27 @@ def scrape_vlr_results():
                     },
                     "vod": None
                 })
+        try:
+            with open("vlr_results_backup.json", "w", encoding="utf-8") as f:
+                json.dump(matches, f, indent=2)
+        except Exception as ef:
+            print("Failed to save results backup file:", ef)
+            
         cache[cache_key] = {"data": matches, "timestamp": time.time()}
         return matches
     except Exception as e:
         print("[ERROR] fetch_vlr_results failed:", e)
+        if cache_key in cache:
+            print("[VLR RESULTS MEMORY FALLBACK] Serving expired memory cache.")
+            return cache[cache_key]["data"]
+        try:
+            with open("vlr_results_backup.json", "r", encoding="utf-8") as f:
+                print("[VLR RESULTS PERSISTENT FALLBACK] Serving VLR results backup file.")
+                backup_data = json.load(f)
+                cache[cache_key] = {"data": backup_data, "timestamp": time.time()}
+                return backup_data
+        except Exception as e_back:
+            print("Failed to load results backup:", e_back)
         return []
 
 @app.route("/api/esports/live")
@@ -1002,6 +1060,12 @@ def esports_news():
                             "url_path": item.get('href', '')
                         })
                 if news_items:
+                    try:
+                        import json
+                        with open("vlr_news_backup.json", "w", encoding="utf-8") as f:
+                            json.dump(news_items, f, indent=2)
+                    except Exception as ef:
+                        print("Failed to save news backup:", ef)
                     cache[cache_key] = {"data": news_items, "timestamp": time.time()}
                     print(f"[SUCCESS] Esports News successfully scraped {len(news_items)} items from VLR.gg directly.")
                     return jsonify({"data": news_items})
@@ -1028,6 +1092,12 @@ def esports_news():
                         "url_path": url_path
                     })
                 if news_items:
+                    try:
+                        import json
+                        with open("vlr_news_backup.json", "w", encoding="utf-8") as f:
+                            json.dump(news_items, f, indent=2)
+                    except Exception as ef:
+                        print("Failed to save news backup:", ef)
                     cache[cache_key] = {"data": news_items, "timestamp": time.time()}
                     print(f"[SUCCESS] Esports News successfully fetched {len(news_items)} items from vlrggapi backup.")
                     return jsonify({"data": news_items})
@@ -1038,6 +1108,17 @@ def esports_news():
     if cache_key in cache:
         print("[INFO] Returning expired VLR news cache as emergency fallback.")
         return jsonify({"data": cache[cache_key]["data"]})
+        
+    # 3.5. Persistent Backup File Fallback
+    try:
+        import json
+        with open("vlr_news_backup.json", "r", encoding="utf-8") as f:
+            print("[VLR NEWS PERSISTENT FALLBACK] Serving VLR news backup file.")
+            backup_news = json.load(f)
+            cache[cache_key] = {"data": backup_news, "timestamp": time.time()}
+            return jsonify({"data": backup_news})
+    except Exception as e_back:
+        print("Failed to load news backup file:", e_back)
         
     # 4. Offline Mock News Fallback
     mock_news = [

@@ -10380,7 +10380,7 @@ body::after {
   background: linear-gradient(135deg, rgba(20, 20, 25, 0.65) 0%, rgba(10, 10, 12, 0.85) 100%) !important;
   border: 1px solid var(--border);
   border-radius: 30px;
-  padding: 2px 14px;
+  padding: 2px 10px !important;
   gap: 0;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.03), 0 4px 15px rgba(0,0,0,0.25);
@@ -10396,8 +10396,8 @@ body::after {
 .filter-item {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 8px;
+  gap: 4px !important;
+  padding: 4px 5px !important;
   cursor: pointer;
 }
 .filter-icon {
@@ -10409,6 +10409,8 @@ body::after {
 }
 .filter-icon-svg {
   color: var(--accent);
+  width: 12px !important;
+  height: 12px !important;
   filter: drop-shadow(0 0 4px rgba(250, 68, 84, 0.25));
 }
 .filter-item:hover .filter-icon {
@@ -10423,6 +10425,10 @@ body::after {
   color: var(--muted);
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
+.chevron-icon svg {
+  width: 8px !important;
+  height: 8px !important;
+}
 .filter-item:hover .chevron-icon {
   opacity: 0.8;
   color: var(--accent);
@@ -10432,20 +10438,20 @@ body::after {
   width: 1px;
   height: 16px;
   background: rgba(255,255,255,0.08);
-  margin: 0 4px;
+  margin: 0 2px !important;
 }
 .topbar-filter-capsule select {
   font-family: 'Barlow Condensed', sans-serif !important;
-  font-size: 13px !important;
+  font-size: 11.5px !important;
   font-weight: 700 !important;
-  letter-spacing: 0.5px !important;
+  letter-spacing: 0.3px !important;
   text-transform: uppercase !important;
   color: var(--text);
   background: transparent;
   border: none;
   outline: none;
   cursor: pointer;
-  padding: 6px 2px;
+  padding: 4px 2px !important;
   appearance: none;
   -webkit-appearance: none;
   transition: color 0.2s ease;
@@ -10454,9 +10460,9 @@ body::after {
   color: var(--accent);
 }
 
-#region-select { min-width: 42px !important; }
-#mode-select { min-width: 82px !important; }
-#act-select { min-width: 82px !important; }
+#region-select { min-width: 34px !important; }
+#mode-select { min-width: 72px !important; }
+#act-select { min-width: 72px !important; }
 
 .player-active-pill {
   font-family: 'Barlow Condensed', sans-serif !important;
