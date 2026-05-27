@@ -1666,6 +1666,22 @@ function openDB() {
 
 async function saveMatches(matches) {
   const db = await openDB();
+  
+  // Read all existing keys first in a readonly pass to avoid async delays inside the write transaction
+  const existingMap = {};
+  try {
+    const txRead = db.transaction(STORE_NAME, 'readonly');
+    const storeRead = txRead.objectStore(STORE_NAME);
+    const all = await new Promise((res) => {
+      const req = storeRead.getAll();
+      req.onsuccess = () => res(req.result || []);
+      req.onerror = () => res([]);
+    });
+    all.forEach(r => {
+      existingMap[r.matchId] = r.data;
+    });
+  } catch(e) {}
+
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE_NAME, 'readwrite');
     const store = tx.objectStore(STORE_NAME);
@@ -1675,6 +1691,16 @@ async function saveMatches(matches) {
       if (!id) return;
       // Key includes player+mode so different players/modes don't mix
       const storeKey = `${PLAYER_NAME}#${PLAYER_TAG}|${window._currentMode||'competitive'}|${id}`;
+      
+      const existing = existingMap[storeKey];
+      const newHasDetails = m.rounds && m.rounds.length > 0 && m.rounds[0].player_stats && m.rounds[0].player_stats.length > 0;
+      const existingHasDetails = existing && existing.rounds && existing.rounds.length > 0 && existing.rounds[0].player_stats;
+      
+      // If the stored match already has detailed rounds, do not overwrite/downgrade it with a raw list summary
+      if (existingHasDetails && !newHasDetails) {
+        return;
+      }
+      
       store.put({ matchId: storeKey, date: m.metadata?.game_start || Date.now(), data: m });
       saved++;
     });
@@ -1773,7 +1799,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         processMatches(stored);
         // Asynchronously prefetch match details in background on startup to populate weapons and rounds automatically
         setTimeout(() => {
-          prefetchMatchDetails(stored.slice(0, 15));
+          prefetchMatchDetails(stored);
         }, 500);
       }
       // Note: We deliberately do NOT call dismissLanding() here anymore! 
@@ -1935,9 +1961,7 @@ async function fetchAll(){
     }
 
     if(matchData?.data?.length){
-      // Clear stale data for this player+mode — ensures new act data replaces old act data
-      await clearPlayerMatches();
-      // Save fresh matches from API
+      // Save fresh matches from API without wiping out previous detailed match caches
       await saveMatches(matchData.data);
       // Load full history from DB and process all of it
       const allMatches = await loadAllMatches();
@@ -1945,7 +1969,7 @@ async function fetchAll(){
       
       // Asynchronously prefetch match details in background to populate weapons and rounds automatically
       setTimeout(() => {
-        prefetchMatchDetails(allMatches.slice(0, 15));
+        prefetchMatchDetails(allMatches);
       }, 500);
 
       const newCount = matchData.data.length;

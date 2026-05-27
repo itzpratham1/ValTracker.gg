@@ -602,10 +602,15 @@ def proxy_api(subpath):
     target_url = f"https://api.henrikdev.xyz/valorant/{encoded_subpath}"
     cache_key = f"{target_url}?{request.query_string.decode('utf-8')}"
     
+    # Immutable historic match details can be cached in memory for 24 hours (86400s) to maximize speeds
+    is_detail_route = subpath.startswith("v2/match/") or subpath.startswith("v3/match/")
+    detail_ttl = 86400  # 24 hours
+    
     if request.method == "GET" and cache_key in cache:
         cache_entry = cache[cache_key]
-        if time.time() - cache_entry["timestamp"] < CACHE_TTL:
-            print("[CACHE HIT] Serving from memory")
+        ttl = detail_ttl if is_detail_route else CACHE_TTL
+        if time.time() - cache_entry["timestamp"] < ttl:
+            print(f"[CACHE HIT] Serving detailed match {subpath} instantly from memory cache!")
             return jsonify(cache_entry["data"])
             
     headers = {
