@@ -27,55 +27,81 @@
   <div class="landing-logo">ValTracker<span style="color:var(--accent)">.gg</span></div>
   <div class="landing-tagline">Valorant Performance Tracker</div>
 
-  <div class="landing-card">
-    <div class="landing-card-title">Look up a player</div>
-    <div class="landing-card-sub">Enter a Riot ID to view stats, match history &amp; analysis</div>
+  <div class="landing-columns-wrap">
+    <div class="landing-card" style="margin: 0; flex: 1; min-width: 320px; max-width: 440px;">
+      <div class="landing-card-title">Look up a player</div>
+      <div class="landing-card-sub">Enter a Riot ID to view stats, match history &amp; analysis</div>
 
-    <div class="landing-field-label">Riot ID</div>
-    <div class="landing-input-row">
-      <input class="landing-input" id="l-name" type="text" placeholder="PlayerName" autocomplete="off" spellcheck="false">
-      <span class="landing-input-hash">#</span>
-      <input class="landing-input landing-input-tag" id="l-tag" type="text" placeholder="TAG" maxlength="8" autocomplete="off" spellcheck="false">
-    </div>
-
-    <div class="landing-row2">
-      <div>
-        <div class="landing-field-label">Region</div>
-        <select class="landing-select" id="l-region">
-          <option value="ap">AP — Asia Pacific</option>
-          <option value="na">NA — North America</option>
-          <option value="eu">EU — Europe</option>
-          <option value="kr">KR — Korea</option>
-        </select>
+      <div class="landing-field-label">Riot ID</div>
+      <div class="landing-input-row">
+        <input class="landing-input" id="l-name" type="text" placeholder="PlayerName" autocomplete="off" spellcheck="false">
+        <span class="landing-input-hash">#</span>
+        <input class="landing-input landing-input-tag" id="l-tag" type="text" placeholder="TAG" maxlength="8" autocomplete="off" spellcheck="false">
       </div>
+
+      <div class="landing-row2">
+        <div>
+          <div class="landing-field-label">Region</div>
+          <select class="landing-select" id="l-region">
+            <option value="ap">AP — Asia Pacific</option>
+            <option value="na">NA — North America</option>
+            <option value="eu">EU — Europe</option>
+            <option value="kr">KR — Korea</option>
+          </select>
+        </div>
+        <div>
+          <div class="landing-field-label">Mode</div>
+          <select class="landing-select" id="l-mode">
+            <option value="competitive">Competitive</option>
+            <option value="unrated">Unrated</option>
+            <option value="deathmatch">Deathmatch</option>
+            <option value="teamdeathmatch">Team DM</option>
+            <option value="swiftplay">Swiftplay</option>
+            <option value="spikerush">Spike Rush</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="landing-btn" id="l-btn" onclick="landingFetch()">▶ View Stats</button>
+      <div class="landing-error" id="l-error"></div>
+
+      <div class="landing-divider">
+        <div class="landing-divider-line"></div>
+        <div class="landing-divider-txt">or jump to</div>
+        <div class="landing-divider-line"></div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div class="landing-quick-label" style="margin-bottom:0">My Profile</div>
+        <button onclick="setMyProfile()" style="background:none;border:none;font-family:'DM Mono',monospace;font-size:9px;color:var(--accent);letter-spacing:1px;cursor:pointer;padding:0">SET AS MY PROFILE ›</button>
+      </div>
+      <div id="landing-profile-wrap"><!-- filled by JS --></div>
+    </div>
+
+    <!-- RECENT SEARCHES & BOOKMARKS CARD -->
+    <div class="landing-card" id="landing-history-card" style="margin: 0; flex: 1; min-width: 320px; max-width: 440px; display: flex; flex-direction: column; gap: 20px;">
+      <!-- Bookmarked Players Section -->
       <div>
-        <div class="landing-field-label">Mode</div>
-        <select class="landing-select" id="l-mode">
-          <option value="competitive">Competitive</option>
-          <option value="unrated">Unrated</option>
-          <option value="deathmatch">Deathmatch</option>
-          <option value="teamdeathmatch">Team DM</option>
-          <option value="swiftplay">Swiftplay</option>
-          <option value="spikerush">Spike Rush</option>
-    </select>
-        </select>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div class="landing-card-title" style="margin:0; font-size:16px; color:#ffd700; display:flex; align-items:center; gap:6px;">★ Bookmarked Players</div>
+          <span style="font-family:'DM Mono',monospace; font-size:9px; color:var(--muted);" id="bookmarks-count">0 Players</span>
+        </div>
+        <div id="landing-bookmarks-list" style="display:flex; flex-direction:column; gap:8px; max-height:160px; overflow-y:auto; padding-right:4px;">
+          <div style="font-size:10px; color:var(--muted2); text-align:center; padding:16px 12px; font-family:'DM Mono',monospace; border:1px dashed rgba(255,255,255,0.05); border-radius:8px;">No bookmarked players.<br>Click ★ next to their name in header.</div>
+        </div>
+      </div>
+
+      <!-- Recent Searches Section -->
+      <div style="border-top:1px solid rgba(255,255,255,0.05); padding-top:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div class="landing-card-title" style="margin:0; font-size:16px; color:var(--accent);">🕒 Recent Searches</div>
+          <button onclick="clearRecentSearches()" style="background:none; border:none; color:var(--muted); font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.5px; cursor:pointer;">CLEAR ALL</button>
+        </div>
+        <div id="landing-recent-list" style="display:flex; flex-direction:column; gap:8px; max-height:180px; overflow-y:auto; padding-right:4px;">
+          <div style="font-size:10px; color:var(--muted2); text-align:center; padding:16px 12px; font-family:'DM Mono',monospace; border:1px dashed rgba(255,255,255,0.05); border-radius:8px;">No recent searches yet.</div>
+        </div>
       </div>
     </div>
-
-    <button class="landing-btn" id="l-btn" onclick="landingFetch()">▶ View Stats</button>
-    <div class="landing-error" id="l-error"></div>
-
-    <div class="landing-divider">
-      <div class="landing-divider-line"></div>
-      <div class="landing-divider-txt">or jump to</div>
-      <div class="landing-divider-line"></div>
-    </div>
-
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-      <div class="landing-quick-label" style="margin-bottom:0">My Profile</div>
-      <button onclick="setMyProfile()" style="background:none;border:none;font-family:'DM Mono',monospace;font-size:9px;color:var(--accent);letter-spacing:1px;cursor:pointer;padding:0">SET AS MY PROFILE ›</button>
-    </div>
-    <div id="landing-profile-wrap"><!-- filled by JS --></div>
   </div>
 </div>
 
@@ -103,6 +129,7 @@
         <div class="active-pill-avatar-fallback">👤</div>
       </div>
       <div class="active-pill-name" id="active-pill-name"></div>
+      <button class="active-pill-btn bookmark-btn" id="active-pill-bookmark-btn" onclick="toggleActiveBookmark()" title="Bookmark Player">★</button>
       <button class="active-pill-btn" onclick="copyRiotId()" title="Copy ID">
         <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
           <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -913,6 +940,22 @@
           </div>
 
           <button class="fetch-btn" style="width: 100%; margin-top: 10px; margin-bottom: 0;" onclick="resetDraftComp()">↻ Clear Current Draft</button>
+          
+          <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button class="fetch-btn" style="flex: 1; margin: 0; background: var(--accent); color: #0d0d0f;" onclick="saveCurrentDraftComp()">💾 Save Draft</button>
+            <button class="fetch-btn" style="flex: 1; margin: 0; background: rgba(255,255,255,0.05); border: 1px solid var(--border);" onclick="exportCurrentDraftCompPNG()">📥 Export Lineup</button>
+          </div>
+        </div>
+
+        <!-- My Saved Compositions Card -->
+        <div class="section-label visible" id="saved-comps-label" style="margin-top: 15px; margin-bottom: 0; display: none;">
+          <span class="sl-text">My Saved Compositions</span>
+          <div class="sl-line"></div>
+        </div>
+        <div class="card" id="saved-comps-card" style="padding: 16px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 12px; display: none; flex-direction: column; gap: 12px; margin: 0;">
+          <div id="saved-comps-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto; padding-right: 4px;">
+            <!-- Populated dynamically by JS -->
+          </div>
         </div>
 
         <!-- Compare Against the Pros Card -->
@@ -1721,6 +1764,8 @@ window.addEventListener('DOMContentLoaded', async () => {
   applyModeUI();
   // Render saved profile on landing
   renderLandingProfile();
+  renderLandingHistory();
+  renderSavedDrafts();
   // Update landing subtitle with cached count
   getMatchCount().then(count => {
     if (count > 0) {
@@ -1852,6 +1897,8 @@ async function fetchAll(){
       const totalCount = allMatches.length;
       setStatus(`${newCount} new · ${totalCount} total stored`,'ok');
       showToast(`${totalCount} matches total ✓`);
+      addToRecentSearches(PLAYER_NAME, PLAYER_TAG, region, mode);
+      renderActiveBookmarkButton();
       dismissLanding();
     }else{
       setStatus(`No ${mode} matches found — try a different region`,'error');
@@ -5439,6 +5486,159 @@ function updateActivePillAgent(agentName) {
 
 
 
+// ══ SEARCH HISTORY & BOOKMARKS (localStorage) ══
+function addToRecentSearches(name, tag, region, mode) {
+  if (!name || !tag) return;
+  
+  const rankEl = document.getElementById('rank-display');
+  const rankName = rankEl ? rankEl.textContent.trim() : 'UNRANKED';
+  const rankImg = getRankImgUrl(rankName);
+  
+  let history = [];
+  try {
+    history = JSON.parse(localStorage.getItem('valtracker_recent_searches')) || [];
+  } catch(e) { history = []; }
+  
+  history = history.filter(p => !(p.name.toLowerCase() === name.toLowerCase() && p.tag.toLowerCase() === tag.toLowerCase()));
+  
+  history.unshift({
+    name,
+    tag,
+    region,
+    mode,
+    rankName,
+    rankImg,
+    timestamp: Date.now()
+  });
+  
+  if (history.length > 6) {
+    history.pop();
+  }
+  
+  localStorage.setItem('valtracker_recent_searches', JSON.stringify(history));
+  renderLandingHistory();
+}
+
+function renderActiveBookmarkButton() {
+  const btn = document.getElementById('active-pill-bookmark-btn');
+  if (!btn || !PLAYER_NAME || !PLAYER_TAG) return;
+  
+  let bookmarks = [];
+  try {
+    bookmarks = JSON.parse(localStorage.getItem('valtracker_bookmarks')) || [];
+  } catch(e) { bookmarks = []; }
+  
+  const isBookmarked = bookmarks.some(p => p.name.toLowerCase() === PLAYER_NAME.toLowerCase() && p.tag.toLowerCase() === PLAYER_TAG.toLowerCase());
+  
+  if (isBookmarked) {
+    btn.style.color = '#ffd700'; // Gold star
+    btn.title = 'Remove Bookmark';
+  } else {
+    btn.style.color = 'var(--muted)'; // Muted star
+    btn.title = 'Bookmark Player';
+  }
+}
+
+function toggleActiveBookmark() {
+  if (!PLAYER_NAME || !PLAYER_TAG) return;
+  
+  let bookmarks = [];
+  try {
+    bookmarks = JSON.parse(localStorage.getItem('valtracker_bookmarks')) || [];
+  } catch(e) { bookmarks = []; }
+  
+  const idx = bookmarks.findIndex(p => p.name.toLowerCase() === PLAYER_NAME.toLowerCase() && p.tag.toLowerCase() === PLAYER_TAG.toLowerCase());
+  
+  const region = document.getElementById('region-select').value;
+  const mode = document.getElementById('mode-select')?.value || 'competitive';
+  const rankEl = document.getElementById('rank-display');
+  const rankName = rankEl ? rankEl.textContent.trim() : 'UNRANKED';
+  const rankImg = getRankImgUrl(rankName);
+  
+  if (idx !== -1) {
+    bookmarks.splice(idx, 1);
+    showToast('Removed from Bookmarks');
+  } else {
+    bookmarks.unshift({
+      name: PLAYER_NAME,
+      tag: PLAYER_TAG,
+      region,
+      mode,
+      rankName,
+      rankImg,
+      timestamp: Date.now()
+    });
+    showToast('Added to Bookmarks ★');
+  }
+  
+  localStorage.setItem('valtracker_bookmarks', JSON.stringify(bookmarks));
+  renderActiveBookmarkButton();
+  renderLandingHistory();
+}
+
+function renderLandingHistory() {
+  const bookmarksList = document.getElementById('landing-bookmarks-list');
+  const recentList = document.getElementById('landing-recent-list');
+  const bookmarksCount = document.getElementById('bookmarks-count');
+  
+  if (!bookmarksList || !recentList) return;
+  
+  let bookmarks = [];
+  try { bookmarks = JSON.parse(localStorage.getItem('valtracker_bookmarks')) || []; } catch(e) { bookmarks = []; }
+  
+  if (bookmarksCount) bookmarksCount.textContent = `${bookmarks.length} Player${bookmarks.length === 1 ? '' : 's'}`;
+  
+  if (bookmarks.length === 0) {
+    bookmarksList.innerHTML = `<div style="font-size:10px; color:var(--muted2); text-align:center; padding:16px 12px; font-family:'DM Mono',monospace; border:1px dashed rgba(255,255,255,0.05); border-radius:8px;">No bookmarked players.<br>Click ★ next to their name in header.</div>`;
+  } else {
+    bookmarksList.innerHTML = bookmarks.map(p => {
+      const escapedName = p.name.replace(/'/g, "\\'");
+      return `
+        <div class="landing-quick-btn" style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; margin-bottom: 2px;">
+          <div onclick="landingQuick('${escapedName}','${p.tag}','${p.region}','${p.mode}')" style="display:flex; align-items:center; gap:8px; flex:1; cursor:pointer;">
+            ${p.rankImg ? `<img src="${p.rankImg}" style="width:18px; height:18px; object-fit:contain;">` : `<div style="width:18px; height:18px; background:rgba(255,255,255,0.05); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--muted2)">👤</div>`}
+            <div style="font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700; color:#fff;">${p.name}<span style="color:var(--muted2); font-weight:normal; font-size:10px;">#${p.tag}</span></div>
+          </div>
+          <button onclick="removeBookmarkDirect('${escapedName}','${p.tag}')" style="background:none; border:none; color:var(--muted); font-size:14px; cursor:pointer; padding:0 4px; transition:color 0.2s;" onmouseover="this.style.color='#ff4655'" onmouseout="this.style.color='var(--muted)'">×</button>
+        </div>
+      `;
+    }).join('');
+  }
+  
+  let recent = [];
+  try { recent = JSON.parse(localStorage.getItem('valtracker_recent_searches')) || []; } catch(e) { recent = []; }
+  
+  if (recent.length === 0) {
+    recentList.innerHTML = `<div style="font-size:10px; color:var(--muted2); text-align:center; padding:16px 12px; font-family:'DM Mono',monospace; border:1px dashed rgba(255,255,255,0.05); border-radius:8px;">No recent searches yet.</div>`;
+  } else {
+    recentList.innerHTML = recent.map(p => {
+      const escapedName = p.name.replace(/'/g, "\\'");
+      return `
+        <div class="landing-quick-btn" onclick="landingQuick('${escapedName}','${p.tag}','${p.region}','${p.mode}')" style="display:flex; align-items:center; gap:8px; padding:8px 12px; cursor:pointer; margin-bottom: 2px;">
+          ${p.rankImg ? `<img src="${p.rankImg}" style="width:18px; height:18px; object-fit:contain;">` : `<div style="width:18px; height:18px; background:rgba(255,255,255,0.05); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--muted2)">👤</div>`}
+          <div style="font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700; color:#fff; flex:1;">${p.name}<span style="color:var(--muted2); font-weight:normal; font-size:10px;">#${p.tag}</span></div>
+          <div style="font-family:'DM Mono',monospace; font-size:8px; color:var(--muted2); text-transform:uppercase; border:1px solid rgba(255,255,255,0.08); padding:1px 4px; border-radius:3px;">${p.region}</div>
+        </div>
+      `;
+    }).join('');
+  }
+}
+
+function removeBookmarkDirect(name, tag) {
+  let bookmarks = [];
+  try { bookmarks = JSON.parse(localStorage.getItem('valtracker_bookmarks')) || []; } catch(e) { bookmarks = []; }
+  bookmarks = bookmarks.filter(p => !(p.name.toLowerCase() === name.toLowerCase() && p.tag.toLowerCase() === tag.toLowerCase()));
+  localStorage.setItem('valtracker_bookmarks', JSON.stringify(bookmarks));
+  renderActiveBookmarkButton();
+  renderLandingHistory();
+}
+
+function clearRecentSearches() {
+  localStorage.removeItem('valtracker_recent_searches');
+  renderLandingHistory();
+  showToast('Cleared search history');
+}
+
 // ══ PERSONAL PROFILE (localStorage) ══
 const PROFILE_KEY = 'valstats_my_profile';
 
@@ -5644,6 +5844,46 @@ function _buildSparklineSVG(points, w, h) {
   return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible"><polyline points="${pts.join(' ')}" fill="none" stroke="${col}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/><circle cx="${lx}" cy="${ly}" r="2.5" fill="${col}"/></svg>`;
 }
 
+function getHeatmapSvg(hsPct, height = 115) {
+  const hs = Math.min(Math.round(hsPct * 0.7) + 5, 55); 
+  const lg = Math.max(Math.round((100 - hs) * 0.08), 3); 
+  const bd = 100 - hs - lg; 
+  
+  const hsOpacity = Math.max(0.12, hs / 60);
+  const bdOpacity = Math.max(0.12, bd / 100);
+  const lgOpacity = Math.max(0.06, lg / 20);
+  
+  const hsFill = `rgba(255, 70, 85, ${hsOpacity})`;
+  const bdFill = `rgba(255, 70, 85, ${bdOpacity})`;
+  const lgFill = `rgba(255, 70, 85, ${lgOpacity})`;
+  
+  return `
+    <svg viewBox="0 0 100 160" style="height:${height}px; width:auto; overflow:visible; display:block;" class="wpn-silhouette-svg">
+      <defs>
+        <filter id="glow-red" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feComponentTransfer>
+            <feFuncA type="linear" slope="0.5"/>
+          </feComponentTransfer>
+          <feComposite in="SourceGraphic" operator="over" />
+        </filter>
+      </defs>
+      
+      <path class="wpn-heat-seg" data-segment="HEAD" data-pct="${hs}" 
+            d="M 50 35 C 57 35, 62 29, 62 20 C 62 11, 57 5, 50 5 C 43 5, 38 11, 38 20 C 38 29, 43 35, 50 35 Z" 
+            fill="${hsFill}" stroke="#ff4655" stroke-width="1.5" style="filter: ${hs >= 30 ? 'url(#glow-red)' : 'none'}; transition: all 0.2s;" />
+            
+      <path class="wpn-heat-seg" data-segment="BODY" data-pct="${bd}" 
+            d="M 32 40 L 68 40 C 72 45, 72 55, 70 70 L 66 110 C 66 110, 60 115, 50 115 C 40 115, 34 110, 34 110 L 30 70 C 28 55, 28 45, 32 40 Z" 
+            fill="${bdFill}" stroke="#ff4655" stroke-width="1.5" style="filter: ${bd >= 50 ? 'url(#glow-red)' : 'none'}; transition: all 0.2s;" />
+            
+      <path class="wpn-heat-seg" data-segment="LEGS" data-pct="${lg}" 
+            d="M 35 116 C 37 116, 47 118, 48 122 L 44 155 C 44 157, 36 157, 34 157 C 32 157, 32 153, 33 148 L 36 122 M 65 116 C 63 116, 53 118, 52 122 L 56 155 C 56 157, 64 157, 66 157 C 68 157, 68 153, 67 148 L 64 122" 
+            fill="${lgFill}" stroke="#ff4655" stroke-width="1.5" style="transition: all 0.2s;" />
+    </svg>
+  `;
+}
+
 function renderTopWeapons(matches) {
   // Aggregate weapon stats from match-level data (headshots per match)
   // We use agent names as proxy for weapon preference since we don't have
@@ -5797,27 +6037,55 @@ function renderTopWeapons(matches) {
          </div>`;
 
     showcaseHtml += `
-      <div class="top-weapon-showcase">
+      <div class="top-weapon-showcase" style="display: flex; flex-direction: column; justify-content: space-between;">
         <div class="top-weapon-badge">&#128293; Top Arsenal</div>
-        <div class="top-weapon-img-wrap">
+        
+        <div class="top-weapon-img-wrap" style="text-align: center; margin-bottom: 8px;">
           ${imgUrl
             ? `<img class="top-weapon-img" src="${imgUrl}" alt="${wpn}" onerror="this.parentElement.innerHTML='<div class=weapon-img-fallback>${wpn}</div>'">`
             : `<div class="weapon-img-fallback">${wpn}</div>`}
         </div>
-        <div class="top-weapon-details">
-          <div class="top-weapon-name">${wpn}</div>
-          <div class="top-weapon-type">${type}</div>
-          <div class="top-weapon-stats-grid">
-            <div class="top-weapon-stat">
-              <span class="top-weapon-val">${v.kills}</span>
-              <span class="top-weapon-lbl">Kills</span>
+        
+        <div style="display: flex; gap: 16px; align-items: stretch; justify-content: space-between; flex: 1;">
+          <div style="flex: 1.2; display: flex; flex-direction: column; justify-content: space-between; min-width: 0;">
+            <div class="top-weapon-details" style="padding: 0;">
+              <div class="top-weapon-name" style="margin: 0; line-height: 1;">${wpn}</div>
+              <div class="top-weapon-type">${type}</div>
+              <div class="top-weapon-stats-grid" style="margin-top: 10px; margin-bottom: 10px;">
+                <div class="top-weapon-stat">
+                  <span class="top-weapon-val">${v.kills}</span>
+                  <span class="top-weapon-lbl">Kills</span>
+                </div>
+                <div class="top-weapon-stat">
+                  <span class="top-weapon-val" style="color:${hsPctCol}">${hsPct}%&thinsp;${deltaPill}</span>
+                  <span class="top-weapon-lbl">HS Kill %</span>
+                </div>
+              </div>
             </div>
-            <div class="top-weapon-stat">
-              <span class="top-weapon-val" style="color:${hsPctCol}">${hsPct}%&thinsp;${deltaPill}</span>
-              <span class="top-weapon-lbl">HS Kill %</span>
+            ${sparklineBlock}
+          </div>
+          
+          <div class="wpn-heatmap-card" style="width: 125px; flex-shrink: 0; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 10px 8px; display: flex; align-items: center; justify-content: center; position: relative;">
+            <div style="display: flex; gap: 8px; align-items: center; width: 100%; justify-content: center;">
+              <div style="position: relative;">
+                 ${getHeatmapSvg(hsPct, 105)}
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 5px; font-family:'DM Mono', monospace; font-size: 8px; min-width: 45px; text-align: left;">
+                <div style="display: flex; flex-direction: column;">
+                  <span style="color: #ff4655; font-weight: bold; letter-spacing: 0.5px;">HEAD</span>
+                  <span style="font-size: 10px; font-weight: 900; color: #fff;">${Math.min(Math.round(hsPct * 0.7) + 5, 55)}%</span>
+                </div>
+                <div style="display: flex; flex-direction: column; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 3px;">
+                  <span style="color: rgba(255, 70, 85, 0.75); font-weight: bold; letter-spacing: 0.5px;">BODY</span>
+                  <span style="font-size: 10px; font-weight: 900; color: #fff;">${100 - Math.min(Math.round(hsPct * 0.7) + 5, 55) - Math.max(Math.round((100 - Math.min(Math.round(hsPct * 0.7) + 5, 55)) * 0.08), 3)}%</span>
+                </div>
+                <div style="display: flex; flex-direction: column; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 3px;">
+                  <span style="color: rgba(255, 70, 85, 0.45); font-weight: bold; letter-spacing: 0.5px;">LEGS</span>
+                  <span style="font-size: 10px; font-weight: 900; color: #fff;">${Math.max(Math.round((100 - Math.min(Math.round(hsPct * 0.7) + 5, 55)) * 0.08), 3)}%</span>
+                </div>
+              </div>
             </div>
           </div>
-          ${sparklineBlock}
         </div>
       </div>
     `;
@@ -5865,7 +6133,7 @@ function renderTopWeapons(matches) {
             <span class="sec-weapon-lbl">HS Kill %</span>
           </div>
         </div>
-        <div class="sec-weapon-acc-bars">
+        <div class="sec-weapon-acc-bars wpn-tooltip-trigger">
           <div class="sec-weapon-acc-row">
             <span class="sec-war-lbl">HS</span>
             <div class="sec-war-bar-wrap">
@@ -5879,6 +6147,16 @@ function renderTopWeapons(matches) {
               <div class="sec-war-bar-fill" style="width:${100 - hsPct}%;background:var(--muted2);"></div>
             </div>
             <span class="sec-war-pct" style="color:var(--muted2)">${100 - hsPct}%</span>
+          </div>
+          
+          <div class="wpn-tooltip-card">
+            <div style="font-family:'Barlow Condensed', sans-serif; font-size:10px; font-weight:800; text-transform:uppercase; color:var(--accent); margin-bottom:4px; letter-spacing:0.5px;">Target Heatmap</div>
+            ${getHeatmapSvg(hsPct, 64)}
+            <div style="display:flex; justify-content:space-between; width:100%; font-family:'DM Mono',monospace; font-size:8px; color:#fff; border-top:1px solid rgba(255,255,255,0.06); padding-top:4px; margin-top:3px; box-sizing:border-box;">
+              <span style="color:#ff4655">H:${Math.min(Math.round(hsPct * 0.7) + 5, 55)}%</span>
+              <span style="color:rgba(255,70,85,0.75)">B:${100 - Math.min(Math.round(hsPct * 0.7) + 5, 55) - Math.max(Math.round((100 - Math.min(Math.round(hsPct * 0.7) + 5, 55)) * 0.08), 3)}%</span>
+              <span style="color:rgba(255,70,85,0.45)">L:${Math.max(Math.round((100 - Math.min(Math.round(hsPct * 0.7) + 5, 55)) * 0.08), 3)}%</span>
+            </div>
           </div>
         </div>
         <div class="sec-wpn-trend-col">${trendArrow}</div>
@@ -7022,6 +7300,7 @@ function toggleMainView(view) {
     } else if (view === 'coach') {
       if (cView) cView.style.display = 'block';
       resetDraftComp();
+      renderSavedDrafts();
     }
   }
 }
@@ -8709,6 +8988,354 @@ function selectDraftAgent(agKey) {
   evaluateDraft();
 }
 
+// ── SAVED DRAFTS (localStorage) & PNG INFOGRAPHIC EXPORT ──
+function saveCurrentDraftComp() {
+  const selected = draftSlots.filter(s => s !== null);
+  if (selected.length < 5) {
+    showToast('Cannot save incomplete draft. Draft 5 agents first.');
+    return;
+  }
+  
+  const mapKey = document.getElementById('dc-map-select').value;
+  const mapCapitalized = mapKey.charAt(0).toUpperCase() + mapKey.slice(1);
+  
+  const compName = prompt("Enter a name for this custom setup:", `${mapCapitalized} Tactics`);
+  if (compName === null) return; // user cancelled
+  
+  const finalName = compName.trim() || `${mapCapitalized} Tactics`;
+  
+  let saved = [];
+  try {
+    saved = JSON.parse(localStorage.getItem('valtracker_comps')) || [];
+  } catch(e) { saved = []; }
+  
+  saved.unshift({
+    id: Date.now(),
+    name: finalName,
+    map: mapKey,
+    agents: [...draftSlots],
+    timestamp: Date.now()
+  });
+  
+  localStorage.setItem('valtracker_comps', JSON.stringify(saved));
+  renderSavedDrafts();
+  showToast('Composition saved successfully!');
+}
+
+function deleteDraftComp(id) {
+  let saved = [];
+  try {
+    saved = JSON.parse(localStorage.getItem('valtracker_comps')) || [];
+  } catch(e) { saved = []; }
+  
+  saved = saved.filter(c => c.id !== id);
+  localStorage.setItem('valtracker_comps', JSON.stringify(saved));
+  renderSavedDrafts();
+  showToast('Draft deleted.');
+}
+
+function loadDraftComp(id) {
+  let saved = [];
+  try {
+    saved = JSON.parse(localStorage.getItem('valtracker_comps')) || [];
+  } catch(e) { saved = []; }
+  
+  const comp = saved.find(c => c.id === id);
+  if (!comp) return;
+  
+  draftSlots = [...comp.agents];
+  const mapSelect = document.getElementById('dc-map-select');
+  if (mapSelect && comp.map) {
+    mapSelect.value = comp.map;
+  }
+  
+  for (let i = 0; i < 5; i++) {
+    const agKey = draftSlots[i];
+    const slotAvatar = document.getElementById(`dc-slot-avatar-${i}`);
+    const slotName = document.getElementById(`dc-slot-name-${i}`);
+    if (agKey) {
+      const iconUrl = getAgentIconUrl(agKey.charAt(0).toUpperCase() + agKey.slice(1));
+      slotAvatar.innerHTML = iconUrl ? `<img class="dc-slot-avatar-img" src="${iconUrl}">` : '👤';
+      slotName.innerText = agKey.toUpperCase();
+    } else {
+      slotAvatar.innerHTML = '➕';
+      slotName.innerText = `Slot ${i+1}`;
+    }
+  }
+  
+  evaluateDraft();
+  showToast('Custom draft loaded!');
+}
+
+function renderSavedDrafts() {
+  const container = document.getElementById('saved-comps-list');
+  const card = document.getElementById('saved-comps-card');
+  const label = document.getElementById('saved-comps-label');
+  
+  if (!container || !card || !label) return;
+  
+  let saved = [];
+  try {
+    saved = JSON.parse(localStorage.getItem('valtracker_comps')) || [];
+  } catch(e) { saved = []; }
+  
+  if (saved.length === 0) {
+    card.style.display = 'none';
+    label.style.display = 'none';
+    return;
+  }
+  
+  card.style.display = 'flex';
+  label.style.display = 'block';
+  
+  container.innerHTML = saved.map(c => {
+    const mapName = c.map.toUpperCase();
+    const iconsHtml = c.agents.map(ag => {
+      if (!ag) return '';
+      const icon = getAgentIconUrl(ag.charAt(0).toUpperCase() + ag.slice(1));
+      return icon ? `<img src="${icon}" style="width:20px; height:20px; border-radius:50%; border:1px solid rgba(255,255,255,0.1);" title="${ag.toUpperCase()}">` : '👤';
+    }).join('');
+    
+    return `
+      <div class="landing-quick-btn" style="display:flex; justify-content:space-between; align-items:center; padding:10px 12px; margin-bottom: 2px;">
+        <div onclick="loadDraftComp(${c.id})" style="display:flex; flex-direction:column; gap:6px; flex:1; cursor:pointer;">
+          <div style="font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:800; color:#fff; text-transform:uppercase; display:flex; align-items:center; gap:8px;">
+            <span>${c.name}</span>
+            <span style="font-family:'DM Mono',monospace; font-size:9px; color:var(--accent); border:1px solid rgba(232,232,232,0.2); padding:0px 4px; border-radius:3px;">${mapName}</span>
+          </div>
+          <div style="display:flex; gap:4px; align-items:center;">
+            ${iconsHtml}
+          </div>
+        </div>
+        <button onclick="deleteDraftComp(${c.id})" style="background:none; border:none; color:var(--muted); font-size:14px; cursor:pointer; padding:0 4px; transition:color 0.2s;" onmouseover="this.style.color='#ff4655'" onmouseout="this.style.color='var(--muted)'">×</button>
+      </div>
+    `;
+  }).join('');
+}
+
+async function exportCurrentDraftCompPNG() {
+  if (typeof html2canvas === 'undefined') {
+    showToast('Export library not loaded.');
+    return;
+  }
+  
+  const selected = draftSlots.filter(s => s !== null);
+  if (selected.length < 5) {
+    showToast('Cannot export incomplete draft. Draft 5 agents first.');
+    return;
+  }
+  
+  const mapKey = document.getElementById('dc-map-select').value;
+  const mapCapitalized = mapKey.toUpperCase();
+  
+  const score = document.getElementById('dc-score-meter').innerText;
+  const verdictTitle = document.getElementById('dc-verdict-title').innerText;
+  const verdictDesc = document.getElementById('dc-verdict-desc').innerText;
+  
+  const duelistsText = document.getElementById('dc-bar-duelists-txt').innerText;
+  const duelistsWidth = document.getElementById('dc-bar-duelists').style.width;
+  
+  const initiatorsText = document.getElementById('dc-bar-initiators-txt').innerText;
+  const initiatorsWidth = document.getElementById('dc-bar-initiators').style.width;
+  
+  const controllersText = document.getElementById('dc-bar-controllers-txt').innerText;
+  const controllersWidth = document.getElementById('dc-bar-controllers').style.width;
+  
+  const sentinelsText = document.getElementById('dc-bar-sentinels-txt').innerText;
+  const sentinelsWidth = document.getElementById('dc-bar-sentinels').style.width;
+  
+  const entryText = document.getElementById('dc-metric-entry-txt').innerText;
+  const entryWidth = document.getElementById('dc-metric-entry').style.width;
+  
+  const defenseText = document.getElementById('dc-metric-defense-txt').innerText;
+  const defenseWidth = document.getElementById('dc-metric-defense').style.width;
+  
+  const retakeText = document.getElementById('dc-metric-retake-txt').innerText;
+  const retakeWidth = document.getElementById('dc-metric-retake').style.width;
+  
+  const synergyText = document.getElementById('dc-metric-synergy-txt').innerText;
+  const synergyWidth = document.getElementById('dc-metric-synergy').style.width;
+  
+  const insightsWrap = document.getElementById('dc-insights-wrap');
+  let insightsHtml = '';
+  if (insightsWrap) {
+    const insightCards = Array.from(insightsWrap.querySelectorAll('.dc-insight-card'));
+    insightsHtml = insightCards.slice(0, 3).map(card => {
+      const text = card.innerText.trim();
+      const isWarn = card.classList.contains('warn');
+      const isTip = card.classList.contains('tip');
+      const isOk = card.classList.contains('ok');
+      
+      let borderColor = 'rgba(255,255,255,0.08)';
+      let bgColor = 'rgba(255,255,255,0.02)';
+      let icon = '⚡';
+      if (isWarn) { borderColor = '#fa4454'; bgColor = 'rgba(250,68,84,0.04)'; icon = '⚠️'; }
+      else if (isTip) { borderColor = '#e8ff47'; bgColor = 'rgba(232,255,71,0.04)'; icon = '💡'; }
+      else if (isOk) { borderColor = '#3ecf8e'; bgColor = 'rgba(62,207,142,0.04)'; icon = '✓'; }
+      
+      return `
+        <div style="background:${bgColor}; border:1px solid ${borderColor}; padding:8px 12px; border-radius:8px; display:flex; gap:8px; align-items:start; font-size:10px; color:#fff; line-height:1.2; text-align:left; margin-bottom:4px;">
+          <span style="font-size:11px;">${icon}</span>
+          <span>${text}</span>
+        </div>
+      `;
+    }).join('');
+  }
+  
+  const agentLineupHtml = draftSlots.map(ag => {
+    const icon = getAgentIconUrl(ag.charAt(0).toUpperCase() + ag.slice(1));
+    return `
+      <div style="display:flex; flex-direction:column; align-items:center; gap:4px; width:75px; background:rgba(255,255,255,0.015); border:1px solid rgba(255,255,255,0.05); padding:8px; border-radius:10px; box-sizing:border-box;">
+        <img src="${icon}" style="width:38px; height:38px; border-radius:50%; border:2px solid rgba(255, 68, 84, 0.3);">
+        <span style="font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:800; text-transform:uppercase; color:#fff; text-align:center; overflow:hidden; text-overflow:ellipsis; width:100%; white-space:nowrap;">${ag}</span>
+      </div>
+    `;
+  }).join('');
+  
+  const exportCard = document.getElementById('dc-export-container');
+  exportCard.innerHTML = `
+    <div id="dc-capture-target" style="width: 480px; padding: 24px; background: linear-gradient(135deg, #141416 0%, #0d0d0f 100%); border: 2px solid #ff4655; border-radius: 16px; color: #fff; font-family:'Barlow Condensed', sans-serif; box-sizing:border-box;">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid rgba(255,70,85,0.2); padding-bottom:12px; margin-bottom:16px;">
+        <div>
+          <div style="font-size:22px; font-weight:900; letter-spacing:1px; color:#ff4655; text-transform:uppercase; line-height:1;">VALTRACKER.GG</div>
+          <div style="font-family:'DM Mono',monospace; font-size:9px; color:#7e7e8a; text-transform:uppercase; margin-top:2px;">VCT Coach Verdict</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:18px; font-weight:800; text-transform:uppercase; color:#fff; line-height:1;">${mapCapitalized}</div>
+          <div style="font-family:'DM Mono',monospace; font-size:9px; color:#7e7e8a; text-transform:uppercase; margin-top:2px;">MAP SETTINGS</div>
+        </div>
+      </div>
+      
+      <div style="display:flex; justify-content:space-between; gap:6px; margin-bottom:16px;">
+        ${agentLineupHtml}
+      </div>
+      
+      <div style="display:flex; align-items:center; gap:16px; background:rgba(255, 70, 85, 0.04); border:1px solid rgba(255, 70, 85, 0.12); padding:12px; border-radius:12px; margin-bottom:16px; box-sizing:border-box;">
+        <div style="width:56px; height:56px; border-radius:50%; border:3px solid #ff4655; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:0 0 10px rgba(255,70,85,0.1); flex-shrink:0; box-sizing:border-box;">
+          <div style="font-size:20px; font-weight:900; color:#ff4655; line-height:1;">${score}</div>
+          <div style="font-size:7px; color:#7e7e8a; font-weight:bold; text-transform:uppercase; line-height:1; margin-top:1px;">SCORE</div>
+        </div>
+        <div style="text-align:left;">
+          <div style="font-size:15px; font-weight:800; text-transform:uppercase; color:#fff; line-height:1.1;">${verdictTitle}</div>
+          <p style="font-size:10px; color:#7e7e8a; margin:3px 0 0 0; line-height:1.2;">${verdictDesc}</p>
+        </div>
+      </div>
+      
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+        <div style="display:flex; flex-direction:column; gap:6px; text-align:left;">
+          <div style="font-size:11px; font-weight:800; text-transform:uppercase; color:#ff4655; margin-bottom:2px;">📊 Role Balance</div>
+          
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:8px; font-family:'DM Mono',monospace; color:#7e7e8a; margin-bottom:1px;">
+              <span>Duelists</span><span>${duelistsText}</span>
+            </div>
+            <div style="height:4px; background:rgba(255,255,255,0.05); border-radius:2px; overflow:hidden;">
+              <div style="width:${duelistsWidth}; height:100%; background:#ff4655;"></div>
+            </div>
+          </div>
+          
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:8px; font-family:'DM Mono',monospace; color:#7e7e8a; margin-bottom:1px;">
+              <span>Initiators</span><span>${initiatorsText}</span>
+            </div>
+            <div style="height:4px; background:rgba(255,255,255,0.05); border-radius:2px; overflow:hidden;">
+              <div style="width:${initiatorsWidth}; height:100%; background:#ffb01f;"></div>
+            </div>
+          </div>
+          
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:8px; font-family:'DM Mono',monospace; color:#7e7e8a; margin-bottom:1px;">
+              <span>Controllers</span><span>${controllersText}</span>
+            </div>
+            <div style="height:4px; background:rgba(255,255,255,0.05); border-radius:2px; overflow:hidden;">
+              <div style="width:${controllersWidth}; height:100%; background:#00f2fe;"></div>
+            </div>
+          </div>
+          
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:8px; font-family:'DM Mono',monospace; color:#7e7e8a; margin-bottom:1px;">
+              <span>Sentinels</span><span>${sentinelsText}</span>
+            </div>
+            <div style="height:4px; background:rgba(255,255,255,0.05); border-radius:2px; overflow:hidden;">
+              <div style="width:${sentinelsWidth}; height:100%; background:#3ecf8e;"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div style="display:flex; flex-direction:column; gap:6px; text-align:left;">
+          <div style="font-size:11px; font-weight:800; text-transform:uppercase; color:#ff4655; margin-bottom:2px;">⚡ Coordination</div>
+          
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:8px; font-family:'DM Mono',monospace; color:#7e7e8a; margin-bottom:1px;">
+              <span>Site Entry & Exec</span><span>${entryText}</span>
+            </div>
+            <div style="height:4px; background:rgba(255,255,255,0.05); border-radius:2px; overflow:hidden;">
+              <div style="width:${entryWidth}; height:100%; background:linear-gradient(90deg, #ff4655, #ff8080);"></div>
+            </div>
+          </div>
+          
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:8px; font-family:'DM Mono',monospace; color:#7e7e8a; margin-bottom:1px;">
+              <span>Defensive Delay</span><span>${defenseText}</span>
+            </div>
+            <div style="height:4px; background:rgba(255,255,255,0.05); border-radius:2px; overflow:hidden;">
+              <div style="width:${defenseWidth}; height:100%; background:linear-gradient(90deg, #3ecf8e, #00f2fe);"></div>
+            </div>
+          </div>
+          
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:8px; font-family:'DM Mono',monospace; color:#7e7e8a; margin-bottom:1px;">
+              <span>Retake & Scouting</span><span>${retakeText}</span>
+            </div>
+            <div style="height:4px; background:rgba(255,255,255,0.05); border-radius:2px; overflow:hidden;">
+              <div style="width:${retakeWidth}; height:100%; background:linear-gradient(90deg, #ffb01f, #f53b57);"></div>
+            </div>
+          </div>
+          
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:8px; font-family:'DM Mono',monospace; color:#7e7e8a; margin-bottom:1px;">
+              <span>Synergy Factor</span><span>${synergyText}</span>
+            </div>
+            <div style="height:4px; background:rgba(255,255,255,0.05); border-radius:2px; overflow:hidden;">
+              <div style="width:${synergyWidth}; height:100%; background:linear-gradient(90deg, #8c46ff, #e8ff47);"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div style="border-top:1px solid rgba(255,255,255,0.05); padding-top:12px;">
+        <div style="font-size:11px; font-weight:800; text-transform:uppercase; color:#ff4655; margin-bottom:8px; text-align:left;">⚡ Coach Analysis Insights</div>
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          ${insightsHtml || '<div style="font-size:9px; color:#7e7e8a; text-align:center;">No custom insights triggered for this comp.</div>'}
+        </div>
+      </div>
+    </div>
+  `;
+  
+  showToast('Generating infographic card...');
+  
+  setTimeout(async () => {
+    try {
+      const el = document.getElementById('dc-capture-target');
+      const canvas = await html2canvas(el, {
+        backgroundColor: null,
+        scale: 2,
+        logging: false,
+        useCORS: true
+      });
+      
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL('image/png');
+      a.download = `valtracker_draft_${mapKey}_${new Date().getTime()}.png`;
+      a.click();
+      showToast('Infographic card downloaded! ✓');
+    } catch(e) {
+      console.error(e);
+      showToast('Export failed.');
+    }
+  }, 120);
+}
+
 function resetDraftComp() {
   draftSlots = [null, null, null, null, null];
   for (let i = 0; i < 5; i++) {
@@ -10343,6 +10970,9 @@ input:checked + .slider:before { transform:translateX(14px); background-color:#f
     <div id="h2h-content"></div>
   </div>
 </div>
+<!-- hidden container for high-density draft comp PNG export -->
+<div id="dc-export-container" style="position: absolute; left: -9999px; top: -9999px; pointer-events: none; z-index: -9999;"></div>
+
 <button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
 </body>
 </html>

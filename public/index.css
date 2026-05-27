@@ -4273,5 +4273,102 @@ input:checked + .slider:before {
   }
 }
 
+/* ── PROFILE BOOKMARKS & SEARCH HISTORY STYLES ── */
+.landing-columns-wrap {
+  display: flex;
+  gap: 24px;
+  width: 100%;
+  max-width: 920px;
+  justify-content: center;
+  align-items: stretch;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+@media (max-width: 800px) {
+  .landing-columns-wrap {
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+}
+
+.bookmark-btn {
+  color: var(--muted);
+  font-size: 15px !important;
+  line-height: 1 !important;
+  padding: 0 8px !important;
+  margin-left: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s, transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bookmark-btn:hover {
+  color: #ffd700 !important;
+  transform: scale(1.2);
+}
+.bookmark-btn:active {
+  transform: scale(0.9);
+}
+
+/* ── INTERACTIVE WEAPON HEATMAP STYLES ── */
+.wpn-heat-seg {
+  cursor: pointer;
+  stroke: #ff4655;
+  stroke-width: 1.5;
+  transition: fill-opacity 0.2s, stroke-width 0.2s, filter 0.2s;
+}
+.wpn-heat-seg:hover {
+  fill-opacity: 0.8 !important;
+  stroke-width: 2.2px !important;
+  filter: drop-shadow(0 0 5px #ff4655) !important;
+}
+
+/* Floating Tooltip Popovers for Secondary Weapons Accuracy */
+.wpn-tooltip-trigger {
+  position: relative;
+}
+.wpn-tooltip-card {
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(13, 13, 15, 0.96);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  width: 130px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 100;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.wpn-tooltip-card::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: rgba(13, 13, 15, 0.96) transparent transparent transparent;
+}
+.wpn-tooltip-trigger:hover .wpn-tooltip-card {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+  border-color: rgba(255, 70, 85, 0.3);
+}
+
 
 
