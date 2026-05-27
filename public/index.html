@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="referrer" content="no-referrer">
 <title>ValTracker.gg — Valorant Stats Tracker</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23030304'/%3E%3Cpolygon points='16,4 28,11 28,21 16,28 4,21 4,11' stroke='%23e8ff47' stroke-width='2' fill='none'/%3E%3Cpath d='M11,12 L16,20 L21,12' stroke='%23ff4655' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3Ccircle cx='16' cy='8' r='1.5' fill='%23ff4655'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23030304'/%3E%3Cpath d='M7,6 L14,6 L16.5,22 L12,26 Z' fill='%23ff4655'/%3E%3Cpath d='M25,6 L18,6 L15.5,22 L20,26 Z' fill='%23e8ff47'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
 <link rel="stylesheet" href="index.css?v=12.10">
@@ -25,16 +25,11 @@
   </div>
 
   <div class="landing-logo" style="display:flex; align-items:center; justify-content:center;">
-    <svg class="logo-icon" viewBox="0 0 32 32" style="width:36px; height:36px; display:inline-block; vertical-align:middle; fill:none; margin-right:12px;">
-      <defs>
-        <linearGradient id="logo-grad-lg" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#e8ff47" />
-          <stop offset="100%" stop-color="#ff4655" />
-        </linearGradient>
-      </defs>
-      <polygon points="16,2 30,10 30,22 16,30 2,22 2,10" stroke="url(#logo-grad-lg)" stroke-width="2.5" />
-      <path d="M10,12 L16,20 L22,12" stroke="#e8ff47" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-      <circle cx="16" cy="7" r="1.5" fill="#ff4655" />
+    <svg class="logo-icon" viewBox="0 0 32 32" style="width:36px; height:36px; display:inline-block; vertical-align:middle; fill:none; margin-right:12px; filter: drop-shadow(0 0 8px rgba(255, 70, 85, 0.45));">
+      <!-- Left Crimson Slash -->
+      <path d="M7,6 L14,6 L16.5,22 L12,26 Z" fill="#ff4655" />
+      <!-- Right Neon Slash -->
+      <path d="M25,6 L18,6 L15.5,22 L20,26 Z" fill="#e8ff47" />
     </svg>
     <span>ValTracker<span style="color:var(--accent)">.gg</span></span>
   </div>
@@ -149,16 +144,11 @@
 <div class="topbar">
   <div class="topbar-left">
     <div class="logo" onclick="toggleMainView('tracker')" style="cursor:pointer; display:flex; align-items:center;">
-      <svg class="logo-icon" viewBox="0 0 32 32" style="width:20px; height:20px; display:inline-block; vertical-align:middle; fill:none; margin-right:6px; flex-shrink:0;">
-        <defs>
-          <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#e8ff47" />
-            <stop offset="100%" stop-color="#ff4655" />
-          </linearGradient>
-        </defs>
-        <polygon points="16,2 30,10 30,22 16,30 2,22 2,10" stroke="url(#logo-grad)" stroke-width="2.5" />
-        <path d="M10,12 L16,20 L22,12" stroke="#e8ff47" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-        <circle cx="16" cy="7" r="1.5" fill="#ff4655" />
+      <svg class="logo-icon" viewBox="0 0 32 32" style="width:20px; height:20px; display:inline-block; vertical-align:middle; fill:none; margin-right:6px; flex-shrink:0; filter: drop-shadow(0 0 4px rgba(255, 70, 85, 0.45));">
+        <!-- Left Crimson Slash -->
+        <path d="M7,6 L14,6 L16.5,22 L12,26 Z" fill="#ff4655" />
+        <!-- Right Neon Slash -->
+        <path d="M25,6 L18,6 L15.5,22 L20,26 Z" fill="#e8ff47" />
       </svg>
       <span>ValTracker<span style="color:var(--accent)">.gg</span></span>
     </div>
