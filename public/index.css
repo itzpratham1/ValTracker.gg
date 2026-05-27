@@ -1873,9 +1873,17 @@ body::before {
   position: fixed; inset: 0; z-index: 500;
   background: var(--bg);
   display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  padding: 24px;
+  align-items: center; justify-content: flex-start;
+  padding: 40px 16px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   animation: fadeIn 0.4s ease;
+}
+@media (min-height: 850px) and (min-width: 800px) {
+  #landing {
+    justify-content: center;
+    padding: 24px;
+  }
 }
 #landing.hidden {
   animation: landingOut 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
