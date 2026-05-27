@@ -443,6 +443,28 @@ def submit_feedback():
         print(f"[FEEDBACK ERROR] Failed to save feedback: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
+@app.route("/api/admin/feedback", methods=["GET"])
+def get_feedback():
+    # Simple security token verification (configurable via environment variable)
+    token = request.args.get("secret")
+    expected_token = os.getenv("ADMIN_SECRET", "valtracker_admin_secret_2026")
+    
+    if not token or token != expected_token:
+        print(f"[SECURITY] Unauthorized access attempt to get_feedback API prefix")
+        return jsonify({"status": 403, "message": "Forbidden: Invalid or missing secret token"}), 403
+        
+    filepath = os.path.join(os.path.dirname(__file__), "feedback.json")
+    if not os.path.exists(filepath):
+        return jsonify([])
+        
+    try:
+        import json
+        with open(filepath, "r", encoding="utf-8") as f:
+            records = json.load(f)
+        return jsonify(records)
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
 @app.route("/api/clear-cache", methods=["POST"])
 def clear_server_cache():
     cache.clear()
