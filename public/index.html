@@ -6198,7 +6198,7 @@ function renderTopWeapons(matches) {
     } else if (trendInfo.trend === 'down') {
       deltaPill = `<span class="wpn-trend-pill wpn-trend-pill-down">&#9660; ${trendInfo.delta}%</span>`;
     } else if (trendInfo.trend === 'flat') {
-      deltaPill = `<span class="wpn-trend-pill wpn-trend-pill-flat">&#8212; &#177;0%</span>`;
+      deltaPill = `<span class="wpn-trend-pill wpn-trend-pill-flat">&plusmn;0%</span>`;
     }
 
     const sparklineBlock = sparkSVG
@@ -6290,7 +6290,7 @@ function renderTopWeapons(matches) {
     } else if (trendInfo.trend === 'down') {
       trendArrow = `<span class="sec-wpn-trend sec-wpn-trend-down" title="HS% down ${trendInfo.delta}% vs last session">&#9660; ${trendInfo.delta}%</span>`;
     } else if (trendInfo.trend === 'flat') {
-      trendArrow = `<span class="sec-wpn-trend sec-wpn-trend-flat" title="HS% stable vs last session">&#8212;&thinsp;0%</span>`;
+      trendArrow = `<span class="sec-wpn-trend sec-wpn-trend-flat" title="HS% stable vs last session">&plusmn;0%</span>`;
     } else {
       trendArrow = `<span class="sec-wpn-trend sec-wpn-trend-new" title="First session — tracking started">NEW</span>`;
     }
