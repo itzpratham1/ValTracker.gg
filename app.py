@@ -1432,22 +1432,52 @@ def esports_event_teams(event_id):
 @app.route("/api/store/featured")
 @rate_limit(requests_per_minute=30)
 def store_featured():
-    cache_key = "store_featured"
-    if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < 3600:
-        return jsonify(cache[cache_key]["data"])
-        
+    import json
+    backup_file = "store_featured_backup.json"
+    cache_duration = 86400  # 24 hours in seconds
+    
+    # 1. Serve from fresh persistent file cache if available
+    if os.path.exists(backup_file):
+        try:
+            file_age = time.time() - os.path.getmtime(backup_file)
+            if file_age < cache_duration:
+                with open(backup_file, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                return jsonify(data)
+        except Exception as e:
+            print("[WARNING] Failed to read store_featured_backup.json:", e)
+
+    # 2. Cache is stale or missing: fetch fresh data from HenrikDev API
     try:
         headers = {"Authorization": API_KEY}
         r = requests.get("https://api.henrikdev.xyz/valorant/v2/store-featured", headers=headers, timeout=10)
         if r.status_code == 200:
             data = r.json()
-            cache[cache_key] = {"data": data, "timestamp": time.time()}
-            return jsonify(data)
+            if data and isinstance(data, dict) and "data" in data:
+                try:
+                    with open(backup_file, "w", encoding="utf-8") as f:
+                        json.dump(data, f, indent=2)
+                except Exception as cache_err:
+                    print("[WARNING] Failed to write store_featured_backup.json:", cache_err)
+                return jsonify(data)
+            else:
+                print("[WARNING] HenrikDev API returned unexpected store data structure")
         else:
-            return jsonify({"status": r.status_code, "error": "Failed to fetch store"}), r.status_code
+            print(f"[WARNING] HenrikDev API returned store status {r.status_code}")
     except Exception as e:
-        print("[ERROR] Store Featured fetch failed:", e)
-        return jsonify({"status": 500, "error": "Internal server error"}), 500
+        print("[ERROR] HenrikDev Store Featured fetch failed:", e)
+
+    # 3. Graceful Fallback: read existing store_featured_backup.json even if older than 24 hours
+    if os.path.exists(backup_file):
+        try:
+            with open(backup_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            print("[INFO] Serving store from older backup_file fallback")
+            return jsonify(data)
+        except Exception as e:
+            print("[ERROR] Failed to load older store_featured_backup.json:", e)
+
+    return jsonify({"status": 500, "error": "Failed to retrieve store offers"}), 500
 
 @app.route("/api/v3/meta-comps")
 @rate_limit(requests_per_minute=60)

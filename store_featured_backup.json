@@ -1,0 +1,133 @@
+{
+  "status": 200,
+  "data": [
+    {
+      "bundle_uuid": "20de500a-4551-2584-eaa2-8ab0231f13a9",
+      "bundle_price": 2440,
+      "whole_sale_only": true,
+      "items": [
+        {
+          "uuid": "785319d1-4819-89e0-5870-63b6d3d54a70",
+          "name": "Burnard Buddy",
+          "image": "https://media.valorant-api.com/buddies/785319d1-4819-89e0-5870-63b6d3d54a70/displayicon.png",
+          "type": "buddy",
+          "amount": 2,
+          "discount_percent": 0.4,
+          "base_price": 675,
+          "discounted_price": 405,
+          "promo_item": false
+        },
+        {
+          "uuid": "6338becc-4151-c9a1-e130-af8a72d745f1",
+          "name": "Flower Buddy",
+          "image": "https://media.valorant-api.com/buddies/6338becc-4151-c9a1-e130-af8a72d745f1/displayicon.png",
+          "type": "buddy",
+          "amount": 2,
+          "discount_percent": 0.4,
+          "base_price": 675,
+          "discounted_price": 405,
+          "promo_item": false
+        },
+        {
+          "uuid": "9c5d4d3d-4266-8255-bf9a-ea96b07ecff7",
+          "name": "Flower Card",
+          "image": "https://media.valorant-api.com/playercards/9c5d4d3d-4266-8255-bf9a-ea96b07ecff7/displayicon.png",
+          "type": "player_card",
+          "amount": 1,
+          "discount_percent": 0.4,
+          "base_price": 575,
+          "discounted_price": 345,
+          "promo_item": false
+        },
+        {
+          "uuid": "fca03251-4672-df99-e0cb-b59746877174",
+          "name": "Burnard Card",
+          "image": "https://media.valorant-api.com/playercards/fca03251-4672-df99-e0cb-b59746877174/displayicon.png",
+          "type": "player_card",
+          "amount": 1,
+          "discount_percent": 0.4,
+          "base_price": 575,
+          "discounted_price": 345,
+          "promo_item": false
+        },
+        {
+          "uuid": "f249f31b-4b0d-c0df-d3ca-9dab2686f107",
+          "name": "Burnard Spray",
+          "image": "https://media.valorant-api.com/sprays/f249f31b-4b0d-c0df-d3ca-9dab2686f107/displayicon.png",
+          "type": "spray",
+          "amount": 1,
+          "discount_percent": 0.4,
+          "base_price": 325,
+          "discounted_price": 195,
+          "promo_item": false
+        },
+        {
+          "uuid": "eab8fd97-4dc4-0bdb-828e-66ae3e481de3",
+          "name": "Flower Spray",
+          "image": "https://media.valorant-api.com/sprays/eab8fd97-4dc4-0bdb-828e-66ae3e481de3/displayicon.png",
+          "type": "spray",
+          "amount": 1,
+          "discount_percent": 0.4,
+          "base_price": 325,
+          "discounted_price": 195,
+          "promo_item": false
+        },
+        {
+          "uuid": "e4abaf07-4c46-73df-f67b-72b6932a5ff9",
+          "name": "Burnard & Brioche Flex",
+          "image": "https://media.valorant-api.com/flex/e4abaf07-4c46-73df-f67b-72b6932a5ff9/displayicon.png",
+          "type": "flex",
+          "amount": 1,
+          "discount_percent": 0.6,
+          "base_price": 1375,
+          "discounted_price": 550,
+          "promo_item": false
+        }
+      ],
+      "seconds_remaining": 92474,
+      "expires_at": "2026-05-28T18:02:19.082Z"
+    },
+    {
+      "bundle_uuid": "905db1c9-4ce0-d0c3-93e3-7f8b5d8fb86a",
+      "bundle_price": 1025,
+      "whole_sale_only": true,
+      "items": [
+        {
+          "uuid": "495920f9-48b8-891a-5e52-888a2204396a",
+          "name": "Brioche Buddy",
+          "image": "https://media.valorant-api.com/buddies/495920f9-48b8-891a-5e52-888a2204396a/displayicon.png",
+          "type": "buddy",
+          "amount": 2,
+          "discount_percent": 0.35,
+          "base_price": 675,
+          "discounted_price": 439,
+          "promo_item": false
+        },
+        {
+          "uuid": "286c244e-4de4-f8e0-d332-b6932f6cf156",
+          "name": "Brioche Card",
+          "image": "https://media.valorant-api.com/playercards/286c244e-4de4-f8e0-d332-b6932f6cf156/displayicon.png",
+          "type": "player_card",
+          "amount": 1,
+          "discount_percent": 0.35,
+          "base_price": 575,
+          "discounted_price": 374,
+          "promo_item": false
+        },
+        {
+          "uuid": "cda18d45-47ba-78cc-4fa8-5992c65cf1bc",
+          "name": "Brioche Spray",
+          "image": "https://media.valorant-api.com/sprays/cda18d45-47ba-78cc-4fa8-5992c65cf1bc/displayicon.png",
+          "type": "spray",
+          "amount": 1,
+          "discount_percent": 0.35,
+          "base_price": 325,
+          "discounted_price": 212,
+          "promo_item": false
+        }
+      ],
+      "seconds_remaining": 92474,
+      "expires_at": "2026-05-28T18:02:19.082Z"
+    }
+  ]
+}

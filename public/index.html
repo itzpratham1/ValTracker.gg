@@ -10803,19 +10803,29 @@ body::after {
     order: 2 !important;
     margin-left: auto !important; /* Push active pill and toggle to the right */
     font-size: 11px !important;
-    padding: 3px 8px 3px 4px !important;
+    padding: 3px 6px 3px 4px !important;
     border-radius: 20px !important;
-    max-width: 150px !important;
+    max-width: 160px !important;
+    flex-shrink: 0 !important; /* Prevent squishing on mobile screens */
+    gap: 4px !important;
   }
   .active-pill-avatar-wrap {
     width: 20px !important;
     height: 20px !important;
   }
   .active-pill-name {
-    max-width: 90px !important;
+    max-width: 85px !important;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    font-size: 11px !important;
+  }
+  .active-pill-btn {
+    padding: 2px !important;
+  }
+  .active-pill-btn svg {
+    width: 10px !important;
+    height: 10px !important;
   }
   
   /* Sleek mobile filter toggle pill */
