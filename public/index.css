@@ -99,6 +99,8 @@ body::before {
   letter-spacing: 3px;
   color: var(--text);
   text-transform: uppercase;
+  line-height: 1.4 !important;
+  overflow: visible !important;
 }
 .logo span {
   color: var(--accent);
