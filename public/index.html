@@ -8,7 +8,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%23030304'/%3E%3Cpath d='M23.792 2.152a.252.252 0 0 0-.098.083c-3.384 4.23-6.769 8.46-10.15 12.69-.107.093-.025.288.119.265 2.439.003 4.877 0 7.316.001a.66.66 0 0 0 .552-.25c.774-.967 1.55-1.934 2.324-2.903a.72.72 0 0 0 .144-.49c-.002-3.077 0-6.153-.003-9.23.016-.11-.1-.206-.204-.167zM.077 2.166c-.077.038-.074.132-.076.205.002 3.074.001 6.15.001 9.225a.679.679 0 0 0 .158.463l7.64 9.55c.12.152.308.25.505.247 2.455 0 4.91.003 7.365 0 .142.02.222-.174.116-.265C10.661 15.176 5.526 8.766.4 2.35c-.08-.094-.174-.272-.322-.184z' fill='%23ff4655'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
-<link rel="stylesheet" href="index.css?v=12.15">
+<link rel="stylesheet" href="index.css?v=12.16">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 </head>
@@ -10812,70 +10812,68 @@ body::after {
     height: auto !important; /* Auto height to fit wrapping content rows */
     box-sizing: border-box !important;
   }
-  .topbar-left { 
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: wrap !important; /* Row wrap to separate headers, search inputs, and scrollable tabs */
+  /* ── MOBILE TOPBAR: CSS GRID for perfect row control ── */
+  .topbar-left {
+    display: grid !important;
+    grid-template-columns: 1fr auto !important;
+    grid-template-rows: auto auto auto !important;
     align-items: center !important;
-    width: 100% !important; 
-    gap: 8px !important; 
+    width: 100% !important;
+    gap: 6px 8px !important;
   }
-  
-  /* Logo and User stats in Header Row */
+
+  /* Row 1 Left: Logo */
   .logo {
-    order: 1 !important;
-    font-size: 18px !important;
-    align-self: center !important;
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    font-size: 17px !important;
     display: flex !important;
     align-items: center !important;
     gap: 6px !important;
-    line-height: 1.5 !important;
     overflow: visible !important;
-    min-height: 36px !important;
-    padding-bottom: 4px !important;
+    white-space: nowrap !important;
+    order: unset !important;
+    margin-left: 0 !important;
   }
   .logo svg {
-    width: 18px !important;
-    height: 18px !important;
-    margin-right: 2px !important;
+    width: 17px !important;
+    height: 17px !important;
+    flex-shrink: 0 !important;
   }
-  
-  /* User profile active pill */
+
+  /* Row 1 Right: Profile pill OR search input */
   .player-active-pill {
-    order: 2 !important;
-    margin-left: auto !important; /* Push active pill and toggle to the right */
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    order: unset !important;
+    margin-left: 0 !important;
     font-size: 11px !important;
     padding: 3px 6px 3px 4px !important;
     border-radius: 20px !important;
-    max-width: 160px !important;
-    flex-shrink: 0 !important; /* Prevent squishing on mobile screens */
+    max-width: 170px !important;
+    flex-shrink: 0 !important;
     gap: 4px !important;
+    justify-self: end !important;
   }
-  .active-pill-avatar-wrap {
-    width: 20px !important;
-    height: 20px !important;
+  .player-search-wrap {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    order: unset !important;
+    width: auto !important;
+    min-width: 0 !important;
+    gap: 4px !important;
+    margin-top: 0 !important;
+    box-sizing: border-box !important;
+    justify-self: end !important;
   }
-  .active-pill-name {
-    max-width: 85px !important;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 11px !important;
-  }
-  .active-pill-btn {
-    padding: 2px !important;
-  }
-  .active-pill-btn svg {
-    width: 10px !important;
-    height: 10px !important;
-  }
-  
-  /* Sleek mobile filter toggle pill */
+
+  /* Row 2: Mobile filter toggle pill (AP • Comp • V26 Act 3) */
   .mobile-filter-toggle {
-    /* Display controlled dynamically by JS */
-    order: 2 !important;
+    grid-column: 1 / -1 !important;
+    grid-row: 2 !important;
+    order: unset !important;
+    justify-self: start !important;
     align-items: center;
-    justify-content: center;
     gap: 4px;
     font-family: 'DM Mono', monospace;
     font-size: 10px;
@@ -10888,27 +10886,29 @@ body::after {
     cursor: pointer;
     transition: all 0.2s ease;
     box-shadow: 0 0 10px rgba(250, 68, 84, 0.25);
-    margin-left: 6px !important;
+    margin-left: 0 !important;
     flex-shrink: 0 !important;
   }
-  .mobile-filter-toggle:active {
-    transform: scale(0.95);
+  .mobile-filter-toggle:active { transform: scale(0.95); }
+
+  .active-pill-avatar-wrap { width: 20px !important; height: 20px !important; }
+  .active-pill-name {
+    max-width: 90px !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 11px !important;
   }
-  
-  .player-search-wrap { 
-    order: 3 !important;
-    /* Display controlled dynamically by JS */
-    width: 100% !important; 
-    gap: 6px !important; 
-    margin-top: 4px !important;
-    box-sizing: border-box !important;
-  }
-  .player-input { flex: 1; max-width: none !important; font-size: 13px !important; width: 100%; padding: 6px 8px !important; }
-  .player-input-tag { width: 60px; flex: none; max-width: none !important; font-size: 13px !important; }
-  
-  /* Horizontal swipeable tabs navigation */
+  .active-pill-btn { padding: 2px !important; }
+  .active-pill-btn svg { width: 10px !important; height: 10px !important; }
+  .player-input { flex: 1; font-size: 12px !important; padding: 5px 6px !important; width: 90px !important; }
+  .player-input-tag { width: 52px !important; flex: none; font-size: 12px !important; }
+
+  /* Row 3: Horizontal swipeable tabs navigation */
   .topbar-tabs {
-    order: 4 !important;
+    grid-column: 1 / -1 !important;
+    grid-row: 3 !important;
+    order: unset !important;
     display: flex !important;
     overflow-x: auto !important;
     white-space: nowrap !important;
