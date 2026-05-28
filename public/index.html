@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="referrer" content="no-referrer">
 <title>ValTracker.gg — Valorant Stats Tracker</title>
-<link rel="icon" type="image/png" href="valorant_v_logo.png">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M2,2 L10.5,22 L13.5,22 L22,2 L17.5,2 L12,13 L6.5,2 Z' fill='%23ff4655'/%3E%3Cpolygon points='12,2 15.5,6 12,10 8.5,6' fill='%23e8ff47'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
 <link rel="stylesheet" href="index.css?v=12.16">
@@ -25,7 +25,10 @@
   </div>
 
   <div class="landing-logo" style="display:flex; align-items:center; justify-content:center;">
-    <img src="valorant_v_logo.png" class="logo-icon-img-lg" alt="Valorant V Logo" style="width:38px; height:38px; object-fit:contain; margin-right:12px; filter: drop-shadow(0 0 10px rgba(255, 70, 85, 0.7));">
+    <svg class="logo-icon" viewBox="0 0 24 24" style="width:36px; height:36px; display:inline-block; vertical-align:middle; fill:none; margin-right:12px; flex-shrink:0; filter: drop-shadow(0 0 8px rgba(255, 70, 85, 0.6)); overflow: visible !important;">
+      <path d="M2,2 L10.5,22 L13.5,22 L22,2 L17.5,2 L12,13 L6.5,2 Z" fill="#ff4655" />
+      <polygon points="12,2 15.5,6 12,10 8.5,6" fill="#e8ff47" />
+    </svg>
     <span>ValTracker<span style="color:var(--accent)">.gg</span></span>
   </div>
   <div class="landing-tagline">Valorant Performance Tracker</div>
@@ -139,7 +142,10 @@
 <div class="topbar">
   <div class="topbar-left">
     <div class="logo" onclick="toggleMainView('tracker')" style="cursor:pointer; display:flex; align-items:center;">
-      <img src="valorant_v_logo.png" class="logo-icon-img" alt="Valorant V Logo" style="width:20px; height:20px; object-fit:contain; margin-right:6px; flex-shrink:0; filter: drop-shadow(0 0 4px rgba(255, 70, 85, 0.65));">
+      <svg class="logo-icon" viewBox="0 0 24 24" style="width:20px; height:20px; display:inline-block; vertical-align:middle; fill:none; margin-right:6px; flex-shrink:0; filter: drop-shadow(0 0 4px rgba(255, 70, 85, 0.5)); overflow: visible !important;">
+        <path d="M2,2 L10.5,22 L13.5,22 L22,2 L17.5,2 L12,13 L6.5,2 Z" fill="#ff4655" />
+        <polygon points="12,2 15.5,6 12,10 8.5,6" fill="#e8ff47" />
+      </svg>
       <span>ValTracker<span style="color:var(--accent)">.gg</span></span>
     </div>
     
