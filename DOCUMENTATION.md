@@ -626,4 +626,4 @@ gunicorn -w 2 -b 0.0.0.0:$PORT app:app
 
 ---
 
-*Built with ❤️ by ItzPratham — NIT India, 2026*
+*Built with ❤️ by ItzPratham — India, 2026*
