@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="referrer" content="no-referrer">
 <title>ValTracker.gg — Valorant Stats Tracker</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%23030304'/%3E%3Cpath d='M23.792 2.152a.252.252 0 0 0-.098.083c-3.384 4.23-6.769 8.46-10.15 12.69-.107.093-.025.288.119.265 2.439.003 4.877 0 7.316.001a.66.66 0 0 0 .552-.25c.774-.967 1.55-1.934 2.324-2.903a.72.72 0 0 0 .144-.49c-.002-3.077 0-6.153-.003-9.23.016-.11-.1-.206-.204-.167zM.077 2.166c-.077.038-.074.132-.076.205.002 3.074.001 6.15.001 9.225a.679.679 0 0 0 .158.463l7.64 9.55c.12.152.308.25.505.247 2.455 0 4.91.003 7.365 0 .142.02.222-.174.116-.265C10.661 15.176 5.526 8.766.4 2.35c-.08-.094-.174-.272-.322-.184z' fill='%23ff4655'/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" href="valorant_v_logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
 <link rel="stylesheet" href="index.css?v=12.16">
@@ -25,9 +25,7 @@
   </div>
 
   <div class="landing-logo" style="display:flex; align-items:center; justify-content:center;">
-    <svg class="logo-icon" viewBox="0 0 24 24" style="width:36px; height:36px; display:inline-block; vertical-align:middle; fill:none; margin-right:12px; filter: drop-shadow(0 0 8px rgba(255, 70, 85, 0.5)); overflow: visible !important;">
-      <path d="M23.792 2.152a.252.252 0 0 0-.098.083c-3.384 4.23-6.769 8.46-10.15 12.69-.107.093-.025.288.119.265 2.439.003 4.877 0 7.316.001a.66.66 0 0 0 .552-.25c.774-.967 1.55-1.934 2.324-2.903a.72.72 0 0 0 .144-.49c-.002-3.077 0-6.153-.003-9.23.016-.11-.1-.206-.204-.167zM.077 2.166c-.077.038-.074.132-.076.205.002 3.074.001 6.15.001 9.225a.679.679 0 0 0 .158.463l7.64 9.55c.12.152.308.25.505.247 2.455 0 4.91.003 7.365 0 .142.02.222-.174.116-.265C10.661 15.176 5.526 8.766.4 2.35c-.08-.094-.174-.272-.322-.184z" fill="#ff4655" />
-    </svg>
+    <img src="valorant_v_logo.png" class="logo-icon-img-lg" alt="Valorant V Logo" style="width:38px; height:38px; object-fit:contain; margin-right:12px; filter: drop-shadow(0 0 10px rgba(255, 70, 85, 0.7));">
     <span>ValTracker<span style="color:var(--accent)">.gg</span></span>
   </div>
   <div class="landing-tagline">Valorant Performance Tracker</div>
@@ -141,9 +139,7 @@
 <div class="topbar">
   <div class="topbar-left">
     <div class="logo" onclick="toggleMainView('tracker')" style="cursor:pointer; display:flex; align-items:center;">
-      <svg class="logo-icon" viewBox="0 0 24 24" style="width:20px; height:20px; display:inline-block; vertical-align:middle; fill:none; margin-right:6px; flex-shrink:0; filter: drop-shadow(0 0 4px rgba(255, 70, 85, 0.5)); overflow: visible !important;">
-        <path d="M23.792 2.152a.252.252 0 0 0-.098.083c-3.384 4.23-6.769 8.46-10.15 12.69-.107.093-.025.288.119.265 2.439.003 4.877 0 7.316.001a.66.66 0 0 0 .552-.25c.774-.967 1.55-1.934 2.324-2.903a.72.72 0 0 0 .144-.49c-.002-3.077 0-6.153-.003-9.23.016-.11-.1-.206-.204-.167zM.077 2.166c-.077.038-.074.132-.076.205.002 3.074.001 6.15.001 9.225a.679.679 0 0 0 .158.463l7.64 9.55c.12.152.308.25.505.247 2.455 0 4.91.003 7.365 0 .142.02.222-.174.116-.265C10.661 15.176 5.526 8.766.4 2.35c-.08-.094-.174-.272-.322-.184z" fill="#ff4655" />
-      </svg>
+      <img src="valorant_v_logo.png" class="logo-icon-img" alt="Valorant V Logo" style="width:20px; height:20px; object-fit:contain; margin-right:6px; flex-shrink:0; filter: drop-shadow(0 0 4px rgba(255, 70, 85, 0.65));">
       <span>ValTracker<span style="color:var(--accent)">.gg</span></span>
     </div>
     
@@ -10826,16 +10822,16 @@ body::after {
   .logo {
     grid-column: 1 !important;
     grid-row: 1 !important;
-    font-size: 17px !important;
+    font-size: 16px !important;
     display: flex !important;
     align-items: center !important;
-    gap: 6px !important;
+    gap: 4px !important;
     overflow: visible !important;
     white-space: nowrap !important;
     order: unset !important;
     margin-left: 0 !important;
   }
-  .logo svg {
+  .logo img, .logo svg {
     width: 17px !important;
     height: 17px !important;
     flex-shrink: 0 !important;
@@ -10850,9 +10846,10 @@ body::after {
     font-size: 11px !important;
     padding: 3px 6px 3px 4px !important;
     border-radius: 20px !important;
-    max-width: 170px !important;
-    flex-shrink: 0 !important;
-    gap: 4px !important;
+    max-width: 145px !important;
+    flex-shrink: 1 !important;
+    min-width: 0 !important;
+    gap: 3px !important;
     justify-self: end !important;
   }
   .player-search-wrap {
@@ -10860,8 +10857,9 @@ body::after {
     grid-row: 1 !important;
     order: unset !important;
     width: auto !important;
+    max-width: 145px !important;
     min-width: 0 !important;
-    gap: 4px !important;
+    gap: 2px !important;
     margin-top: 0 !important;
     box-sizing: border-box !important;
     justify-self: end !important;
@@ -10891,9 +10889,9 @@ body::after {
   }
   .mobile-filter-toggle:active { transform: scale(0.95); }
 
-  .active-pill-avatar-wrap { width: 20px !important; height: 20px !important; }
+  .active-pill-avatar-wrap { width: 18px !important; height: 18px !important; }
   .active-pill-name {
-    max-width: 90px !important;
+    max-width: 70px !important;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -10901,8 +10899,8 @@ body::after {
   }
   .active-pill-btn { padding: 2px !important; }
   .active-pill-btn svg { width: 10px !important; height: 10px !important; }
-  .player-input { flex: 1; font-size: 12px !important; padding: 5px 6px !important; width: 90px !important; }
-  .player-input-tag { width: 52px !important; flex: none; font-size: 12px !important; }
+  .player-input { flex: 1; font-size: 11px !important; padding: 4px 6px !important; width: 80px !important; }
+  .player-input-tag { width: 40px !important; flex: none; font-size: 11px !important; }
 
   /* Row 3: Horizontal swipeable tabs navigation */
   .topbar-tabs {
