@@ -221,7 +221,7 @@ See [DOCUMENTATION.md](./DOCUMENTATION.md) for the full technical reference:
 
 ## 👤 Author
 
-**ItzPratham** — student at the National Institute of Technology, India  
+**ItzPratham**  
 Built as a personal project for the Valorant community 🎯
 
 ---
