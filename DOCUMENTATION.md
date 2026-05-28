@@ -44,7 +44,7 @@
 
 ## 1. Project Overview
 
-ValTracker.gg is a full-stack, single-page Valorant stats tracker built by **ItzPratham** — a student project from the National Institute of Technology, India. It provides:
+ValTracker.gg is a full-stack, single-page Valorant stats tracker. It provides:
 
 - **Real-time player statistics** — combat, performance, agents, maps, weapons, match history
 - **Esports coverage** — live VCT match scores, upcoming fixtures, results, standings, news
