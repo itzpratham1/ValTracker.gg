@@ -1451,7 +1451,14 @@ def store_featured():
             return False
         except Exception:
             return False
-    
+
+    # 0. Serve from in-memory cache if available and not expired
+    mem_store = cache.get("store_featured")
+    if mem_store:
+        mem_age = time.time() - mem_store.get("timestamp", 0)
+        if mem_age < cache_duration and not bundles_have_expired(mem_store.get("data", {})):
+            return jsonify(mem_store["data"])
+
     # 1. Serve from fresh persistent file cache if available and bundles haven't expired
     if os.path.exists(backup_file):
         try:
@@ -1463,6 +1470,7 @@ def store_featured():
                 if bundles_have_expired(data):
                     print("[STORE] Cached bundles have expired — busting cache and refetching.")
                 else:
+                    cache["store_featured"] = {"data": data, "timestamp": time.time()}
                     return jsonify(data)
         except Exception as e:
             print("[WARNING] Failed to read store_featured_backup.json:", e)
@@ -1474,6 +1482,8 @@ def store_featured():
         if r.status_code == 200:
             data = r.json()
             if data and isinstance(data, dict) and "data" in data:
+                # Store in memory cache
+                cache["store_featured"] = {"data": data, "timestamp": time.time()}
                 try:
                     with open(backup_file, "w", encoding="utf-8") as f:
                         json.dump(data, f, indent=2)
