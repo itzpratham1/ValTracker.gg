@@ -8300,12 +8300,16 @@ function getEspHTML(m, type) {
   
   let statusHtml = '';
   let mediaBtn = '';
+  const vlrUrl = m.vlr_path ? `https://www.vlr.gg${m.vlr_path}` : null;
+  const vlrBtn = vlrUrl ? `<a href="${vlrUrl}" target="_blank" rel="noopener noreferrer" class="esp-btn vlr" style="background:rgba(250,68,84,0.12);border:1px solid rgba(250,68,84,0.3);color:#ff4655;font-size:10px;gap:5px;letter-spacing:0.5px;">🔗 Full Details</a>` : '';
+
   if (m.state === 'in_progress' || m.state === 'inProgress') {
     statusHtml = `<div class="esp-status live">LIVE</div>`;
+    mediaBtn = `<div style="display:flex;gap:6px;flex-wrap:wrap;">${vlrBtn}</div>`;
   } else if (m.state === 'completed') {
     statusHtml = `<div class="esp-status">FINAL</div>`;
     if (m.vod) {
-      mediaBtn = `<a href="${m.vod}" target="_blank" class="esp-btn vod">📺 Watch VOD</a>`;
+      mediaBtn = `<div style="display:flex;gap:6px;flex-wrap:wrap;"><a href="${m.vod}" target="_blank" class="esp-btn vod">📺 Watch VOD</a>${vlrBtn}</div>`;
     } else {
       let datePart = '';
       if (m.date) {
@@ -8363,10 +8367,11 @@ function getEspHTML(m, type) {
       }
       
       const searchQ = `${cleanEvent} ${t1} vs ${t2} highlights ${datePart}`.trim();
-      mediaBtn = `<a href="https://www.youtube.com/results?search_query=${encodeURIComponent(searchQ)}" target="_blank" class="esp-btn vod">📺 View Highlights</a>`;
+      mediaBtn = `<div style="display:flex;gap:6px;flex-wrap:wrap;"><a href="https://www.youtube.com/results?search_query=${encodeURIComponent(searchQ)}" target="_blank" class="esp-btn vod">📺 View Highlights</a>${vlrBtn}</div>`;
     }
   } else {
     statusHtml = `<div class="esp-status">UPCOMING</div>`;
+    mediaBtn = vlrBtn ? `<div style="display:flex;gap:6px;flex-wrap:wrap;">${vlrBtn}</div>` : '';
   }
 
   // Format date to local string if possible

@@ -957,6 +957,7 @@ def scrape_vlr_matches():
                     "id": match_id,
                     "date": date_meta,
                     "state": state,
+                    "vlr_path": href,
                     "league": {
                         "name": event_name,
                         "region": stage_name
@@ -1082,6 +1083,7 @@ def scrape_vlr_results():
                     "id": match_id,
                     "date": date_meta,
                     "state": state,
+                    "vlr_path": href,
                     "league": {
                         "name": event_name,
                         "region": stage_name
@@ -1435,19 +1437,37 @@ def store_featured():
     import json
     backup_file = "store_featured_backup.json"
     cache_duration = 86400  # 24 hours in seconds
+
+    def bundles_have_expired(data):
+        """Return True if any bundle in the cached data has 0 or negative seconds_remaining."""
+        try:
+            bundles = data.get("data", [])
+            if not bundles:
+                return False
+            for b in bundles:
+                secs = b.get("seconds_remaining", 1)
+                if secs is not None and secs <= 0:
+                    return True
+            return False
+        except Exception:
+            return False
     
-    # 1. Serve from fresh persistent file cache if available
+    # 1. Serve from fresh persistent file cache if available and bundles haven't expired
     if os.path.exists(backup_file):
         try:
             file_age = time.time() - os.path.getmtime(backup_file)
             if file_age < cache_duration:
                 with open(backup_file, "r", encoding="utf-8") as f:
                     data = json.load(f)
-                return jsonify(data)
+                # If bundles have expired (countdown hit 0), bust cache and refetch
+                if bundles_have_expired(data):
+                    print("[STORE] Cached bundles have expired — busting cache and refetching.")
+                else:
+                    return jsonify(data)
         except Exception as e:
             print("[WARNING] Failed to read store_featured_backup.json:", e)
 
-    # 2. Cache is stale or missing: fetch fresh data from HenrikDev API
+    # 2. Cache is stale, missing, or bundles expired: fetch fresh data from HenrikDev API
     try:
         headers = {"Authorization": API_KEY}
         r = requests.get("https://api.henrikdev.xyz/valorant/v2/store-featured", headers=headers, timeout=10)
