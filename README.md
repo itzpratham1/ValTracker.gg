@@ -176,7 +176,7 @@ Open **http://127.0.0.1:5000** in your browser.
 | Platform | [Render](https://render.com) Free Tier |
 | Runtime | Python 3 |
 | Build command | `pip install -r requirements.txt` |
-| Start command | `python app.py` |
+| Start command | `gunicorn -c gunicorn.conf.py app:app` |
 | Auto-deploy | Every push to `main` |
 | Live URL | https://valtracker-gg.onrender.com |
 
