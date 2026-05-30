@@ -1442,7 +1442,7 @@ body::before {
   border-left: 3px solid var(--accent); border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   font-family: 'Barlow', sans-serif; font-size: 12px; line-height: 1.6; color: var(--text);
 }
-.match-ai-verdict-label { font-family: 'DM Mono', monospace; font-size: 8px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+.match-ai-verdict-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 13px; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
 
 /* ── DEEP SELF ANALYSIS ── */
 .deep-wrap { grid-column: span 12; display: flex; flex-direction: column; gap: 12px; }

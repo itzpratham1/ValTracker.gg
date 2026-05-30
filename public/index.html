@@ -154,6 +154,7 @@
       <div class="topbar-tab" id="tab-esports" onclick="toggleMainView('esports')">Esports</div>
       <div class="topbar-tab" id="tab-store" onclick="toggleMainView('store')">Skins Store</div>
       <div class="topbar-tab" id="tab-coach" onclick="toggleMainView('coach')">Meta Comp Architect</div>
+      <div class="topbar-tab" id="tab-ai-hub" onclick="toggleMainView('ai-hub')">AI Hub</div>
     </div>
     
     <div class="topbar-divider" id="tracker-divider-1"></div>
@@ -964,6 +965,59 @@
   </div>
 
 </div>
+
+  <!-- AI COACH HUB VIEW -->
+  <div id="ai-hub-view" style="display:none; padding: 24px; max-width: 1400px; margin: 0 auto;">
+    <div style="background: linear-gradient(135deg, rgba(232, 255, 71, 0.12) 0%, rgba(20, 20, 22, 0.45) 100%); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 8px;">
+      <h2 style="font-family:'Barlow Condensed', sans-serif; font-size: 32px; font-weight: 900; text-transform: uppercase; color: #fff; letter-spacing: 1.5px; margin: 0;">VALSTATS AI Command Center</h2>
+      <p style="font-size: 13px; color: var(--muted); margin: 0; max-width: 700px;">Access your personalized AI systems. Our dynamic client-side AI engines cross-reference your match history, combat patterns, session telemetry, and agent pool against live rank tier benchmarks to deliver optimal, hyper-focused coaching.</p>
+    </div>
+
+    <!-- AI Tools Bento Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+      
+      <!-- CARD 1: VALBOT GLOBAL COACH -->
+      <div class="card" style="padding: 24px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; justify-content: space-between; gap: 20px; margin: 0; position: relative; overflow: hidden; transition: all 0.25s ease;" onmouseenter="this.style.borderColor='var(--accent)';" onmouseleave="this.style.borderColor='var(--border)';">
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="font-size: 32px;">🎯</div>
+          <h3 style="font-family:'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 900; color: #fff; text-transform: uppercase; margin: 0; letter-spacing: 0.5px;">ValBot Global Assistant</h3>
+          <p style="font-size: 12px; color: var(--muted); line-height: 1.5; margin: 0;">Analyzes your last 20+ matches to calculate your K/D Trends, Rank Readiness Score, Combat Consistency, and isolates your absolute <strong>#1 Priority Focus</strong> action item to break your rank cap.</p>
+        </div>
+        <button class="fetch-btn" style="margin: 0; width: 100%; background: var(--accent); color: #000; font-weight: bold;" onclick="goToAISubsystem('valbot')">Launch ValBot &rarr;</button>
+      </div>
+
+      <!-- CARD 2: MATCH-LEVEL INTEL AI -->
+      <div class="card" style="padding: 24px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; justify-content: space-between; gap: 20px; margin: 0; position: relative; overflow: hidden; transition: all 0.25s ease;" onmouseenter="this.style.borderColor='var(--win)';" onmouseleave="this.style.borderColor='var(--border)';">
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="font-size: 32px;">📊</div>
+          <h3 style="font-family:'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 900; color: #fff; text-transform: uppercase; margin: 0; letter-spacing: 0.5px;">Match Intel AI</h3>
+          <p style="font-size: 12px; color: var(--muted); line-height: 1.5; margin: 0;">Fuses game details with your personal baseline profile. Highlights how you performed relative to your historical averages, tracks mid-match fatigue patterns, and isolates your <strong>Star Round</strong> peak moments.</p>
+        </div>
+        <button class="fetch-btn" style="margin: 0; width: 100%; background: var(--win); color: #000; font-weight: bold;" onclick="goToAISubsystem('match-ai')">Inspect Match AI &rarr;</button>
+      </div>
+
+      <!-- CARD 3: PERFORMANCE DIAGNOSTICS LAB -->
+      <div class="card" style="padding: 24px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; justify-content: space-between; gap: 20px; margin: 0; position: relative; overflow: hidden; transition: all 0.25s ease;" onmouseenter="this.style.borderColor='#9333ea';" onmouseleave="this.style.borderColor='var(--border)';">
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="font-size: 32px;">🧠</div>
+          <h3 style="font-family:'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 900; color: #fff; text-transform: uppercase; margin: 0; letter-spacing: 0.5px;">Performance Diagnostics Lab</h3>
+          <p style="font-size: 12px; color: var(--muted); line-height: 1.5; margin: 0;">Your mental game defense system. Scans your playing sessions to identify tilt risks, calculates fatigue win-rate dips, analyzes performance by hour of day, and delivers definitive 'Keep Playing or Stop' session guidelines.</p>
+        </div>
+        <button class="fetch-btn" style="margin: 0; width: 100%; background: #9333ea; color: #fff; font-weight: bold; border-color: #9333ea;" onclick="goToAISubsystem('perf-lab')">Run Diagnostics &rarr;</button>
+      </div>
+
+      <!-- CARD 4: META COMP ARCHITECT -->
+      <div class="card" style="padding: 24px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; justify-content: space-between; gap: 20px; margin: 0; position: relative; overflow: hidden; transition: all 0.25s ease;" onmouseenter="this.style.borderColor='#ff4655';" onmouseleave="this.style.borderColor='var(--border)';">
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="font-size: 32px;">🎮</div>
+          <h3 style="font-family:'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 900; color: #fff; text-transform: uppercase; margin: 0; letter-spacing: 0.5px;">VCT Meta Comp Coach</h3>
+          <p style="font-size: 12px; color: var(--muted); line-height: 1.5; margin: 0;">Evaluates team layouts for any map in real-time. Features the custom <strong>'Build Around Me'</strong> engine to dynamically fill compositions using your top-winrate agent pool and pro meta trends.</p>
+        </div>
+        <button class="fetch-btn" style="margin: 0; width: 100%; background: #ff4655; color: #fff; font-weight: bold; border-color: #ff4655;" onclick="goToAISubsystem('architect')">Architect Comp &rarr;</button>
+      </div>
+
+    </div>
+  </div>
 
   <!-- DRAFT COMPOSITION COACH VIEW -->
   <div id="coach-view" style="display:none; padding: 24px; max-width: 1400px; margin: 0 auto;">
@@ -7999,6 +8053,8 @@ function toggleMainView(view) {
   document.getElementById('store-view').style.display = 'none';
   const cView = document.getElementById('coach-view');
   if (cView) cView.style.display = 'none';
+  const aiHub = document.getElementById('ai-hub-view');
+  if (aiHub) aiHub.style.display = 'none';
   
   const filterGroup = document.getElementById('topbar-filters-group');
   const mft = document.getElementById('mobile-filter-toggle');
@@ -8041,8 +8097,46 @@ function toggleMainView(view) {
       if (cView) cView.style.display = 'block';
       resetDraftComp();
       renderSavedDrafts();
+    } else if (view === 'ai-hub') {
+      if (aiHub) aiHub.style.display = 'block';
+      if(esportsLiveInterval) clearInterval(esportsLiveInterval);
+      if(esportsCountdownInterval) clearInterval(esportsCountdownInterval);
     }
   }
+}
+
+function goToAISubsystem(system) {
+  if (system === 'architect') {
+    toggleMainView('coach');
+    return;
+  }
+  
+  // For the others, navigate to 'tracker' view first
+  toggleMainView('tracker');
+  
+  setTimeout(() => {
+    let targetEl = null;
+    if (system === 'valbot') {
+      targetEl = document.getElementById('ai-section') || document.querySelector('.deep-wrap') || document.getElementById('ai-btn');
+    } else if (system === 'perf-lab') {
+      targetEl = document.getElementById('plab-btn') || document.querySelector('.plab-run-btn') || document.getElementById('plab-heatmap');
+    } else if (system === 'match-ai') {
+      targetEl = document.getElementById('match-history-list') || document.getElementById('match-list-container') || document.getElementById('ai-section');
+    }
+    
+    if (targetEl) {
+      const offset = 110;
+      const elementPosition = targetEl.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+      showToast(`Navigated to ${system.toUpperCase()} ✓`);
+    } else {
+      showToast('Please fetch your player profile stats first!');
+    }
+  }, 250);
 }
 
 function toggleMobileFilters() {
