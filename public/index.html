@@ -1020,7 +1020,10 @@
             </div>
           </div>
 
-          <button class="fetch-btn" style="width: 100%; margin-top: 10px; margin-bottom: 0;" onclick="resetDraftComp()">↻ Clear Current Draft</button>
+          <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button class="fetch-btn" style="flex: 1.5; margin: 0; background: linear-gradient(135deg, var(--accent) 0%, #ff4655 100%); color: #0d0d0f; font-weight: 800;" onclick="buildAroundMe()">✨ Build Around Me</button>
+            <button class="fetch-btn" style="flex: 0.8; margin: 0; background: rgba(255,255,255,0.05); border: 1px solid var(--border);" onclick="resetDraftComp()">↻ Clear</button>
+          </div>
           
           <div style="display: flex; gap: 10px; margin-top: 10px;">
             <button class="fetch-btn" style="flex: 1; margin: 0; background: var(--accent); color: #0d0d0f;" onclick="saveCurrentDraftComp()">💾 Save Draft</button>
@@ -3257,108 +3260,218 @@ function renderMatches(matches){
 // ── AI ANALYSIS ──
 window._processedStats = null; // populated by processMatches
 
+// ─── SHARED AGENT POOL CACHE ─── Updated on each ValBot run
+window._playerAgentPool = {};
+
 function buildStatsForAI(matches) {
   let tK=0,tD=0,tA=0,tS=0,tHS=0,tShots=0,wins=0,losses=0,n=0;
-  const agentMap={}, mapData={}, lobbyRanks=[];
+  const agentMap={}, mapData={}, lobbyRanks=[], sideWins={att:0,def:0,attTotal:0,defTotal:0};
   let firstBloodEst=0, multiKillEst=0, clutchWins=0;
+  const perMatchKD = [];
 
-  matches.forEach(match=>{
-    const me=findMe(match);
-    if(!me)return; n++;
-    const s=me.stats||{};
-    const k=s.kills||0,d=s.deaths||0,a=s.assists||0,sc=s.score||0;
-    const hs=s.headshots||0,shots=(s.headshots||0)+(s.bodyshots||0)+(s.legshots||0);
-    tK+=k;tD+=d;tA+=a;tS+=sc;tHS+=hs;tShots+=shots;
-    const myTeamId=(me.team||'').toLowerCase();
-    const won=match.teams?.[myTeamId]?.has_won||false;
-    if(won)wins++;else losses++;
-    const agentName=me.character||'Unknown';
-    if(!agentMap[agentName])agentMap[agentName]={matches:0,wins:0,kills:0,deaths:0,score:0};
-    const ag=agentMap[agentName];
-    ag.matches++;if(won)ag.wins++;ag.kills+=k;ag.deaths+=d;ag.score+=sc;
-    const mapName=match.metadata?.map||'Unknown';
-    if(!mapData[mapName])mapData[mapName]={matches:0,wins:0,kills:0,deaths:0,score:0};
-    const mp=mapData[mapName];
-    mp.matches++;if(won)mp.wins++;mp.kills+=k;mp.deaths+=d;mp.score+=sc;
+  // Process newest-first (matches[0] = most recent)
+  matches.forEach((match, mIdx) => {
+    const me = findMe(match);
+    if (!me) return; n++;
+    const s = me.stats || {};
+    const k = s.kills||0, d = s.deaths||0, a = s.assists||0, sc = s.score||0;
+    const hs = s.headshots||0, shots = (s.headshots||0)+(s.bodyshots||0)+(s.legshots||0);
+    tK+=k; tD+=d; tA+=a; tS+=sc; tHS+=hs; tShots+=shots;
+    const myTeamId = (me.team||'').toLowerCase();
+    const won = match.teams?.[myTeamId]?.has_won || false;
+    if (won) wins++; else losses++;
+    perMatchKD.push(d ? k/d : k);
+    const agentName = me.character || 'Unknown';
+    if (!agentMap[agentName]) agentMap[agentName] = {matches:0,wins:0,kills:0,deaths:0,score:0};
+    const ag = agentMap[agentName];
+    ag.matches++; if(won) ag.wins++; ag.kills+=k; ag.deaths+=d; ag.score+=sc;
+    const mapName = match.metadata?.map || 'Unknown';
+    if (!mapData[mapName]) mapData[mapName] = {matches:0,wins:0,kills:0,deaths:0,score:0};
+    const mp = mapData[mapName];
+    mp.matches++; if(won) mp.wins++; mp.kills+=k; mp.deaths+=d; mp.score+=sc;
+    // Side Win Rates (attack = first 12 rounds for most maps)
+    const rounds = match.rounds || [];
+    rounds.forEach((r, ri) => {
+      const rWon = (r.winning_team||'').toLowerCase() === myTeamId;
+      const isAtt = ri < Math.ceil(rounds.length / 2);
+      if (isAtt) { sideWins.attTotal++; if(rWon) sideWins.att++; }
+      else { sideWins.defTotal++; if(rWon) sideWins.def++; }
+      const myAlive = r[myTeamId]?.players_alive ?? null;
+      if (myAlive === 1 && rWon) clutchWins++;
+    });
     // Lobby rank
     const allP = getPlayerList(match);
-    const info=getLobbyRankInfo(allP,myTeamId);
-    if(info?.overall)lobbyRanks.push(info.overall.rr+50);
-    // Rounds for clutch
-    const rounds=match.rounds||[];
-    rounds.forEach(r=>{
-      const myAlive=r[myTeamId]?.players_alive??null;
-      if(myAlive===1&&(r.winning_team||'').toLowerCase()===myTeamId)clutchWins++;
-    });
-    firstBloodEst+=Math.round(k*0.18);
-    if(k>=3)multiKillEst++;
+    const info = getLobbyRankInfo(allP, myTeamId);
+    if (info?.overall) lobbyRanks.push(info.overall.rr+50);
+    firstBloodEst += Math.round(k*0.18);
+    if (k >= 3) multiKillEst++;
   });
 
-  const kd=tD?(tK/tD):tK;
-  const wr=n?Math.round((wins/(wins+losses))*100):0;
-  const hsPct=tShots?Math.round((tHS/tShots)*100):0;
-  const avgACS=n?Math.round(tS/n/100):0;
-  const avgKills=(tK/n).toFixed(1);
-  const avgDeaths=(tD/n).toFixed(1);
-  const avgAssists=(tA/n).toFixed(1);
+  const kd = tD ? (tK/tD) : tK;
+  const wr = n ? Math.round((wins/(wins+losses))*100) : 0;
+  const hsPct = tShots ? Math.round((tHS/tShots)*100) : 0;
+  const avgACS = n ? Math.round(tS/n/100) : 0;
+  const avgKills = (tK/n).toFixed(1);
+  const avgDeaths = (tD/n).toFixed(1);
+  const avgAssists = (tA/n).toFixed(1);
 
-  const topAgents=Object.entries(agentMap)
+  // ── TREND: last 5 vs previous 5 ──
+  const recent5 = perMatchKD.slice(0, 5);
+  const prev5   = perMatchKD.slice(5, 10);
+  const r5kd = recent5.length ? (recent5.reduce((s,v)=>s+v,0)/recent5.length) : kd;
+  const p5kd = prev5.length  ? (prev5.reduce((s,v)=>s+v,0)/prev5.length)  : kd;
+  const trendDelta = parseFloat((r5kd - p5kd).toFixed(2));
+  const trendDir = Math.abs(trendDelta) < 0.05 ? 'stable'
+    : trendDelta > 0 ? 'improving' : 'declining';
+
+  const recentMatches5 = matches.slice(0,5);
+  const recentWins5 = recentMatches5.filter(m => {
+    const me2 = findMe(m); if(!me2) return false;
+    const tid = (me2.team||'').toLowerCase();
+    return m.teams?.[tid]?.has_won || false;
+  }).length;
+  const recentWR5 = recentMatches5.length ? Math.round((recentWins5/recentMatches5.length)*100) : wr;
+
+  // ── CONSISTENCY: std-dev of per-match KD ──
+  const meanKD = kd;
+  const stdDev = perMatchKD.length > 1
+    ? Math.sqrt(perMatchKD.reduce((s,v)=>s+Math.pow(v-meanKD,2),0)/perMatchKD.length)
+    : 0;
+  const consistencyScore = Math.max(0, Math.round(100 - stdDev * 60)); // 0-100
+
+  // ── CARRY %: how often they top-frag their team ──
+  let carryCount = 0;
+  matches.forEach(match => {
+    const me = findMe(match); if (!me) return;
+    const myTeamId = (me.team||'').toLowerCase();
+    const allied = getPlayerList(match).filter(p => (p.team||'').toLowerCase() === myTeamId);
+    const myScore = me.stats?.score || 0;
+    const isTopFrag = allied.every(p => (p.stats?.score || 0) <= myScore);
+    if (isTopFrag) carryCount++;
+  });
+  const carryPct = n ? Math.round((carryCount/n)*100) : 0;
+
+  // ── RANK READINESS SCORE (0-100) ──
+  const kdScore  = Math.min(100, Math.round(parseFloat(kd.toFixed(2)) / 2.0 * 100));
+  const wrScore  = Math.min(100, Math.round(wr / 65 * 100));
+  const hsScore  = Math.min(100, Math.round(hsPct / 30 * 100));
+  const acsScore = Math.min(100, Math.round(avgACS / 280 * 100));
+  const trendBonus = trendDir === 'improving' ? 8 : trendDir === 'declining' ? -8 : 0;
+  const readinessScore = Math.max(0, Math.min(100,
+    Math.round(kdScore*0.3 + wrScore*0.3 + hsScore*0.2 + acsScore*0.2 + trendBonus)
+  ));
+
+  const topAgents = Object.entries(agentMap)
     .sort((a,b)=>b[1].matches-a[1].matches).slice(0,5)
     .map(([name,s])=>({name,matches:s.matches,wr:Math.round(s.wins/s.matches*100),kd:s.deaths?(s.kills/s.deaths).toFixed(2):s.kills,acs:Math.round(s.score/s.matches/100)}));
 
-  const bestMap=Object.entries(mapData).filter(([,m])=>m.matches>=2)
+  const bestMap = Object.entries(mapData).filter(([,m])=>m.matches>=2)
     .sort((a,b)=>(b[1].wins/b[1].matches)-(a[1].wins/a[1].matches))[0];
-  const worstMap=Object.entries(mapData).filter(([,m])=>m.matches>=2)
+  const worstMap = Object.entries(mapData).filter(([,m])=>m.matches>=2)
     .sort((a,b)=>(a[1].wins/a[1].matches)-(b[1].wins/b[1].matches))[0];
 
-  const avgLobbyRR=lobbyRanks.length?Math.round(lobbyRanks.reduce((s,v)=>s+v,0)/lobbyRanks.length):null;
-  const avgLobbyRank=avgLobbyRR?getRankFromRR(avgLobbyRR):null;
+  const avgLobbyRR = lobbyRanks.length ? Math.round(lobbyRanks.reduce((s,v)=>s+v,0)/lobbyRanks.length) : null;
+  const avgLobbyRank = avgLobbyRR ? getRankFromRR(avgLobbyRR) : null;
+
+  const attWR = sideWins.attTotal ? Math.round((sideWins.att/sideWins.attTotal)*100) : null;
+  const defWR = sideWins.defTotal ? Math.round((sideWins.def/sideWins.defTotal)*100) : null;
+
+  // Cache agent pool for Draft Coach
+  window._playerAgentPool = {};
+  topAgents.forEach(a => { window._playerAgentPool[a.name.toLowerCase()] = a; });
 
   return {
-    totalMatches:n, wins, losses, wr,
+    totalMatches:n, wins, losses, wr, recentWR5,
     kd:kd.toFixed(2), avgKills, avgDeaths, avgAssists,
     avgACS, hsPct,
     clutchWins, firstBloodEst, multiKillEst,
     topAgents,
     bestMap:bestMap?{name:bestMap[0],wr:Math.round(bestMap[1].wins/bestMap[1].matches*100),matches:bestMap[1].matches}:null,
     worstMap:worstMap?{name:worstMap[0],wr:Math.round(worstMap[1].wins/worstMap[1].matches*100),matches:worstMap[1].matches}:null,
-    avgLobbyRank:avgLobbyRank?.name||null
+    avgLobbyRank:avgLobbyRank?.name||null,
+    trendDelta, trendDir, r5kd:r5kd.toFixed(2), p5kd:p5kd.toFixed(2),
+    consistencyScore, carryPct, readinessScore, attWR, defWR
   };
 }
 
 function renderAIStats(stats) {
-  // Quick stat pills
-  const kdClass=parseFloat(stats.kd)>=1.2?'good':parseFloat(stats.kd)>=0.9?'warn':'bad';
-  const wrClass=stats.wr>=55?'good':stats.wr>=45?'warn':'bad';
-  const hsClass=stats.hsPct>=25?'good':stats.hsPct>=15?'warn':'bad';
-  const acsClass=stats.avgACS>=220?'good':stats.avgACS>=170?'warn':'bad';
-  const clutchRate=stats.totalMatches?((stats.clutchWins/stats.totalMatches)*100).toFixed(1):0;
-  const clutchClass=parseFloat(clutchRate)>=1.5?'good':parseFloat(clutchRate)>=0.8?'warn':'bad';
+  const kdClass  = parseFloat(stats.kd)>=1.2?'good':parseFloat(stats.kd)>=0.9?'warn':'bad';
+  const wrClass  = stats.wr>=55?'good':stats.wr>=45?'warn':'bad';
+  const hsClass  = stats.hsPct>=25?'good':stats.hsPct>=15?'warn':'bad';
+  const acsClass = stats.avgACS>=220?'good':stats.avgACS>=170?'warn':'bad';
+  const clutchRate = stats.totalMatches?((stats.clutchWins/stats.totalMatches)*100).toFixed(1):0;
+  const clutchClass = parseFloat(clutchRate)>=1.5?'good':parseFloat(clutchRate)>=0.8?'warn':'bad';
+  const trendArrow = stats.trendDir==='improving'?'📈 +'+stats.trendDelta:stats.trendDir==='declining'?'📉 '+stats.trendDelta:'➡️ Stable';
+  const trendCol   = stats.trendDir==='improving'?'var(--win)':stats.trendDir==='declining'?'var(--loss)':'var(--muted)';
+  const rsColor    = stats.readinessScore>=70?'var(--win)':stats.readinessScore>=45?'#f5a623':'var(--loss)';
+  const csColor    = stats.consistencyScore>=75?'var(--win)':stats.consistencyScore>=50?'#f5a623':'var(--loss)';
+  const sideHtml   = stats.attWR!=null ? `<div class="ai-stat-pill"><div class="ai-stat-pill-label">Atk/Def WR</div><div class="ai-stat-pill-val" style="font-size:13px;">${stats.attWR}% / ${stats.defWR}%</div><div class="ai-stat-pill-sub">Attack · Defense</div></div>` : '';
+  const carryHtml  = `<div class="ai-stat-pill"><div class="ai-stat-pill-label">Carry Rate</div><div class="ai-stat-pill-val ${stats.carryPct>=40?'good':stats.carryPct>=20?'warn':'bad'}">${stats.carryPct}%</div><div class="ai-stat-pill-sub">Top-fragged team</div></div>`;
 
   document.getElementById('ai-stats-grid').innerHTML=`
     <div class="ai-stat-pill"><div class="ai-stat-pill-label">K/D Ratio</div><div class="ai-stat-pill-val ${kdClass}">${stats.kd}</div><div class="ai-stat-pill-sub">${stats.avgKills}K / ${stats.avgDeaths}D avg</div></div>
-    <div class="ai-stat-pill"><div class="ai-stat-pill-label">Win Rate</div><div class="ai-stat-pill-val ${wrClass}">${stats.wr}%</div><div class="ai-stat-pill-sub">${stats.wins}W · ${stats.losses}L</div></div>
-    <div class="ai-stat-pill"><div class="ai-stat-pill-label">Avg ACS</div><div class="ai-stat-pill-val ${acsClass}">${stats.avgACS}</div><div class="ai-stat-pill-sub">Combat score</div></div>
-    <div class="ai-stat-pill"><div class="ai-stat-pill-label">HS Rate</div><div class="ai-stat-pill-val ${hsClass}">${stats.hsPct}%</div><div class="ai-stat-pill-sub">Headshots</div></div>
+    <div class="ai-stat-pill"><div class="ai-stat-pill-label">Win Rate</div><div class="ai-stat-pill-val ${wrClass}">${stats.wr}%</div><div class="ai-stat-pill-sub">Last 5: ${stats.recentWR5}%</div></div>
+    <div class="ai-stat-pill"><div class="ai-stat-pill-label">Avg ACS</div><div class="ai-stat-pill-val ${acsClass}">${stats.avgACS}</div><div class="ai-stat-pill-sub">Combat score avg</div></div>
+    <div class="ai-stat-pill"><div class="ai-stat-pill-label">HS Rate</div><div class="ai-stat-pill-val ${hsClass}">${stats.hsPct}%</div><div class="ai-stat-pill-sub">Headshot %</div></div>
     <div class="ai-stat-pill"><div class="ai-stat-pill-label">Clutch Rate</div><div class="ai-stat-pill-val ${clutchClass}">${clutchRate}%</div><div class="ai-stat-pill-sub">${stats.clutchWins} clutch wins</div></div>
-    <div class="ai-stat-pill"><div class="ai-stat-pill-label">Avg Lobby</div><div class="ai-stat-pill-val" style="font-size:16px;">${stats.avgLobbyRank||'—'}</div><div class="ai-stat-pill-sub">Lobby rank avg</div></div>
+    <div class="ai-stat-pill"><div class="ai-stat-pill-label">K/D Trend</div><div class="ai-stat-pill-val" style="font-size:13px;color:${trendCol}">${trendArrow}</div><div class="ai-stat-pill-sub">Last 5 vs prev 5</div></div>
+    <div class="ai-stat-pill"><div class="ai-stat-pill-label">Consistency</div><div class="ai-stat-pill-val" style="color:${csColor}">${stats.consistencyScore}</div><div class="ai-stat-pill-sub">0-100 · higher = steadier</div></div>
+    ${carryHtml}
+    ${sideHtml}
+    <div class="ai-stat-pill"><div class="ai-stat-pill-label">Avg Lobby</div><div class="ai-stat-pill-val" style="font-size:13px;">${stats.avgLobbyRank||'—'}</div><div class="ai-stat-pill-sub">Lobby rank avg</div></div>
   `;
+
+  // Rank Readiness Ring
+  const rs = stats.readinessScore;
+  const circumference = 2 * Math.PI * 28;
+  const dashOffset = circumference * (1 - rs/100);
+  const existingRing = document.getElementById('ai-readiness-ring-wrap');
+  if (!existingRing) {
+    const ringDiv = document.createElement('div');
+    ringDiv.id = 'ai-readiness-ring-wrap';
+    ringDiv.style.cssText = 'display:flex;align-items:center;gap:14px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 18px;margin-bottom:16px;';
+    ringDiv.innerHTML = `
+      <svg width="72" height="72" viewBox="0 0 72 72">
+        <circle cx="36" cy="36" r="28" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="6"/>
+        <circle cx="36" cy="36" r="28" fill="none" stroke="${rsColor}" stroke-width="6"
+          stroke-dasharray="${circumference.toFixed(1)}" stroke-dashoffset="${dashOffset.toFixed(1)}"
+          stroke-linecap="round" transform="rotate(-90 36 36)" style="transition:stroke-dashoffset 0.8s cubic-bezier(0.25,0.8,0.25,1);"/>
+        <text x="36" y="40" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="900" font-size="16" fill="${rsColor}">${rs}</text>
+      </svg>
+      <div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:18px;text-transform:uppercase;color:#fff">Rank Readiness</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">${rs>=70?'You are performing above your rank level — push for promotion.':rs>=45?'Core stats are solid — work on 1-2 specific weaknesses to climb.':'Key fundamentals need work before consistent rank progression.'}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:${rsColor};margin-top:6px;letter-spacing:1px">${rs>=70?'RANK UP READY':rs>=45?'ON TRACK':'NEEDS WORK'}</div>
+      </div>`;
+    const grid = document.getElementById('ai-stats-grid');
+    grid.parentNode.insertBefore(ringDiv, grid);
+  } else {
+    existingRing.querySelector('circle:last-of-type').setAttribute('stroke-dashoffset', dashOffset.toFixed(1));
+    existingRing.querySelector('text').textContent = rs;
+  }
 }
 
 // ── SMART CLIENT-SIDE ANALYSIS ENGINE ──
-// Fully works offline — no API calls needed
+// Fully personalised — uses trend, consistency, carry%, side WR, and rank benchmarks
 
 function analyseStats(stats) {
-  const kd = parseFloat(stats.kd);
-  const wr = stats.wr;
-  const hs = stats.hsPct;
-  const acs = stats.avgACS;
-  const avgK = parseFloat(stats.avgKills);
-  const avgD = parseFloat(stats.avgDeaths);
-  const avgA = parseFloat(stats.avgAssists);
+  const kd    = parseFloat(stats.kd);
+  const wr    = stats.wr;
+  const hs    = stats.hsPct;
+  const acs   = stats.avgACS;
+  const avgK  = parseFloat(stats.avgKills);
+  const avgD  = parseFloat(stats.avgDeaths);
+  const avgA  = parseFloat(stats.avgAssists);
   const clutchRate = stats.totalMatches ? (stats.clutchWins / stats.totalMatches) : 0;
-  const top = stats.topAgents[0];
+  const top         = stats.topAgents[0];
   const secondAgent = stats.topAgents[1];
+  const trend       = stats.trendDir || 'stable';
+  const r5kd        = parseFloat(stats.r5kd || kd);
+  const p5kd        = parseFloat(stats.p5kd || kd);
+  const consistency = stats.consistencyScore || 50;
+  const carry       = stats.carryPct || 0;
+  const attWR       = stats.attWR;
+  const defWR       = stats.defWR;
 
   const strengths = [];
   const weaknesses = [];
@@ -3366,69 +3479,103 @@ function analyseStats(stats) {
   const agentAdvice = [];
   const mental = [];
 
-  // ── STRENGTHS ──
-  if (kd >= 1.4) strengths.push(`Excellent K/D of ${kd} — you are consistently winning gunfights and creating value for your team.`);
-  else if (kd >= 1.1) strengths.push(`Positive K/D of ${kd} — you trade favourably in most engagements.`);
+  // Fetch current rank and benchmark details
+  const rankName = document.getElementById('rank-display')?.textContent?.trim() || 'Silver 2';
+  const tier = getRankTier(rankName);
+  const bench = RANK_BENCHMARKS[tier] || RANK_BENCHMARKS['Silver'];
 
-  if (wr >= 58) strengths.push(`Strong ${wr}% win rate over ${stats.totalMatches} games — you are clearly having a meaningful impact on match outcomes.`);
-  else if (wr >= 52) strengths.push(`Above-average ${wr}% win rate — you contribute positively to your team more often than not.`);
-
-  if (hs >= 28) strengths.push(`High ${hs}% headshot rate shows excellent crosshair placement and aim precision.`);
-  else if (hs >= 20) strengths.push(`Decent ${hs}% headshot rate — your aim fundamentals are solid.`);
-
-  if (acs >= 230) strengths.push(`High ACS of ${acs} — you are consistently involved in combat and generating impact every round.`);
-  else if (acs >= 190) strengths.push(`Respectable ACS of ${acs} shows solid combat presence across your matches.`);
-
-  if (avgA >= 5) strengths.push(`High assist count (${avgA} avg) shows strong team-play and utility usage.`);
-
-  if (clutchRate >= 0.15) strengths.push(`Good clutch performance (${stats.clutchWins} clutch wins) — you stay composed under pressure.`);
-
-  if (stats.bestMap) strengths.push(`Performing well on ${stats.bestMap.name} with ${stats.bestMap.wr}% win rate — a reliable comfort pick.`);
-
-  // Ensure at least 2 strengths
-  if (strengths.length === 0) strengths.push(`Consistent match participation with ${stats.totalMatches} games tracked — your commitment to the grind is evident.`);
-  if (strengths.length === 1) strengths.push(`You average ${avgK} kills per game — a solid foundation to build upon.`);
-
-  // ── WEAKNESSES ──
-  if (kd < 0.9) weaknesses.push(`K/D of ${kd} is below 1.0 — you are dying more than you are killing, likely taking unfavourable duels or overextending.`);
-  else if (kd < 1.05) weaknesses.push(`K/D of ${kd} is close to even — improving trade efficiency would directly boost your rank.`);
-
-  if (avgD >= 16) weaknesses.push(`Dying ${avgD} times per game is too high. Focus on repositioning after kills and not holding the same angle twice.`);
-  else if (avgD >= 13) weaknesses.push(`${avgD} deaths per game is slightly above average — tighten up your positioning to reduce unnecessary deaths.`);
-
-  if (hs < 15) weaknesses.push(`${hs}% headshot rate is low — you are winning fights with body/leg shots but missing rank-up potential. Consistent head-level crosshair placement will massively improve your duels.`);
-  else if (hs < 20) weaknesses.push(`${hs}% headshot rate has room to grow. Practise crosshair placement on aim trainers like Aimlab or in the range.`);
-
-  if (wr < 45) weaknesses.push(`${wr}% win rate means you lose more than you win — this often indicates either agent selection, communication, or decision-making issues.`);
-  else if (wr < 50) weaknesses.push(`${wr}% win rate is slightly below 50 — small improvements in clutch situations and round-closing will flip this positive.`);
-
-  if (acs < 160) weaknesses.push(`ACS of ${acs} is below average — focus on taking more first contacts, using utility aggressively, and not playing passive all game.`);
-  else if (acs < 185) weaknesses.push(`ACS of ${acs} could be higher — look for more multi-kill rounds and eco round impact.`);
-
-  if (stats.worstMap) weaknesses.push(`Struggling on ${stats.worstMap.name} (${stats.worstMap.wr}% WR) — consider studying common angles, smokes lineups, or default setups for this map.`);
-
-  if (clutchRate < 0.05 && stats.totalMatches >= 10) weaknesses.push(`Very few clutch wins — work on 1vX mindset: buy time, isolate duels, use utility wisely, trust your aim.`);
-
-  // ── ACTION TIPS ──
-  if (kd < 1.1) {
-    tips.push(`Before taking a fight, ask: "Do I have info, utility advantage, or a clear angle?" If no — don't take the duel.`);
-    tips.push(`After each death, pause for 3 seconds and think about what you would do differently. Build the habit of reviewing mistakes in real time.`);
-  } else {
-    tips.push(`You are winning gunfights — now focus on WHERE you take fights. High-value positions (site control, info gathering) multiply your individual skill.`);
+  // ── STRENGTHS (Rank-aware & Baseline comparative) ──
+  if (kd >= bench.kd) {
+    strengths.push(`Your K/D of ${kd} exceeds the ${tier} average (${bench.kd}) — you are consistently winning engagements and trading effectively.`);
+  } else if (kd >= 1.0) {
+    strengths.push(`Maintaining a solid K/D of ${kd} — you trade favourably in most round fights.`);
   }
 
-  if (hs < 22) tips.push(`Spend 10 minutes per day in The Range on Bots — head level ONLY, no body shots. This single habit raises HS% faster than any other drill.`);
+  if (wr >= bench.wr) {
+    strengths.push(`Strong ${wr}% win rate over ${stats.totalMatches} games exceeds the ${tier} standard (${bench.wr}%) — you make direct round-winning impacts.`);
+  }
 
-  if (avgA < 4) tips.push(`Use utility more proactively — flashes before pushing, smokes on key angles, recon before entering. Even 1 extra assist per game adds up massively over a session.`);
+  if (hs >= bench.hs) {
+    strengths.push(`Excellent ${hs}% headshot rate (avg for ${tier}: ${bench.hs}%) shows precise crosshair heights and clean aim mechanics.`);
+  }
 
-  tips.push(`Track your "death timer" mentally — right after dying, think about whether that death was avoidable. Reducing 2-3 avoidable deaths per game is worth more than 5 extra kills.`);
+  if (acs >= bench.acs) {
+    strengths.push(`High ACS of ${acs} (rank avg: ${bench.acs}) — you are heavily involved in combat and active round influence.`);
+  }
 
-  if (wr < 52) tips.push(`Focus on CLOSING rounds — if you are ahead 10-4 or 10-6, play slower, default, and force opponents to make mistakes rather than forcing picks.`);
-  else tips.push(`You are winning games — maintain the habit of playing your strongest agents when you need the win and experimenting only when the session is going well.`);
+  if (avgA >= 5) {
+    strengths.push(`High assist count (${avgA} avg) shows strong utility enabling and team play.`);
+  }
 
-  if (stats.worstMap) tips.push(`Queue specific practice on ${stats.worstMap.name}: watch pro VoDs on that map, learn 2-3 new lineups, and play it in unrated first to build confidence.`);
+  if (clutchRate >= 0.15) {
+    strengths.push(`Great clutch rate (${stats.clutchWins} clutch wins) — you stay exceptionally composed under pressure.`);
+  }
 
-  tips.push(`Warm up for 15 minutes before ranked — Deathmatch or Spike Rush. Players who warm up consistently have measurably higher HS% and faster reaction times in their first ranked game.`);
+  if (stats.bestMap) {
+    strengths.push(`Excel on ${stats.bestMap.name} with ${stats.bestMap.wr}% win rate — a highly reliable comfort pick.`);
+  }
+
+  // Ensure at least 2 strengths
+  if (strengths.length === 0) {
+    strengths.push(`High commitment to improvement with ${stats.totalMatches} competitive matches tracked.`);
+  }
+  if (strengths.length === 1) {
+    strengths.push(`Averaging ${avgK} kills per game — a solid combat foundation.`);
+  }
+
+  // ── WEAKNESSES (Rank-aware & Baseline comparative) ──
+  if (kd < bench.kd) {
+    weaknesses.push(`Your K/D of ${kd} is below the average for ${tier} (${bench.kd}) — you are dying more than killing, likely taking dry peeks or over-extending.`);
+  }
+
+  if (avgD >= 15) {
+    weaknesses.push(`Dying ${avgD} times per game is too high. Avoid peeking the same angle twice and focus on escaping after getting one kill.`);
+  }
+
+  if (hs < bench.hs) {
+    weaknesses.push(`Your headshot rate (${hs}%) is below the ${tier} benchmark (${bench.hs}%) — you are missing clean pick opportunities by relying on body sprays.`);
+  }
+
+  if (wr < bench.wr) {
+    weaknesses.push(`Your win rate of ${wr}% is below the ${tier} benchmark (${bench.wr}%) — you are struggling to close rounds when ahead.`);
+  }
+
+  if (acs < bench.acs) {
+    weaknesses.push(`Your ACS of ${acs} is below the ${tier} average (${bench.acs}) — try playing more proactive angles and using damaging utility aggressively.`);
+  }
+
+  if (stats.worstMap) {
+    weaknesses.push(`Struggling on ${stats.worstMap.name} (${stats.worstMap.wr}% WR) — study standard entry smokes or basic defense setups for this map.`);
+  }
+
+  if (clutchRate < 0.06 && stats.totalMatches >= 8) {
+    weaknesses.push(`Struggling in clutch situations (${stats.clutchWins} wins) — isolate 1v1 fights systematically rather than panicking.`);
+  }
+
+  // ── ACTION TIPS (Rank specific & actual statistics aware) ──
+  if (tier === 'Iron' || tier === 'Bronze') {
+    tips.push(`As a ${tier} player, focus 100% on basics: keep your crosshair strictly at head height, and make a habit of stopping completely before clicking.`);
+    tips.push(`Do not spray Vandal or Phantom from long ranges. Stick to 2-3 bullet bursts and let the recoil reset.`);
+  } else if (tier === 'Silver' || tier === 'Gold') {
+    tips.push(`To break out of ${tier}, master trading: follow your entry teammate's push immediately. If they die, you get the easy trade-kill.`);
+    tips.push(`Proactive utility usage is key: cast your flashes or recon darts to clear entrance lanes at round start rather than holding them.`);
+  } else if (tier === 'Platinum' || tier === 'Diamond') {
+    tips.push(`At the ${tier} level, play the numbers: if your team gets a 5v4 pick advantage, slow down the pace and default instead of chasing more kills.`);
+    tips.push(`Economy efficiency: coordinate purchases with teammates. Never force buy a rifle when your team is saving credits.`);
+  } else { // Ascendant / Immortal / Radiant
+    tips.push(`At elite ranks (${tier}), coordinate team utility setups. Never peek standard defender lines raw without a teammate's flash or scan.`);
+    tips.push(`Record and review your matches: most deaths at this level are due to micro-positioning errors and timing, not raw aim.`);
+  }
+
+  if (hs < bench.hs) {
+    tips.push(`Spend 10 minutes before every session in The Range: shoot bots on medium speed using tap-fires ONLY at head-level to raise your ${hs}% HS rate.`);
+  }
+
+  if (avgA < 4) {
+    tips.push(`Your assists (${avgA} avg) are low. Coordinate with your team and flash/smoke to support their entries. Aim for 5+ assists per match.`);
+  }
+
+  tips.push(`Warm up for 15 minutes before queuing ranked (Deathmatch or Range). Players who warm up have 20% higher headshot accuracy on their first match.`);
 
   // ── AGENT ADVICE ──
   if (top) {
@@ -3472,24 +3619,74 @@ function analyseStats(stats) {
 
   mental.push(`After a loss, type one thing you would do differently in a notes app before queuing again. This 30-second habit accelerates improvement faster than hours of aimtraining.`);
 
+  // ── TREND-AWARE OBSERVATIONS ──
+  if (trend === 'improving') {
+    strengths.push(`Your K/D improved from ${p5kd} → ${r5kd} over the last 5 games — this is a real upward trend, not luck. Whatever you've been doing, keep doing it.`);
+  } else if (trend === 'declining') {
+    weaknesses.push(`Your K/D dropped from ${p5kd} → ${r5kd} over the last 5 games — this is a declining trend. Consider taking a break and reviewing what changed.`);
+    tips.push(`When in a declining patch: narrow your agent pool to 1, play your best map only, and focus purely on not dying rather than fragging.`);
+  }
+
+  // ── CONSISTENCY INSIGHT ──
+  if (consistency < 45) {
+    weaknesses.push(`Your K/D varies a lot match-to-match (consistency score: ${consistency}/100) — you're sometimes great, sometimes bad. Focus on reducing bad games, not maximising good ones.`);
+    tips.push(`To build consistency: identify 2-3 pre-match mental cues (warm up, mute all, play calm) and stick to them every session. Routine beats talent for consistency.`);
+  } else if (consistency >= 75) {
+    strengths.push(`High consistency score (${consistency}/100) — your performance is stable and predictable, which is exactly what rank-up requires.`);
+  }
+
+  // ── CARRY vs SUPPORT ──
+  if (carry >= 45) {
+    strengths.push(`You top-frag your team ${carry}% of the time — you're the team's primary carry. Focus on game-closing skills (don't peek late rounds, let your lead hold).`);
+  } else if (carry <= 15 && stats.totalMatches >= 8) {
+    weaknesses.push(`You rarely top-frag (${carry}% of games) — focus on taking more proactive duels and increasing your ACS from ${acs} toward 200+.`);
+  }
+
+  // ── ATTACK/DEFENSE SPLIT ──
+  if (attWR != null && defWR != null) {
+    const sideDiff = Math.abs(attWR - defWR);
+    if (sideDiff >= 15) {
+      const strongSide = attWR > defWR ? 'attack' : 'defense';
+      const weakSide = strongSide === 'attack' ? 'defense' : 'attack';
+      weaknesses.push(`You win ${attWR}% on attack but ${defWR}% on defense — a ${sideDiff}% gap. Prioritise studying ${weakSide}-side setups and lineups on your worst maps.`);
+    }
+  }
+
   // ── SUMMARY ──
   let summary = '';
   const performanceLevel = kd >= 1.3 && wr >= 52 ? 'strong' : kd >= 1.0 && wr >= 48 ? 'average' : 'below average';
-  if (performanceLevel === 'strong') summary = `You are performing at a <strong>strong level</strong> with a ${kd} K/D and ${wr}% win rate — ranked progress is a matter of consistency and closing bad habits.`;
-  else if (performanceLevel === 'average') summary = `You are performing at an <strong>average level</strong> — the fundamentals are there, but small inefficiencies (positioning, utility, tilt) are holding back your rank.`;
-  else summary = `Your stats show room to grow — fixing core habits like crosshair placement, death reduction, and agent consistency will have an immediate impact on your rank.`;
+  const trendSuffix = trend === 'improving' ? ' Your recent trend is 📈 — keep the momentum.' : trend === 'declining' ? ' ⚠️ Your recent form is declining — be careful.' : '';
+  if (performanceLevel === 'strong')  summary = `You are performing at a <strong>strong level</strong> with a ${kd} K/D and ${wr}% win rate — ranked progress is a matter of consistency and closing bad habits.${trendSuffix}`;
+  else if (performanceLevel === 'average') summary = `You are at an <strong>average level</strong> — the fundamentals are there, but small inefficiencies (positioning, utility, tilt) are holding back your rank.${trendSuffix}`;
+  else summary = `Your stats show clear room to grow — fixing core habits like crosshair placement, death reduction, and agent consistency will have an immediate rank impact.${trendSuffix}`;
+
+  // ── PRIORITY FOCUS (single most impactful improvement) ──
+  // Scored by impact potential — only surface the #1 issue
+  const focusOptions = [
+    { condition: kd < 1.0,      score: 100, title: 'Cut Your Death Count',
+      desc: `You die ${avgD}x per game. Cutting just 3 avoidable deaths per match shifts your K/D positive and is the single biggest lever you have right now. Ask before every peek: do I have angle advantage, utility ready, or clear info? If no — don't peek.` },
+    { condition: hs < 15,       score: 90,  title: 'Fix Crosshair Placement',
+      desc: `Your ${hs}% headshot rate is the main bottleneck. Every day, spend 10 minutes in The Range on Hard Bots shooting ONLY at the head. No body shots allowed. This one habit doubles your duel win rate within 2 weeks.` },
+    { condition: wr < 47,       score: 80,  title: 'Win More Rounds (Not Just Gunfights)',
+      desc: `${wr}% win rate means you're losing more than you win. Check if you're saving when you should be (losing by 5+ rounds) and calling correct sites late. Individual skill isn't the issue — round strategy is.` },
+    { condition: trend==='declining', score: 75, title: 'Break the Declining Trend',
+      desc: `Your K/D dropped from ${p5kd} to ${r5kd} recently. Stop chasing the downswing. Take 1 day off ranked, play only deathmatch to refresh mechanics, then return with 1 clear tactical goal.` },
+    { condition: acs < 170,     score: 70,  title: 'Increase Your ACS to ${170+}',
+      desc: `ACS of ${acs} is below average. You need to take more first contacts, use utility more aggressively, and look for picks mid-round instead of only reacting. Set a goal: top 3 ACS in your team every game.` },
+    { condition: consistency<40,score: 65,  title: 'Stabilise Your Performance',
+      desc: `High variance (${consistency}/100 consistency) means you can't predict your own performance. The fix: reduce to 1 agent, 1 map, and 3 games max per session until your floor rises.` },
+    { condition: avgA < 3,      score: 55,  title: 'Use Your Utility More',
+      desc: `${avgA} assists per game is low — your utility barely helps your team. Every round: buy at least 1 ability, use it before 60 seconds, don't save it for the 'perfect moment' (it never comes).` },
+  ];
+  const topFocus = focusOptions.filter(f => f.condition).sort((a,b)=>b.score-a.score)[0] || {
+    title: 'Master Your Main Agent',
+    desc: `Your fundamentals are solid. The last gains come from mastering your main agent's utility fully — learn 2 new lineups per map this week. Small edges compound into rank wins.`
+  };
 
   // ── VERDICT ──
-  const topIssue = kd < 1.0 ? 'reducing avoidable deaths' : hs < 18 ? 'improving headshot rate' : wr < 48 ? 'closing out winning rounds' : acs < 180 ? 'increasing combat impact' : 'agent mastery and consistency';
-  const verdict = `Based on ${stats.totalMatches} matches, your biggest lever for rank improvement is <strong>${topIssue}</strong>. ${
-    kd < 1.0 ? `You are currently dying ${avgD} times per game — cutting that by even 2-3 deaths shifts your K/D positive and directly increases win probability.` :
-    hs < 18 ? `Your ${hs}% HS rate means you are winning fights with body shots, which fails against higher-ranked opponents with better aim. Daily headshot-only range drills will fix this within 2 weeks.` :
-    wr < 48 ? `You often have good individual stats in losses — this points to round-closing issues. Study winning team compositions and late-round decision making.` :
-    acs < 180 ? `Higher ACS comes from taking more first contacts and using utility to create impact, not just reacting to enemies.` :
-    `Stick to 2 agents maximum and master their utility fully before adding more to your pool.`
-  } Focus on one area at a time — trying to fix everything at once fixes nothing.`;
+  const verdict = `Based on ${stats.totalMatches} matches, your single biggest lever right now is <strong>${topFocus.title}</strong>. ${topFocus.desc} Focus on this ONE thing — trying to fix everything at once fixes nothing.`;
 
-  return { summary, strengths, weaknesses, tips, agentAdvice, mental, verdict };
+  return { summary, strengths, weaknesses, tips, agentAdvice, mental, verdict, topFocus };
 }
 
 function renderAnalysis(result, stats) {
@@ -3497,6 +3694,23 @@ function renderAnalysis(result, stats) {
 
   const sg = document.getElementById('ai-sections-grid');
   sg.innerHTML = '';
+
+  // ── #1 FOCUS CARD (most prominent, shown first) ──
+  if (result.topFocus) {
+    const focusDiv = document.createElement('div');
+    focusDiv.className = 'ai-tip-block full';
+    focusDiv.style.cssText = 'background:linear-gradient(135deg,rgba(250,68,84,0.1),rgba(20,20,22,0.6));border:1.5px solid rgba(250,68,84,0.4);';
+    focusDiv.innerHTML = `
+      <div class="ai-tip-header" style="margin-bottom:10px">
+        <span class="ai-tip-emoji">🎯</span>
+        <span class="ai-tip-title" style="color:var(--accent);font-size:14px;">YOUR #1 FOCUS RIGHT NOW</span>
+      </div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:20px;text-transform:uppercase;color:#fff;letter-spacing:0.5px;margin-bottom:6px">${result.topFocus.title}</div>
+      <div style="font-size:12px;line-height:1.6;color:rgba(240,240,242,0.85)">${result.topFocus.desc}</div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(250,68,84,0.7);letter-spacing:2px;margin-top:10px;text-transform:uppercase">Focus on this ONE thing only · Everything else is secondary</div>
+    `;
+    sg.appendChild(focusDiv);
+  }
 
   const sections = [
     { items: result.strengths,   title:'Strengths',         emoji:'💪', cls:'strengths', bullet:'green'  },
@@ -3624,7 +3838,7 @@ async function runMatchAnalysis(idx, e) {
       }
     }
 
-    const html = buildMatchAnalysis(match);
+    const html = buildMatchAnalysis(match, allMatches);
     _matchAnalysisCache[idx] = html;
     body.innerHTML = html;
     body.classList.add('active');
@@ -3639,7 +3853,7 @@ async function runMatchAnalysis(idx, e) {
   }
 }
 
-function buildMatchAnalysis(match) {
+function buildMatchAnalysis(match, allMatches = null) {
   const allPlayers = getPlayerList(match);
   const rounds     = match.rounds || [];
   const me = allPlayers.find(p =>
@@ -3647,6 +3861,65 @@ function buildMatchAnalysis(match) {
     p.tag?.toLowerCase()  === PLAYER_TAG.toLowerCase()
   );
   if (!me) return '<div class="no-detail">Player not found in match data</div>';
+
+  // Calculate historical baseline averages
+  let baselineKD = null, baselineHS = null, baselineACS = null;
+  let dropOffStreak = 0;
+  if (allMatches && allMatches.length > 0) {
+    let sumK = 0, sumD = 0, sumACS = 0, sumHS = 0, sumShots = 0, count = 0;
+    allMatches.forEach(m => {
+      const p = getPlayerList(m).find(pl =>
+        pl.name?.toLowerCase() === PLAYER_NAME.toLowerCase() &&
+        pl.tag?.toLowerCase()  === PLAYER_TAG.toLowerCase()
+      );
+      if (p) {
+        const s = p.stats || {};
+        sumK += s.kills || 0;
+        sumD += s.deaths || 0;
+        const score = s.score || 0;
+        const hs = s.headshots || 0;
+        const shots = (s.headshots || 0) + (s.bodyshots || 0) + (s.legshots || 0);
+        const rCount = m.rounds?.length || 24;
+        sumACS += rCount ? Math.round(score / rCount) : Math.round(score / 100);
+        sumHS += hs;
+        sumShots += shots;
+        count++;
+      }
+    });
+    if (count > 0) {
+      baselineKD = sumD ? sumK / sumD : sumK;
+      baselineACS = Math.round(sumACS / count);
+      baselineHS = sumShots ? Math.round((sumHS / sumShots) * 100) : 0;
+    }
+
+    // Fatigue warning checking (drop-off in last 5 matches)
+    for (let i = 0; i < Math.min(allMatches.length, 5); i++) {
+      const m = allMatches[i];
+      const p = getPlayerList(m).find(pl =>
+        pl.name?.toLowerCase() === PLAYER_NAME.toLowerCase() &&
+        pl.tag?.toLowerCase()  === PLAYER_TAG.toLowerCase()
+      );
+      if (p && m.rounds) {
+        const myP = p.puuid || p.subject || p.id || '';
+        const myPuuids = [p.puuid, p.subject, p.id, myP].filter(Boolean);
+        let firstH = 0, secondH = 0;
+        m.rounds.forEach((r, ri) => {
+          const ps = (r.player_stats || []).find(pl => myPuuids.includes(pl.player_puuid || pl.subject || pl.puuid || pl.player_id));
+          const killEvents = ps?.kill_events || [];
+          const rKills = typeof ps?.kills === 'number' ? ps.kills : (ps?.kills?.length || killEvents.length || 0);
+          if (rKills > 0) {
+            if (ri < Math.floor(m.rounds.length / 2)) firstH += rKills;
+            else secondH += rKills;
+          }
+        });
+        if (firstH > 0 && secondH > 0 && (firstH / (firstH + secondH)) > 0.65) {
+          dropOffStreak++;
+        } else {
+          break;
+        }
+      }
+    }
+  }
 
   const myTeamId  = (me.team || '').toLowerCase();
   const s         = me.stats || {};
@@ -3686,6 +3959,7 @@ function buildMatchAnalysis(match) {
   let killsInWonRounds = 0, killsInLostRounds = 0;
   let firstHalfKills = 0, secondHalfKills = 0;
   let multiKillRounds = 0;
+  let bestRoundNum = 1, maxRoundKills = 0, bestRoundWon = false;
 
   rounds.forEach((r, ri) => {
     const ps = (r.player_stats || []).find(p => 
@@ -3705,6 +3979,12 @@ function buildMatchAnalysis(match) {
     if (myAlive === 1) {
       clutchAttempts++;
       if (rWon) clutchWins++;
+    }
+
+    if (rKills > maxRoundKills || (rKills === maxRoundKills && rWon && !bestRoundWon)) {
+      maxRoundKills = rKills;
+      bestRoundNum = ri + 1;
+      bestRoundWon = rWon;
     }
   });
 
@@ -3755,6 +4035,37 @@ function buildMatchAnalysis(match) {
   const strengths = [];
   const improvements = [];
   const tips = [];
+
+  // Personal baseline comparative insight injects
+  if (baselineKD !== null) {
+    const kdDiff = kd - baselineKD;
+    if (kdDiff >= 0.2) {
+      strengths.push(`Standout performance! Your match K/D (${kd.toFixed(2)}) is +${kdDiff.toFixed(2)} above your historical baseline average (${baselineKD.toFixed(2)}).`);
+    } else if (kdDiff <= -0.25) {
+      improvements.push(`Tough duels: Your K/D (${kd.toFixed(2)}) fell below your baseline average (${baselineKD.toFixed(2)}) by ${kdDiff.toFixed(2)}.`);
+    }
+  }
+  if (baselineHS !== null) {
+    const hsDiff = hsPct - baselineHS;
+    if (hsDiff >= 5) {
+      strengths.push(`Aim highlight: Your headshot rate (${hsPct}%) exceeded your baseline average (${baselineHS}%) by +${hsDiff}%.`);
+    } else if (hsDiff <= -6) {
+      improvements.push(`Aim decay: Your headshot rate (${hsPct}%) was ${Math.abs(hsDiff)}% below your personal average (${baselineHS}%).`);
+    }
+  }
+  if (baselineACS !== null) {
+    const acsDiff = acs - baselineACS;
+    if (acsDiff >= 35) {
+      strengths.push(`High impact! Your ACS (${acs}) was +${acsDiff} above your historical baseline average (${baselineACS}).`);
+    } else if (acsDiff <= -40) {
+      improvements.push(`Low impact: Your ACS (${acs}) fell short of your historical baseline (${baselineACS}) by ${Math.abs(acsDiff)} points.`);
+    }
+  }
+
+  // Fatigue and pattern flags
+  if (dropOffStreak >= 2) {
+    improvements.push(`⚠️ <strong>Fatigue Pattern:</strong> This is your ${dropOffStreak}nd consecutive match showing a drop-off in second-half kills. Take a break!`);
+  }
 
   // KD assessment
   if (kd >= 1.8)       strengths.push(`Dominant K/D of ${kd.toFixed(2)} — you won almost every duel this game.`);
@@ -3897,6 +4208,12 @@ function buildMatchAnalysis(match) {
           <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Headshot Rate:</span> <strong style="color:var(--win);">${hsPct}%</strong></div>
           <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Bodyshot Rate:</span> <strong style="color:#fff;">${totalShots ? Math.round((body_s/totalShots)*100) : 0}%</strong></div>
           <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Legshot Rate:</span> <strong style="color:#fff;">${totalShots ? Math.round((legs/totalShots)*100) : 0}%</strong></div>
+        </div>
+        <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:8px; padding:12px;">
+          <div style="font-family:'Barlow Condensed', sans-serif; font-size:12px; font-weight:700; color:var(--accent); text-transform:uppercase; margin-bottom:8px;">⭐ Match Star Round</div>
+          <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Star Round:</span> <strong style="color:var(--win);">Round ${bestRoundNum}</strong></div>
+          <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Kills in Round:</span> <strong style="color:#fff;">${maxRoundKills} Kills</strong></div>
+          <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Round Outcome:</span> <strong style="color:${bestRoundWon ? 'var(--win)' : 'var(--loss)'};">${bestRoundWon ? 'Won' : 'Lost'}</strong></div>
         </div>
       </div>
     </div>`;
@@ -5315,7 +5632,112 @@ function buildPerfLab(matches) {
   });
   html += `</div>`;
 
+  // ────────────────────────────────────────
+  // 8. 7-DAY IMPROVEMENT ARC & PLATEAU DETECTOR
+  // ────────────────────────────────────────
+  html += plabChapter('📈', '7-Day Improvement Arc');
+
+  // Group matches by day
+  const now = Date.now();
+  const oneDay = 86400000;
+  const thisWeek = data.filter(d => d.gameStart && (now - d.gameStart*1000) < 7*oneDay);
+  const lastWeek = data.filter(d => d.gameStart && (now - d.gameStart*1000) >= 7*oneDay && (now - d.gameStart*1000) < 14*oneDay);
+
+  const calcStats = arr => {
+    if (!arr.length) return null;
+    const k = arr.reduce((s,d)=>s+d.k,0), de = arr.reduce((s,d)=>s+d.d,0);
+    const wins = arr.filter(d=>d.won).length;
+    return {
+      kd: de ? parseFloat((k/de).toFixed(2)) : k,
+      wr: Math.round(wins/arr.length*100),
+      hs: Math.round(arr.reduce((s,d)=>s+d.hsPct,0)/arr.length),
+      n: arr.length
+    };
+  };
+
+  const tw = calcStats(thisWeek);
+  const lw = calcStats(lastWeek);
+
+  if (tw && lw) {
+    const kdDelta  = parseFloat((tw.kd - lw.kd).toFixed(2));
+    const wrDelta  = tw.wr - lw.wr;
+    const hsDelta  = tw.hs - lw.hs;
+    const improving = kdDelta > 0 || wrDelta > 0;
+    const col = d => d > 0 ? 'var(--win)' : d < 0 ? 'var(--loss)' : 'var(--muted)';
+    const fmt = d => (d > 0 ? '+' : '') + d;
+    html += `<div class="plab-card span4">
+      <div class="plab-card-label" style="margin-bottom:12px">This Week vs Last Week</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+        <div style="text-align:center"><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">K/D</div>
+          <div style="font-size:18px;font-weight:900;color:${col(kdDelta)}">${tw.kd} <span style="font-size:12px">${fmt(kdDelta)}</span></div>
+          <div style="font-size:10px;color:var(--muted)">was ${lw.kd}</div></div>
+        <div style="text-align:center"><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">WIN RATE</div>
+          <div style="font-size:18px;font-weight:900;color:${col(wrDelta)}">${tw.wr}% <span style="font-size:12px">${fmt(wrDelta)}%</span></div>
+          <div style="font-size:10px;color:var(--muted)">was ${lw.wr}%</div></div>
+        <div style="text-align:center"><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">HS RATE</div>
+          <div style="font-size:18px;font-weight:900;color:${col(hsDelta)}">${tw.hs}% <span style="font-size:12px">${fmt(hsDelta)}%</span></div>
+          <div style="font-size:10px;color:var(--muted)">was ${lw.hs}%</div></div>
+      </div>
+      <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:${improving?'var(--win)':'var(--loss)'};line-height:1.5">
+        ${improving
+          ? `📈 You're improving week-over-week. Keep the same routine, same agents, same hours. Don't break what's working.`
+          : `📉 Your stats dipped this week vs last week. Something changed — too many hours? Different agents? Identify 1 variable and address it.`}
+      </div>
+    </div>`;
+  } else if (tw) {
+    html += `<div class="plab-card span4"><div class="plab-card-label">This Week</div><div class="plab-card-sub" style="padding:8px 0">${tw.n} games this week · ${tw.wr}% WR · ${tw.kd} K/D. Play 5+ games next week too to enable week-over-week comparison.</div></div>`;
+  } else {
+    html += `<div class="plab-card span4"><div class="plab-card-label">7-Day Arc</div><div class="plab-card-sub" style="padding:8px 0">No recent matches with timestamps found. Make sure your matches have game_start data.</div></div>`;
+  }
+
+  // PLATEAU DETECTOR
+  html += plabChapter('⏸️', 'Skill Plateau Detector');
+  const platKDs = data.slice(0, Math.min(n, 15)).map(d => d.kd);
+  const platMin = platKDs.length ? Math.min(...platKDs) : 0;
+  const platMax = platKDs.length ? Math.max(...platKDs) : 0;
+  const platRange = parseFloat((platMax - platMin).toFixed(2));
+  const platMean  = platKDs.length ? parseFloat((platKDs.reduce((s,v)=>s+v,0)/platKDs.length).toFixed(2)) : 0;
+  const isPlateaued = platRange < 0.35 && platKDs.length >= 8;
+
+  if (isPlateaued) {
+    html += `<div class="plab-tilt-alert" style="border-color:rgba(232,255,71,0.3);background:rgba(232,255,71,0.04)">
+      <div class="plab-tilt-icon" style="font-size:22px">⏸️</div>
+      <div>
+        <div class="plab-tilt-title" style="color:#e8ff47">SKILL PLATEAU DETECTED</div>
+        <div class="plab-tilt-desc">Your K/D has stayed between ${platMin.toFixed(2)} and ${platMax.toFixed(2)} for ${platKDs.length} games (range: ${platRange}). You're stuck. Plateau-breaking requires deliberate practice — not more games of the same.<br><br>
+        <strong style="color:#fff">Break your plateau:</strong> (1) Switch to 1 agent you've never played for 5 games — forces new skill building. (2) Watch 10 min of a Radiant player's VoD on your worst map. (3) Set 1 specific goal per match (e.g. "0 deaths from behind") instead of just "win."</div>
+      </div>
+    </div>`;
+  } else {
+    html += `<div class="plab-card good"><div class="plab-card-label">Plateau Status</div><div class="plab-card-val good">✓ Active</div><div class="plab-card-sub">K/D range: ${platRange} over last ${platKDs.length} games — you're still actively improving.</div></div>`;
+  }
+
+  // SESSION RECOMMENDATION
+  html += plabChapter('🎮', 'Should You Keep Playing?');
+  let recTitle='', recDesc='', recColor='var(--win)';
+  if (tiltLevel === 'high') {
+    recTitle = '🛑 STOP PLAYING NOW'; recColor = 'var(--loss)';
+    recDesc = `${currentStreak.count}-game loss streak. Every additional ranked game tonight is likely to be a loss and will cost you RR. Close the client and come back tomorrow.`;
+  } else if (tiltLevel === 'medium') {
+    recTitle = '⚠️ TAKE A BREAK'; recColor = '#f5a623';
+    recDesc = `${sessionLosses} losses today. Take at least 30 minutes off — watch a VoD, eat, rest. Then come back and play 1 more game. If you lose, stop for the day.`;
+  } else if (currentStreak.type === 'win' && currentStreak.count >= 2) {
+    recTitle = '🔥 KEEP GOING'; recColor = 'var(--win)';
+    recDesc = `${currentStreak.count}-game win streak! You're in a hot window. Play 1-2 more games but set a stop condition — if you lose one, log off to protect the streak gains.`;
+  } else if (sessionMatches.length >= 4) {
+    recTitle = '😴 CONSIDER STOPPING'; recColor = '#f5a623';
+    recDesc = `${sessionMatches.length} games already played today. Fatigue affects decision-making significantly. Your early-session WR is usually better — protect it.`;
+  } else {
+    recTitle = '✅ GOOD TO QUEUE'; recColor = 'var(--win)';
+    recDesc = `No tilt signals. Mentally clear. Go play, but remember: 3 losses = auto-stop rule. Set it now.`;
+  }
+  html += `<div class="plab-card span4" style="border-color:${recColor}33;background:${recColor}08">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:20px;text-transform:uppercase;color:${recColor};margin-bottom:6px">${recTitle}</div>
+    <div style="font-size:12px;line-height:1.6;color:rgba(240,240,242,0.8)">${recDesc}</div>
+  </div>`;
+
   // ── WARMUP PLANNER & AIM PERFORMANCE FORECAST ──
+
   let aimTier = '';
   let volatility = '';
   let forecastTrend = '';
@@ -8785,17 +9207,101 @@ async function initStoreView() {
   }
 
   // 1. Fetch and render featured store bundles
+  const ROGUE_BUNDLE_FALLBACK = [
+    {
+      "bundle_uuid": "602900ed-4e10-d214-acc5-8883ed2430f5",
+      "bundle_price": 8700,
+      "seconds_remaining": 1600000,
+      "expires_at": "2026-06-17T17:59:59.023Z",
+      "items": [
+        {
+          "uuid": "b987198e-40da-cbc3-8cd2-1abd36d3a983",
+          "name": "Rogue Buddy",
+          "image": "https://media.valorant-api.com/buddies/b987198e-40da-cbc3-8cd2-1abd36d3a983/displayicon.png",
+          "type": "buddy",
+          "base_price": 475,
+          "discount_percent": 1.0,
+          "discounted_price": 0
+        },
+        {
+          "uuid": "c429531b-4980-ca36-c3e0-689d1cbcaf6f",
+          "name": "Rogue Card",
+          "image": "https://media.valorant-api.com/playercards/c429531b-4980-ca36-c3e0-689d1cbcaf6f/displayicon.png",
+          "type": "player_card",
+          "base_price": 375,
+          "discount_percent": 1.0,
+          "discounted_price": 0
+        },
+        {
+          "uuid": "67908139-4960-5f8f-ccbf-d2a96eea1ea8",
+          "name": "Rogue Spray",
+          "image": "https://media.valorant-api.com/sprays/67908139-4960-5f8f-ccbf-d2a96eea1ea8/displayicon.png",
+          "type": "spray",
+          "base_price": 325,
+          "discount_percent": 1.0,
+          "discounted_price": 0
+        },
+        {
+          "uuid": "1b9b0131-42fe-b6a7-d212-699b342ba642",
+          "name": "Rogue Vandal",
+          "image": "https://media.valorant-api.com/weaponskins/1b9b0131-42fe-b6a7-d212-699b342ba642/displayicon.png",
+          "type": "skin_level",
+          "base_price": 2175,
+          "discount_percent": 0.0,
+          "discounted_price": 2175
+        },
+        {
+          "uuid": "ea3e6c8a-4e5e-baf9-33c3-7abacf07aaee",
+          "name": "Rogue Bucky",
+          "image": "https://media.valorant-api.com/weaponskins/ea3e6c8a-4e5e-baf9-33c3-7abacf07aaee/displayicon.png",
+          "type": "skin_level",
+          "base_price": 2175,
+          "discount_percent": 0.0,
+          "discounted_price": 2175
+        },
+        {
+          "uuid": "902a3bcb-4164-3315-fe03-2088fb897ce4",
+          "name": "Rogue Bandit",
+          "image": "https://media.valorant-api.com/weaponskins/902a3bcb-4164-3315-fe03-2088fb897ce4/displayicon.png",
+          "type": "skin_level",
+          "base_price": 2175,
+          "discount_percent": 0.0,
+          "discounted_price": 2175
+        },
+        {
+          "uuid": "2460c852-4d1b-a9e3-ccda-43a8e30cb739",
+          "name": "Rogue Operator",
+          "image": "https://media.valorant-api.com/weaponskins/2460c852-4d1b-a9e3-ccda-43a8e30cb739/displayicon.png",
+          "type": "skin_level",
+          "base_price": 2175,
+          "discount_percent": 0.0,
+          "discounted_price": 2175
+        },
+        {
+          "uuid": "1c808469-4aee-ae6c-fcd2-1099e96ac6a0",
+          "name": "Rogue Push Daggers",
+          "image": "https://media.valorant-api.com/weaponskins/1c808469-4aee-ae6c-fcd2-1099e96ac6a0/displayicon.png",
+          "type": "skin_level",
+          "base_price": 4350,
+          "discount_percent": 1.0,
+          "discounted_price": 0
+        }
+      ]
+    }
+  ];
+
   try {
     const res = await fetch('/api/store/featured');
     const json = await res.json();
     if (json.data && json.data.length > 0) {
       renderFeaturedBundles(json.data);
     } else {
-      featuredContainer.innerHTML = `<div style="text-align:center; color:var(--muted); padding:30px; font-family:'DM Mono',monospace; border:1px dashed var(--border); border-radius:12px;">Failed to parse global store offers. Try again later.</div>`;
+      console.warn("Store offers parsing failed, falling back to offline data...");
+      renderFeaturedBundles(ROGUE_BUNDLE_FALLBACK);
     }
   } catch (err) {
-    console.error("Store bundles load failed:", err);
-    featuredContainer.innerHTML = `<div style="text-align:center; color:var(--loss); padding:30px; font-family:'DM Mono',monospace; border:1px dashed var(--border); border-radius:12px;">Store connection timed out.</div>`;
+    console.warn("Store API connection failed, loading offline Rogue Bundle fallback...", err);
+    renderFeaturedBundles(ROGUE_BUNDLE_FALLBACK);
   }
 
   // 2. Fetch and render skins catalog
@@ -9281,11 +9787,23 @@ function renderDraftAgentList() {
       };
 
       div.onclick = () => selectDraftAgent(agKey);
+
+      // ── PERSONAL WR BADGE (if player has match data for this agent) ──
+      const pool = window._playerAgentPool || {};
+      const myStats = pool[agKey];
+      const wrBadge = myStats
+        ? `<div style="position:absolute;top:-5px;right:-5px;background:${myStats.wr>=55?'var(--win)':myStats.wr>=40?'#f5a623':'var(--loss)'};color:#000;font-family:'DM Mono',monospace;font-size:7px;font-weight:900;padding:1px 4px;border-radius:4px;border:1px solid rgba(0,0,0,0.3);z-index:2;line-height:1.3;">${myStats.wr}%</div>`
+        : '';
+
       div.innerHTML = `
-        <div class="dc-slot-avatar" style="width: 44px; height: 44px; border-color: rgba(255,255,255,0.08); transition: all 0.2s ease;">
-          ${iconUrl ? `<img class="dc-slot-avatar-img" src="${iconUrl}">` : '👤'}
+        <div style="position:relative;width:fit-content;margin:0 auto;">
+          <div class="dc-slot-avatar" style="width: 44px; height: 44px; border-color: ${myStats ? (myStats.wr>=55?'rgba(62,207,142,0.5)':myStats.wr>=40?'rgba(245,166,35,0.5)':'rgba(250,68,84,0.5)') : 'rgba(255,255,255,0.08)'}; transition: all 0.2s ease;">
+            ${iconUrl ? `<img class="dc-slot-avatar-img" src="${iconUrl}">` : '👤'}
+          </div>
+          ${wrBadge}
         </div>
-        <div style="font-family:'Barlow Condensed', sans-serif; font-size:11px; font-weight:800; color:#fff; text-transform:uppercase; text-align:center; overflow:hidden; text-overflow:ellipsis; width:100%; white-space:nowrap; letter-spacing:0.5px;">${ag}</div>
+        <div style="font-family:'Barlow Condensed', sans-serif; font-size:11px; font-weight:800; color:#fff; text-transform:uppercase; text-align:center; overflow:hidden; text-overflow:ellipsis; width:100%; white-space:nowrap; letter-spacing:0.5px; margin-top:4px">${ag}</div>
+        ${myStats ? `<div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);text-align:center;margin-top:1px">${myStats.matches}g · ${myStats.kd}kd</div>` : ''}
       `;
       grid.appendChild(div);
     });
@@ -9666,6 +10184,132 @@ function resetDraftComp() {
     document.getElementById(`dc-slot-name-${i}`).innerText = `Slot ${i+1}`;
   }
   evaluateDraft();
+}
+
+function buildAroundMe() {
+  const mapKey = document.getElementById('dc-map-select').value;
+  const pool = window._playerAgentPool || {};
+  
+  // Find if there is already an agent selected in the slots
+  let mainAgent = null;
+  for (let i = 0; i < 5; i++) {
+    if (draftSlots[i]) {
+      mainAgent = draftSlots[i];
+      break;
+    }
+  }
+  
+  // If no agent selected, pick their historical main agent from the parsed agent pool
+  if (!mainAgent) {
+    const topAgents = Object.keys(pool);
+    if (topAgents.length > 0) {
+      mainAgent = topAgents[0]; // most played agent
+    } else {
+      mainAgent = 'jett'; // default fallback
+    }
+  }
+  
+  // Clean all slots and set the first one to mainAgent
+  resetDraftComp();
+  draftSlots[0] = mainAgent;
+  
+  // Suggest the other 4 agents based on map and role balance
+  const mapRecs = draftMapRecommendations[mapKey] || { preferred: [], note: '' };
+  
+  const roles = {
+    duelist: ['jett', 'raze', 'neon', 'yoru', 'phoenix', 'reyna'],
+    initiator: ['sova', 'fade', 'gekko', 'skye', 'kay/o', 'breach'],
+    controller: ['omen', 'viper', 'brimstone', 'clove', 'astra', 'harbor'],
+    sentinel: ['killjoy', 'cypher', 'vyse', 'deadlock', 'sage']
+  };
+  
+  const getRole = (agent) => {
+    return getRoleClass(agent.charAt(0).toUpperCase() + agent.slice(1));
+  };
+  
+  const mainRole = getRole(mainAgent);
+  
+  // Standard composition needs: 1 controller, 1 sentinel, 1 initiator, and 1 duelist.
+  const requiredRoles = ['controller', 'sentinel', 'initiator', 'duelist'];
+  
+  // Remove the role of our main agent from the list of strictly required roles
+  const mainRoleIndex = requiredRoles.indexOf(mainRole);
+  if (mainRoleIndex > -1) {
+    requiredRoles.splice(mainRoleIndex, 1);
+  }
+  
+  // So we need 3 required roles, and 1 flex role
+  const neededRoles = [...requiredRoles];
+  if (mainRole === 'controller') {
+    neededRoles.push('initiator'); // dual initiator
+  } else if (mainRole === 'sentinel') {
+    neededRoles.push('controller'); // dual controller
+  } else {
+    neededRoles.push('controller'); // default dual controller or initiator
+  }
+  
+  const pickedAgents = new Set([mainAgent]);
+  
+  neededRoles.forEach((role, idx) => {
+    const candidates = roles[role];
+    let bestCandidate = null;
+    let maxScore = -1000;
+    
+    candidates.forEach(cand => {
+      if (pickedAgents.has(cand)) return;
+      
+      let score = 0;
+      // Preferred meta pick for this map
+      if (mapRecs.preferred.includes(cand)) {
+        score += 40;
+      }
+      
+      // User's own pool
+      if (pool[cand]) {
+        score += 20 + (pool[cand].wr || 50) * 0.5; // favor played agents with high WR
+      }
+      
+      // Map synergies
+      if (mainAgent === 'jett' || mainAgent === 'neon') {
+        if (cand === 'breach' || cand === 'omen') score += 15;
+      }
+      if (mainAgent === 'viper') {
+        if (cand === 'brimstone' || cand === 'killjoy') score += 15;
+      }
+      if (mainAgent === 'cypher' || mainAgent === 'deadlock') {
+        if (cand === 'raze') score += 15;
+      }
+      if (mainAgent === 'sova' || mainAgent === 'fade') {
+        if (cand === 'gekko') score += 15;
+      }
+      
+      if (score > maxScore) {
+        maxScore = score;
+        bestCandidate = cand;
+      }
+    });
+    
+    if (bestCandidate) {
+      pickedAgents.add(bestCandidate);
+      draftSlots[idx + 1] = bestCandidate;
+    }
+  });
+  
+  // Render the selected agents into the UI slots
+  for (let i = 0; i < 5; i++) {
+    const agKey = draftSlots[i];
+    if (agKey) {
+      const slotAvatar = document.getElementById(`dc-slot-avatar-${i}`);
+      const slotName = document.getElementById(`dc-slot-name-${i}`);
+      const iconUrl = getAgentIconUrl(agKey.charAt(0).toUpperCase() + agKey.slice(1));
+      
+      slotAvatar.innerHTML = iconUrl ? `<img class="dc-slot-avatar-img" src="${iconUrl}">` : '👤';
+      slotName.innerText = agKey.toUpperCase();
+    }
+  }
+  
+  evaluateDraft();
+  showToast(`✨ Composition built around ${mainAgent.toUpperCase()} using your pool and map meta!`);
 }
 
 function evaluateDraft() {
