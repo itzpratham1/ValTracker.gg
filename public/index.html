@@ -154,7 +154,6 @@
       <div class="topbar-tab" id="tab-esports" onclick="toggleMainView('esports')">Esports</div>
       <div class="topbar-tab" id="tab-store" onclick="toggleMainView('store')">Skins Store</div>
       <div class="topbar-tab" id="tab-coach" onclick="toggleMainView('coach')">Meta Comp Architect</div>
-      <div class="topbar-tab" id="tab-ai-hub" onclick="toggleMainView('ai-hub')">AI Hub</div>
     </div>
     
     <div class="topbar-divider" id="tracker-divider-1"></div>
@@ -291,6 +290,8 @@
     <a class="tracker-nav-item" onclick="smoothScrollTo('sec-maps', event)"><span class="nav-icon">🗺️</span> Maps</a>
     <a class="tracker-nav-item" onclick="smoothScrollTo('sec-weapons', event)"><span class="nav-icon">🔫</span> Weapons</a>
     <a class="tracker-nav-item" onclick="smoothScrollTo('sec-matches', event)"><span class="nav-icon">🎮</span> Matches</a>
+    <a class="tracker-nav-item" onclick="smoothScrollTo('sec-ai', event)"><span class="nav-icon">🤖</span> ValBot AI</a>
+    <a class="tracker-nav-item" onclick="smoothScrollTo('sec-lab', event)"><span class="nav-icon">🧪</span> Perf Lab</a>
   </div>
 
     
@@ -519,6 +520,16 @@
           <span class="btn-icon">⚡</span> Analyse My Performance
         </button>
       </div>
+      <!-- Premium AI Clarification Card -->
+      <div class="ai-clarification-banner" style="background: linear-gradient(135deg, rgba(232, 255, 71, 0.05) 0%, rgba(255, 70, 85, 0.03) 100%); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; align-items: center; gap: 16px;">
+        <div style="font-size: 24px; filter: drop-shadow(0 0 6px var(--accent));">🧬</div>
+        <div style="flex-grow: 1;">
+          <div style="font-family:'Barlow Condensed', sans-serif; font-weight: 800; font-size: 14px; text-transform: uppercase; color: var(--accent); letter-spacing: 0.5px; margin-bottom: 2px;">ValBot Macro Diagnostic System</div>
+          <div style="font-size: 11.5px; color: var(--muted); line-height: 1.4;">
+            Fuses telemetry across your last 20+ matches to calculate your **K/D Trends**, **Rank Readiness Index**, and **Combat Consistency**. Pinpoints your absolute **#1 Focus Priority** to help break your current rank ceiling.
+          </div>
+        </div>
+      </div>
       <div class="ai-body">
         <div class="ai-loading" id="ai-loading">
           <div class="ai-spinner"></div>
@@ -570,6 +581,16 @@
   <!-- ── SECTION 09: PERFORMANCE LAB ── -->
   <div class="section-label" id="sec-lab"><span class="sl-text">Performance Lab</span><span class="sl-line"></span><span class="sl-num">12</span></div>
   <div class="plab-wrap">
+    <!-- Premium PLab Clarification Banner -->
+    <div class="plab-clarification-banner" style="background: linear-gradient(135deg, rgba(147, 51, 234, 0.08) 0%, rgba(20, 20, 22, 0.6) 100%); border: 1px solid rgba(147, 51, 234, 0.2); border-radius: 8px; padding: 14px 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 14px;">
+      <div style="font-size: 22px; filter: drop-shadow(0 0 6px #9333ea);">🧠</div>
+      <div>
+        <div style="font-family:'Barlow Condensed', sans-serif; font-weight: 800; font-size: 13px; text-transform: uppercase; color: #b794f4; letter-spacing: 0.5px; margin-bottom: 2px;">Performance Diagnostics Lab</div>
+        <div style="font-size: 11px; color: var(--muted); line-height: 1.4;">
+          Your mental game and scheduling defense system. Scans active sessions for **tilt indicators**, computes **win probability dips** due to fatigue, maps **win rate by hour of the day**, and generates dynamic keep-playing guidelines.
+        </div>
+      </div>
+    </div>
     <div class="plab-trigger">
       <div class="plab-trigger-info">
         <div class="plab-trigger-title">🧪 Full Performance Lab</div>
@@ -966,58 +987,7 @@
 
 </div>
 
-  <!-- AI COACH HUB VIEW -->
-  <div id="ai-hub-view" style="display:none; padding: 24px; max-width: 1400px; margin: 0 auto;">
-    <div style="background: linear-gradient(135deg, rgba(232, 255, 71, 0.12) 0%, rgba(20, 20, 22, 0.45) 100%); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 8px;">
-      <h2 style="font-family:'Barlow Condensed', sans-serif; font-size: 32px; font-weight: 900; text-transform: uppercase; color: #fff; letter-spacing: 1.5px; margin: 0;">VALSTATS AI Command Center</h2>
-      <p style="font-size: 13px; color: var(--muted); margin: 0; max-width: 700px;">Access your personalized AI systems. Our dynamic client-side AI engines cross-reference your match history, combat patterns, session telemetry, and agent pool against live rank tier benchmarks to deliver optimal, hyper-focused coaching.</p>
-    </div>
 
-    <!-- AI Tools Bento Grid -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
-      
-      <!-- CARD 1: VALBOT GLOBAL COACH -->
-      <div class="card" style="padding: 24px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; justify-content: space-between; gap: 20px; margin: 0; position: relative; overflow: hidden; transition: all 0.25s ease;" onmouseenter="this.style.borderColor='var(--accent)';" onmouseleave="this.style.borderColor='var(--border)';">
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <div style="font-size: 32px;">🎯</div>
-          <h3 style="font-family:'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 900; color: #fff; text-transform: uppercase; margin: 0; letter-spacing: 0.5px;">ValBot Global Assistant</h3>
-          <p style="font-size: 12px; color: var(--muted); line-height: 1.5; margin: 0;">Analyzes your last 20+ matches to calculate your K/D Trends, Rank Readiness Score, Combat Consistency, and isolates your absolute <strong>#1 Priority Focus</strong> action item to break your rank cap.</p>
-        </div>
-        <button class="fetch-btn" style="margin: 0; width: 100%; background: var(--accent); color: #000; font-weight: bold;" onclick="goToAISubsystem('valbot')">Launch ValBot &rarr;</button>
-      </div>
-
-      <!-- CARD 2: MATCH-LEVEL INTEL AI -->
-      <div class="card" style="padding: 24px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; justify-content: space-between; gap: 20px; margin: 0; position: relative; overflow: hidden; transition: all 0.25s ease;" onmouseenter="this.style.borderColor='var(--win)';" onmouseleave="this.style.borderColor='var(--border)';">
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <div style="font-size: 32px;">📊</div>
-          <h3 style="font-family:'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 900; color: #fff; text-transform: uppercase; margin: 0; letter-spacing: 0.5px;">Match Intel AI</h3>
-          <p style="font-size: 12px; color: var(--muted); line-height: 1.5; margin: 0;">Fuses game details with your personal baseline profile. Highlights how you performed relative to your historical averages, tracks mid-match fatigue patterns, and isolates your <strong>Star Round</strong> peak moments.</p>
-        </div>
-        <button class="fetch-btn" style="margin: 0; width: 100%; background: var(--win); color: #000; font-weight: bold;" onclick="goToAISubsystem('match-ai')">Inspect Match AI &rarr;</button>
-      </div>
-
-      <!-- CARD 3: PERFORMANCE DIAGNOSTICS LAB -->
-      <div class="card" style="padding: 24px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; justify-content: space-between; gap: 20px; margin: 0; position: relative; overflow: hidden; transition: all 0.25s ease;" onmouseenter="this.style.borderColor='#9333ea';" onmouseleave="this.style.borderColor='var(--border)';">
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <div style="font-size: 32px;">🧠</div>
-          <h3 style="font-family:'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 900; color: #fff; text-transform: uppercase; margin: 0; letter-spacing: 0.5px;">Performance Diagnostics Lab</h3>
-          <p style="font-size: 12px; color: var(--muted); line-height: 1.5; margin: 0;">Your mental game defense system. Scans your playing sessions to identify tilt risks, calculates fatigue win-rate dips, analyzes performance by hour of day, and delivers definitive 'Keep Playing or Stop' session guidelines.</p>
-        </div>
-        <button class="fetch-btn" style="margin: 0; width: 100%; background: #9333ea; color: #fff; font-weight: bold; border-color: #9333ea;" onclick="goToAISubsystem('perf-lab')">Run Diagnostics &rarr;</button>
-      </div>
-
-      <!-- CARD 4: META COMP ARCHITECT -->
-      <div class="card" style="padding: 24px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; justify-content: space-between; gap: 20px; margin: 0; position: relative; overflow: hidden; transition: all 0.25s ease;" onmouseenter="this.style.borderColor='#ff4655';" onmouseleave="this.style.borderColor='var(--border)';">
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <div style="font-size: 32px;">🎮</div>
-          <h3 style="font-family:'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 900; color: #fff; text-transform: uppercase; margin: 0; letter-spacing: 0.5px;">VCT Meta Comp Coach</h3>
-          <p style="font-size: 12px; color: var(--muted); line-height: 1.5; margin: 0;">Evaluates team layouts for any map in real-time. Features the custom <strong>'Build Around Me'</strong> engine to dynamically fill compositions using your top-winrate agent pool and pro meta trends.</p>
-        </div>
-        <button class="fetch-btn" style="margin: 0; width: 100%; background: #ff4655; color: #fff; font-weight: bold; border-color: #ff4655;" onclick="goToAISubsystem('architect')">Architect Comp &rarr;</button>
-      </div>
-
-    </div>
-  </div>
 
   <!-- DRAFT COMPOSITION COACH VIEW -->
   <div id="coach-view" style="display:none; padding: 24px; max-width: 1400px; margin: 0 auto;">
@@ -4224,6 +4194,16 @@ function buildMatchAnalysis(match, allMatches = null) {
 
   return `
     <div class="match-ai-summary">${summary}</div>
+    <!-- Match Intel AI Clarification Banner -->
+    <div style="background: linear-gradient(135deg, rgba(232, 255, 71, 0.05) 0%, rgba(20, 20, 22, 0.5) 100%); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; margin: 12px 0 16px; display: flex; align-items: center; gap: 12px;">
+      <div style="font-size: 20px; filter: drop-shadow(0 0 4px var(--accent));">📊</div>
+      <div>
+        <div style="font-family:'Barlow Condensed', sans-serif; font-weight: 800; font-size: 13px; text-transform: uppercase; color: var(--accent); letter-spacing: 0.5px; margin-bottom: 2px;">Match Intel AI Diagnostics</div>
+        <div style="font-size: 11px; color: var(--muted); line-height: 1.4;">
+          Personalized match audit. Compares your performance to your **historical baselines**, checks for **mid-session fatigue patterns**, and spotlights critical **clutches & impact plays** from this match.
+        </div>
+      </div>
+    </div>
     <div class="match-ai-grid">
       <div class="match-ai-pill"><div class="match-ai-pill-label">K/D</div><div class="match-ai-pill-val ${kdClass}">${kd.toFixed(2)}</div><div class="match-ai-pill-sub">${kills}K / ${deaths}D</div></div>
       <div class="match-ai-pill"><div class="match-ai-pill-label">ACS</div><div class="match-ai-pill-val ${acsClass}">${acs}</div><div class="match-ai-pill-sub">Team avg: ${teamAvgACS}</div></div>
@@ -8053,8 +8033,6 @@ function toggleMainView(view) {
   document.getElementById('store-view').style.display = 'none';
   const cView = document.getElementById('coach-view');
   if (cView) cView.style.display = 'none';
-  const aiHub = document.getElementById('ai-hub-view');
-  if (aiHub) aiHub.style.display = 'none';
   
   const filterGroup = document.getElementById('topbar-filters-group');
   const mft = document.getElementById('mobile-filter-toggle');
@@ -8097,10 +8075,6 @@ function toggleMainView(view) {
       if (cView) cView.style.display = 'block';
       resetDraftComp();
       renderSavedDrafts();
-    } else if (view === 'ai-hub') {
-      if (aiHub) aiHub.style.display = 'block';
-      if(esportsLiveInterval) clearInterval(esportsLiveInterval);
-      if(esportsCountdownInterval) clearInterval(esportsCountdownInterval);
     }
   }
 }
@@ -9218,7 +9192,7 @@ function smoothScrollTo(elementId, event) {
 function initScrollSpy() {
   const sections = [
     'sec-combat', 'sec-performance', 'sec-trend', 'sec-agents',
-    'sec-maps', 'sec-weapons', 'sec-matches'
+    'sec-maps', 'sec-weapons', 'sec-matches', 'sec-ai', 'sec-lab'
   ];
   
   const navItems = {
@@ -9228,7 +9202,9 @@ function initScrollSpy() {
     'sec-agents': document.querySelector('#tracker-nav a[onclick*="sec-agents"]'),
     'sec-maps': document.querySelector('#tracker-nav a[onclick*="sec-maps"]'),
     'sec-weapons': document.querySelector('#tracker-nav a[onclick*="sec-weapons"]'),
-    'sec-matches': document.querySelector('#tracker-nav a[onclick*="sec-matches"]')
+    'sec-matches': document.querySelector('#tracker-nav a[onclick*="sec-matches"]'),
+    'sec-ai': document.querySelector('#tracker-nav a[onclick*="sec-ai"]'),
+    'sec-lab': document.querySelector('#tracker-nav a[onclick*="sec-lab"]')
   };
 
   window.addEventListener('scroll', () => {
@@ -11539,9 +11515,8 @@ body::after {
 
   /* ── TOPBAR ── */
   .topbar {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: stretch !important;
+    display: grid !important;
+    grid-template-columns: 1fr auto !important;
     padding: 10px 14px !important;
     gap: 8px !important;
     width: 100% !important;
@@ -11549,12 +11524,7 @@ body::after {
     box-sizing: border-box !important;
   }
   .topbar-left {
-    display: grid !important;
-    grid-template-columns: 1fr auto !important;
-    grid-template-rows: auto auto auto !important;
-    align-items: center !important;
-    width: 100% !important;
-    gap: 6px 8px !important;
+    display: contents !important;
   }
   .logo {
     grid-column: 1 !important;
@@ -11631,7 +11601,7 @@ body::after {
   .player-input-tag { width: 40px !important; flex: none; font-size: 11px !important; }
   .topbar-tabs {
     grid-column: 1 / -1 !important;
-    grid-row: 3 !important;
+    grid-row: 4 !important;
     order: unset !important;
     display: flex !important;
     overflow-x: auto !important;
@@ -11661,6 +11631,8 @@ body::after {
   }
   .topbar-right { display: none !important; }
   .topbar-right.mobile-expanded {
+    grid-column: 1 / -1 !important;
+    grid-row: 3 !important;
     display: flex !important;
     flex-direction: column !important;
     width: 100% !important;
