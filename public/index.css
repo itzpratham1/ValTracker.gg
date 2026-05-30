@@ -1823,7 +1823,7 @@ body::before {
 .toast.show { transform: translateY(0); opacity: 1; }
 
 #back-to-top {
-  position: fixed; bottom: 24px; right: 24px; z-index: 900;
+  position: fixed; bottom: 20px; right: 20px; z-index: 900;
   width: 38px; height: 38px; border-radius: 50%;
   background: var(--surface2); border: 1px solid var(--border);
   color: var(--accent); font-size: 18px; cursor: pointer;
