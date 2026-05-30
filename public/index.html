@@ -291,6 +291,7 @@
     <a class="tracker-nav-item" onclick="smoothScrollTo('sec-weapons', event)"><span class="nav-icon">🔫</span> Weapons</a>
     <a class="tracker-nav-item" onclick="smoothScrollTo('sec-matches', event)"><span class="nav-icon">🎮</span> Matches</a>
     <a class="tracker-nav-item" onclick="smoothScrollTo('sec-ai', event)"><span class="nav-icon">🤖</span> ValBot AI</a>
+    <a class="tracker-nav-item" onclick="smoothScrollTo('sec-deep', event)"><span class="nav-icon">🔬</span> Deep Analysis</a>
     <a class="tracker-nav-item" onclick="smoothScrollTo('sec-lab', event)"><span class="nav-icon">🧪</span> Perf Lab</a>
   </div>
 
@@ -557,6 +558,16 @@
   <div class="section-label" id="sec-deep"><span class="sl-text">Deep Game Analysis</span><span class="sl-line"></span><span class="sl-num">11</span></div>
 
   <div class="deep-wrap">
+    <!-- Premium Deep Self-Analysis Clarification Banner -->
+    <div class="deep-clarification-banner" style="background: linear-gradient(135deg, rgba(56, 189, 248, 0.08) 0%, rgba(20, 20, 22, 0.6) 100%); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 14px;">
+      <div style="font-size: 22px; filter: drop-shadow(0 0 6px #0ea5e9);">🔬</div>
+      <div>
+        <div style="font-family:'Barlow Condensed', sans-serif; font-weight: 800; font-size: 13px; text-transform: uppercase; color: #38bdf8; letter-spacing: 0.5px; margin-bottom: 2px;">Deep Self-Analysis Diagnostics</div>
+        <div style="font-size: 11px; color: var(--muted); line-height: 1.4;">
+          Your micro-tactical execution blueprint. Correlates rounds to calculate **map side win rates** (Attack vs Defense), evaluates **agent-to-map performance fits**, checks for **multi-match consistency trends**, and issues direct strategic recommendations.
+        </div>
+      </div>
+    </div>
     <!-- Trigger -->
     <div class="deep-trigger-card">
       <div class="deep-trigger-info">
@@ -9192,7 +9203,7 @@ function smoothScrollTo(elementId, event) {
 function initScrollSpy() {
   const sections = [
     'sec-combat', 'sec-performance', 'sec-trend', 'sec-agents',
-    'sec-maps', 'sec-weapons', 'sec-matches', 'sec-ai', 'sec-lab'
+    'sec-maps', 'sec-weapons', 'sec-matches', 'sec-ai', 'sec-deep', 'sec-lab'
   ];
   
   const navItems = {
@@ -9204,6 +9215,7 @@ function initScrollSpy() {
     'sec-weapons': document.querySelector('#tracker-nav a[onclick*="sec-weapons"]'),
     'sec-matches': document.querySelector('#tracker-nav a[onclick*="sec-matches"]'),
     'sec-ai': document.querySelector('#tracker-nav a[onclick*="sec-ai"]'),
+    'sec-deep': document.querySelector('#tracker-nav a[onclick*="sec-deep"]'),
     'sec-lab': document.querySelector('#tracker-nav a[onclick*="sec-lab"]')
   };
 
