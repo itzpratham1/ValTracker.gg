@@ -486,6 +486,79 @@ def proxy_image():
     except Exception as e:
         return str(e), 500
 
+# --- PREMIUM SOCIAL FLEX CARD SHARING API ---
+import uuid
+import json
+
+@app.route("/api/share-card", methods=["POST"])
+def share_card_api():
+    try:
+        data = request.get_json() or {}
+        image_data_url = data.get("image", "")
+        player_name = data.get("playerName", "Unknown Player")
+        player_tag = data.get("playerTag", "000")
+        agent_name = data.get("agentName", "Unknown Agent")
+        map_name = data.get("mapName", "Unknown Map")
+        won = data.get("won", False)
+        score = data.get("score", "0-0")
+        
+        if not image_data_url or not image_data_url.startswith("data:image/png;base64,"):
+            return jsonify({"status": "error", "message": "Invalid base64 image data"}), 400
+            
+        # Decode base64
+        header, encoded = image_data_url.split(",", 1)
+        import base64
+        binary_data = base64.b64decode(encoded)
+        
+        # Ensure shared directory exists
+        shared_dir = os.path.join(app.static_folder, "shared")
+        if not os.path.exists(shared_dir):
+            os.makedirs(shared_dir, exist_ok=True)
+            
+        # Generate unique ID
+        share_id = str(uuid.uuid4())[:8]
+        filename = f"{share_id}.png"
+        filepath = os.path.join(shared_dir, filename)
+        
+        # Save PNG locally
+        with open(filepath, "wb") as f:
+            f.write(binary_data)
+            
+        # Save metadata to local metadata database
+        meta_filepath = os.path.join(os.path.dirname(__file__), "shared_meta.json")
+        meta_records = {}
+        if os.path.exists(meta_filepath):
+            try:
+                with open(meta_filepath, "r", encoding="utf-8") as f:
+                    meta_records = json.load(f)
+            except:
+                meta_records = {}
+                
+        meta_records[share_id] = {
+            "playerName": player_name,
+            "playerTag": player_tag,
+            "agentName": agent_name,
+            "mapName": map_name,
+            "won": won,
+            "score": score,
+            "timestamp": time.time()
+        }
+        
+        with open(meta_filepath, "w", encoding="utf-8") as f:
+            json.dump(meta_records, f, indent=2, ensure_ascii=False)
+            
+        # Determine host url dynamically
+        host_url = request.host_url
+        
+        return jsonify({
+            "status": "ok",
+            "share_id": share_id,
+            "share_url": f"{host_url}share/{share_id}"
+        })
+    except Exception as e:
+        print(f"[SHARE API ERROR] {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+
 @app.route("/api/<path:subpath>", methods=["GET", "POST"])
 @rate_limit(requests_per_minute=120)
 def proxy_api(subpath):
@@ -1647,6 +1720,180 @@ def api_meta_comps():
         "most_played_comp": most_played_meta,
         "highest_winrate_comp": highest_winrate_meta
     })
+
+
+
+@app.route("/share/<share_id>", methods=["GET"])
+def get_share_page(share_id):
+    meta_filepath = os.path.join(os.path.dirname(__file__), "shared_meta.json")
+    meta = {}
+    if os.path.exists(meta_filepath):
+        try:
+            with open(meta_filepath, "r", encoding="utf-8") as f:
+                records = json.load(f)
+                meta = records.get(share_id, {})
+        except:
+            meta = {}
+            
+    p_name = f"{meta.get('playerName', 'ValTracker Player')}#{meta.get('playerTag', 'GG')}"
+    agent = meta.get('agentName', 'VALORANT Agent')
+    v_map = meta.get('mapName', 'VALORANT Map')
+    outcome = "VICTORY" if meta.get('won', False) else "DEFEAT"
+    score = meta.get('score', '')
+    score_lbl = f"({score})" if score else ""
+    
+    # Custom, premium Spotify-style meta headers
+    og_title = f"{p_name} secured a huge {outcome} {score_lbl} as {agent.upper()} on {v_map.toUpperCase()}!"
+    og_desc = f"💥 Combat ACS & Stats diagnosed automatically. See the full holographic Performance Infographic Card live on ValTracker.gg!"
+    host_url = request.host_url
+    image_url = f"{host_url}shared/{share_id}.png"
+    share_url = f"{host_url}share/{share_id}"
+    
+    html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ValTracker.gg — Performance Flex Card</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M2,2 L10.5,22 L13.5,22 L22,2 L17.5,2 L12,13 L6.5,2 Z' fill='%23ff4655'/%3E%3Cpolygon points='12,2 15.5,6 12,10 8.5,6' fill='%23e8ff47'/%3E%3C/svg%3E">
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Barlow+Condensed:wght@800;900&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{share_url}">
+  <meta property="og:title" content="{og_title}">
+  <meta property="og:description" content="{og_desc}">
+  <meta property="og:image" content="{image_url}">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="{share_url}">
+  <meta name="twitter:title" content="{og_title}">
+  <meta name="twitter:description" content="{og_desc}">
+  <meta name="twitter:image" content="{image_url}">
+
+  <style>
+    :root {{
+      --surface: #0b0b0e;
+      --border: rgba(255, 70, 85, 0.3);
+      --win: #3ecf8e;
+      --loss: #ff4655;
+    }}
+    body {{
+      margin: 0;
+      padding: 0;
+      background: #060608;
+      color: #fff;
+      font-family: 'Rajdhani', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      box-sizing: border-box;
+      overflow-x: hidden;
+    }}
+    .container {{
+      max-width: 900px;
+      width: 95%;
+      margin: 20px auto;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }}
+    .card-preview {{
+      width: 100%;
+      max-width: 850px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.8), 0 0 15px rgba(255, 70, 85, 0.15);
+      background: var(--surface);
+      display: block;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }}
+    .card-preview:hover {{
+      transform: scale(1.01) translateY(-2px);
+    }}
+    .brand {{
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      margin-bottom: 5px;
+    }}
+    .brand svg {{
+      width: 24px;
+      height: 24px;
+      fill: none;
+      filter: drop-shadow(0 0 6px rgba(255, 70, 85, 0.6));
+    }}
+    .brand span {{
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      color: #fff;
+      text-transform: uppercase;
+    }}
+    .btn {{
+      background: linear-gradient(135deg, #ff4655 0%, #e8ff47 100%);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 28px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 16px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 4px 15px rgba(255, 70, 85, 0.3);
+      transition: all 0.2s;
+      margin-top: 10px;
+    }}
+    .btn:hover {{
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 70, 85, 0.4), 0 0 10px rgba(232, 255, 71, 0.2);
+      filter: brightness(1.05);
+    }}
+    .badge {{
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: rgba(255, 70, 85, 0.12);
+      border: 1px solid rgba(255, 70, 85, 0.3);
+      color: #ff4655;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="brand">
+      <svg viewBox="0 0 24 24">
+        <path d="M2,2 L10.5,22 L13.5,22 L22,2 L17.5,2 L12,13 L6.5,2 Z" fill="#ff4655" />
+        <polygon points="12,2 15.5,6 12,10 8.5,6" fill="#e8ff47" />
+      </svg>
+      <span>ValTracker<span style="color:#ff4655">.gg</span></span>
+    </a>
+    
+    <div class="badge">Match Flex Card</div>
+    
+    <img src="/shared/{share_id}.png" class="card-preview" alt="Valorant Performance Flex Card">
+    
+    <a href="/?player={meta.get('playerName', '')}%23{meta.get('playerTag', '')}" class="btn">
+      🎮 View Full Performance Telemetry
+    </a>
+  </div>
+</body>
+</html>"""
+    return html
 
 if __name__ == "__main__":
     if not API_KEY:
