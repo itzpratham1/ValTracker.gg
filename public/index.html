@@ -5007,9 +5007,33 @@ window.openShareMatchModal = async function(idx, event) {
     `;
   }).join('');
 
-  // Dynamic color coding
-  const accentColor = m.won ? '#3ecf8e' : '#ff4655';
-  const accentShadow = m.won ? 'rgba(62,207,142,0.35)' : 'rgba(255,70,85,0.35)';
+  // Dynamic color coding based on performance tier & MVP status (Improvisation)
+  let accentColor = '#ff4655'; // Default Defeat color (Obsidian Crimson Red)
+  let accentShadow = 'rgba(255, 70, 85, 0.35)';
+  let themeName = 'OBSIDIAN';
+  
+  if (isMatchMVP) {
+    // Majestic Gold theme for the absolute lobby ruler
+    accentColor = '#ffd700';
+    accentShadow = 'rgba(255, 215, 0, 0.45)';
+    themeName = 'GOLD';
+  } else if (isTeamMVP || perfGrade === 'S+' || perfGrade === 'S') {
+    // Vibrant Neon Green-Yellow for high-impact carries
+    accentColor = '#e8ff47';
+    accentShadow = 'rgba(232, 255, 71, 0.45)';
+    themeName = 'NEON';
+  } else if (m.won || perfGrade === 'A') {
+    // Cool Cyber-Cyan/Emerald Green for strategic victors
+    accentColor = '#3ecf8e';
+    accentShadow = 'rgba(62, 207, 142, 0.4)';
+    themeName = 'EMERALD';
+  } else {
+    // Deep obsidian/crimson for tough bounce-backs
+    accentColor = '#ff4655';
+    accentShadow = 'rgba(255, 70, 85, 0.35)';
+    themeName = 'OBSIDIAN';
+  }
+  
   const outcomeText = m.won ? 'VICTORY' : 'DEFEAT';
 
   // Map capsule HTML (renamed to Map)
@@ -5078,13 +5102,13 @@ window.openShareMatchModal = async function(idx, event) {
 
   const captureContainer = document.getElementById('match-export-container');
   captureContainer.innerHTML = `
-    <div id="match-capture-target" style="width: 900px; height: 520px; background: #050508; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; color: #fff; font-family:'Barlow Condensed', sans-serif; box-sizing:border-box; position:relative; overflow:hidden; box-shadow:0 25px 60px rgba(0,0,0,0.95); display:flex; flex-direction:column; justify-content:space-between; padding:24px;">
+    <div id="match-capture-target" style="width: 900px; height: 520px; background: #050508; border: 1.5px solid ${accentColor}40; border-radius: 20px; color: #fff; font-family:'Barlow Condensed', sans-serif; box-sizing:border-box; position:relative; overflow:hidden; box-shadow:0 25px 60px rgba(0,0,0,0.95), 0 0 20px ${accentColor}10; display:flex; flex-direction:column; justify-content:space-between; padding:24px;">
       
       <!-- Premium Blurred Map Background Splash -->
       ${mapImg ? `<img src="${mapImg}" crossorigin="anonymous" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.18; filter: blur(2px); pointer-events:none; z-index:0;">` : ''}
       
       <!-- Dynamic Soothing Radial Gradient Overlay -->
-      <div style="position:absolute; inset:0; background: radial-gradient(circle at 20% 30%, ${m.won ? 'rgba(62, 207, 142, 0.08)' : 'rgba(56, 189, 248, 0.04)'} 0%, rgba(10, 10, 15, 0.95) 70%, rgba(4, 4, 6, 0.99) 100%); z-index:1; pointer-events:none;"></div>
+      <div style="position:absolute; inset:0; background: radial-gradient(circle at 20% 30%, ${accentColor}12 0%, rgba(10, 10, 15, 0.96) 70%, rgba(4, 4, 6, 0.99) 100%); z-index:1; pointer-events:none;"></div>
       
       <!-- Left decorative border indicating outcome -->
       <div style="position:absolute; left:0; top:0; bottom:0; width:4px; background:${accentColor}; box-shadow: 1px 0 12px ${accentShadow}; border-radius:20px 0 0 20px; z-index:4;"></div>
@@ -5238,9 +5262,9 @@ window.openShareMatchModal = async function(idx, event) {
       </div>
 
       <!-- Bottom Footer (High-impact premium promotion) -->
-      <div style="position:relative; z-index:3; display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,70,85,0.25); padding-top:12px; font-family:'Barlow Condensed', sans-serif; font-size:11px; letter-spacing:0.5px; margin-top:2px;">
+      <div style="position:relative; z-index:3; display:flex; justify-content:space-between; align-items:center; border-top:1px solid ${accentColor}40; padding-top:12px; font-family:'Barlow Condensed', sans-serif; font-size:11px; letter-spacing:0.5px; margin-top:2px;">
         <div style="display:flex; align-items:center; gap:8px;">
-          <div style="background:rgba(255,70,85,0.1); border:1px solid #ff4655; color:#ff4655; border-radius:4px; padding:2px 6px; font-family:'DM Mono', monospace; font-size:8px; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; box-shadow:0 0 6px rgba(255,70,85,0.25);">
+          <div style="background:${accentColor}15; border:1px solid ${accentColor}; color:${accentColor}; border-radius:4px; padding:2px 6px; font-family:'DM Mono', monospace; font-size:8px; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; box-shadow:0 0 6px ${accentColor}30;">
             ⚡ INFOGRAPHIC DIAGNOSTICS
           </div>
           <div style="color:rgba(255,255,255,0.65); font-weight:500;">

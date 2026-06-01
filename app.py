@@ -1766,6 +1766,11 @@ def get_share_page(share_id):
   <meta property="og:title" content="{og_title}">
   <meta property="og:description" content="{og_desc}">
   <meta property="og:image" content="{image_url}">
+  <meta property="og:image:secure_url" content="{image_url}">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="520">
+  <meta property="og:site_name" content="ValTracker.gg">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
@@ -1773,6 +1778,7 @@ def get_share_page(share_id):
   <meta name="twitter:title" content="{og_title}">
   <meta name="twitter:description" content="{og_desc}">
   <meta name="twitter:image" content="{image_url}">
+  <meta name="twitter:image:alt" content="VALORANT Match Infographic Card">
 
   <style>
     :root {{
