@@ -5237,10 +5237,22 @@ window.openShareMatchModal = async function(idx, event) {
 
       </div>
 
-      <!-- Bottom Footer -->
-      <div style="position:relative; z-index:3; display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.05); padding-top:10px; font-family:'DM Mono', monospace; font-size:8.5px; color:rgba(255,255,255,0.32); letter-spacing:0.5px;">
-        <div>Telemetry Diagnosed by VALTRACKER.GG</div>
-        <div style="color:#ff4655; font-weight:700; letter-spacing:1px; text-transform:uppercase;">TRACK. ANALYZE. CONQUER.</div>
+      <!-- Bottom Footer (High-impact premium promotion) -->
+      <div style="position:relative; z-index:3; display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,70,85,0.25); padding-top:12px; font-family:'Barlow Condensed', sans-serif; font-size:11px; letter-spacing:0.5px; margin-top:2px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div style="background:rgba(255,70,85,0.1); border:1px solid #ff4655; color:#ff4655; border-radius:4px; padding:2px 6px; font-family:'DM Mono', monospace; font-size:8px; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; box-shadow:0 0 6px rgba(255,70,85,0.25);">
+            ⚡ INFOGRAPHIC DIAGNOSTICS
+          </div>
+          <div style="color:rgba(255,255,255,0.65); font-weight:500;">
+            Telemetry compiled by <span style="color:#fff; font-weight:bold; letter-spacing:0.8px;">VALTRACKER.GG</span>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="color:#e8ff47; font-weight:900; letter-spacing:1px; text-transform:uppercase; text-shadow:0 0 6px rgba(232,255,71,0.3); font-size:11.5px;">
+            JOIN VALTRACKER.GG/TRACKER TO FLEX YOUR STATS
+          </div>
+          <div style="width:5px; height:5px; border-radius:50%; background:#e8ff47; box-shadow:0 0 6px #e8ff47;"></div>
+        </div>
       </div>
     </div>
   `;
@@ -5369,10 +5381,23 @@ window.shareToPlatform = function(platform) {
     showToast('Match Flex Card downloaded! ✓');
   } 
   else if (platform === 'twitter') {
-    // textVal already contains the dynamic shareUrl appended at the end. Passing text is all that is needed to prevent duplication!
-    const url = `https://twitter.com/intent/tweet?text=${encodedText}`;
+    // Force cache-busting on the target URL so social crawler bypasses their aggressively cached metadata failures
+    const shareUrlWithBuster = shareUrl ? `${shareUrl}?v=${Date.now()}` : '';
+    
+    // Strip the raw share URL out of the template text area so it doesn't double-post.
+    // We pass the URL explicitly using the official '&url=' Web Intent parameter to force Twitter's card preload engine to execute!
+    let cleanText = textVal;
+    if (shareUrl && cleanText.includes(shareUrl)) {
+      cleanText = cleanText.replace(shareUrl, '').trim();
+    }
+    const encodedCleanText = encodeURIComponent(cleanText);
+    
+    const url = shareUrl 
+      ? `https://twitter.com/intent/tweet?text=${encodedCleanText}&url=${encodeURIComponent(shareUrlWithBuster)}`
+      : `https://twitter.com/intent/tweet?text=${encodedText}`;
+      
     window.open(url, '_blank');
-    showToast('Opening X (Twitter)!');
+    showToast('Opening X (Twitter) with card preload! 🐦');
   } 
   else if (platform === 'reddit') {
     const redditTitle = share.won
@@ -5380,9 +5405,11 @@ window.shareToPlatform = function(platform) {
       : `[ValTracker.gg] Hard-fought match on ${share.mapName.toUpperCase()} as ${share.agentName.toUpperCase()} (${share.scoreText})`;
     const title = encodeURIComponent(redditTitle);
     
-    // If we have a shareUrl, we share it as a direct link post on Reddit. Reddit will show the preview card perfectly!
+    // Append cache-buster so Reddit crawlers fetch fresh metadata from Render server
+    const shareUrlWithBuster = shareUrl ? `${shareUrl}?v=${Date.now()}` : '';
+    
     const url = shareUrl 
-      ? `https://www.reddit.com/r/VALORANT/submit?url=${encodeURIComponent(shareUrl)}&title=${title}`
+      ? `https://www.reddit.com/r/VALORANT/submit?url=${encodeURIComponent(shareUrlWithBuster)}&title=${title}`
       : `https://www.reddit.com/r/VALORANT/submit?title=${title}&text=${encodedText}`;
     window.open(url, '_blank');
     showToast('Opening Reddit!');

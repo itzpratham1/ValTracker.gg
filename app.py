@@ -1743,9 +1743,11 @@ def get_share_page(share_id):
     score_lbl = f"({score})" if score else ""
     
     # Custom, premium Spotify-style meta headers
-    og_title = f"{p_name} secured a huge {outcome} {score_lbl} as {agent.upper()} on {v_map.toUpperCase()}!"
+    og_title = f"{p_name} secured a huge {outcome} {score_lbl} as {agent.upper()} on {v_map.upper()}!"
     og_desc = f"💥 Combat ACS & Stats diagnosed automatically. See the full holographic Performance Infographic Card live on ValTracker.gg!"
     host_url = request.host_url
+    if "localhost" not in host_url and "127.0.0.1" not in host_url:
+        host_url = host_url.replace("http://", "https://")
     image_url = f"{host_url}shared/{share_id}.png"
     share_url = f"{host_url}share/{share_id}"
     
