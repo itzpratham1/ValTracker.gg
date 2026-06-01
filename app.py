@@ -1760,6 +1760,16 @@ def get_share_page(share_id):
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M2,2 L10.5,22 L13.5,22 L22,2 L17.5,2 L12,13 L6.5,2 Z' fill='%23ff4655'/%3E%3Cpolygon points='12,2 15.5,6 12,10 8.5,6' fill='%23e8ff47'/%3E%3C/svg%3E">
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Barlow+Condensed:wght@800;900&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
   
+  <!-- Twitter Card (First for timeline rendering compatibility) -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@itzpratham01">
+  <meta name="twitter:creator" content="@itzpratham01">
+  <meta name="twitter:url" content="{share_url}">
+  <meta name="twitter:title" content="{og_title}">
+  <meta name="twitter:description" content="{og_desc}">
+  <meta name="twitter:image" content="{image_url}">
+  <meta name="twitter:image:alt" content="VALORANT Match Infographic Card">
+
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="{share_url}">
@@ -1771,14 +1781,6 @@ def get_share_page(share_id):
   <meta property="og:image:width" content="900">
   <meta property="og:image:height" content="520">
   <meta property="og:site_name" content="ValTracker.gg">
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:url" content="{share_url}">
-  <meta name="twitter:title" content="{og_title}">
-  <meta name="twitter:description" content="{og_desc}">
-  <meta name="twitter:image" content="{image_url}">
-  <meta name="twitter:image:alt" content="VALORANT Match Infographic Card">
 
   <style>
     :root {{
