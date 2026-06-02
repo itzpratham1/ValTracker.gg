@@ -154,6 +154,7 @@
       <div class="topbar-tab" id="tab-esports" onclick="toggleMainView('esports')">Esports</div>
       <div class="topbar-tab" id="tab-store" onclick="toggleMainView('store')">Skins Store</div>
       <div class="topbar-tab" id="tab-coach" onclick="toggleMainView('coach')">Meta Comp Architect</div>
+      <div class="topbar-tab" id="tab-overlay" onclick="toggleMainView('overlay')">Stream Overlay</div>
     </div>
     
     <div class="topbar-divider" id="tracker-divider-1"></div>
@@ -1316,6 +1317,142 @@
             <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
           </svg>
         </a>
+      </div>
+    </div>
+  </div>
+
+  <div id="overlay-view" style="display:none; padding: 24px; max-width: 1400px; margin: 0 auto;">
+    <!-- Header Banner -->
+    <div style="background: linear-gradient(135deg, rgba(232, 255, 71, 0.12) 0%, rgba(20, 20, 22, 0.45) 100%); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 8px;">
+      <h2 style="font-family:'Barlow Condensed', sans-serif; font-size: 32px; font-weight: 900; text-transform: uppercase; color: #fff; letter-spacing: 1.5px; margin: 0;">OBS Stream Overlay Studio</h2>
+      <p style="font-size: 13px; color: var(--muted); margin: 0; max-width: 700px;">Design premium, real-time telemetry overlays for your stream. Configure color schemes, layout scaling, and stats packages, then paste the generated URL into an OBS Browser Source.</p>
+    </div>
+
+    <!-- Dashboard Split Grid -->
+    <div class="overlay-studio-grid">
+      
+      <!-- LEFT PANEL: Simulated Live Stream Preview -->
+      <div class="overlay-studio-preview-col">
+        <div class="overlay-studio-label">Live Overlay Preview (Scale Simulator)</div>
+        <div class="overlay-studio-canvas" id="overlay-preview-canvas">
+          <div class="overlay-studio-backdrop"></div>
+          <!-- Injected Overlay Preview Sandbox -->
+          <div class="overlay-studio-sandbox" id="overlay-preview-sandbox">
+            <!-- Rendered dynamically by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT PANEL: Settings Sidebar -->
+      <div class="overlay-studio-settings-col">
+        <!-- 1. Profile Linker -->
+        <div class="overlay-settings-group">
+          <h3>1. Link Player Profile</h3>
+          <div class="overlay-settings-row">
+            <input class="overlay-studio-input" id="overlay-name-input" type="text" placeholder="Name" value="" autocomplete="off" spellcheck="false" oninput="updateOverlayPreview()">
+            <span class="overlay-studio-hash">#</span>
+            <input class="overlay-studio-input overlay-studio-tag-input" id="overlay-tag-input" type="text" placeholder="TAG" value="" maxlength="8" autocomplete="off" spellcheck="false" oninput="updateOverlayPreview()">
+            <select class="overlay-studio-select" id="overlay-region-select" onchange="updateOverlayPreview()">
+              <option value="ap">AP</option>
+              <option value="na">NA</option>
+              <option value="eu">EU</option>
+              <option value="kr">KR</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 2. Select Layout -->
+        <div class="overlay-settings-group">
+          <h3>2. Select Layout Preset</h3>
+          <select class="overlay-studio-select-large" id="overlay-variant-select" onchange="onOverlayVariantChange()">
+            <option value="competitive">Competitive Overlay (Agent History & Rank Info)</option>
+            <option value="center">Center HUD Overlay (Horizontal Bar HUD)</option>
+            <option value="flexible">Flexible Stats Panel (Vertical Custom Checklist)</option>
+          </select>
+        </div>
+
+        <!-- 3. Flexible Stats selection -->
+        <div class="overlay-settings-group" id="flex-stats-checklist-group" style="display:none;">
+          <h3>3. Select Display Stats</h3>
+          <div class="stats-checklist-grid">
+            <label class="chk-label"><input type="checkbox" value="rank" checked onchange="updateOverlayPreview()"> Current Rank</label>
+            <label class="chk-label"><input type="checkbox" value="peak" checked onchange="updateOverlayPreview()"> Peak Rank</label>
+            <label class="chk-label"><input type="checkbox" value="winrate" checked onchange="updateOverlayPreview()"> Win Rate %</label>
+            <label class="chk-label"><input type="checkbox" value="kd" checked onchange="updateOverlayPreview()"> K/D Ratio</label>
+            <label class="chk-label"><input type="checkbox" value="acs" checked onchange="updateOverlayPreview()"> Avg ACS</label>
+            <label class="chk-label"><input type="checkbox" value="avg_kills" onchange="updateOverlayPreview()"> Avg Kills</label>
+            <label class="chk-label"><input type="checkbox" value="assists" onchange="updateOverlayPreview()"> Assists</label>
+            <label class="chk-label"><input type="checkbox" value="daily_wl" onchange="updateOverlayPreview()"> Session W/L</label>
+          </div>
+        </div>
+
+        <!-- 4. Theme customization -->
+        <div class="overlay-settings-group">
+          <h3>3. Customize Colors &amp; Scale</h3>
+          <div class="colors-controls-grid">
+            <div class="color-picker-control">
+              <label>Accent Color</label>
+              <div class="color-picker-input-wrap">
+                <input type="color" id="ov-color-accent" value="#e8ff47" onchange="syncColorInput('accent')">
+                <input type="text" id="ov-txt-accent" value="e8ff47" oninput="syncColorPicker('accent')">
+              </div>
+            </div>
+            <div class="color-picker-control">
+              <label>Background</label>
+              <div class="color-picker-input-wrap">
+                <input type="color" id="ov-color-bg" value="#0f0f12" onchange="syncColorInput('bg')">
+                <input type="text" id="ov-txt-bg" value="rgba(15, 15, 18, 0.85)" oninput="syncColorPicker('bg')">
+              </div>
+            </div>
+            <div class="color-picker-control">
+              <label>Text Color</label>
+              <div class="color-picker-input-wrap">
+                <input type="color" id="ov-color-text" value="#f4f4f7" onchange="syncColorInput('text')">
+                <input type="text" id="ov-txt-text" value="f4f4f7" oninput="syncColorPicker('text')">
+              </div>
+            </div>
+            <div class="color-picker-control">
+              <label>Border Color</label>
+              <div class="color-picker-input-wrap">
+                <input type="color" id="ov-color-border" value="#333333" onchange="syncColorInput('border')">
+                <input type="text" id="ov-txt-border" value="rgba(255, 255, 255, 0.08)" oninput="syncColorPicker('border')">
+              </div>
+            </div>
+          </div>
+          <div class="scale-slider-control" style="margin-top: 14px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom: 6px;">
+              <label style="font-family:'DM Mono',monospace; font-size:11px; color:var(--muted);">Overlay Scale (OBS Multiplier)</label>
+              <span id="overlay-scale-val" style="font-family:'DM Mono',monospace; font-size:11px; color:var(--accent); font-weight:700;">1.0x</span>
+            </div>
+            <input type="range" id="ov-scale-range" min="0.5" max="1.5" step="0.05" value="1.0" oninput="updateOverlayScale()" style="width:100%; accent-color:var(--accent); cursor:pointer;">
+          </div>
+        </div>
+
+        <!-- 5. Generate Link & Setup Guide -->
+        <div class="overlay-settings-group final-link-box" style="border: 1px solid rgba(232, 255, 71, 0.16); background: rgba(232, 255, 71, 0.02);">
+          <h3>4. Generate OBS URL</h3>
+          <div class="obs-url-row" style="display: flex; gap: 8px; margin-bottom: 12px;">
+            <input type="text" id="obs-generated-url" readonly value="" onclick="this.select()" style="flex-grow:1; background:var(--surface2); border:1px solid var(--border); color:#fff; padding:8px 12px; border-radius:6px; font-family:'DM Mono',monospace; font-size:11px; outline:none; text-overflow:ellipsis;">
+            <button class="fetch-btn" onclick="copyObsUrl()" style="padding: 8px 16px;">Copy URL</button>
+          </div>
+          
+          <div class="obs-setup-guide" style="font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); padding-top: 12px;">
+            <h4 style="color:#fff; font-family:'Barlow Condensed',sans-serif; font-size:14px; text-transform:uppercase; margin-bottom:6px; letter-spacing:0.5px;">How to add to OBS Studio:</h4>
+            <ol style="padding-left: 16px; margin: 0; display:flex; flex-direction:column; gap:4px; line-height:1.4;">
+              <li>In OBS, click <strong>+</strong> under the <em>Sources</em> panel.</li>
+              <li>Select <strong>Browser Source</strong> and name it (e.g. "Valorant Overlay").</li>
+              <li>Paste the copied URL into the <strong>URL</strong> field.</li>
+              <li>Set the Width and Height based on your layout:
+                <ul style="margin-top: 2px; padding-left: 16px; color: var(--accent); list-style-type: square;">
+                  <li>Competitive: <strong>600 x 200</strong></li>
+                  <li>Center HUD: <strong>720 x 120</strong></li>
+                  <li>Flexible Panel: <strong>320 x 480</strong></li>
+                </ul>
+              </li>
+              <li>Click <strong>OK</strong> and position it on your stream canvas!</li>
+            </ol>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -8904,6 +9041,8 @@ function toggleMainView(view) {
   document.getElementById('store-view').style.display = 'none';
   const cView = document.getElementById('coach-view');
   if (cView) cView.style.display = 'none';
+  const oView = document.getElementById('overlay-view');
+  if (oView) oView.style.display = 'none';
   
   const filterGroup = document.getElementById('topbar-filters-group');
   const mft = document.getElementById('mobile-filter-toggle');
@@ -8946,6 +9085,20 @@ function toggleMainView(view) {
       if (cView) cView.style.display = 'block';
       resetDraftComp();
       renderSavedDrafts();
+    } else if (view === 'overlay') {
+      const oView = document.getElementById('overlay-view');
+      if (oView) oView.style.display = 'block';
+      
+      // Auto-populate player name and tag from active player session
+      if (PLAYER_NAME && PLAYER_TAG) {
+        document.getElementById('overlay-name-input').value = PLAYER_NAME;
+        document.getElementById('overlay-tag-input').value = PLAYER_TAG;
+      }
+      const activeRegion = document.getElementById('region-select')?.value || 'ap';
+      document.getElementById('overlay-region-select').value = activeRegion;
+      
+      // Initialize/update preview
+      updateOverlayPreview();
     }
   }
 }
@@ -12067,6 +12220,125 @@ async function submitFeedbackForm() {
     }
   } catch (e) {
     showToast('Network error — please check connection');
+  }
+}
+
+// ==========================================
+// STREAM OVERLAY CUSTOMIZER SYSTEM
+// ==========================================
+function onOverlayVariantChange() {
+  const variant = document.getElementById('overlay-variant-select').value;
+  const checklist = document.getElementById('flex-stats-checklist-group');
+  if (variant === 'flexible') {
+    checklist.style.display = 'block';
+  } else {
+    checklist.style.display = 'none';
+  }
+  updateOverlayPreview();
+}
+
+function syncColorInput(type) {
+  const colorPicker = document.getElementById(`ov-color-${type}`);
+  const textInput = document.getElementById(`ov-txt-${type}`);
+  if (colorPicker && textInput) {
+    let val = colorPicker.value;
+    textInput.value = val;
+  }
+  updateOverlayPreview();
+}
+
+function syncColorPicker(type) {
+  const colorPicker = document.getElementById(`ov-color-${type}`);
+  const textInput = document.getElementById(`ov-txt-${type}`);
+  if (colorPicker && textInput) {
+    let val = textInput.value.trim();
+    // If it is a valid hex, update color picker
+    if (/^#[0-9A-F]{6}$/i.test(val)) {
+      colorPicker.value = val;
+    }
+  }
+  updateOverlayPreview();
+}
+
+function updateOverlayScale() {
+  const range = document.getElementById('ov-scale-range');
+  const valDisplay = document.getElementById('overlay-scale-val');
+  if (range && valDisplay) {
+    valDisplay.textContent = parseFloat(range.value).toFixed(2) + 'x';
+  }
+  updateOverlayPreview();
+}
+
+function updateOverlayPreview() {
+  const name = document.getElementById('overlay-name-input').value.trim();
+  const tag = document.getElementById('overlay-tag-input').value.trim();
+  const region = document.getElementById('overlay-region-select').value;
+  const variant = document.getElementById('overlay-variant-select').value;
+  const accent = document.getElementById('ov-txt-accent').value.trim().replace('#', '');
+  const bg = encodeURIComponent(document.getElementById('ov-txt-bg').value.trim());
+  const text = document.getElementById('ov-txt-text').value.trim().replace('#', '');
+  const border = encodeURIComponent(document.getElementById('ov-txt-border').value.trim());
+  const scale = document.getElementById('ov-scale-range').value;
+
+  if (!name || !tag) {
+    document.getElementById('obs-generated-url').value = "Please enter name and tag first";
+    document.getElementById('overlay-preview-sandbox').innerHTML = `
+      <div style="font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); text-align:center; padding: 40px;">
+        Enter a player's Name and Tag to generate the stream overlay preview.
+      </div>
+    `;
+    return;
+  }
+
+  const host = window.location.origin;
+  let url = `${host}/overlay?name=${encodeURIComponent(name)}&tag=${encodeURIComponent(tag)}&region=${region}&variant=${variant}`;
+  
+  if (accent) url += `&accent=${accent}`;
+  if (bg) url += `&bg=${bg}`;
+  if (text) url += `&text=${text}`;
+  if (border) url += `&border=${border}`;
+  if (scale !== '1') url += `&scale=${scale}`;
+
+  if (variant === 'flexible') {
+    const checked = Array.from(document.querySelectorAll('#flex-stats-checklist-group input[type="checkbox"]:checked')).map(c => c.value);
+    if (checked.length > 0) {
+      url += `&stats=${checked.join(',')}`;
+    }
+  }
+
+  document.getElementById('obs-generated-url').value = url;
+
+  // Render preview iframe
+  let w = 600, h = 200;
+  if (variant === 'center') { w = 720; h = 120; }
+  else if (variant === 'flexible') { w = 320; h = 480; }
+
+  // Adjust preview scaling to fit in preview canvas
+  const canvasWidth = document.getElementById('overlay-preview-canvas').clientWidth || 700;
+  let previewScale = 1.0;
+  if (w > (canvasWidth - 40)) {
+    previewScale = (canvasWidth - 40) / w;
+  }
+
+  document.getElementById('overlay-preview-sandbox').innerHTML = `
+    <iframe src="${url}" style="border: none; background: transparent; width: ${w}px; height: ${h}px; overflow: hidden; transform: scale(${previewScale}); transform-origin: center center;" scrolling="no"></iframe>
+  `;
+}
+
+function copyObsUrl() {
+  const urlEl = document.getElementById('obs-generated-url');
+  if (urlEl && urlEl.value && !urlEl.value.startsWith('Please')) {
+    urlEl.select();
+    navigator.clipboard.writeText(urlEl.value)
+      .then(() => {
+        showToast("OBS Overlay URL copied to clipboard!");
+      })
+      .catch(err => {
+        console.error("Failed to copy", err);
+        showToast("Failed to copy automatically. Please select text and copy manually.");
+      });
+  } else {
+    showToast("Please enter a player Name and Tag first!");
   }
 }
 

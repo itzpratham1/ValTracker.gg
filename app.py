@@ -399,6 +399,14 @@ def index():
     resp.headers["Expires"] = "0"
     return resp
 
+@app.route("/overlay")
+def overlay():
+    resp = make_response(send_from_directory(app.static_folder, "overlay.html"))
+    resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    resp.headers["Pragma"] = "no-cache"
+    resp.headers["Expires"] = "0"
+    return resp
+
 @app.errorhandler(404)
 def page_not_found(e):
     resp = make_response(send_from_directory(app.static_folder, "404.html"))

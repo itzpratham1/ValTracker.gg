@@ -1,0 +1,478 @@
+/* ==========================================================================
+   ValTracker.gg Stream Overlay Premium Styles
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;0,900;1,800&family=DM+Mono:wght@500;700&family=Rajdhani:wght@600;700&display=swap');
+
+:root {
+  /* Dynamic customizer overrides */
+  --accent: #e8ff47;
+  --bg: rgba(15, 15, 18, 0.85);
+  --text: #f4f4f7;
+  --border: rgba(255, 255, 255, 0.08);
+  --scale: 1;
+
+  /* Static variables */
+  --win: #10b981;
+  --loss: #f43f5e;
+  --font-title: 'Barlow Condensed', 'Rajdhani', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --font-body: 'Rajdhani', sans-serif;
+}
+
+/* Reset and OBS Clean State */
+html, body {
+  margin: 0;
+  padding: 0;
+  background: transparent !important;
+  color: var(--text);
+  font-family: var(--font-body);
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Master Scaling Wrapper */
+.overlay-scaler {
+  transform: scale(var(--scale));
+  transform-origin: top left;
+  padding: 10px;
+  box-sizing: border-box;
+  display: inline-block;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+.overlay-scaler.loaded {
+  opacity: 1;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   1. COMPETITIVE OVERLAY
+   ────────────────────────────────────────────────────────────────────────── */
+.comp-overlay {
+  width: 580px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  position: relative;
+}
+
+/* Cyberpunk Left Accents */
+.comp-overlay::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--accent);
+}
+
+/* Recent Games Row */
+.comp-recent-games {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--border);
+  gap: 6px;
+}
+.comp-recent-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 1px;
+}
+.comp-avatars-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.comp-avatar-wrap {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.comp-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.comp-avatar-outcome {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.3);
+}
+.comp-avatar-outcome.win { background: var(--win); }
+.comp-avatar-outcome.loss { background: var(--loss); }
+
+/* Main stats row */
+.comp-stats-body {
+  display: flex;
+  align-items: center;
+  padding: 14px 20px;
+  gap: 16px;
+}
+
+.comp-rank-icon-wrap {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.comp-rank-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 8px var(--accent));
+}
+
+.comp-rank-info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+.comp-rank-name {
+  font-family: var(--font-title);
+  font-size: 26px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--accent);
+  line-height: 1;
+  letter-spacing: 1px;
+  text-shadow: 0 0 10px rgba(232, 255, 71, 0.2);
+}
+.comp-rank-rr {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 4px;
+}
+
+.comp-stat-grid {
+  display: flex;
+  gap: 20px;
+  border-left: 1px solid var(--border);
+  padding-left: 20px;
+}
+.comp-stat-box {
+  display: flex;
+  flex-direction: column;
+  min-width: 70px;
+}
+.comp-stat-val {
+  font-family: var(--font-title);
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1;
+  color: #fff;
+}
+.comp-stat-lbl {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  margin-top: 4px;
+  letter-spacing: 0.5px;
+}
+
+/* Brand Footer Bar */
+.comp-brand-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 16px;
+  background: rgba(0, 0, 0, 0.4);
+  border-top: 1px solid var(--border);
+}
+.comp-brand-logo {
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #fff;
+  letter-spacing: 1px;
+}
+.comp-brand-logo span {
+  color: var(--accent);
+}
+.comp-brand-text {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.3);
+  text-transform: uppercase;
+}
+
+
+/* ──────────────────────────────────────────────────────────────────────────
+   2. CENTER HUD OVERLAY
+   ────────────────────────────────────────────────────────────────────────── */
+.center-overlay {
+  width: 680px;
+  height: 80px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  /* Premium cut-corner layout */
+  clip-path: polygon(
+    15px 0%, 100% 0%, 100% 100%, 0% 100%, 0% 15px
+  );
+}
+
+.center-overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 15px;
+  height: 15px;
+  background: var(--accent);
+}
+
+.center-left-block {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.center-rank-icon {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 6px var(--accent));
+}
+.center-player-info {
+  display: flex;
+  flex-direction: column;
+}
+.center-player-name {
+  font-family: var(--font-title);
+  font-size: 20px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+.center-player-rank {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.center-divider {
+  width: 1px;
+  height: 36px;
+  background: var(--border);
+}
+
+.center-right-block {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.center-stat-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 60px;
+}
+.center-stat-val {
+  font-family: var(--font-title);
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1;
+  color: #fff;
+}
+.center-stat-lbl {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  margin-top: 3px;
+  letter-spacing: 0.5px;
+}
+
+
+/* ──────────────────────────────────────────────────────────────────────────
+   3. FLEXIBLE / CUSTOM OVERLAY PANEL
+   ────────────────────────────────────────────────────────────────────────── */
+.flex-overlay {
+  width: 280px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  position: relative;
+}
+
+.flex-overlay-header {
+  padding: 16px 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.flex-overlay-header::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--accent);
+}
+
+.flex-rank-icon {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 6px var(--accent));
+}
+
+.flex-header-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.flex-player-name {
+  font-family: var(--font-title);
+  font-size: 20px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.5px;
+}
+.flex-player-rank {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent);
+  margin-top: 2px;
+}
+
+.flex-stats-list {
+  padding: 12px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.flex-stat-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.04);
+}
+.flex-stat-row:last-child {
+  border-bottom: none;
+}
+.flex-stat-lbl-block {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.flex-stat-icon {
+  font-size: 12px;
+  opacity: 0.6;
+}
+.flex-stat-lbl {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.flex-stat-val {
+  font-family: var(--font-title);
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.flex-brand-footer {
+  padding: 8px 20px;
+  background: rgba(0, 0, 0, 0.4);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: center;
+}
+
+
+/* ──────────────────────────────────────────────────────────────────────────
+   4. UTILITY STYLES / SKELETON LOADING
+   ────────────────────────────────────────────────────────────────────────── */
+.overlay-loading {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 10, 12, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  gap: 12px;
+  border-radius: inherit;
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-left-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.error-text {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--loss);
+  text-align: center;
+  padding: 20px;
+}
