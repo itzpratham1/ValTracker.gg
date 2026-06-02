@@ -259,7 +259,7 @@ def optimize_response(response):
     path = request.path.lower()
     
     # 1. Apply premium Caching Headers
-    if 'overlay' in path:
+    if 'overlay' in path or 'index.html' in path or path == '/' or path == '':
         response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
         response.headers['Pragma'] = 'no-cache'
         response.headers['Expires'] = '0'
