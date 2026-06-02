@@ -8,7 +8,7 @@
 <link rel="icon" type="image/png" href="logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
-<link rel="stylesheet" href="index.css?v=13.02">
+<link rel="stylesheet" href="index.css?v=13.03">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 </head>
@@ -275,6 +275,47 @@
 
 <div id="tracker-view" style="display: none;">
 
+<!-- HERO -->
+<div class="hero">
+  <div id="player-card-bg"></div>
+  <div class="hero-content">
+    <div class="hero-left">
+      <div class="hero-avatar-wrap">
+        <img id="player-avatar-img" class="player-avatar-img" src="" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="hero-avatar-fallback" style="display:none; width:100%; height:100%; align-items:center; justify-content:center; background:var(--surface2); font-size:24px; color:rgba(255,255,255,0.4)">👤</div>
+      </div>
+      <div class="hero-player-details">
+        <div class="hero-eyebrow" id="hero-eyebrow">Competitive Tracker</div>
+        <div class="hero-title" id="hero-title">—</div>
+        <div class="hero-sub" id="hero-sub"></div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <!-- Rank Block -->
+      <div class="hero-rank-block">
+        <div id="rank-icon"><div style="width:56px;height:56px;background:var(--surface2);border-radius:8px;"></div></div>
+        <div class="hero-rank-info">
+          <div class="hero-rank-name" id="rank-display">—</div>
+          <div class="hero-rank-rr">
+            <span id="peak-icon"></span>
+            <span id="rank-rr-txt">Current Rank</span>
+          </div>
+          <div class="hero-level" id="hero-level-badge" style="display:none"></div>
+          <div class="hero-rank-prediction" id="rank-prediction" style="display:none; margin-top:8px; font-family:'DM Mono',monospace; font-size:10px; color:var(--accent); letter-spacing:0.5px; border-top:1px solid var(--border); padding-top:6px;"></div>
+        </div>
+      </div>
+      <!-- Streak Block -->
+      <div class="hero-streak-block" id="streak-block" style="display:none">
+        <div class="streak-icon" id="streak-icon">🔥</div>
+        <div class="streak-info">
+          <div class="streak-label">Current Streak</div>
+          <div class="streak-val" id="streak-val">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- UNIFIED TRACKER NAVIGATION -->
 <div class="tracker-nav" id="tracker-nav">
   <div class="tracker-nav-left">
@@ -289,94 +330,46 @@
     <a class="tracker-nav-item" onclick="smoothScrollTo('sec-deep', event)"><span class="nav-icon">🔬</span> Deep Analysis</a>
     <a class="tracker-nav-item" onclick="smoothScrollTo('sec-lab', event)"><span class="nav-icon">🧪</span> Perf Lab</a>
   </div>
-
+  
+  <!-- Session Actions & Utilities Grouped on Right -->
+  <div class="tracker-nav-right">
+    <!-- Session Actions -->
+    <div class="session-group">
+      <button class="nav-btn action" id="session-btn" onclick="toggleSession()">▶ Start Session</button>
+      <button class="nav-btn success" id="session-summary-btn" onclick="showSessionSummary()" style="display: none;">📊 Summary</button>
+    </div>
     
-    <!-- Session Actions & Utilities Grouped on Right -->
-    <div class="tracker-nav-right">
-      <!-- Session Actions -->
-      <div class="session-group">
-        <button class="nav-btn action" id="session-btn" onclick="toggleSession()">▶ Start Session</button>
-        <button class="nav-btn success" id="session-summary-btn" onclick="showSessionSummary()" style="display: none;">📊 Summary</button>
-      </div>
-      
-      <!-- Tools Dropdown -->
-      <div class="nav-dropdown" id="nav-tools-dropdown">
-        <button class="nav-btn dropdown-trigger" onclick="toggleToolsDropdown(event)" title="More Tools">
-          <span>⚡ Utilities</span>
-          <span class="dropdown-arrow">▼</span>
+    <!-- Tools Dropdown -->
+    <div class="nav-dropdown" id="nav-tools-dropdown">
+      <button class="nav-btn dropdown-trigger" onclick="toggleToolsDropdown(event)" title="More Tools">
+        <span>⚡ Utilities</span>
+        <span class="dropdown-arrow">▼</span>
+      </button>
+      <div class="dropdown-menu" id="tools-dropdown-menu">
+        <button class="dropdown-item" id="share-profile-btn" onclick="shareProfile()">
+          <span class="dropdown-item-icon">🔗</span> Share Profile
         </button>
-        <div class="dropdown-menu" id="tools-dropdown-menu">
-          <button class="dropdown-item" id="share-profile-btn" onclick="shareProfile()">
-            <span class="dropdown-item-icon">🔗</span> Share Profile
-          </button>
-          <button class="dropdown-item" onclick="fetchLeaderboard()">
-            <span class="dropdown-item-icon">🏆</span> Top 500
-          </button>
-          <button class="dropdown-item" onclick="toggleHeadToHead()">
-            <span class="dropdown-item-icon">⚔️</span> Compare (Vs)
-          </button>
-          <button class="dropdown-item" id="export-btn" onclick="exportStatsCard()">
-            <span class="dropdown-item-icon">📤</span> Export Stats Card
-          </button>
-          <button class="dropdown-item" onclick="showBookmarksModal()">
-            <span class="dropdown-item-icon" style="color:#ffd700;">★</span> Bookmarked Players
-          </button>
-          <div class="dropdown-divider"></div>
-          <button class="dropdown-item danger" id="clear-btn" onclick="handleClear()" title="Clear all stored matches">
-            <span class="dropdown-item-icon">🗑️</span> Clear Stored Matches
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-
-<!-- HERO -->
-<div class="hero">
-  <div id="player-card-bg"></div>
-  <div class="hero-left">
-    <div class="hero-eyebrow" id="hero-eyebrow">Competitive Tracker</div>
-    <div class="hero-title" id="hero-title">—</div>
-    <div class="hero-sub" id="hero-sub"><span id="player-level"></span></div>
-  </div>
-  <div class="hero-right">
-    <!-- Player Banner Card -->
-    <div class="player-banner-card" id="player-banner-card">
-      <img class="player-banner-img" id="player-banner-img" src="" alt="" onerror="this.style.display='none'">
-      <div class="player-banner-overlay">
-        <div class="player-banner-name" id="banner-name">—</div>
-        <div class="player-banner-meta">
-          <span class="player-banner-tag" id="banner-tag"></span>
-          <span class="player-banner-lvl" id="banner-lvl">LVL —</span>
-        </div>
-      </div>
-    </div>
-    <!-- Rank Block -->
-    <div class="hero-rank-block">
-      <div id="rank-icon"><div style="width:56px;height:56px;background:var(--surface2);border-radius:8px;"></div></div>
-      <div class="hero-rank-info">
-        <div class="hero-rank-name" id="rank-display">—</div>
-        <div class="hero-rank-rr">
-          <span id="peak-icon"></span>
-          <span id="rank-rr-txt">Current Rank</span>
-        </div>
-        <div class="hero-level" id="hero-level-badge" style="display:none"></div>
-        <div class="hero-rank-prediction" id="rank-prediction" style="display:none; margin-top:8px; font-family:'DM Mono',monospace; font-size:10px; color:var(--accent); letter-spacing:0.5px; border-top:1px solid var(--border); padding-top:6px;">
-          <!-- Rank prediction text -->
-        </div>
-      </div>
-    </div>
-    <!-- Streak Block -->
-    <div class="hero-streak-block" id="streak-block" style="display:none">
-      <div class="streak-icon" id="streak-icon">🔥</div>
-      <div class="streak-info">
-        <div class="streak-label">Current Streak</div>
-        <div class="streak-val" id="streak-val">—</div>
+        <button class="dropdown-item" onclick="fetchLeaderboard()">
+          <span class="dropdown-item-icon">🏆</span> Top 500
+        </button>
+        <button class="dropdown-item" onclick="toggleHeadToHead()">
+          <span class="dropdown-item-icon">⚔️</span> Compare (Vs)
+        </button>
+        <button class="dropdown-item" id="export-btn" onclick="exportStatsCard()">
+          <span class="dropdown-item-icon">📤</span> Export Stats Card
+        </button>
+        <button class="dropdown-item" onclick="showBookmarksModal()">
+          <span class="dropdown-item-icon" style="color:#ffd700;">★</span> Bookmarked Players
+        </button>
+        <div class="dropdown-divider"></div>
+        <button class="dropdown-item danger" id="clear-btn" onclick="handleClear()" title="Clear all stored matches">
+          <span class="dropdown-item-icon">🗑️</span> Clear Stored Matches
+        </button>
       </div>
     </div>
   </div>
 </div>
+
 
 <!-- MAIN BENTO GRID -->
 <div class="main" id="main-grid">
@@ -2227,19 +2220,38 @@ async function fetchAll(){
     if(accountData?.data){
       const a=accountData.data;
       const cardUrl=a.card?.wide||a.card?.large||(typeof a.card==='string'?`https://media.valorant-api.com/playercards/${a.card}/wideart.png`:null);
+      const smallCardUrl=a.card?.small||(typeof a.card==='string'?`https://media.valorant-api.com/playercards/${a.card}/smallart.png`:null);
       const lvl=`LVL ${a.account_level||'—'}`;
-      document.getElementById('player-level').textContent=lvl;
-      document.getElementById('hero-level-badge').textContent=lvl;
-      document.getElementById('hero-level-badge').style.display='inline-block';
-      document.getElementById('banner-lvl').textContent=lvl;
+      
+      const lvlEl = document.getElementById('player-level');
+      if (lvlEl) lvlEl.textContent = lvl;
+      const heroLvlEl = document.getElementById('hero-level-badge');
+      if (heroLvlEl) {
+        heroLvlEl.textContent = lvl;
+        heroLvlEl.style.display = 'inline-block';
+      }
+      
+      // Update avatar image
+      const avatarImg = document.getElementById('player-avatar-img');
+      if (avatarImg) {
+        if (smallCardUrl) {
+          avatarImg.src = smallCardUrl;
+          avatarImg.style.display = 'block';
+          const fallback = avatarImg.nextElementSibling;
+          if (fallback) fallback.style.display = 'none';
+        } else {
+          avatarImg.style.display = 'none';
+          const fallback = avatarImg.nextElementSibling;
+          if (fallback) fallback.style.display = 'flex';
+        }
+      }
+      
       if(cardUrl){
         const bg=document.getElementById('player-card-bg');
-        bg.style.backgroundImage=`url('${cardUrl}')`;
-        bg.style.opacity='0.22';
-        // Also populate the banner card
-        const bannerImg=document.getElementById('player-banner-img');
-        bannerImg.src=cardUrl;
-        bannerImg.style.display='block';
+        if (bg) {
+          bg.style.backgroundImage=`url('${cardUrl}')`;
+          bg.style.opacity='0.26';
+        }
       }
     }
 
@@ -7020,7 +7032,9 @@ function updateHeroName() {
   const titleEl = document.getElementById('hero-title');
   if (titleEl) titleEl.innerHTML = base + (suffix ? `<span class="dim">${suffix}</span>` : '');
   const subEl = document.getElementById('hero-sub');
-  if (subEl) subEl.innerHTML = `#${tag} · <span id="player-level"></span>`;
+  if (subEl) {
+    subEl.innerHTML = `<span style="font-size:15px; color:var(--muted); letter-spacing:0.5px;">#${tag}</span><span class="hero-level-badge-new" id="player-level">LVL —</span>`;
+  }
   const eyebrowEl = document.getElementById('hero-eyebrow');
   if (eyebrowEl) eyebrowEl.textContent = `${modeLabel} Tracker`;
   const bannerNameEl = document.getElementById('banner-name');
@@ -7221,6 +7235,7 @@ function dismissLanding() {
   if (h2hb) h2hb.style.display = 'inline-block';
   
   setTimeout(updateFilterToggleText, 50); // Initialize mobile filter text indicators!
+  setTimeout(updateHeaderHeights, 60);
 }
 
 function toggleSearchMode(showSearch) {
@@ -9161,6 +9176,7 @@ function toggleMainView(view) {
       updateOverlayPreview();
     }
   }
+  setTimeout(updateHeaderHeights, 50);
 }
 
 function goToAISubsystem(system) {
@@ -12699,11 +12715,22 @@ function attachDropdownClickEvents(dropdown, input, tagInput, regionSelectId) {
   });
 }
 
+function updateHeaderHeights() {
+  const topbar = document.querySelector('.topbar');
+  if (topbar) {
+    const rect = topbar.getBoundingClientRect();
+    document.documentElement.style.setProperty('--topbar-height', `${rect.height}px`);
+  }
+}
+window.addEventListener('resize', updateHeaderHeights);
+
 document.addEventListener('DOMContentLoaded', () => { 
   setTimeout(checkUrlParams, 200); 
   setTimeout(initScrollSpy, 500);
   initSearchAutocomplete('l-name', 'l-tag', 'landing-search-dropdown', 'l-region');
   initSearchAutocomplete('player-name-input', 'player-tag-input', 'topbar-search-dropdown', 'region-select');
+  setTimeout(updateHeaderHeights, 100);
+  setTimeout(updateHeaderHeights, 500);
 });
 </script>
 <style>/* ── GLASSMORPHISM OVERRIDES & VALORANT CRIMSON THEME ── */
@@ -12895,10 +12922,26 @@ body::after {
 }
 
 @media (min-width: 801px) {
+  .topbar {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1000 !important;
+  }
   .tracker-nav {
     position: sticky !important;
-    top: 60px !important;
-    z-index: 99 !important;
+    top: var(--topbar-height, 108px) !important;
+    z-index: 999 !important;
+  }
+}
+@media (max-width: 800px) {
+  .topbar {
+    position: relative !important;
+    box-shadow: none !important;
+  }
+  .tracker-nav {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 9999 !important;
   }
 }
 
