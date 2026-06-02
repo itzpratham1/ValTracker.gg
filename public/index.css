@@ -624,6 +624,19 @@ body::before {
   gap: 12px;
   padding: 14px 20px;
   min-width: 170px;
+}
+.streak-icon {
+  font-size: 24px;
+  filter: drop-shadow(0 0 8px rgba(250,68,84,0.25));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.streak-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 .streak-label {
   font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted);
   letter-spacing: 2px; text-transform: uppercase;
