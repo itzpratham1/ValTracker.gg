@@ -82,17 +82,36 @@ body::before {
 /* ── TOP BAR (STICKY NAV) ── */
 .topbar {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 20px;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 12px 20px 10px;
   border-bottom: 1px solid var(--border);
   position: sticky; top: 0; z-index: 100;
   background: rgba(3, 3, 4, 0.85);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+  gap: 8px;
 }
-.topbar-left { display: flex; align-items: center; gap: 12px; }
+.topbar-main-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.topbar-sub-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  padding-top: 8px;
+}
+.topbar-sub-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 .logo {
   font-family: 'Rajdhani', sans-serif;
   font-weight: 700;
@@ -2479,8 +2498,9 @@ body::before {
 }
 
 /* ── ESPORTS CONTROLS & NEWS ── */
-.topbar-tabs { display: flex; align-items: center; gap: 4px; background: var(--surface2); padding: 4px; border-radius: var(--radius-sm); border: 1px solid var(--border); }
-.topbar-tab { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); padding: 6px 12px; border-radius: 4px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: var(--transition); }
+.topbar-tabs { display: flex; align-items: center; gap: 4px; background: var(--surface2); padding: 4px; border-radius: var(--radius-sm); border: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; }
+.topbar-tabs::-webkit-scrollbar { display: none; }
+.topbar-tab { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); padding: 6px 12px; border-radius: 4px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: var(--transition); white-space: nowrap; }
 .topbar-tab.active { background: var(--surface); color: var(--accent); border: 1px solid var(--border); }
 
 .esports-subnav { display: flex; gap: 8px; padding: 12px 28px; background: rgba(10, 10, 12, 0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); overflow-x: auto; white-space: nowrap; scrollbar-width: none; position: sticky; top: 60px; z-index: 90; }
@@ -4753,23 +4773,104 @@ input:checked + .slider:before {
   text-transform: uppercase;
 }
 
-/* Desktop/Laptop Topbar Wrapping (under 1350px) to prevent stacking */
-@media (max-width: 1350px) {
+/* Mobile Filter Toggle base button */
+.mobile-filter-toggle {
+  display: none; /* dynamically set to inline-flex by JS if active profile is loaded */
+  align-items: center;
+  gap: 6px;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  background: var(--surface2);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.mobile-filter-toggle:hover {
+  background: var(--surface3);
+  color: var(--text);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+.mobile-filter-toggle:active {
+  transform: scale(0.95);
+}
+
+/* Responsive Topbar layout on Mobile (width <= 800px) */
+@media (max-width: 800px) {
   .topbar {
-    flex-wrap: wrap !important;
-    justify-content: center !important;
-    gap: 12px !important;
-    padding: 12px 20px !important;
+    padding: 10px 14px 8px !important;
+    gap: 6px !important;
   }
-  .topbar-left {
-    justify-content: center !important;
-    flex-wrap: wrap !important;
-    gap: 16px !important;
+  .topbar-main-row {
+    flex-wrap: nowrap !important;
+  }
+  .topbar-tabs {
+    max-width: 70%;
+  }
+  .topbar-sub-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+  .topbar-sub-left {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
     width: 100% !important;
   }
-  .topbar-right {
-    justify-content: center !important;
+  /* Hide filter elements inside the sub-row by default on mobile */
+  .topbar-sub-row .topbar-right {
+    display: none !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
     width: 100% !important;
+    gap: 10px !important;
+    background: rgba(13, 13, 16, 0.98) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    padding: 14px !important;
+    margin-top: 4px !important;
+    position: relative !important;
+  }
+  .topbar-sub-row .topbar-right.mobile-expanded {
+    display: flex !important;
+  }
+  .topbar-sub-row .topbar-right .topbar-filter-capsule {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    gap: 8px !important;
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+  .topbar-sub-row .topbar-right .filter-item {
+    width: 100% !important;
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius-sm) !important;
+    padding: 8px 12px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+  }
+  .topbar-sub-row .topbar-right .filter-divider {
+    display: none !important;
+  }
+  .topbar-sub-row .topbar-right .region-select {
+    width: 100% !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    font-size: 12px !important;
+  }
+  .topbar-sub-row .topbar-right .fetch-btn {
+    width: 100% !important;
+    padding: 10px 20px !important;
   }
 }
 
