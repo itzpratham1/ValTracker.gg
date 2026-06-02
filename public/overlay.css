@@ -253,6 +253,22 @@ html, body {
   background: var(--accent);
 }
 
+.center-brand-tag {
+  position: absolute;
+  top: 4px;
+  right: 24px;
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 10px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 1px;
+  z-index: 5;
+}
+.center-brand-tag span {
+  color: var(--accent);
+}
+
 .center-left-block {
   display: flex;
   align-items: center;

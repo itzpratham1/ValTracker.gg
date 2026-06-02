@@ -305,6 +305,7 @@
 
   // 8. Renders the Selected Layout template
   function renderOverlay(stats) {
+    hideLoading();
     const container = document.getElementById('overlay-container');
     if (!container) return;
 
@@ -389,7 +390,7 @@
       html = `
         <div class="center-overlay">
           <!-- Subtle top brand watermark -->
-          <div style="position: absolute; top: 4px; right: 24px; font-family: var(--font-title); font-weight: 800; font-size: 10px; text-transform: uppercase; color: rgba(255, 255, 255, 0.2); letter-spacing: 0.5px; z-index: 5;">Val<span style="color: var(--accent);">Tracker</span></div>
+          <div class="center-brand-tag">Val<span>Tracker</span></div>
 
           <!-- Left: Rank & Player info -->
           <div class="center-left-block">
@@ -493,18 +494,28 @@
 
   // 9. Utility Functions
   function showLoading(msg = 'Fetching data...') {
-    const container = document.getElementById('overlay-container');
-    if (container) {
-      container.innerHTML = `
-        <div class="overlay-loading">
-          <div class="spinner"></div>
-          <div class="loading-text">${msg}</div>
-        </div>
-      `;
+    let loader = document.getElementById('overlay-loading-screen');
+    if (!loader) {
+      loader = document.createElement('div');
+      loader.id = 'overlay-loading-screen';
+      loader.className = 'overlay-loading';
+      document.body.appendChild(loader);
+    }
+    loader.innerHTML = `
+      <div class="spinner"></div>
+      <div class="loading-text">${msg}</div>
+    `;
+  }
+
+  function hideLoading() {
+    const loader = document.getElementById('overlay-loading-screen');
+    if (loader) {
+      loader.remove();
     }
   }
 
   function showError(msg) {
+    hideLoading();
     const container = document.getElementById('overlay-container');
     if (container) {
       container.innerHTML = `
