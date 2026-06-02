@@ -5310,12 +5310,14 @@ async function generateFlexCard() {
     const el = document.getElementById('match-capture-target');
     const canvas = await html2canvas(el, {
       backgroundColor: null,
-      scale: 2.5, // 2.5x scale for stunning sharpness and premium details
+      scale: 1.8, // 1.8x scale for stunning sharpness and premium details, optimized size
       logging: false,
       useCORS: true
     });
     
     const dataUrl = canvas.toDataURL('image/png');
+    // Generate an optimized JPEG dataUrl for server sharing (reduces size by 15x for instant timeline preloads)
+    const uploadDataUrl = canvas.toDataURL('image/jpeg', 0.85);
     
     // Update preview in the modal
     document.getElementById('share-modal-img-preview').src = dataUrl;
@@ -5351,7 +5353,7 @@ async function generateFlexCard() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          image: dataUrl,
+          image: uploadDataUrl,
           playerName: share.playerName,
           playerTag: share.playerTag,
           agentName: share.agentName,

@@ -502,11 +502,12 @@ def share_card_api():
         won = data.get("won", False)
         score = data.get("score", "0-0")
         
-        if not image_data_url or not image_data_url.startswith("data:image/png;base64,"):
+        if not image_data_url or not (image_data_url.startswith("data:image/png;base64,") or image_data_url.startswith("data:image/jpeg;base64,")):
             return jsonify({"status": "error", "message": "Invalid base64 image data"}), 400
             
         # Decode base64
         header, encoded = image_data_url.split(",", 1)
+        ext = "jpg" if "image/jpeg" in header or "image/jpg" in header else "png"
         import base64
         binary_data = base64.b64decode(encoded)
         
@@ -517,7 +518,7 @@ def share_card_api():
             
         # Generate unique ID
         share_id = str(uuid.uuid4())[:8]
-        filename = f"{share_id}.png"
+        filename = f"{share_id}.{ext}"
         filepath = os.path.join(shared_dir, filename)
         
         # Save PNG locally
@@ -1748,7 +1749,16 @@ def get_share_page(share_id):
     host_url = request.host_url
     if "localhost" not in host_url and "127.0.0.1" not in host_url:
         host_url = host_url.replace("http://", "https://")
-    image_url = f"{host_url}shared/{share_id}.png"
+    
+    # Check if we have .jpg or .png saved
+    shared_dir = os.path.join(app.static_folder, "shared")
+    ext = "png"
+    if os.path.exists(os.path.join(shared_dir, f"{share_id}.jpg")):
+        ext = "jpg"
+    elif os.path.exists(os.path.join(shared_dir, f"{share_id}.jpeg")):
+        ext = "jpeg"
+        
+    image_url = f"{host_url}shared/{share_id}.{ext}"
     share_url = f"{host_url}share/{share_id}"
     
     html = f"""<!DOCTYPE html>
@@ -1895,7 +1905,7 @@ def get_share_page(share_id):
     
     <div class="badge">Match Flex Card</div>
     
-    <img src="/shared/{share_id}.png" class="card-preview" alt="Valorant Performance Flex Card">
+    <img src="{image_url}" class="card-preview" alt="Valorant Performance Flex Card">
     
     <a href="/?player={meta.get('playerName', '')}%23{meta.get('playerTag', '')}" class="btn">
       🎮 View Full Performance Telemetry
