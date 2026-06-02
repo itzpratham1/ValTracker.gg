@@ -39,10 +39,11 @@
       <div class="landing-card-sub">Enter a Riot ID to view stats, match history &amp; analysis</div>
 
       <div class="landing-field-label">Riot ID</div>
-      <div class="landing-input-row">
+      <div class="landing-input-row" style="position: relative;">
         <input class="landing-input" id="l-name" type="text" placeholder="PlayerName" autocomplete="off" spellcheck="false">
         <span class="landing-input-hash">#</span>
         <input class="landing-input landing-input-tag" id="l-tag" type="text" placeholder="TAG" maxlength="8" autocomplete="off" spellcheck="false">
+        <div id="landing-search-dropdown" class="search-dropdown"></div>
       </div>
 
       <div class="landing-row2">
@@ -158,10 +159,11 @@
     </div>
     
     <div class="topbar-divider" id="tracker-divider-1"></div>
-    <div class="player-search-wrap">
+    <div class="player-search-wrap" style="position: relative;">
       <input class="player-input" id="player-name-input" type="text" placeholder="Name" value="" autocomplete="off" spellcheck="false">
       <span class="player-input-hash">#</span>
       <input class="player-input player-input-tag" id="player-tag-input" type="text" placeholder="TAG" value="" maxlength="8" autocomplete="off" spellcheck="false">
+      <div id="topbar-search-dropdown" class="search-dropdown"></div>
     </div>
     
     <div class="player-active-pill" id="player-active-pill" style="display: none;">
@@ -1294,32 +1296,7 @@
     </div>
   </div>
 
-  <!-- GLOBAL FOOTER -->
-  <div id="global-footer" style="display: none; width: calc(100% - 56px); max-width: 1200px; margin: 40px auto 20px; border-top:1px solid rgba(255,255,255,0.05); padding-top:24px; flex-direction:column; align-items:center; gap:12px; box-sizing:border-box;">
-    <!-- Riot Games Legal Disclaimer -->
-    <div style="font-family:'DM Mono',monospace; font-size:9px; color:var(--muted2); text-align:center; max-width:760px; line-height:1.6; text-transform:uppercase; letter-spacing:0.5px;">
-      VALTRACKER IS NOT ENDORSED BY RIOT GAMES AND DOES NOT REFLECT THE VIEWS OR OPINIONS OF RIOT GAMES OR ANYONE OFFICIALLY INVOLVED IN PRODUCING OR MANAGING VALORANT. VALORANT AND RIOT GAMES ARE TRADEMARKS OR REGISTERED TRADEMARKS OF RIOT GAMES, INC. VALORANT © RIOT GAMES, INC.
-    </div>
-    
-    <!-- Developer socials -->
-    <div style="display:flex; align-items:center; justify-content:center; gap:16px; margin-top:8px;">
-      <span style="font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:800; color:var(--muted); letter-spacing:1px; text-transform:uppercase;">Developed by Pratham</span>
-      <div style="display:flex; align-items:center; gap:12px;">
-        <!-- GitHub -->
-        <a href="https://github.com/itzpratham1" target="_blank" title="GitHub" style="color:var(--muted); display:inline-block; transition:color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="display:block;">
-            <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.646.64.699 1.026 1.592 1.026 2.683 0 3.842-2.337 4.687-4.565 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.579.688.481C19.137 20.162 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
-          </svg>
-        </a>
-        <!-- Twitter/X -->
-        <a href="https://x.com/itzpratham01" target="_blank" title="Twitter / X" style="color:var(--muted); display:inline-block; transition:color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="display:block;">
-            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-          </svg>
-        </a>
-      </div>
-    </div>
-  </div>
+
 
   <div id="overlay-view" style="display:none; padding: 24px; max-width: 1400px; margin: 0 auto;">
     <!-- Header Banner -->
@@ -1456,6 +1433,33 @@
             </ol>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GLOBAL FOOTER -->
+  <div id="global-footer" style="display: none; width: calc(100% - 56px); max-width: 1200px; margin: 40px auto 20px; border-top:1px solid rgba(255,255,255,0.05); padding-top:24px; flex-direction:column; align-items:center; gap:12px; box-sizing:border-box;">
+    <!-- Riot Games Legal Disclaimer -->
+    <div style="font-family:'DM Mono',monospace; font-size:9px; color:var(--muted2); text-align:center; max-width:760px; line-height:1.6; text-transform:uppercase; letter-spacing:0.5px;">
+      VALTRACKER IS NOT ENDORSED BY RIOT GAMES AND DOES NOT REFLECT THE VIEWS OR OPINIONS OF RIOT GAMES OR ANYONE OFFICIALLY INVOLVED IN PRODUCING OR MANAGING VALORANT. VALORANT AND RIOT GAMES ARE TRADEMARKS OR REGISTERED TRADEMARKS OF RIOT GAMES, INC. VALORANT © RIOT GAMES, INC.
+    </div>
+    
+    <!-- Developer socials -->
+    <div style="display:flex; align-items:center; justify-content:center; gap:16px; margin-top:8px;">
+      <span style="font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:800; color:var(--muted); letter-spacing:1px; text-transform:uppercase;">Developed by Pratham</span>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <!-- GitHub -->
+        <a href="https://github.com/itzpratham1" target="_blank" title="GitHub" style="color:var(--muted); display:inline-block; transition:color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="display:block;">
+            <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.646.64.699 1.026 1.592 1.026 2.683 0 3.842-2.337 4.687-4.565 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.579.688.481C19.137 20.162 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+          </svg>
+        </a>
+        <!-- Twitter/X -->
+        <a href="https://x.com/itzpratham01" target="_blank" title="Twitter / X" style="color:var(--muted); display:inline-block; transition:color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="display:block;">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+        </a>
       </div>
     </div>
   </div>
@@ -2226,7 +2230,7 @@ async function fetchAll(){
     const matchData=matchRes.ok?await matchRes.json():null;
     const accountData=accountRes.ok?await accountRes.json():null;
     const mmrHistData=mmrHistRes?.ok?await mmrHistRes.json():null;
-    if(!matchData)throw new Error(`API error — check player name/tag`);
+    if(!matchData)throw new Error(`Invalid Riot ID or player not found. Check spelling, tag and region.`);
 
     if(accountData?.data){
       const a=accountData.data;
@@ -2293,13 +2297,16 @@ async function fetchAll(){
     }else{
       setStatus(`No ${mode} matches found — try a different region`,'error');
       showToast('No data');
+      throw new Error(`No ${mode} matches found for this player in this region.`);
     }
   }catch(e){
     console.error(e);
     setStatus('Error: '+(e.message||'Check region'),'error');
     showToast('Fetch failed');
+    throw e;
+  }finally{
+    btn.disabled=false;btn.textContent='↻ Fetch Stats';
   }
-  btn.disabled=false;btn.textContent='↻ Fetch Stats';
 }
 
 async function prefetchMatchDetails(matchesToFetch) {
@@ -7113,11 +7120,26 @@ async function landingFetch() {
   PLAYER_TAG  = tag;
   window._currentMode = mode;
 
-  // Dismiss landing
-  dismissLanding();
-
-  // Trigger fetch
-  await fetchAll();
+  try {
+    await fetchAll();
+  } catch (err) {
+    console.error("Landing fetch failed:", err);
+    errEl.textContent = err.message || 'Player not found or API error. Check spelling, region & tag.';
+    
+    // Restore landing page view
+    const landing = document.getElementById('landing');
+    if (landing) {
+      landing.classList.remove('hidden');
+      landing.style.display = 'flex';
+    }
+    const tv = document.getElementById('tracker-view');
+    if (tv) tv.style.display = 'none';
+    const gf = document.getElementById('global-footer');
+    if (gf) gf.style.display = 'none';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '▶ View Stats';
+  }
 }
 
 function dismissLanding() {
@@ -12345,9 +12367,118 @@ function copyObsUrl() {
   }
 }
 
+// Search autocomplete functionality
+function initSearchAutocomplete(inputId, tagInputId, dropdownId, regionSelectId) {
+  const input = document.getElementById(inputId);
+  const tagInput = document.getElementById(tagInputId);
+  const dropdown = document.getElementById(dropdownId);
+  let debounceTimeout = null;
+
+  if (!input || !dropdown) return;
+
+  input.addEventListener('input', () => {
+    const val = input.value.trim();
+    clearTimeout(debounceTimeout);
+    
+    if (val.length < 2) {
+      dropdown.classList.remove('open');
+      dropdown.innerHTML = '';
+      return;
+    }
+
+    debounceTimeout = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(val)}`);
+        if (res.ok) {
+          const players = await res.json();
+          renderSearchDropdown(players, dropdown, input, tagInput, regionSelectId);
+        }
+      } catch (e) {
+        console.error("Autocomplete search failed:", e);
+      }
+    }, 250);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.classList.remove('open');
+    }
+  });
+
+  input.addEventListener('focus', () => {
+    if (input.value.trim().length >= 2) {
+      dropdown.classList.add('open');
+    }
+  });
+}
+
+function renderSearchDropdown(players, dropdown, input, tagInput, regionSelectId) {
+  if (!players || players.length === 0) {
+    dropdown.innerHTML = `
+      <div style="padding: 14px; text-align: center; font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace;">
+        No players found in database
+      </div>
+    `;
+    dropdown.classList.add('open');
+    return;
+  }
+
+  let html = '';
+  players.forEach(p => {
+    const rankImg = getRankImgUrl(p.current_tier_patched);
+    const cardUrl = p.card_id ? `https://media.valorant-api.com/playercards/${p.card_id}/smallart.png` : '';
+    const avatarHtml = cardUrl ? `<img src="${cardUrl}">` : '👤';
+    const cleanRank = (p.current_tier_patched || 'Unranked').toUpperCase();
+
+    html += `
+      <div class="search-item" data-name="${p.name}" data-tag="${p.tag}" data-region="${p.region}">
+        <div class="search-item-left">
+          <div class="search-item-card">${avatarHtml}</div>
+          <div class="search-item-details">
+            <span class="search-item-name">${p.name}<span class="search-item-tag">#${p.tag}</span></span>
+            <span class="search-item-meta">${cleanRank}</span>
+          </div>
+        </div>
+        <div class="search-item-right">
+          ${rankImg ? `<img class="search-item-rank-img" src="${rankImg}">` : ''}
+          <span class="search-item-region-badge">${p.region}</span>
+        </div>
+      </div>
+    `;
+  });
+
+  dropdown.innerHTML = html;
+  dropdown.classList.add('open');
+
+  dropdown.querySelectorAll('.search-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const name = item.getAttribute('data-name');
+      const tag = item.getAttribute('data-tag');
+      const region = item.getAttribute('data-region');
+
+      input.value = name;
+      tagInput.value = tag;
+      if (regionSelectId) {
+        const regSelect = document.getElementById(regionSelectId);
+        if (regSelect) regSelect.value = region;
+      }
+
+      dropdown.classList.remove('open');
+
+      if (input.id === 'l-name') {
+        landingFetch();
+      } else {
+        fetchAll();
+      }
+    });
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => { 
   setTimeout(checkUrlParams, 200); 
   setTimeout(initScrollSpy, 500);
+  initSearchAutocomplete('l-name', 'l-tag', 'landing-search-dropdown', 'l-region');
+  initSearchAutocomplete('player-name-input', 'player-tag-input', 'topbar-search-dropdown', 'region-select');
 });
 </script>
 <style>

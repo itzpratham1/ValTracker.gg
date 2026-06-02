@@ -1736,6 +1736,56 @@ def api_meta_comps():
 
 
 
+@app.route("/api/search")
+def search_players():
+    query = request.args.get("q", "").strip()
+    if not query or len(query) < 2:
+        return jsonify([])
+    
+    if "#" in query:
+        parts = query.split("#")
+        name_part = parts[0].strip()
+        tag_part = parts[1].strip()
+        params = {
+            "name": f"ilike.*{name_part}*",
+            "tag": f"ilike.{tag_part}%"
+        }
+    else:
+        params = {
+            "name": f"ilike.*{query}*"
+        }
+    
+    params["limit"] = 10
+    
+    r = supabase_request("GET", "players_cache", params=params)
+    if r and r.status_code == 200:
+        players = r.json()
+        results = []
+        # Prevent duplicates
+        seen = set()
+        for p in players:
+            n = p.get("name")
+            t = p.get("tag")
+            if not n or not t:
+                continue
+            key = f"{n.lower()}#{t.lower()}"
+            if key in seen:
+                continue
+            seen.add(key)
+            results.append({
+                "name": n,
+                "tag": t,
+                "region": p.get("region"),
+                "level": p.get("level"),
+                "card_id": p.get("card_id"),
+                "current_tier_patched": p.get("current_tier_patched") or "Unranked"
+            })
+        return jsonify(results)
+    
+    return jsonify([])
+
+
+
 @app.route("/share/<share_id>", methods=["GET"])
 def get_share_page(share_id):
     meta_filepath = os.path.join(os.path.dirname(__file__), "shared_meta.json")
