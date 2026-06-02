@@ -531,3 +531,96 @@ html,body {
   text-align: center;
   padding: 20px;
 }
+
+/* Player Badge & Tagline Styles */
+.comp-player-badge {
+  font-family: var(--font-title);
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+.comp-player-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 600;
+  margin-left: 2px;
+  text-transform: uppercase;
+}
+.center-player-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 600;
+  margin-left: 2px;
+  text-transform: uppercase;
+}
+.flex-player-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 600;
+  margin-left: 2px;
+  text-transform: uppercase;
+}
+
+/* Glowing RR Progress Bar Styles */
+.comp-rr-bar-container {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  margin-top: 6px;
+  margin-bottom: 2px;
+  width: 120px;
+  overflow: hidden;
+  position: relative;
+}
+.comp-rr-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #ffffff);
+  box-shadow: 0 0 8px var(--accent);
+  border-radius: 2px;
+  transition: width 1s ease-in-out;
+}
+.flex-rr-bar-container {
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 1.5px;
+  margin-top: 4px;
+  margin-bottom: 2px;
+  width: 100px;
+  overflow: hidden;
+  position: relative;
+}
+.flex-rr-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #ffffff);
+  box-shadow: 0 0 6px var(--accent);
+  border-radius: 1.5px;
+  transition: width 1s ease-in-out;
+}
+
+/* Blinking Live Sync Dot Styles */
+.live-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background-color: #10b981;
+  border-radius: 50%;
+  margin-left: 6px;
+  box-shadow: 0 0 8px #10b981;
+  animation: live-blink 1.5s infinite alternate;
+  vertical-align: middle;
+}
+@keyframes live-blink {
+  0% {
+    opacity: 0.4;
+    box-shadow: 0 0 4px rgba(16, 185, 129, 0.4);
+  }
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 1);
+  }
+}

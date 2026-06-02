@@ -57,7 +57,10 @@
     kills: 'Total Kills',
     avg_kills: 'Avg Kills',
     assists: 'Assists',
-    daily_wl: 'Session W/L'
+    daily_wl: 'Session W/L',
+    session_winrate: 'Session Win %',
+    session_kd: 'Session K/D',
+    session_acs: 'Session ACS'
   };
 
   const statIcons = {
@@ -69,7 +72,10 @@
     kills: '💀',
     avg_kills: '💀',
     assists: '🤝',
-    daily_wl: '📊'
+    daily_wl: '📊',
+    session_winrate: '📈',
+    session_kd: '⚔️',
+    session_acs: '🔥'
   };
 
   // State
@@ -197,6 +203,12 @@
     // Today's Session tracking
     let sessionWins = 0;
     let sessionLosses = 0;
+    let sessionKills = 0;
+    let sessionDeaths = 0;
+    let sessionAssists = 0;
+    let sessionACS = 0;
+    let sessionRounds = 0;
+    let sessionMatchesCount = 0;
 
     // Process matches
     matches.forEach(match => {
@@ -231,6 +243,13 @@
 
       if (playedToday) {
         if (won) sessionWins++; else sessionLosses++;
+        sessionKills += kills;
+        sessionDeaths += deaths;
+        sessionAssists += assists;
+        const roundsPlayed = match.metadata?.rounds_played || 1;
+        sessionRounds += roundsPlayed;
+        sessionACS += score;
+        sessionMatchesCount++;
       }
 
       // Aggregate for averages (last 20 matches)
@@ -258,6 +277,12 @@
     const finalWinRate = matchesCount > 0 ? ((totalWins / matchesCount) * 100).toFixed(1) : '0.0';
     const finalAvgACS = totalRounds > 0 ? Math.round(totalACS / totalRounds) : 0;
     const finalAvgKills = (totalKills / matchesCount).toFixed(1);
+
+    // Calculate session averages
+    const sessionWinrate = sessionMatchesCount > 0 ? ((sessionWins / sessionMatchesCount) * 100).toFixed(1) : '—';
+    const sessionKd = sessionMatchesCount > 0 ? (sessionDeaths > 0 ? (sessionKills / sessionDeaths).toFixed(2) : sessionKills.toFixed(2)) : '—';
+    const sessionAcs = sessionRounds > 0 ? Math.round(sessionACS / sessionRounds) : '—';
+    const sessionAvgKills = sessionMatchesCount > 0 ? (sessionKills / sessionMatchesCount).toFixed(1) : '—';
 
     // Calculate Win / Loss Streak
     let winStreak = 0;
@@ -290,6 +315,25 @@
     else if (valIndex >= 65) { perfGrade = 'A'; gradeColor = '#60a5fa'; }
     else if (valIndex >= 50) { perfGrade = 'B'; gradeColor = '#34d399'; }
 
+    // Session Performance Index
+    let sessionValIndex = '—';
+    let sessionPerfGrade = '—';
+    let sessionGradeColor = 'rgba(255, 255, 255, 0.4)';
+    if (sessionMatchesCount > 0) {
+      const sKdNum = parseFloat(sessionKd) || 0.0;
+      const sWrNum = parseFloat(sessionWinrate) || 0.0;
+      const sAcsNum = parseInt(sessionAcs) || 0;
+      let sValIndex = Math.round((sKdNum * 40) + (sAcsNum * 0.15) + (sWrNum * 0.25));
+      sValIndex = Math.max(0, Math.min(100, sValIndex));
+      sessionValIndex = sValIndex;
+
+      if (sValIndex >= 85) { sessionPerfGrade = 'S+'; sessionGradeColor = '#fbbf24'; }
+      else if (sValIndex >= 75) { sessionPerfGrade = 'S'; sessionGradeColor = '#a78bfa'; }
+      else if (sValIndex >= 65) { sessionPerfGrade = 'A'; sessionGradeColor = '#60a5fa'; }
+      else if (sValIndex >= 50) { sessionPerfGrade = 'B'; sessionGradeColor = '#34d399'; }
+      else { sessionPerfGrade = 'C'; sessionGradeColor = '#94a3b8'; }
+    }
+
     return {
       currentTierName,
       currentTierId,
@@ -308,6 +352,14 @@
       valIndex,
       perfGrade,
       gradeColor,
+      sessionWinrate,
+      sessionKd,
+      sessionAcs,
+      sessionAvgKills,
+      sessionAssists,
+      sessionValIndex,
+      sessionPerfGrade,
+      sessionGradeColor,
       recentGames: recentGames.slice(0, 10) // 10 avatars
     };
   }
@@ -351,7 +403,7 @@
         <div class="comp-overlay">
           <!-- Top Row: Recent Form -->
           <div class="comp-recent-games">
-            <span class="comp-recent-title">Recent Form</span>
+            <span class="comp-player-badge">${playerName}<span class="comp-player-tag">#${playerTag}</span></span>
             <div class="comp-avatars-row">${avatarsHtml}</div>
           </div>
 
@@ -364,6 +416,9 @@
               <div style="display:flex; align-items:center;">
                 <div class="comp-rank-name">${stats.currentTierName}</div>
                 ${streakHtml}
+              </div>
+              <div class="comp-rr-bar-container">
+                <div class="comp-rr-bar-fill" style="width: ${Math.min(100, Math.max(0, stats.currentRR))}%"></div>
               </div>
               <div class="comp-rank-rr">${stats.currentRR} RR</div>
             </div>
@@ -385,7 +440,7 @@
 
           <!-- Bottom Footer -->
           <div class="comp-brand-footer">
-            <div class="comp-brand-logo">Val<span>Tracker</span></div>
+            <div class="comp-brand-logo">Val<span>Tracker</span> <span class="live-dot" title="Live Synced"></span></div>
             <div class="comp-brand-text">Valorant Live stream hud</div>
           </div>
         </div>
@@ -405,13 +460,13 @@
       html = `
         <div class="center-overlay">
           <!-- Subtle top brand watermark -->
-          <div class="center-brand-tag">Val<span>Tracker</span></div>
+          <div class="center-brand-tag">Val<span>Tracker</span> <span class="live-dot" title="Live Synced"></span></div>
 
           <!-- Left: Rank & Player info -->
           <div class="center-left-block">
             <img class="center-rank-icon" src="${rankIcon}" alt="${stats.currentTierName}">
             <div class="center-player-info">
-              <span class="center-player-name" style="display:flex; align-items:center;">${playerName}${streakHtml}</span>
+              <span class="center-player-name" style="display:flex; align-items:center;">${playerName}<span class="center-player-tag">#${playerTag}</span>${streakHtml}</span>
               <span class="center-player-rank">${stats.currentTierName}</span>
             </div>
           </div>
@@ -421,15 +476,15 @@
           <!-- Right: Grid of Stats -->
           <div class="center-right-block">
             <div class="center-stat-box">
-              <span class="center-stat-val">${stats.winrate}%</span>
+              <span class="center-stat-val">${stats.sessionWinrate}${stats.sessionWinrate !== '—' ? '%' : ''}</span>
               <span class="center-stat-lbl">Win %</span>
             </div>
             <div class="center-stat-box">
-              <span class="center-stat-val">${stats.kd}</span>
+              <span class="center-stat-val">${stats.sessionKd}</span>
               <span class="center-stat-lbl">K/D Ratio</span>
             </div>
             <div class="center-stat-box">
-              <span class="center-stat-val" style="color: ${stats.gradeColor}; text-shadow: 0 0 8px ${stats.gradeColor}40;">${stats.perfGrade}</span>
+              <span class="center-stat-val" style="color: ${stats.sessionGradeColor}; text-shadow: 0 0 8px ${stats.sessionGradeColor}40;">${stats.sessionPerfGrade}</span>
               <span class="center-stat-lbl">Val Index</span>
             </div>
             <div class="center-stat-box">
@@ -473,6 +528,18 @@
             val = 'None';
             icon = '🔥';
           }
+        } else if (s === 'session_winrate') {
+          label = 'Session Win %';
+          val = stats.sessionWinrate !== '—' ? `${stats.sessionWinrate}%` : '—';
+          icon = '📈';
+        } else if (s === 'session_kd') {
+          label = 'Session K/D';
+          val = stats.sessionKd;
+          icon = '⚔️';
+        } else if (s === 'session_acs') {
+          label = 'Session ACS';
+          val = stats.sessionAcs;
+          icon = '🔥';
         }
 
         if (!label || val === undefined) return;
@@ -498,7 +565,10 @@
           <div class="flex-overlay-header">
             <img class="flex-rank-icon" src="${rankIcon}" alt="${stats.currentTierName}">
             <div class="flex-header-text">
-              <span class="flex-player-name">${playerName}</span>
+              <span class="flex-player-name">${playerName}<span class="flex-player-tag">#${playerTag}</span></span>
+              <div class="flex-rr-bar-container">
+                <div class="flex-rr-bar-fill" style="width: ${Math.min(100, Math.max(0, stats.currentRR))}%"></div>
+              </div>
               <span class="flex-player-rank">${stats.currentRR} RR</span>
             </div>
           </div>
@@ -508,7 +578,7 @@
 
           <!-- Footer -->
           <div class="flex-brand-footer">
-            <div class="comp-brand-logo">Val<span>Tracker</span></div>
+            <div class="comp-brand-logo">Val<span>Tracker</span> <span class="live-dot" title="Live Synced"></span></div>
           </div>
         </div>
       `;
