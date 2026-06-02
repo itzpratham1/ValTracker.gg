@@ -4973,7 +4973,7 @@ window.openShareMatchModal = async function(idx, event) {
     const nameWeight = isMe ? 'bold' : 'normal';
 
     return `
-      <tr style="background:${rowBg}; border:${rowBorder}; font-size:9.5px; border-radius:4px; font-family:'DM Mono',monospace; height:24px; box-shadow:${isMe ? '0 0 10px rgba(62, 207, 142, 0.15)' : 'none'};">
+      <tr style="background:${rowBg}; border:${rowBorder}; font-size:9.5px; border-radius:4px; font-family:'DM Mono',monospace; height:21px; box-shadow:${isMe ? '0 0 10px rgba(62, 207, 142, 0.15)' : 'none'};">
         <td style="padding:2px 8px; border-radius:4px 0 0 4px; border-left:${isMe ? '3px solid #3ecf8e' : 'none'};">
           <div style="display:flex; align-items:center; gap:5px;">
             ${charIcon ? `<img src="${charIcon}" style="width:14px; height:14px; border-radius:50%; border:1px solid rgba(255,255,255,0.1);">` : ''}
@@ -4994,7 +4994,7 @@ window.openShareMatchModal = async function(idx, event) {
     const rowBorder = '1px solid rgba(255, 255, 255, 0.015)';
 
     return `
-      <tr style="background:${rowBg}; border:${rowBorder}; font-size:9.5px; border-radius:4px; font-family:'DM Mono',monospace; height:24px;">
+      <tr style="background:${rowBg}; border:${rowBorder}; font-size:9.5px; border-radius:4px; font-family:'DM Mono',monospace; height:21px;">
         <td style="padding:2px 8px; border-radius:4px 0 0 4px;">
           <div style="display:flex; align-items:center; gap:5px;">
             ${charIcon ? `<img src="${charIcon}" style="width:14px; height:14px; border-radius:50%; border:1px solid rgba(255,255,255,0.1);">` : ''}
@@ -5102,7 +5102,7 @@ window.openShareMatchModal = async function(idx, event) {
 
   const captureContainer = document.getElementById('match-export-container');
   captureContainer.innerHTML = `
-    <div id="match-capture-target" style="width: 900px; height: 520px; background: #050508; border: 1.5px solid ${accentColor}40; border-radius: 20px; color: #fff; font-family:'Barlow Condensed', sans-serif; box-sizing:border-box; position:relative; overflow:hidden; box-shadow:0 25px 60px rgba(0,0,0,0.95), 0 0 20px ${accentColor}10; display:flex; flex-direction:column; justify-content:space-between; padding:24px;">
+    <div id="match-capture-target" style="width: 900px; height: 535px; background: #050508; border: 1.5px solid ${accentColor}40; border-radius: 20px; color: #fff; font-family:'Barlow Condensed', sans-serif; box-sizing:border-box; position:relative; overflow:hidden; box-shadow:0 25px 60px rgba(0,0,0,0.95), 0 0 20px ${accentColor}10; display:flex; flex-direction:column; justify-content:space-between; padding:24px;">
       
       <!-- Diagonal Watermark Stripe -->
       <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:2; overflow:hidden;">
@@ -5121,7 +5121,7 @@ window.openShareMatchModal = async function(idx, event) {
       <div style="position:absolute; left:0; top:0; bottom:0; width:4px; background:${accentColor}; box-shadow: 1px 0 12px ${accentShadow}; border-radius:20px 0 0 20px; z-index:4;"></div>
 
       <!-- Top Header Row -->
-      <div style="position:relative; z-index:3; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:10px; margin-bottom:10px;">
+      <div style="position:relative; z-index:3; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:8px; margin-bottom:8px;">
         <div style="display:flex; align-items:center; gap:12px;">
           <!-- ValTracker Logo -->
           <svg viewBox="0 0 24 24" style="width:24px; height:24px; fill:none; filter: drop-shadow(0 0 8px rgba(255, 70, 85, 0.6));">
@@ -5160,7 +5160,7 @@ window.openShareMatchModal = async function(idx, event) {
       <div style="position:relative; z-index:3; flex-grow:1; display:flex; gap:24px; align-items:stretch; padding-bottom:10px;">
         
         <!-- Left Performance Column -->
-        <div style="width:390px; display:flex; flex-direction:column; gap:10px; justify-content:space-between;">
+        <div style="width:390px; display:flex; flex-direction:column; gap:8px; justify-content:space-between;">
           <!-- Profile + Title Card -->
           <div style="display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:10px; padding:10px 12px;">
             <!-- Sized-down framed agent avatar slot -->
@@ -5248,7 +5248,7 @@ window.openShareMatchModal = async function(idx, event) {
             <span style="font-family:'DM Mono',monospace; font-size:8px; color:rgba(255,255,255,0.3);">ALLIED VS ENEMY ROSTER</span>
           </div>
 
-          <table style="width:100%; border-collapse:separate; border-spacing:0 4px;">
+          <table style="width:100%; border-collapse:separate; border-spacing:0 2.5px;">
             <thead>
               <tr style="font-family:'Barlow Condensed',sans-serif; font-size:9.5px; font-weight:900; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:0.5px; height:18px;">
                 <th style="text-align:left; padding:0 8px;">Player / Character</th>

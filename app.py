@@ -1789,7 +1789,7 @@ def get_share_page(share_id):
   <meta property="og:image:secure_url" content="{image_url}">
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="900">
-  <meta property="og:image:height" content="520">
+  <meta property="og:image:height" content="535">
   <meta property="og:site_name" content="ValTracker.gg">
 
   <style>
