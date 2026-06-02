@@ -28,6 +28,7 @@
 /* ── CORE RESETS & GLOBAL SCROLL ── */
 html {
   scroll-behavior: smooth;
+  background-color: #050508;
 }
 * {
   margin: 0;
