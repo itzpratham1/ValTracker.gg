@@ -8,7 +8,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M2,2 L10.5,22 L13.5,22 L22,2 L17.5,2 L12,13 L6.5,2 Z' fill='%23ff4655'/%3E%3Cpolygon points='12,2 15.5,6 12,10 8.5,6' fill='%23e8ff47'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
-<link rel="stylesheet" href="index.css?v=12.20">
+<link rel="stylesheet" href="index.css?v=12.21">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 </head>
@@ -164,6 +164,12 @@
       <input class="player-input" id="player-name-input" type="text" placeholder="Name" value="" autocomplete="off" spellcheck="false">
       <span class="player-input-hash">#</span>
       <input class="player-input player-input-tag" id="player-tag-input" type="text" placeholder="TAG" value="" maxlength="8" autocomplete="off" spellcheck="false">
+      <button class="topbar-search-submit-btn" onclick="fetchAll()" title="Search">
+        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </button>
       <div id="topbar-search-dropdown" class="search-dropdown"></div>
     </div>
   </div>
@@ -1542,6 +1548,10 @@ function getPlayerList(match) {
 // API_KEY has been securely moved to the backend
 let PLAYER_NAME = '';
 let PLAYER_TAG  = '';
+let LAST_SUCCESSFUL_NAME = '';
+let LAST_SUCCESSFUL_TAG = '';
+let LAST_SUCCESSFUL_REGION = '';
+let LAST_SUCCESSFUL_MODE = '';
 
 const ACTS_TIMELINE = {
   'v26a3': { name: 'V26 Act 3', start: new Date('2026-04-29T00:00:00Z').getTime(), end: new Date('2026-06-24T00:00:00Z').getTime() },
@@ -2105,6 +2115,12 @@ window.addEventListener('DOMContentLoaded', async () => {
       PLAYER_TAG = savedProfile.tag;
       window._currentMode = savedProfile.mode || 'competitive';
       
+      // Initialize last successful lookup state on page load
+      LAST_SUCCESSFUL_NAME = savedProfile.name;
+      LAST_SUCCESSFUL_TAG = savedProfile.tag;
+      LAST_SUCCESSFUL_REGION = savedProfile.region || 'ap';
+      LAST_SUCCESSFUL_MODE = savedProfile.mode || 'competitive';
+      
       const mmrKey = `vt_mmr_${PLAYER_NAME.toLowerCase()}_${PLAYER_TAG.toLowerCase()}`;
       try { window._rawMmrData = JSON.parse(localStorage.getItem(mmrKey)); } catch(e) {}
       
@@ -2293,6 +2309,13 @@ async function fetchAll(){
       showToast(`${totalCount} matches total ✓`);
       addToRecentSearches(PLAYER_NAME, PLAYER_TAG, region, mode);
       renderActiveBookmarkButton();
+      
+      // Store successful lookup parameters
+      LAST_SUCCESSFUL_NAME = PLAYER_NAME;
+      LAST_SUCCESSFUL_TAG = PLAYER_TAG;
+      LAST_SUCCESSFUL_REGION = region;
+      LAST_SUCCESSFUL_MODE = mode;
+      
       dismissLanding();
     }else{
       setStatus(`No ${mode} matches found — try a different region`,'error');
@@ -2303,6 +2326,29 @@ async function fetchAll(){
     console.error(e);
     setStatus('Error: '+(e.message||'Check region'),'error');
     showToast('Fetch failed');
+    
+    // Revert inputs and variables to last successful profile if we had one
+    if (LAST_SUCCESSFUL_NAME) {
+      PLAYER_NAME = LAST_SUCCESSFUL_NAME;
+      PLAYER_TAG  = LAST_SUCCESSFUL_TAG;
+      window._currentMode = LAST_SUCCESSFUL_MODE;
+      
+      const pNameInput = document.getElementById('player-name-input');
+      const pTagInput  = document.getElementById('player-tag-input');
+      const regSelect  = document.getElementById('region-select');
+      const modeSelect = document.getElementById('mode-select');
+      
+      if (pNameInput) pNameInput.value = LAST_SUCCESSFUL_NAME;
+      if (pTagInput)  pTagInput.value  = LAST_SUCCESSFUL_TAG;
+      if (regSelect)  regSelect.value  = LAST_SUCCESSFUL_REGION;
+      if (modeSelect) modeSelect.value = LAST_SUCCESSFUL_MODE;
+      
+      updateHeroName();
+      applyModeUI();
+      updateActivePill();
+      renderActiveBookmarkButton();
+    }
+    
     throw e;
   }finally{
     btn.disabled=false;btn.textContent='↻ Fetch Stats';
@@ -7194,7 +7240,7 @@ function dismissLanding() {
     }
   }
   const fb = document.getElementById('fetch-btn');
-  if (fb) fb.style.display = window.innerWidth > 800 ? 'inline-block' : 'none';
+  if (fb) fb.style.display = ''; // Let CSS manage visibility
   const h2hb = document.getElementById('h2h-trigger-btn');
   if (h2hb) h2hb.style.display = 'inline-block';
   
@@ -12692,67 +12738,6 @@ body::after {
   }
 }
 
-.filter-item {
-  display: flex;
-  align-items: center;
-  gap: 4px !important;
-  padding: 4px 5px !important;
-  cursor: pointer;
-}
-
-.filter-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.7;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.filter-icon-svg {
-  color: var(--accent);
-  width: 12px !important;
-  height: 12px !important;
-  filter: drop-shadow(0 0 4px rgba(250, 68, 84, 0.25));
-}
-
-.filter-item:hover .filter-icon {
-  opacity: 1;
-  transform: scale(1.05);
-}
-
-.chevron-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.4;
-  color: var(--muted);
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.chevron-icon svg {
-  width: 8px !important;
-  height: 8px !important;
-}
-
-.filter-item:hover .chevron-icon {
-  opacity: 0.8;
-  color: var(--accent);
-  transform: translateY(0.5px);
-}
-
-.filter-divider {
-  width: 1px;
-  height: 16px;
-  background: rgba(255,255,255,0.08);
-  margin: 0 2px !important;
-}
-
-#region-select { min-width: 34px !important; }
-
-#mode-select { min-width: 72px !important; }
-
-#act-select { min-width: 72px !important; }
-
 .card, .agent-bento, .map-card-bento, .impact-bento, .match-row, .match-panel, .hero-rank-block, .player-banner-card, .ai-card, .deep-trigger-card, .deep-card, .live-banner, .stat-modal {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -12776,10 +12761,6 @@ body::after {
   transform: scale(1.08); 
 }
 
-.fetch-btn { box-shadow: 0 0 15px rgba(250, 68, 84, 0.3); transition: all 0.2s ease; }
-
-.fetch-btn:hover { box-shadow: 0 0 25px rgba(250, 68, 84, 0.5); transform: translateY(-2px) scale(1.02); }
-
 .wr-fill, .sb-kd-fill { background: linear-gradient(90deg, #ff5757, var(--accent)); box-shadow: 0 0 10px rgba(250, 68, 84, 0.4); }
 
 .wlv, .ai-stat-pill-val.good, .mr-result.win { text-shadow: 0 0 12px rgba(62,207,142,0.4); }
@@ -12792,90 +12773,11 @@ body::after {
 
 .map-card-bento:hover .map-splash { transform: scale(1.08); opacity: 1; filter: saturate(1.3) brightness(0.8); }
 
-/* ── COMPACT DESKTOP & TABLET SCALING (801PX TO 1350PX) ── */
-@media (max-width: 1350px) and (min-width: 801px) {
-  .topbar {
-    padding: 10px 16px !important;
-    gap: 8px !important;
-  }
-  .topbar-left {
-    gap: 12px !important;
-  }
-  .logo {
-    font-size: 19px !important;
-    letter-spacing: 2px !important;
-  }
-  .topbar-tab {
-    padding: 5px 8px !important;
-    font-size: 10px !important;
-  }
-  .player-search-wrap {
-    gap: 4px !important;
-  }
-  .player-input {
-    width: 110px !important;
-    font-size: 11px !important;
-    padding: 5px 8px !important;
-  }
-  .player-input-tag {
-    width: 50px !important;
-    font-size: 11px !important;
-  }
-  .copy-riot-btn#copy-riot-btn {
-    display: none !important;
-  }
-  .player-active-pill {
-    padding: 3px 8px 3px 4px !important;
-    font-size: 11px !important;
-    gap: 6px !important;
-    max-width: 180px !important;
-  }
-  .active-pill-name {
-    max-width: 100px !important;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .topbar-filter-capsule {
-    padding: 2px 8px !important;
-  }
-  .filter-item {
-    padding: 4px 4px !important;
-    gap: 4px !important;
-  }
-  .topbar-filter-capsule select {
-    font-size: 10px !important;
-    padding: 4px 2px !important;
-  }
-  #region-select {
-    min-width: 36px !important;
-  }
-  #mode-select {
-    min-width: 74px !important;
-  }
-  #act-select {
-    min-width: 74px !important;
-  }
-  .fetch-btn {
-    padding: 0 12px !important;
-    height: 32px !important;
-    font-size: 11px !important;
-    white-space: nowrap !important;
-    box-sizing: border-box !important;
-  }
-  
-  /* Hide decorative divider on smaller screens */
-  #tracker-divider-1, #tracker-divider-2 {
-    display: none !important;
-  }
-}
-
 /* ═══════════════════════════════════════════════════════
    COMPREHENSIVE MOBILE & TABLET RESPONSIVE OVERRIDES
    Breakpoints:  ≤800px (tablet+mobile)  |  ≤480px (phone)
 ═══════════════════════════════════════════════════════ */
 @media(max-width: 800px) {
-
   /* Premium stat row responsive layout: 3 cols on tablet/large mobile */
   .panel-stat-row {
     grid-template-columns: repeat(3, 1fr) !important;
@@ -12888,7 +12790,6 @@ body::after {
   .ps-item .psv {
     font-size: 18px !important;
   }
-
   /* ── BASE RESET ── */
   html, body {
     overflow-x: clip;
@@ -12900,165 +12801,10 @@ body::after {
   }
   body::after { width: 150vw; height: 150vw; top: -15%; left: -25%; filter: blur(70px); }
   .glass-orb-2 { width: 180vw; height: 180vw; bottom: -20%; right: -30%; filter: blur(80px); border-radius: 50%; }
-
-  /* ── TOPBAR ── */
-  .topbar {
-    display: grid !important;
-    grid-template-columns: 1fr auto !important;
-    padding: 10px 14px !important;
-    gap: 8px !important;
-    width: 100% !important;
-    height: auto !important;
-    box-sizing: border-box !important;
-  }
-  .topbar-left {
-    display: contents !important;
-  }
-  .logo {
-    grid-column: 1 !important;
-    grid-row: 1 !important;
-    font-size: 16px !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 4px !important;
-    overflow: visible !important;
-    white-space: nowrap !important;
-    order: unset !important;
-    margin-left: 0 !important;
-  }
-  .logo img, .logo svg { width: 17px !important; height: 17px !important; flex-shrink: 0 !important; }
-  .player-active-pill {
-    grid-column: 2 !important;
-    grid-row: 1 !important;
-    order: unset !important;
-    margin-left: 0 !important;
-    font-size: 11px !important;
-    padding: 3px 6px 3px 4px !important;
-    border-radius: 20px !important;
-    max-width: 145px !important;
-    flex-shrink: 1 !important;
-    min-width: 0 !important;
-    gap: 3px !important;
-    justify-self: end !important;
-  }
-  .player-search-wrap {
-    grid-column: 2 !important;
-    grid-row: 1 !important;
-    order: unset !important;
-    width: auto !important;
-    max-width: 145px !important;
-    min-width: 0 !important;
-    gap: 2px !important;
-    margin-top: 0 !important;
-    box-sizing: border-box !important;
-    justify-self: end !important;
-  }
-  .mobile-filter-toggle {
-    grid-column: 1 / -1 !important;
-    grid-row: 2 !important;
-    order: unset !important;
-    justify-self: start !important;
-    align-items: center;
-    gap: 4px;
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    font-weight: 700;
-    color: #0d0d0f;
-    background: var(--accent);
-    border: none;
-    border-radius: 20px;
-    padding: 4px 10px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 0 10px rgba(250, 68, 84, 0.25);
-    margin-left: 0 !important;
-    flex-shrink: 0 !important;
-  }
-  .mobile-filter-toggle:active { transform: scale(0.95); }
-  .active-pill-avatar-wrap { width: 18px !important; height: 18px !important; }
-  .active-pill-name {
-    max-width: 70px !important;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 11px !important;
-  }
-  .active-pill-btn { padding: 2px !important; }
-  .active-pill-btn svg { width: 10px !important; height: 10px !important; }
-  .player-input { flex: 1; font-size: 11px !important; padding: 4px 6px !important; width: 80px !important; }
-  .player-input-tag { width: 40px !important; flex: none; font-size: 11px !important; }
-  .topbar-tabs {
-    grid-column: 1 / -1 !important;
-    grid-row: 4 !important;
-    order: unset !important;
-    display: flex !important;
-    overflow-x: auto !important;
-    white-space: nowrap !important;
-    -webkit-overflow-scrolling: touch !important;
-    scrollbar-width: none !important;
-    width: 100% !important;
-    padding: 4px 0 !important;
-    gap: 6px !important;
-    background: transparent !important;
-    border: none !important;
-    box-sizing: border-box !important;
-  }
-  .topbar-tabs::-webkit-scrollbar { display: none !important; }
-  .topbar-tab {
-    flex: 0 0 auto !important;
-    font-size: 10px !important;
-    padding: 6px 10px !important;
-    border-radius: 6px !important;
-    background: rgba(255,255,255,0.02) !important;
-    border: 1px solid rgba(255,255,255,0.04) !important;
-  }
-  .topbar-tab.active {
-    background: rgba(250, 68, 84, 0.1) !important;
-    color: var(--accent) !important;
-    border: 1px solid rgba(250, 68, 84, 0.25) !important;
-  }
-  .topbar-right { display: none !important; }
-  .topbar-right.mobile-expanded {
-    grid-column: 1 / -1 !important;
-    grid-row: 3 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    width: 100% !important;
-    gap: 8px !important;
-    animation: slideDownMobile 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
   @keyframes slideDownMobile {
     from { opacity: 0; transform: translateY(-8px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .topbar-right.mobile-expanded .topbar-filter-capsule {
-    display: flex !important;
-    width: 100% !important;
-    background: rgba(20, 20, 22, 0.85) !important;
-    border: 1px solid var(--border) !important;
-    border-radius: 12px !important;
-    padding: 4px 8px !important;
-    flex-direction: row !important;
-    justify-content: space-between !important;
-    box-sizing: border-box !important;
-  }
-  .topbar-right.mobile-expanded .filter-item { flex: 1 !important; justify-content: center !important; padding: 4px 6px !important; }
-  .topbar-right.mobile-expanded .filter-icon { font-size: 10px !important; }
-  .topbar-right.mobile-expanded select { width: 100% !important; text-align: center !important; font-size: 10px !important; padding: 4px 0 !important; }
-  .topbar-right.mobile-expanded .fetch-btn {
-    width: 100% !important;
-    padding: 10px !important;
-    font-size: 11px !important;
-    font-weight: 700 !important;
-    border-radius: 8px !important;
-    background: var(--accent) !important;
-    color: #0d0d0f !important;
-    letter-spacing: 1px !important;
-    margin-top: 4px !important;
-  }
-  .topbar-divider { display: none; }
-  .copy-riot-btn#copy-riot-btn { display: none; }
-
   /* ── ACTION BAR ── */
   .action-bar {
     padding: 6px 10px !important;
@@ -13076,24 +12822,19 @@ body::after {
     font-size: 11px !important;
     padding: 6px 9px !important;
   }
-
   /* ── MAIN LAYOUT ── */
   .main { display: flex !important; flex-direction: column !important; }
-
   /* ── HERO / PLAYER HEADER ── */
   .hero-title { font-size: clamp(26px, 8vw, 36px); line-height: 1.1; margin-bottom: 4px; }
   .hero-rank-name { font-size: 16px; }
-
   /* ── TRACKER STATS GRIDS ── */
   .agent-stats-row { grid-template-columns: repeat(3, 1fr) !important; }
   .map-stats-mini { grid-template-columns: repeat(2, 1fr) !important; }
-
   /* Stat grids with inline 5-column layout */
   [style*="grid-template-columns:repeat(5,1fr)"],
   [style*="grid-template-columns: repeat(5, 1fr)"] {
     grid-template-columns: repeat(3, 1fr) !important;
   }
-
   /* ── MATCH ROW ── */
   .match-row {
     grid-template-columns: 46px 1fr auto 24px;
@@ -13101,14 +12842,11 @@ body::after {
   }
   .mr-agent-name { max-width: 70px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 14px; }
   .mr-result { padding: 12px 0; font-size: 12px; }
-
   /* ── SCOREBOARD ── */
   .scoreboard-wrap { display: block; overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch; }
   .scoreboard { min-width: 500px; }
-
   /* ── LIVE CHIP ── */
   .live-chip { font-size: 9px !important; padding: 3px 8px !important; }
-
   /* ══════════════════════════════════════════
      ESPORTS SECTION
   ══════════════════════════════════════════ */
@@ -13121,19 +12859,16 @@ body::after {
     z-index: 9999 !important;
     border-bottom: 1px solid var(--border) !important;
   }
-
   /* Overview split grid → stack */
   #esp-sec-overview > div[style*="grid-template-columns: 1.8fr 1fr"] {
     grid-template-columns: 1fr !important;
     gap: 20px !important;
   }
-
   /* Schedule grid → stack */
   .esp-schedule-grid {
     grid-template-columns: 1fr !important;
     gap: 16px !important;
   }
-
   /* Match Cards */
   .esp-match-card {
     display: grid !important;
@@ -13159,7 +12894,6 @@ body::after {
   .esp-match-info > .esp-tourney { font-size: 10px !important; color: var(--muted) !important; text-align: center !important; max-width: 90% !important; line-height: 1.2 !important; }
   .esp-status { font-size: 11px !important; padding: 2px 6px !important; border-radius: 4px !important; margin: 2px 0 !important; }
   .esp-meta { font-size: 9px !important; color: var(--muted2) !important; }
-
   /* Match card VLR/Highlights buttons on mobile */
   .esp-match-info > div[style*="display:flex"] {
     flex-wrap: wrap !important;
@@ -13170,7 +12904,6 @@ body::after {
     font-size: 9px !important;
     padding: 4px 8px !important;
   }
-
   .esp-team {
     grid-column: 1 !important;
     grid-row: 2 !important;
@@ -13195,17 +12928,6 @@ body::after {
     width: 100% !important;
     padding: 0 !important;
   }
-  .esp-team > img,
-  .esp-team > .team-logo-fallback,
-  .esp-tlogo-wrap,
-  .esp-tlogo-wrap > img,
-  .esp-tlogo-wrap > .team-logo-fallback {
-    order: 1 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 32px !important;
-    height: 32px !important;
-  }
   .esp-tname {
     order: 2 !important;
     font-size: 14px !important;
@@ -13229,12 +12951,10 @@ body::after {
     display: block !important;
   }
   .esp-team.t-right .esp-tscore { text-align: center !important; margin: 0 auto !important; }
-
   /* Esports Teams section */
   .esp-teams-layout { grid-template-columns: 1fr !important; gap: 16px !important; }
   .esp-sidebar { max-height: 260px !important; overflow-y: auto !important; }
   .esp-team-dashboard { grid-template-columns: 1fr !important; }
-
   /* VCT Modal */
   #vct-modal-winners { grid-template-columns: 1fr !important; gap: 10px !important; }
   #vct-modal-tabs {
@@ -13244,7 +12964,6 @@ body::after {
     padding-bottom: 8px !important;
   }
   .vct-modal-tab-btn { flex-shrink: 0 !important; }
-
   /* ══════════════════════════════════════════
      SKINS STORE SECTION
   ══════════════════════════════════════════ */
@@ -13252,39 +12971,33 @@ body::after {
   #store-view {
     padding: 14px !important;
   }
-
   /* Store header banner */
   #store-view > div:first-child {
     padding: 16px !important;
   }
   #store-view h2 { font-size: clamp(20px, 6vw, 28px) !important; }
   #store-view p { font-size: 12px !important; }
-
   /* Store grid → single column (already 1fr but enforce on mobile) */
   .store-grid {
     grid-template-columns: 1fr !important;
     gap: 20px !important;
   }
-
   /* Bundle item cards grid — allow tighter wrap */
   #store-featured-container [style*="grid-template-columns:repeat(auto-fill, minmax(130px, 1fr))"],
   [style*="grid-template-columns:repeat(auto-fill, minmax(130px, 1fr))"] {
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
     gap: 8px !important;
   }
-
   /* Skin catalog grid — tighter on mobile */
   #skin-catalog-grid {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
     gap: 12px !important;
   }
-
   /* Skin search/filter row → wrap */
   #store-view [style*="display: flex"][style*="gap:12px"],
   #store-view [style*="display:flex"][style*="gap:12px"] {
     flex-wrap: wrap !important;
   }
-
   /* ══════════════════════════════════════════
      META COMP ARCHITECT SECTION
   ══════════════════════════════════════════ */
@@ -13302,23 +13015,19 @@ body::after {
   }
   .dc-slot-avatar { width: 40px !important; height: 40px !important; }
   .dc-slot-name { font-size: 10px !important; max-width: 70px !important; }
-
   /* Agent picker grid */
   #dc-agent-list {
     grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)) !important;
     gap: 8px !important;
   }
-
   /* Insight cards */
   .dc-insight-card { padding: 8px 10px !important; font-size: 10px !important; }
-
   /* Stats grid in meta comp → 2 cols */
   [style*="grid-template-columns:1fr 1fr"][style*="gap:12px"],
   [style*="grid-template-columns: 1fr 1fr"][style*="gap:10px"],
   [style*="grid-template-columns: 1fr 1fr"][style*="gap:16px"] {
     grid-template-columns: 1fr !important;
   }
-
   /* ══════════════════════════════════════════
      MODALS — GLOBAL RULES
   ══════════════════════════════════════════ */
@@ -13333,21 +13042,18 @@ body::after {
     padding: 16px !important;
     box-sizing: border-box !important;
   }
-
   /* H2H player input grid → stack */
   #h2h-modal [style*="grid-template-columns:1fr 1fr"],
   #h2h-modal [style*="grid-template-columns: 1fr 1fr"] {
     grid-template-columns: 1fr !important;
     gap: 12px !important;
   }
-
   /* H2H quick scroll */
   .h2h-quick-scroll {
     overflow-x: auto !important;
     flex-wrap: nowrap !important;
     -webkit-overflow-scrolling: touch !important;
   }
-
   /* Leaderboard modal */
   #leaderboard-modal .card {
     max-width: 96vw !important;
@@ -13355,7 +13061,6 @@ body::after {
     height: 85vh !important;
   }
   #leaderboard-modal .scoreboard { min-width: 400px; font-size: 12px; }
-
   /* Session modal */
   #session-card-export {
     max-width: 96vw !important;
@@ -13363,7 +13068,6 @@ body::after {
     padding: 16px !important;
     box-sizing: border-box !important;
   }
-
   /* Bookmarks modal */
   #bookmarks-modal .card {
     max-width: 96vw !important;
@@ -13371,7 +13075,6 @@ body::after {
     padding: 16px !important;
     box-sizing: border-box !important;
   }
-
   /* Feedback modal */
   #feedback-modal .card {
     max-width: 96vw !important;
@@ -13379,7 +13082,6 @@ body::after {
     padding: 16px !important;
     box-sizing: border-box !important;
   }
-
   /* Feedback trigger button — move to bottom-right to avoid overlap */
   #feedback-trigger-btn {
     bottom: 16px !important;
@@ -13387,7 +13089,6 @@ body::after {
     padding: 8px 12px !important;
     font-size: 10px !important;
   }
-
   /* Back-to-top button */
   #back-to-top {
     bottom: 16px !important;
@@ -13396,7 +13097,6 @@ body::after {
     height: 38px !important;
     font-size: 14px !important;
   }
-
   /* ══════════════════════════════════════════
      GENERIC UTILITY OVERRIDES
   ══════════════════════════════════════════ */
@@ -13405,27 +13105,22 @@ body::after {
   .esports-section, #store-view > *, #meta-view > * {
     box-sizing: border-box !important;
   }
-
   /* Prevent overflow from inline fixed widths */
   .card {
     box-sizing: border-box !important;
     max-width: 100% !important;
   }
-
   /* Section labels */
   .section-label { margin-bottom: 12px !important; }
   .sl-text { font-size: clamp(11px, 3vw, 14px) !important; }
-
   /* VLR btn layout on narrow */
   .esp-btn.vlr { padding: 3px 7px !important; font-size: 9px !important; }
-
 }
 
 /* ═══════════════════════════════════════════════
    ULTRA-SMALL PHONE BREAKPOINT  (≤480px)
 ═══════════════════════════════════════════════ */
 @media(max-width: 480px) {
-
   /* Premium stat row responsive layout: 2 cols on mobile phones */
   .panel-stat-row {
     grid-template-columns: repeat(2, 1fr) !important;
@@ -13444,60 +13139,38 @@ body::after {
     margin-top: 4px !important;
     letter-spacing: 0.5px !important;
   }
-
-  /* Logo even smaller */
-  .logo { font-size: 14px !important; }
-  .logo img, .logo svg { width: 14px !important; height: 14px !important; }
-
-  /* Tighter tab pills */
-  .topbar-tab { font-size: 9px !important; padding: 5px 8px !important; }
-
-  /* Player pill — truncate harder */
-  .active-pill-name { max-width: 52px !important; }
-  .player-active-pill { max-width: 120px !important; }
-
   /* Stats grids: 5-col → 2-col */
   [style*="grid-template-columns:repeat(5,1fr)"],
   [style*="grid-template-columns: repeat(5, 1fr)"] {
     grid-template-columns: repeat(2, 1fr) !important;
   }
   .agent-stats-row { grid-template-columns: repeat(2, 1fr) !important; }
-
   /* Skin catalog — 1 col on tiny phones */
   #skin-catalog-grid {
     grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
     gap: 10px !important;
   }
-
   /* Store bundle items — 2 cols max */
   #store-featured-container [style*="grid-template-columns:repeat(auto-fill, minmax(130px, 1fr))"],
   [style*="grid-template-columns:repeat(auto-fill, minmax(130px, 1fr))"] {
     grid-template-columns: repeat(2, 1fr) !important;
   }
-
   /* Esports match cards — font sizes tighter */
   .esp-tname { font-size: 12px !important; }
   .esp-tscore { font-size: 18px !important; }
-
   /* Meta comp slots wrap tighter */
   .dc-slot-card { min-width: 65px !important; max-width: 78px !important; }
-
   /* Hero title smaller */
   .hero-title { font-size: clamp(22px, 7vw, 28px) !important; }
-
   /* Action bar items even smaller */
   .action-bar > * { font-size: 10px !important; padding: 5px 8px !important; }
-
   /* H2H modal inputs stack label */
   #h2h-modal .h2h-input-block { width: 100% !important; }
-
   /* Store view padding tighter */
   #store-view { padding: 10px !important; }
-
   /* Feedback button: hide text, show icon only */
   #feedback-trigger-btn span + * { display: none !important; }
   #feedback-trigger-btn { padding: 10px 12px !important; border-radius: 50% !important; }
-
 }
 
 /* ── TIER TOGGLE SWITCH & BADGES ── */

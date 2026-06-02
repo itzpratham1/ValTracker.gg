@@ -1671,7 +1671,7 @@ body::before {
 .player-search-wrap {
   display: flex; align-items: center; gap: 0;
   background: var(--surface2); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); overflow: hidden;
+  border-radius: var(--radius-sm); overflow: visible;
   transition: var(--transition);
 }
 .player-search-wrap:focus-within {
@@ -1689,6 +1689,15 @@ body::before {
 .player-input-hash {
   font-family: 'DM Mono', monospace; font-size: 13px;
   color: var(--muted2); padding: 0 2px 0 0; user-select: none;
+}
+.topbar-search-submit-btn {
+  background: transparent; border: none; outline: none;
+  color: var(--muted); padding: 0 12px; align-self: stretch;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s ease; border-left: 1px solid var(--border);
+}
+.topbar-search-submit-btn:hover {
+  color: var(--accent); background: rgba(255, 255, 255, 0.02);
 }
 
 /* ── PLAYER ACTIVE PILL ── */
@@ -1946,7 +1955,7 @@ body::before {
   background: rgba(255,255,255,0.02);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  overflow: hidden; margin-bottom: 12px;
+  overflow: visible; margin-bottom: 12px;
   transition: var(--transition);
 }
 .landing-input-row:focus-within {
@@ -4281,8 +4290,11 @@ input:checked + .slider:before {
     gap: 12px !important;
   }
   
-  /* Force Bento cards to fit full mobile width */
-  .span-2, .span-3, .span-4, .span-6, .span-7, .span-8 {
+  /* Force Bento cards to fit full mobile width, except span-2 which displays 2-per-row */
+  .span-2 {
+    grid-column: span 6 !important;
+  }
+  .span-3, .span-4, .span-6, .span-7, .span-8 {
     grid-column: span 12 !important;
   }
   
