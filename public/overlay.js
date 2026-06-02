@@ -154,6 +154,22 @@
     }
   }
 
+  // Timezone-safe calendar-day check
+  function isToday(timestamp) {
+    if (!timestamp) return false;
+    let d;
+    if (typeof timestamp === 'number') {
+      // If epoch seconds, convert to milliseconds
+      d = new Date(timestamp * (timestamp < 10000000000 ? 1000 : 1));
+    } else {
+      d = new Date(timestamp);
+    }
+    const today = new Date();
+    return d.getDate() === today.getDate() &&
+           d.getMonth() === today.getMonth() &&
+           d.getFullYear() === today.getFullYear();
+  }
+
   // 7. Aggregate Stats Logic
   function aggregateStats(data, name, tag) {
     const mmr = data.mmr;
@@ -178,9 +194,12 @@
     let totalRounds = 0;
     let recentGames = [];
 
-    // Process up to 20 matches (standard history size)
-    const matchesToAnalyze = matches.slice(0, 20);
-    matchesToAnalyze.forEach(match => {
+    // Today's Session tracking
+    let sessionWins = 0;
+    let sessionLosses = 0;
+
+    // Process matches
+    matches.forEach(match => {
       if (!match || !match.players || !match.players.all_players) return;
 
       const player = match.players.all_players.find(p => 
@@ -201,36 +220,67 @@
       if (match.teams && match.teams[myTeam]) {
         won = match.teams[myTeam].has_won || false;
       } else {
-        // Fallback round count comparison
         const redWon = match.teams?.red?.rounds_won || 0;
         const blueWon = match.teams?.blue?.rounds_won || 0;
         won = (myTeam === 'red' && redWon > blueWon) || (myTeam === 'blue' && blueWon > redWon);
       }
 
-      totalKills += kills;
-      totalDeaths += deaths;
-      totalAssists += assists;
-      if (won) totalWins++; else totalLosses++;
+      // Check if match was played today
+      const gameTime = match.metadata?.game_start || match.metadata?.gameStart;
+      const playedToday = isToday(gameTime);
 
-      // ACS computation
-      const roundsPlayed = match.metadata?.rounds_played || 1;
-      totalRounds += roundsPlayed;
-      totalACS += score;
+      if (playedToday) {
+        if (won) sessionWins++; else sessionLosses++;
+      }
 
-      // Add to recent list
-      recentGames.push({
-        agentName: agent,
-        agentIcon: agentMap[agent.toLowerCase()] || '',
-        won: won
-      });
+      // Aggregate for averages (last 20 matches)
+      if (recentGames.length < 20) {
+        totalKills += kills;
+        totalDeaths += deaths;
+        totalAssists += assists;
+        if (won) totalWins++; else totalLosses++;
+
+        const roundsPlayed = match.metadata?.rounds_played || 1;
+        totalRounds += roundsPlayed;
+        totalACS += score;
+
+        recentGames.push({
+          agentName: agent,
+          agentIcon: agentMap[agent.toLowerCase()] || '',
+          won: won
+        });
+      }
     });
 
     // Compute averages
-    const matchesCount = matchesToAnalyze.length || 1;
+    const matchesCount = recentGames.length || 1;
     const finalKDR = totalDeaths > 0 ? (totalKills / totalDeaths).toFixed(2) : totalKills.toFixed(2);
     const finalWinRate = matchesCount > 0 ? ((totalWins / matchesCount) * 100).toFixed(1) : '0.0';
     const finalAvgACS = totalRounds > 0 ? Math.round(totalACS / totalRounds) : 0;
     const finalAvgKills = (totalKills / matchesCount).toFixed(1);
+
+    // Calculate Win Streak
+    let winStreak = 0;
+    for (let i = 0; i < recentGames.length; i++) {
+      if (recentGames[i].won) {
+        winStreak++;
+      } else {
+        break;
+      }
+    }
+
+    // Unique ValTracker Performance Index (0-100 Rating)
+    const kdNum = parseFloat(finalKDR) || 0.0;
+    const wrNum = parseFloat(finalWinRate) || 0.0;
+    let valIndex = Math.round((kdNum * 40) + (finalAvgACS * 0.15) + (wrNum * 0.25));
+    valIndex = Math.max(0, Math.min(100, valIndex));
+
+    let perfGrade = 'C';
+    let gradeColor = '#94a3b8';
+    if (valIndex >= 85) { perfGrade = 'S+'; gradeColor = '#fbbf24'; }
+    else if (valIndex >= 75) { perfGrade = 'S'; gradeColor = '#a78bfa'; }
+    else if (valIndex >= 65) { perfGrade = 'A'; gradeColor = '#60a5fa'; }
+    else if (valIndex >= 50) { perfGrade = 'B'; gradeColor = '#34d399'; }
 
     return {
       currentTierName,
@@ -244,8 +294,12 @@
       kills: totalKills,
       avg_kills: finalAvgKills,
       assists: totalAssists,
-      daily_wl: `${totalWins}W - ${totalLosses}L`,
-      recentGames: recentGames.slice(0, 10) // standard 10 avatars
+      daily_wl: `${sessionWins}W - ${sessionLosses}L`,
+      winStreak,
+      valIndex,
+      perfGrade,
+      gradeColor,
+      recentGames: recentGames.slice(0, 10) // 10 avatars
     };
   }
 
@@ -257,7 +311,6 @@
     let html = '';
 
     if (variant === 'competitive') {
-      // Render Jett/Reyna avatars row with win/loss underline
       let avatarsHtml = '';
       if (stats.recentGames && stats.recentGames.length > 0) {
         stats.recentGames.forEach(g => {
@@ -274,8 +327,12 @@
         avatarsHtml = '<div class="comp-recent-title">No recent matches found</div>';
       }
 
-      // Rank Icon
       const rankIcon = `https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/${stats.currentTierId}/smallicon.png`;
+
+      // Streak badge HTML
+      const streakHtml = stats.winStreak >= 2 
+        ? `<span class="comp-streak-badge" style="background:rgba(251,191,36,0.12); border:1px solid rgba(251,191,36,0.3); color:#fbbf24; padding:1px 6px; border-radius:4px; font-family:var(--font-mono); font-size:9px; margin-left:8px; display:inline-flex; align-items:center; gap:3px; filter:drop-shadow(0 0 4px rgba(251,191,36,0.25)); font-weight:700;">🔥 ${stats.winStreak} STREAK</span>` 
+        : '';
 
       html = `
         <div class="comp-overlay">
@@ -291,7 +348,10 @@
               <img class="comp-rank-icon" src="${rankIcon}" alt="${stats.currentTierName}">
             </div>
             <div class="comp-rank-info">
-              <div class="comp-rank-name">${stats.currentTierName}</div>
+              <div style="display:flex; align-items:center;">
+                <div class="comp-rank-name">${stats.currentTierName}</div>
+                ${streakHtml}
+              </div>
               <div class="comp-rank-rr">${stats.currentRR} RR</div>
             </div>
             <div class="comp-stat-grid">
@@ -303,12 +363,16 @@
                 <span class="comp-stat-val">${stats.kd}</span>
                 <span class="comp-stat-lbl">K/D Ratio</span>
               </div>
+              <div class="comp-stat-box">
+                <span class="comp-stat-val" style="color: ${stats.gradeColor}; text-shadow: 0 0 8px ${stats.gradeColor}40;">${stats.perfGrade}</span>
+                <span class="comp-stat-lbl">VAL INDEX</span>
+              </div>
             </div>
           </div>
 
           <!-- Bottom Footer -->
           <div class="comp-brand-footer">
-            <div class="comp-brand-logo">Val<span>Tracker</span>.gg</div>
+            <div class="comp-brand-logo">Val<span>Tracker</span></div>
             <div class="comp-brand-text">Valorant Live stream hud</div>
           </div>
         </div>
@@ -317,13 +381,18 @@
     } else if (variant === 'center') {
       const rankIcon = `https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/${stats.currentTierId}/smallicon.png`;
 
+      // Streak badge HTML
+      const streakHtml = stats.winStreak >= 2 
+        ? `<span class="comp-streak-badge" style="background:rgba(251,191,36,0.12); border:1px solid rgba(251,191,36,0.3); color:#fbbf24; padding:1px 5px; border-radius:3px; font-family:var(--font-mono); font-size:8px; margin-left:6px; display:inline-flex; align-items:center; gap:2px; font-weight:700;">🔥 ${stats.winStreak}W</span>` 
+        : '';
+
       html = `
         <div class="center-overlay">
           <!-- Left: Rank & Player info -->
           <div class="center-left-block">
             <img class="center-rank-icon" src="${rankIcon}" alt="${stats.currentTierName}">
             <div class="center-player-info">
-              <span class="center-player-name">${playerName}</span>
+              <span class="center-player-name" style="display:flex; align-items:center;">${playerName}${streakHtml}</span>
               <span class="center-player-rank">${stats.currentTierName}</span>
             </div>
           </div>
@@ -341,8 +410,8 @@
               <span class="center-stat-lbl">K/D Ratio</span>
             </div>
             <div class="center-stat-box">
-              <span class="center-stat-val">${stats.acs}</span>
-              <span class="center-stat-lbl">Avg ACS</span>
+              <span class="center-stat-val" style="color: ${stats.gradeColor}; text-shadow: 0 0 8px ${stats.gradeColor}40;">${stats.perfGrade}</span>
+              <span class="center-stat-lbl">Val Index</span>
             </div>
             <div class="center-stat-box">
               <span class="center-stat-val">${stats.daily_wl}</span>
@@ -358,10 +427,27 @@
       // Render custom list of stats dynamically
       let rowsHtml = '';
       selectedStats.forEach(s => {
-        if (!statLabels[s] || stats[s] === undefined) return;
-        const icon = statIcons[s] || '📈';
-        const label = statLabels[s];
+        let label = statLabels[s];
         let val = stats[s];
+        let icon = statIcons[s] || '📈';
+
+        // Add support for custom index stats keys
+        if (s === 'valindex' || s === 'val_index') {
+          label = 'VAL Index Score';
+          val = stats.valIndex;
+          icon = '🧠';
+        } else if (s === 'grade' || s === 'perf_grade') {
+          label = 'VAL Index Grade';
+          val = stats.perfGrade;
+          icon = '⭐';
+        } else if (s === 'streak' || s === 'winstreak') {
+          label = 'Win Streak';
+          val = `${stats.winStreak} Wins`;
+          icon = '🔥';
+        }
+
+        if (!label || val === undefined) return;
+        
         if (s === 'winrate') val = `${val}%`;
         if (s === 'rank') val = stats.currentTierName;
         if (s === 'peak') val = stats.peakTierName;
@@ -372,7 +458,7 @@
               <span class="flex-stat-icon">${icon}</span>
               <span class="flex-stat-lbl">${label}</span>
             </div>
-            <span class="flex-stat-val">${val}</span>
+            <span class="flex-stat-val" ${s==='grade'||s==='perf_grade'?`style="color:${stats.gradeColor}"`:''}>${val}</span>
           </div>
         `;
       });
@@ -393,7 +479,7 @@
 
           <!-- Footer -->
           <div class="flex-brand-footer">
-            <div class="comp-brand-logo">Val<span>Tracker</span>.gg</div>
+            <div class="comp-brand-logo">Val<span>Tracker</span></div>
           </div>
         </div>
       `;
