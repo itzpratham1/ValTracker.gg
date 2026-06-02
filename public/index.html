@@ -8,7 +8,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M2,2 L10.5,22 L13.5,22 L22,2 L17.5,2 L12,13 L6.5,2 Z' fill='%23ff4655'/%3E%3Cpolygon points='12,2 15.5,6 12,10 8.5,6' fill='%23e8ff47'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
-<link rel="stylesheet" href="index.css?v=12.17">
+<link rel="stylesheet" href="index.css?v=12.18">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 </head>
@@ -7104,8 +7104,21 @@ async function landingFetch() {
   const errEl  = document.getElementById('l-error');
   const btn    = document.getElementById('l-btn');
 
-  if (!name || !tag) { errEl.textContent = 'Enter a name and tag first'; return; }
-  errEl.textContent = '';
+  if (!name || !tag) { 
+    errEl.innerHTML = `
+      <svg viewBox="0 0 24 24" width="16" height="16" stroke="#ff4655" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+        <line x1="12" y1="9" x2="12" y2="13"></line>
+        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+      </svg>
+      <span>Enter a name and tag first</span>
+    `;
+    errEl.classList.add('active');
+    return; 
+  }
+  
+  errEl.innerHTML = '';
+  errEl.classList.remove('active');
   btn.disabled = true;
   btn.textContent = 'Loading...';
 
@@ -7124,7 +7137,18 @@ async function landingFetch() {
     await fetchAll();
   } catch (err) {
     console.error("Landing fetch failed:", err);
-    errEl.textContent = err.message || 'Player not found or API error. Check spelling, region & tag.';
+    
+    // Nice Valorant-styled error box message
+    const msg = err.message || 'Player not found or API error. Check spelling, region & tag.';
+    errEl.innerHTML = `
+      <svg viewBox="0 0 24 24" width="16" height="16" stroke="#ff4655" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+        <line x1="12" y1="9" x2="12" y2="13"></line>
+        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+      </svg>
+      <span>${msg}</span>
+    `;
+    errEl.classList.add('active');
     
     // Restore landing page view
     const landing = document.getElementById('landing');
