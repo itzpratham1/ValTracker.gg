@@ -259,7 +259,11 @@ def optimize_response(response):
     path = request.path.lower()
     
     # 1. Apply premium Caching Headers
-    if path.startswith('/api/v3/meta-comps') or path.startswith('/api/v2/') or path.endswith('.json'):
+    if 'overlay' in path:
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+    elif path.startswith('/api/v3/meta-comps') or path.startswith('/api/v2/') or path.endswith('.json'):
         response.headers['Cache-Control'] = 'public, max-age=600' # 10 minutes
     elif path.endswith('.css') or path.endswith('.js'):
         # Client-side static assets are immutable and cache-busted, cache for 1 year

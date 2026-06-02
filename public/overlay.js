@@ -388,6 +388,9 @@
 
       html = `
         <div class="center-overlay">
+          <!-- Subtle top brand watermark -->
+          <div style="position: absolute; top: 4px; right: 24px; font-family: var(--font-title); font-weight: 800; font-size: 10px; text-transform: uppercase; color: rgba(255, 255, 255, 0.2); letter-spacing: 0.5px; z-index: 5;">Val<span style="color: var(--accent);">Tracker</span></div>
+
           <!-- Left: Rank & Player info -->
           <div class="center-left-block">
             <img class="center-rank-icon" src="${rankIcon}" alt="${stats.currentTierName}">
