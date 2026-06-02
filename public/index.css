@@ -4804,13 +4804,25 @@ input:checked + .slider:before {
 @media (max-width: 800px) {
   .topbar {
     padding: 10px 14px 8px !important;
-    gap: 6px !important;
+    gap: 10px !important;
   }
   .topbar-main-row {
-    flex-wrap: nowrap !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+  .topbar-main-row .player-search-wrap {
+    width: 100% !important;
+    max-width: none !important;
+    order: 3 !important; /* ensure it stays at bottom of row 1 */
+    box-sizing: border-box !important;
+  }
+  .topbar-main-row .player-input {
+    flex: 1 !important;
+    width: 0 !important;
   }
   .topbar-tabs {
-    max-width: 70%;
+    max-width: none !important;
+    flex-grow: 1 !important;
   }
   .topbar-sub-row {
     flex-direction: column !important;
