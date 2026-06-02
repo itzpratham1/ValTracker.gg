@@ -5104,6 +5104,13 @@ window.openShareMatchModal = async function(idx, event) {
   captureContainer.innerHTML = `
     <div id="match-capture-target" style="width: 900px; height: 520px; background: #050508; border: 1.5px solid ${accentColor}40; border-radius: 20px; color: #fff; font-family:'Barlow Condensed', sans-serif; box-sizing:border-box; position:relative; overflow:hidden; box-shadow:0 25px 60px rgba(0,0,0,0.95), 0 0 20px ${accentColor}10; display:flex; flex-direction:column; justify-content:space-between; padding:24px;">
       
+      <!-- Diagonal Watermark Stripe -->
+      <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:0; overflow:hidden;">
+        <div style="font-family:'Barlow Condensed', sans-serif; font-size:140px; font-weight:900; color:rgba(255,255,255,0.012); letter-spacing:4px; text-transform:uppercase; transform:rotate(-15deg); white-space:nowrap; select:none;">
+          VALTRACKER.GG
+        </div>
+      </div>
+
       <!-- Premium Blurred Map Background Splash -->
       ${mapImg ? `<img src="${mapImg}" crossorigin="anonymous" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.18; filter: blur(2px); pointer-events:none; z-index:0;">` : ''}
       
@@ -5121,7 +5128,12 @@ window.openShareMatchModal = async function(idx, event) {
             <path d="M2,2 L10.5,22 L13.5,22 L22,2 L17.5,2 L12,13 L6.5,2 Z" fill="#ff4655" />
             <polygon points="12,2 15.5,6 12,10 8.5,6" fill="#e8ff47" />
           </svg>
-          <span style="font-family:'Barlow Condensed', sans-serif; font-size:20px; font-weight:900; letter-spacing:1.5px; color:#fff; text-transform:uppercase; margin-right:12px;">ValTracker<span style="color:#ff4655">.gg</span></span>
+          <span style="font-family:'Barlow Condensed', sans-serif; font-size:20px; font-weight:900; letter-spacing:1.5px; color:#fff; text-transform:uppercase;">ValTracker<span style="color:#ff4655">.gg</span></span>
+          
+          <!-- Verified Report Badge -->
+          <div style="background:rgba(62,207,142,0.1); border:1px solid rgba(62,207,142,0.3); color:#3ecf8e; border-radius:4px; padding:2px 6px; font-family:'DM Mono', monospace; font-size:7.5px; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; box-shadow:0 0 6px rgba(62,207,142,0.15); margin-left:4px;">
+            VERIFIED REPORT
+          </div>
           
           <!-- Player Horizontal Banner & Name Capsule -->
           <div style="display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); padding:3px 10px 3px 3px; border-radius:6px; backdrop-filter:blur(4px);">
@@ -5262,20 +5274,24 @@ window.openShareMatchModal = async function(idx, event) {
       </div>
 
       <!-- Bottom Footer (High-impact premium promotion) -->
-      <div style="position:relative; z-index:3; display:flex; justify-content:space-between; align-items:center; border-top:1px solid ${accentColor}40; padding-top:12px; font-family:'Barlow Condensed', sans-serif; font-size:11px; letter-spacing:0.5px; margin-top:2px;">
+      <div style="position:relative; z-index:3; display:flex; justify-content:space-between; align-items:center; border:1.5px solid ${accentColor}30; background:rgba(10, 10, 15, 0.65); padding:10px 16px; border-radius:12px; font-family:'Barlow Condensed', sans-serif; font-size:11.5px; letter-spacing:0.5px; margin-top:4px; box-shadow:0 4px 20px rgba(0,0,0,0.4);">
         <div style="display:flex; align-items:center; gap:8px;">
-          <div style="background:${accentColor}15; border:1px solid ${accentColor}; color:${accentColor}; border-radius:4px; padding:2px 6px; font-family:'DM Mono', monospace; font-size:8px; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; box-shadow:0 0 6px ${accentColor}30;">
-            ⚡ INFOGRAPHIC DIAGNOSTICS
+          <div style="background:${accentColor}20; border:1px solid ${accentColor}; color:${accentColor}; border-radius:4px; padding:2px 6px; font-family:'DM Mono', monospace; font-size:8px; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; box-shadow:0 0 8px ${accentColor}40; text-shadow:0 0 2px ${accentColor};">
+            ⚡ TELEMETRY ONLINE
           </div>
-          <div style="color:rgba(255,255,255,0.65); font-weight:500;">
-            Telemetry compiled by <span style="color:#fff; font-weight:bold; letter-spacing:0.8px;">VALTRACKER.GG</span>
+          <div style="color:rgba(255,255,255,0.7); font-weight:500;">
+            Holographic report compiled by <span style="color:#fff; font-weight:bold; letter-spacing:0.8px; text-shadow:0 0 8px rgba(255,255,255,0.2);">VALTRACKER.GG</span>
           </div>
         </div>
-        <div style="display:flex; align-items:center; gap:10px;">
-          <div style="color:#e8ff47; font-weight:900; letter-spacing:1px; text-transform:uppercase; text-shadow:0 0 6px rgba(232,255,71,0.3); font-size:11.5px;">
-            JOIN VALTRACKER.GG/TRACKER TO FLEX YOUR STATS
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="color:#e8ff47; font-weight:900; letter-spacing:1px; text-transform:uppercase; text-shadow:0 0 8px rgba(232,255,71,0.4); font-size:12px;">
+            JOIN VALTRACKER.GG/TRACKER TO CREATE YOUR CARD
           </div>
-          <div style="width:5px; height:5px; border-radius:50%; background:#e8ff47; box-shadow:0 0 6px #e8ff47;"></div>
+          <div style="display:flex; align-items:center; justify-content:center; width:22px; height:22px; background:#fff; border-radius:4px; padding:2px; box-shadow:0 0 10px rgba(255,255,255,0.25);">
+            <svg viewBox="0 0 24 24" style="width:100%; height:100%; fill:#000;">
+              <path d="M3 3h6v6H3V3zm2 2v2h2V5H5zm8-2h6v6h-6V3zm2 2v2h2V5h-2zM3 13h6v6H3v-6zm2 2v2h2v-2H5zm13-2h1v1h-1v-1zm1 1h1v1h-1v-1zm-1 1h1v1h-1v-1zm-2-2h1v1h-1v-1zm-1 1h1v1h-1v-1zm2 2h1v1h-1v-1zm1-2h1v1h-1v-1zm0 3h1v1h-1v-1zm2-1h1v1h-1v-1zm-6 2h1v1h-1v-1zm1 1h1v1h-1v-1zm2-2h1v1h-1v-1zm1 1h1v1h-1v-1zm-5-8h2v2h-2V7zm2 2h2v2h-2V9zm-2 2h2v2h-2v-2zm8 2h2v2h-2v-2zm2 2h2v2h-2v-2z" />
+            </svg>
+          </div>
         </div>
       </div>
     </div>
