@@ -184,15 +184,7 @@
           </svg>
         </button>
       </div>
-      
       <div class="player-tag" id="player-tag-display" style="display:none"></div>
-      <button class="copy-riot-btn" id="copy-riot-btn" onclick="copyRiotId()" title="Copy Riot ID" style="display:none">
-        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right: 2px;">
-          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-        </svg>
-        <span>Copy ID</span>
-      </button>
       <button class="mobile-filter-toggle" id="mobile-filter-toggle" onclick="toggleMobileFilters()" title="Toggle Filters" style="display: none;">
         <span class="toggle-icon">⚙️</span>
         <span>Filters</span>
@@ -1812,16 +1804,6 @@ function copyRiotId() {
   const id = tag ? `${name}#${tag}` : name;
   navigator.clipboard.writeText(id).then(() => {
     showToast(`Copied: ${id}`);
-    const btn = document.getElementById('copy-riot-btn');
-    if (btn) {
-      btn.classList.add('copied');
-      const span = btn.querySelector('span');
-      if (span) span.textContent = 'Copied!';
-      setTimeout(() => { 
-        btn.classList.remove('copied'); 
-        if (span) span.textContent = 'Copy ID';
-      }, 1500);
-    }
   }).catch(() => { showToast('Copy failed — check browser permissions'); });
 }
 
@@ -7244,14 +7226,12 @@ function dismissLanding() {
 function toggleSearchMode(showSearch) {
   const psw = document.querySelector('.player-search-wrap');
   const div2 = document.getElementById('tracker-divider-2');
-  const copyBtn = document.getElementById('copy-riot-btn');
   const activePill = document.getElementById('player-active-pill');
   const mft = document.getElementById('mobile-filter-toggle');
   
   // The search bar in topbar-main-row should always remain visible
   if (psw) psw.style.display = 'flex';
   if (div2) div2.style.display = 'block';
-  if (copyBtn) copyBtn.style.display = 'inline-flex';
   
   if (PLAYER_NAME) {
     if (activePill) activePill.style.display = 'flex';
@@ -12561,7 +12541,7 @@ function renderRecommendations(dropdown, input, tagInput, regionSelectId) {
   // 3. Popular VCT Profiles section
   html += `
     <div class="search-rec-section">
-      <div class="search-rec-header">🔥 Popular Profiles</div>
+      <div class="search-rec-header">🔥 Suggested Profiles</div>
       <div class="search-rec-grid">
   `;
   POPULAR_RECOMMENDATIONS.forEach(p => {
@@ -12605,7 +12585,7 @@ function renderSearchDropdown(dbPlayers, localMatches, dropdown, input, tagInput
     // No matches fallback: show warning and popular profiles list
     let html = `
       <div style="padding: 14px 14px 8px 14px; font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; border-bottom: 1px solid rgba(255, 255, 255, 0.03); display: flex; align-items: center; gap: 8px;">
-        <span style="color: var(--accent);">⚠️</span> No players found in database. Try these popular profiles:
+        <span style="color: var(--accent);">⚠️</span> No players found in database. Try one of these suggested profiles:
       </div>
       <div class="search-rec-container" style="padding-top: 0;">
         <div class="search-rec-grid">
@@ -12669,7 +12649,7 @@ function renderSearchDropdown(dbPlayers, localMatches, dropdown, input, tagInput
   if (hasLocal) {
     html += `
       <div class="search-rec-section">
-        <div class="search-rec-header">🔥 Popular Profiles</div>
+        <div class="search-rec-header">🔥 Suggested Profiles</div>
         <div class="search-rec-grid">
     `;
     localMatches.forEach(p => {
