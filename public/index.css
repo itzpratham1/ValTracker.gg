@@ -4763,7 +4763,7 @@ input:checked + .slider:before {
   border-radius: 8px;
   box-shadow: 0 12px 36px rgba(0, 0, 0, 0.85), 0 0 15px rgba(255, 70, 85, 0.1);
   z-index: 1000;
-  max-height: 280px;
+  max-height: 380px;
   overflow-y: auto;
   margin-top: 8px;
   display: none;
@@ -5007,6 +5007,99 @@ input:checked + .slider:before {
   to { opacity: 1; transform: translateY(0); }
 }
 
-
-
-
+/* ── Autocomplete Recommendations Styling ── */
+.search-rec-container {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0;
+}
+.search-rec-section {
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+.search-rec-section:last-child {
+  border-bottom: none;
+}
+.search-rec-header {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 1px;
+  padding: 6px 14px;
+  text-transform: uppercase;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.search-rec-list {
+  display: flex;
+  flex-direction: column;
+}
+.search-rec-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px;
+  padding: 6px 14px 10px 14px;
+}
+.search-rec-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.search-rec-chip:hover {
+  background: rgba(255, 70, 85, 0.06);
+  border-color: rgba(255, 70, 85, 0.3);
+}
+.search-rec-chip-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+}
+.search-rec-chip-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.search-rec-chip-info {
+  display: flex;
+  flex-direction: column;
+}
+.search-rec-chip-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+}
+.search-rec-chip-tag {
+  color: rgba(255, 255, 255, 0.4);
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+}
+.search-rec-chip-region {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  margin-left: auto;
+  padding: 1px 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.search-rec-chip:hover .search-rec-chip-region {
+  background: rgba(255, 70, 85, 0.15);
+  color: var(--accent);
+}
