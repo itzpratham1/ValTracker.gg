@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="referrer" content="no-referrer">
 <title>ValTracker — Valorant Stats Tracker</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M2,2 L10.5,22 L13.5,22 L22,2 L17.5,2 L12,13 L6.5,2 Z' fill='%23ff4655'/%3E%3Cpolygon points='12,2 15.5,6 12,10 8.5,6' fill='%23e8ff47'/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" href="logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
-<link rel="stylesheet" href="index.css?v=13.01">
+<link rel="stylesheet" href="index.css?v=13.02">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 </head>
@@ -12425,13 +12425,14 @@ function copyObsUrl() {
 // Search autocomplete recommendations & search
 const POPULAR_RECOMMENDATIONS = [
   { name: "TenZ", tag: "SEN", region: "na", current_tier_patched: "Radiant", card_id: "9e5c3c2b-dd6c-4b3c-25b7-c25b7c25b7c2" },
-  { name: "zekken", tag: "SEN", region: "na", current_tier_patched: "Radiant", card_id: "69742b2c-dd6c-4c3a-25b7-c69742b2cdd6" },
   { name: "aspas", tag: "LEV", region: "na", current_tier_patched: "Radiant", card_id: "6977f8cf-0996-4ee6-7b89-6977f8cf0996" },
-  { name: "Boaster", tag: "FNC", region: "eu", current_tier_patched: "Immortal 3", card_id: "687e2c49-5dcc-4d5c-7b89-687e2c495dcc" },
-  { name: "Asuna", tag: "100T", region: "na", current_tier_patched: "Immortal 3", card_id: "69704e53-0cfa-4d56-3c0c-fac69704e530" },
-  { name: "something", tag: "PRX", region: "ap", current_tier_patched: "Radiant", card_id: "687e2c49-5dcc-4d5c-7b89-687e2c495dcc" },
-  { name: "t3xture", tag: "GEN", region: "kr", current_tier_patched: "Radiant", card_id: "9e5c3c2b-dd6c-4b3c-25b7-c25b7c25b7c2" },
-  { name: "OXY", tag: "C9", region: "na", current_tier_patched: "Immortal 3", card_id: "51dcf475-4078-2dce-883b-48bb77670ea8" }
+  { name: "saadhak", tag: "LOUD", region: "na", current_tier_patched: "Immortal 3", card_id: "5def384f-47ce-ee1e-8a4c-d1a394fef0b5" },
+  { name: "Cryocells", tag: "100T", region: "na", current_tier_patched: "Radiant", card_id: "69704e38-872a-4646-872a-4646872a4646" },
+  { name: "t3xture", tag: "GEN", region: "kr", current_tier_patched: "Radiant", card_id: "d6e79ba5-4a68-036c-d121-5bb893eafa47" },
+  { name: "Suresh reyna", tag: "2908", region: "ap", current_tier_patched: "Unranked", card_id: "" },
+  { name: "kratos", tag: "game", region: "ap", current_tier_patched: "Unranked", card_id: "eef542d2-4724-bc47-f53f-239f8c9c2623" },
+  { name: "Boogeyman", tag: "game", region: "ap", current_tier_patched: "Unranked", card_id: "51dcf475-4078-2dce-883b-48bb77670ea8" },
+  { name: "Harsh", tag: "khel", region: "ap", current_tier_patched: "Unranked", card_id: "a8b2e213-4aac-95bb-9329-809d5e53e59d" }
 ];
 
 function initSearchAutocomplete(inputId, tagInputId, dropdownId, regionSelectId) {

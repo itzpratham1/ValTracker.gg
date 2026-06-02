@@ -603,6 +603,9 @@ body::before {
   padding: 2px 8px; border-radius: 4px;
   margin-top: 5px; display: inline-block;
 }
+#hero-level-badge {
+  display: none !important;
+}
 
 /* ── STREAK BLOCK ── */
 .hero-streak-block {
@@ -2874,6 +2877,25 @@ input:checked + .slider:before {
   .fetch-btn{flex:1;font-size:12px;padding:8px 10px;letter-spacing:1px;}
   .status-pill{display:none;}
   .hud-nav { top: 96px; padding: 4px 10px; }
+
+  /* Mobile active pill & toggle layout fixes */
+  .player-active-pill {
+    padding: 3px 8px 3px 4px !important;
+    gap: 6px !important;
+    max-width: 190px !important;
+  }
+  .active-pill-name {
+    max-width: 85px !important;
+    font-size: 11px !important;
+  }
+  .mobile-filter-toggle {
+    padding: 5px 8px !important;
+    font-size: 10px !important;
+    gap: 4px !important;
+  }
+  .topbar-tab {
+    flex-shrink: 0 !important;
+  }
 
   /* Hero panels */
   .hero{padding:16px 12px;gap:12px;}
