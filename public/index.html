@@ -12789,6 +12789,19 @@ body::after {
 ═══════════════════════════════════════════════════════ */
 @media(max-width: 800px) {
 
+  /* Premium stat row responsive layout: 3 cols on tablet/large mobile */
+  .panel-stat-row {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 10px !important;
+    padding: 12px !important;
+  }
+  .ps-item {
+    padding: 8px 6px !important;
+  }
+  .ps-item .psv {
+    font-size: 18px !important;
+  }
+
   /* ── BASE RESET ── */
   html, body {
     overflow-x: clip;
@@ -13325,6 +13338,25 @@ body::after {
    ULTRA-SMALL PHONE BREAKPOINT  (≤480px)
 ═══════════════════════════════════════════════ */
 @media(max-width: 480px) {
+
+  /* Premium stat row responsive layout: 2 cols on mobile phones */
+  .panel-stat-row {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    padding: 10px !important;
+  }
+  .ps-item {
+    padding: 8px 4px !important;
+    min-height: 52px !important;
+  }
+  .ps-item .psv {
+    font-size: 15px !important;
+  }
+  .ps-item .psl {
+    font-size: 8px !important;
+    margin-top: 4px !important;
+    letter-spacing: 0.5px !important;
+  }
 
   /* Logo even smaller */
   .logo { font-size: 14px !important; }

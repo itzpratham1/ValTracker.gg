@@ -259,13 +259,21 @@
     const finalAvgACS = totalRounds > 0 ? Math.round(totalACS / totalRounds) : 0;
     const finalAvgKills = (totalKills / matchesCount).toFixed(1);
 
-    // Calculate Win Streak
+    // Calculate Win / Loss Streak
     let winStreak = 0;
-    for (let i = 0; i < recentGames.length; i++) {
-      if (recentGames[i].won) {
-        winStreak++;
+    let lossStreak = 0;
+    if (recentGames.length > 0) {
+      const firstWon = recentGames[0].won;
+      if (firstWon) {
+        winStreak = 1;
+        for (let i = 1; i < recentGames.length; i++) {
+          if (recentGames[i].won) winStreak++; else break;
+        }
       } else {
-        break;
+        lossStreak = 1;
+        for (let i = 1; i < recentGames.length; i++) {
+          if (!recentGames[i].won) lossStreak++; else break;
+        }
       }
     }
 
@@ -296,6 +304,7 @@
       assists: totalAssists,
       daily_wl: `${sessionWins}W - ${sessionLosses}L`,
       winStreak,
+      lossStreak,
       valIndex,
       perfGrade,
       gradeColor,
@@ -331,9 +340,12 @@
       const rankIcon = `https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/${stats.currentTierId}/smallicon.png`;
 
       // Streak badge HTML
-      const streakHtml = stats.winStreak >= 2 
-        ? `<span class="comp-streak-badge" style="background:rgba(251,191,36,0.12); border:1px solid rgba(251,191,36,0.3); color:#fbbf24; padding:1px 6px; border-radius:4px; font-family:var(--font-mono); font-size:9px; margin-left:8px; display:inline-flex; align-items:center; gap:3px; filter:drop-shadow(0 0 4px rgba(251,191,36,0.25)); font-weight:700;">🔥 ${stats.winStreak} STREAK</span>` 
-        : '';
+      let streakHtml = '';
+      if (stats.winStreak >= 2) {
+        streakHtml = `<span class="streak-badge win" style="margin-left: 8px;">🔥 ${stats.winStreak} STREAK</span>`;
+      } else if (stats.lossStreak >= 2) {
+        streakHtml = `<span class="streak-badge loss" style="margin-left: 8px;">❄️ ${stats.lossStreak} STREAK</span>`;
+      }
 
       html = `
         <div class="comp-overlay">
@@ -383,9 +395,12 @@
       const rankIcon = `https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/${stats.currentTierId}/smallicon.png`;
 
       // Streak badge HTML
-      const streakHtml = stats.winStreak >= 2 
-        ? `<span class="comp-streak-badge" style="background:rgba(251,191,36,0.12); border:1px solid rgba(251,191,36,0.3); color:#fbbf24; padding:1px 5px; border-radius:3px; font-family:var(--font-mono); font-size:8px; margin-left:6px; display:inline-flex; align-items:center; gap:2px; font-weight:700;">🔥 ${stats.winStreak}W</span>` 
-        : '';
+      let streakHtml = '';
+      if (stats.winStreak >= 2) {
+        streakHtml = `<span class="streak-badge win" style="margin-left: 6px; font-size: 8px; padding: 1px 4px;">🔥 ${stats.winStreak}W</span>`;
+      } else if (stats.lossStreak >= 2) {
+        streakHtml = `<span class="streak-badge loss" style="margin-left: 6px; font-size: 8px; padding: 1px 4px;">❄️ ${stats.lossStreak}L</span>`;
+      }
 
       html = `
         <div class="center-overlay">
@@ -445,9 +460,19 @@
           val = stats.perfGrade;
           icon = '⭐';
         } else if (s === 'streak' || s === 'winstreak') {
-          label = 'Win Streak';
-          val = `${stats.winStreak} Wins`;
-          icon = '🔥';
+          if (stats.winStreak >= 2) {
+            label = 'Win Streak';
+            val = `🔥 ${stats.winStreak} Wins`;
+            icon = '🔥';
+          } else if (stats.lossStreak >= 2) {
+            label = 'Loss Streak';
+            val = `❄️ ${stats.lossStreak} Losses`;
+            icon = '❄️';
+          } else {
+            label = 'Streak';
+            val = 'None';
+            icon = '🔥';
+          }
         }
 
         if (!label || val === undefined) return;
