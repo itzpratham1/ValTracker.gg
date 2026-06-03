@@ -2059,10 +2059,11 @@ body::before {
   background: transparent; border: none; outline: none;
   font-family: 'Inter', 'DM Mono', monospace; font-size: 14px;
   color: var(--text); padding: 12px 14px; flex: 1;
+  min-width: 0;
 }
 .landing-input::placeholder { color: var(--muted2); }
 .landing-input-tag {
-  width: 90px;
+  width: 85px;
   flex: none;
   border-left: 1px solid var(--border) !important;
   padding-left: 8px !important;
@@ -5165,9 +5166,9 @@ input:checked + .slider:before {
 /* Adjust mobile viewport spacing for landing page tag input */
 @media (max-width: 600px) {
   .landing-input-tag {
-    width: 100px !important;
-    padding-left: 6px !important;
-    padding-right: 6px !important;
+    width: 80px !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
     text-align: center !important;
   }
 }
