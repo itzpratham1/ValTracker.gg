@@ -1802,13 +1802,7 @@ function copyRiotId() {
   }).catch(() => { showToast('Copy failed — check browser permissions'); });
 }
 
-// ── Back to Top visibility ──
-window.addEventListener('scroll', () => {
-  const btn = document.getElementById('back-to-top');
-  if (!btn) return;
-  if (window.scrollY > 300) btn.classList.add('visible');
-  else btn.classList.remove('visible');
-}, { passive: true });
+// ── Back to Top visibility is now managed by the Unified Scroll Manager ──
 
 // ── Performance Trend Chart ──
 let _perfTrendChart = null;
@@ -10325,11 +10319,28 @@ function smoothScrollTo(elementId, event) {
 }
 
 // HUD Scrollspy active indicator tracking
-function initScrollSpy() {
+let cachedSectionOffsets = [];
+function cacheSectionOffsets() {
   const sections = [
     'sec-combat', 'sec-performance', 'sec-trend', 'sec-agents',
     'sec-maps', 'sec-weapons', 'sec-matches', 'sec-ai', 'sec-deep', 'sec-lab'
   ];
+  cachedSectionOffsets = sections.map(id => {
+    const el = document.getElementById(id);
+    return {
+      id: id,
+      offsetTop: el ? el.offsetTop : 0
+    };
+  });
+}
+
+let unifiedScrollInitialized = false;
+function initUnifiedScrollManager() {
+  if (unifiedScrollInitialized) return;
+  unifiedScrollInitialized = true;
+
+  const body = document.body;
+  const backToTopBtn = document.getElementById('back-to-top');
   
   const navItems = {
     'sec-combat': document.querySelector('#tracker-nav a[onclick*="sec-combat"]'),
@@ -10344,27 +10355,94 @@ function initScrollSpy() {
     'sec-lab': document.querySelector('#tracker-nav a[onclick*="sec-lab"]')
   };
 
-  window.addEventListener('scroll', () => {
-    let currentSectionId = '';
-    const scrollPosition = window.scrollY + 150; // offset for detection
-    
-    sections.forEach(id => {
-      const el = document.getElementById(id);
-      if (el && el.offsetTop <= scrollPosition) {
-        currentSectionId = id;
-      }
-    });
+  let lastActiveId = '';
+  let backToTopVisible = false;
+  let headerState = ''; // 'up', 'down', or ''
+  let scrollAccumulator = 0;
+  let rAFScheduled = false;
 
-    if (currentSectionId) {
-      Object.keys(navItems).forEach(key => {
-        const item = navItems[key];
-        if (item) {
-          if (key === currentSectionId) {
-            item.classList.add('active');
-          } else {
-            item.classList.remove('active');
+  window.addEventListener('scroll', () => {
+    if (!rAFScheduled) {
+      rAFScheduled = true;
+      requestAnimationFrame(() => {
+        const currentScrollY = window.scrollY;
+
+        // 1. Back to Top Button
+        const shouldShowB2T = currentScrollY > 300;
+        if (shouldShowB2T !== backToTopVisible) {
+          backToTopVisible = shouldShowB2T;
+          if (backToTopBtn) {
+            if (backToTopVisible) {
+              backToTopBtn.classList.add('visible');
+            } else {
+              backToTopBtn.classList.remove('visible');
+            }
           }
         }
+
+        // 2. Sticky Header Hiding (Desktop width > 800px)
+        if (!isProgrammaticScroll) {
+          if (currentScrollY > 150) {
+            const diff = currentScrollY - lastScrollY;
+            
+            if ((diff > 0 && scrollAccumulator < 0) || (diff < 0 && scrollAccumulator > 0)) {
+              scrollAccumulator = 0;
+            }
+            scrollAccumulator += diff;
+            
+            const threshold = 15; // Requires 15px of continuous scroll in one direction to trigger transition
+            if (scrollAccumulator > threshold) {
+              if (headerState !== 'down') {
+                headerState = 'down';
+                body.classList.add('scrolled-down');
+                body.classList.remove('scrolled-up');
+              }
+              scrollAccumulator = 0;
+            } else if (scrollAccumulator < -threshold) {
+              if (headerState !== 'up') {
+                headerState = 'up';
+                body.classList.add('scrolled-up');
+                body.classList.remove('scrolled-down');
+              }
+              scrollAccumulator = 0;
+            }
+          } else {
+            if (headerState !== '') {
+              headerState = '';
+              body.classList.remove('scrolled-down');
+              body.classList.remove('scrolled-up');
+            }
+            scrollAccumulator = 0;
+          }
+        }
+
+        // 3. Scrollspy active section tracking
+        if (cachedSectionOffsets.length > 0) {
+          const scrollPosition = currentScrollY + 150; // offset for detection
+          let currentSectionId = '';
+          for (let i = 0; i < cachedSectionOffsets.length; i++) {
+            const sec = cachedSectionOffsets[i];
+            if (sec.offsetTop && sec.offsetTop <= scrollPosition) {
+              currentSectionId = sec.id;
+            }
+          }
+          if (currentSectionId && currentSectionId !== lastActiveId) {
+            lastActiveId = currentSectionId;
+            Object.keys(navItems).forEach(key => {
+              const item = navItems[key];
+              if (item) {
+                if (key === currentSectionId) {
+                  item.classList.add('active');
+                } else {
+                  item.classList.remove('active');
+                }
+              }
+            });
+          }
+        }
+
+        lastScrollY = currentScrollY;
+        rAFScheduled = false;
       });
     }
   }, { passive: true });
@@ -12688,63 +12766,15 @@ function updateHeaderHeights() {
     const rect = topbar.getBoundingClientRect();
     document.documentElement.style.setProperty('--topbar-height', `${rect.height}px`);
   }
+  if (typeof cacheSectionOffsets === 'function') {
+    cacheSectionOffsets();
+  }
 }
 window.addEventListener('resize', updateHeaderHeights);
 
-function initHeaderScrollBehavior() {
-  let scrollAccumulator = 0;
-  let rAFScheduled = false;
-  
-  window.addEventListener('scroll', () => {
-    if (isProgrammaticScroll) return;
-    
-    if (!rAFScheduled) {
-      rAFScheduled = true;
-      requestAnimationFrame(() => {
-        const currentScrollY = window.scrollY;
-        const body = document.body;
-        
-        // Only apply hiding past a reasonable offset from the top
-        if (currentScrollY > 150) {
-          const diff = currentScrollY - lastScrollY;
-          
-          // If scroll direction changes, reset the accumulator
-          if ((diff > 0 && scrollAccumulator < 0) || (diff < 0 && scrollAccumulator > 0)) {
-            scrollAccumulator = 0;
-          }
-          scrollAccumulator += diff;
-          
-          const threshold = 15; // Requires 15px of continuous scroll in one direction to trigger transition
-          
-          if (scrollAccumulator > threshold) {
-            // Scrolling down -> Hide header
-            body.classList.add('scrolled-down');
-            body.classList.remove('scrolled-up');
-            scrollAccumulator = 0;
-          } else if (scrollAccumulator < -threshold) {
-            // Scrolling up -> Show header
-            body.classList.add('scrolled-up');
-            body.classList.remove('scrolled-down');
-            scrollAccumulator = 0;
-          }
-        } else {
-          // Near top of page -> Show header
-          body.classList.remove('scrolled-down');
-          body.classList.remove('scrolled-up');
-          scrollAccumulator = 0;
-        }
-        
-        lastScrollY = currentScrollY;
-        rAFScheduled = false;
-      });
-    }
-  }, { passive: true });
-}
-
 document.addEventListener('DOMContentLoaded', () => { 
   setTimeout(checkUrlParams, 200); 
-  setTimeout(initScrollSpy, 500);
-  initHeaderScrollBehavior();
+  setTimeout(initUnifiedScrollManager, 500);
   initSearchAutocomplete('l-name', 'l-tag', 'landing-search-dropdown', 'l-region');
   initSearchAutocomplete('player-name-input', 'player-tag-input', 'topbar-search-dropdown', 'region-select');
   setTimeout(updateHeaderHeights, 100);
@@ -12944,14 +12974,14 @@ body::after {
     position: sticky !important;
     top: 0 !important;
     z-index: 1000 !important;
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1) !important;
     will-change: transform;
   }
   .tracker-nav {
     position: sticky !important;
     top: calc(var(--topbar-height, 108px) - 1.5px) !important;
     z-index: 999 !important;
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1) !important;
     will-change: transform;
   }
   body.scrolled-down .topbar {
@@ -12995,14 +13025,33 @@ body::after {
   }
 }
 
-.card, .agent-bento, .map-card-bento, .impact-bento, .match-row, .match-panel, .hero-rank-block, .player-banner-card, .ai-card, .deep-trigger-card, .deep-card, .live-banner, .stat-modal {
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+/* Optimize static components by removing backdrop-filter for smooth scroll performance */
+.card, .agent-bento, .map-card-bento, .impact-bento, .match-row, .match-panel, .hero-rank-block, .player-banner-card, .ai-card, .deep-trigger-card, .deep-card, .live-banner {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: rgba(11, 11, 15, 0.93) !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.2s ease, box-shadow 0.25s ease;
   will-change: transform, opacity;
   backface-visibility: hidden;
   transform: translateZ(0);
+}
+
+/* Keep backdrop-filter ONLY on overlay items, tuned down to 12px for low GPU composition cost */
+.stat-modal {
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.2s ease, box-shadow 0.25s ease;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Also tune sticky headers' backdrop-blur to 12px for better composition frame-rates during transitions */
+.topbar, .tracker-nav {
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
 }
 
 .card:hover, .agent-bento:hover, .map-card-bento:hover, .impact-bento:hover, .match-row:hover, .deep-card:hover {
