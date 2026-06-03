@@ -1531,6 +1531,7 @@ let LAST_SUCCESSFUL_NAME = '';
 let LAST_SUCCESSFUL_TAG = '';
 let LAST_SUCCESSFUL_REGION = '';
 let LAST_SUCCESSFUL_MODE = '';
+let statsLoaded = false;
 
 const ACTS_TIMELINE = {
   'v26a3': { name: 'V26 Act 3', start: new Date('2026-04-29T00:00:00Z').getTime(), end: new Date('2026-06-24T00:00:00Z').getTime() },
@@ -7203,6 +7204,7 @@ async function landingFetch() {
 }
 
 function dismissLanding() {
+  statsLoaded = true;
   const el = document.getElementById('landing');
   if (el) {
     el.classList.add('hidden');
@@ -9103,15 +9105,8 @@ function toggleMainView(view) {
   const targetTab = document.getElementById('tab-' + view);
   if (targetTab) targetTab.classList.add('active');
   
-  // Hide landing overlay to prevent it from overlaying the active view
   const landing = document.getElementById('landing');
-  if (landing) {
-    landing.classList.add('hidden');
-    landing.style.display = 'none';
-  }
-  
   const gf = document.getElementById('global-footer');
-  if (gf) gf.style.display = 'flex';
   
   // Hide all views first
   document.getElementById('tracker-view').style.display = 'none';
@@ -9126,20 +9121,42 @@ function toggleMainView(view) {
   const subRow = document.getElementById('topbar-sub-row');
   
   if (view === 'tracker') {
-    document.getElementById('tracker-view').style.display = 'block';
-    if (subRow) subRow.style.display = 'flex';
-    
-    // Only show mobile toggle on tracker view if stats have been loaded (active pill is displayed)
-    const activePill = document.getElementById('player-active-pill');
-    if (mft) {
-      mft.style.display = (activePill && activePill.style.display === 'flex') ? 'inline-flex' : 'none';
+    if (statsLoaded) {
+      if (landing) {
+        landing.classList.add('hidden');
+        landing.style.display = 'none';
+      }
+      if (gf) gf.style.display = 'flex';
+      
+      document.getElementById('tracker-view').style.display = 'block';
+      if (subRow) subRow.style.display = 'flex';
+      
+      const activePill = document.getElementById('player-active-pill');
+      if (mft) {
+        mft.style.display = (activePill && activePill.style.display === 'flex') ? 'inline-flex' : 'none';
+      }
+      
+      const h2hb = document.getElementById('h2h-trigger-btn');
+      if (h2hb) h2hb.style.display = 'inline-block';
+      if(esportsLiveInterval) clearInterval(esportsLiveInterval);
+      if(esportsCountdownInterval) clearInterval(esportsCountdownInterval);
+      dismissLanding();
+    } else {
+      if (landing) {
+        landing.classList.remove('hidden');
+        landing.style.display = 'flex';
+      }
+      if (gf) gf.style.display = 'none';
+      
+      document.getElementById('tracker-view').style.display = 'none';
+      if (subRow) subRow.style.display = 'none';
+      if (mft) mft.style.display = 'none';
+      
+      const h2hb = document.getElementById('h2h-trigger-btn');
+      if (h2hb) h2hb.style.display = 'none';
+      if(esportsLiveInterval) clearInterval(esportsLiveInterval);
+      if(esportsCountdownInterval) clearInterval(esportsCountdownInterval);
     }
-    
-    const h2hb = document.getElementById('h2h-trigger-btn');
-    if (h2hb) h2hb.style.display = 'inline-block';
-    if(esportsLiveInterval) clearInterval(esportsLiveInterval);
-    if(esportsCountdownInterval) clearInterval(esportsCountdownInterval);
-    dismissLanding();
   } else {
     // Hide tracker-specific filters and search on other tabs
     if (subRow) subRow.style.display = 'none';

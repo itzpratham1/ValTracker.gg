@@ -5150,3 +5150,17 @@ input:checked + .slider:before {
   background: rgba(255, 70, 85, 0.15);
   color: var(--accent);
 }
+
+/* Hide topbar when the landing page (login/lookup screen) is active */
+#landing:not(.hidden) ~ .topbar {
+  display: none !important;
+}
+
+/* Adjust mobile viewport spacing for landing page tag input */
+@media (max-width: 600px) {
+  .landing-input-tag {
+    width: 95px !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+}
