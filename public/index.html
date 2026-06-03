@@ -12944,7 +12944,7 @@ body::after {
   }
   .tracker-nav {
     position: sticky !important;
-    top: var(--topbar-height, 108px) !important;
+    top: calc(var(--topbar-height, 108px) - 1.5px) !important;
     z-index: 999 !important;
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
     will-change: transform;
@@ -12953,7 +12953,7 @@ body::after {
     transform: translateY(-100%) !important;
   }
   body.scrolled-down .tracker-nav {
-    transform: translateY(calc(-1 * var(--topbar-height, 108px))) !important;
+    transform: translateY(calc(-1 * var(--topbar-height, 108px) - 1.5px)) !important;
   }
 }
 @media (max-width: 800px) {
@@ -12965,6 +12965,28 @@ body::after {
     position: sticky !important;
     top: 0 !important;
     z-index: 9999 !important;
+  }
+  /* Increase active pill name width so Japanese/long names don't truncate aggressively on mobile */
+  .active-pill-name {
+    max-width: 130px !important;
+  }
+}
+@media (max-width: 600px) {
+  /* Prevent word-by-word stretching in rank & streak blocks by stacking them vertically */
+  .hero-right {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+  .hero-rank-block, .hero-streak-block {
+    width: 100% !important;
+  }
+  
+  /* Keep name suffix inline to avoid splitting "ItzPratham" and "エース" into two lines */
+  .hero-title .dim {
+    display: inline-block !important;
+    margin-left: 6px !important;
+    margin-top: 0 !important;
+    font-size: 0.6em !important;
   }
 }
 
