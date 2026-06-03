@@ -2753,17 +2753,16 @@ body::before {
   align-items: center !important;
   text-align: center !important;
   gap: 2px !important;
-  width: 85px !important;
+  width: 95px !important;
 }
 #esp-active-team-matches-container .esp-match-card .esp-match-info .esp-tourney {
-  font-size: 8px !important;
-  line-height: 1.1 !important;
+  font-size: 9px !important;
+  line-height: 1.15 !important;
   max-width: 100% !important;
   word-break: break-word !important;
-  display: -webkit-box !important;
-  -webkit-line-clamp: 2 !important;
-  -webkit-box-orient: vertical !important;
-  overflow: hidden !important;
+  display: block !important;
+  white-space: normal !important;
+  overflow: visible !important;
 }
 #esp-active-team-matches-container .esp-match-card .esp-match-info .tier-badge {
   display: none !important; /* Hide tier badge inside the sidebar card to save space */
@@ -5433,5 +5432,18 @@ input:checked + .slider:before {
     width: 100% !important;
     justify-content: center !important;
     box-sizing: border-box !important;
+  }
+}
+
+/* Hide schedule sub-tabs on desktop viewports by default */
+.schedule-tabs {
+  display: none !important;
+}
+
+/* Force both Schedule columns to display on desktop to override mobile toggles */
+@media (min-width: 801px) {
+  #schedule-col-upcoming,
+  #schedule-col-results {
+    display: block !important;
   }
 }

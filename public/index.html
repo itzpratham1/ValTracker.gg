@@ -655,15 +655,21 @@
     
     <!-- SCHEDULE SECTION -->
     <div id="esp-sec-schedule" class="esports-section">
+      <!-- Mobile Sub-tabs for Schedule Section -->
+      <div class="schedule-tabs" style="display: none; justify-content: center; gap: 8px; margin-bottom: 20px;">
+        <div class="esports-pill active" id="sched-tab-upcoming" onclick="switchScheduleTab('upcoming')">Upcoming</div>
+        <div class="esports-pill" id="sched-tab-results" onclick="switchScheduleTab('results')">Results</div>
+      </div>
+      
       <div class="esp-schedule-grid">
-        <div>
+        <div id="schedule-col-upcoming">
           <div class="section-label visible" style="margin-bottom:16px;">
             <span class="sl-text">Upcoming Matches</span>
             <div class="sl-line"></div>
           </div>
           <div id="esp-upcoming-container"></div>
         </div>
-        <div>
+        <div id="schedule-col-results">
           <div class="section-label visible" style="margin-bottom:16px;">
             <span class="sl-text">Recent Results</span>
             <div class="sl-line"></div>
@@ -9168,7 +9174,7 @@ function toggleMainView(view) {
     
     if (view === 'esports') {
       document.getElementById('esports-view').style.display = 'block';
-      const activeTab = document.querySelector('.esports-pill.active').textContent.toLowerCase();
+      const activeTab = document.querySelector('.esports-pills-scroll .esports-pill.active').textContent.toLowerCase();
       switchEsportsTab(activeTab);
     } else if (view === 'store') {
       document.getElementById('store-view').style.display = 'block';
@@ -9271,9 +9277,9 @@ function updateFilterToggleText() {
 }
 
 function switchEsportsTab(tab) {
-  document.querySelectorAll('.esports-pill').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.esports-pills-scroll .esports-pill').forEach(p => p.classList.remove('active'));
   
-  const activePill = Array.from(document.querySelectorAll('.esports-pill')).find(p => p.textContent.toLowerCase() === tab.toLowerCase());
+  const activePill = Array.from(document.querySelectorAll('.esports-pills-scroll .esports-pill')).find(p => p.textContent.toLowerCase() === tab.toLowerCase());
   if (activePill) activePill.classList.add('active');
   
   document.querySelectorAll('.esports-section').forEach(s => s.classList.remove('active'));
@@ -9289,6 +9295,7 @@ function switchEsportsTab(tab) {
   else if (tab === 'schedule') {
     fetchEsportsUpcoming();
     fetchEsportsResults();
+    switchScheduleTab('upcoming');
   }
   else if (tab === 'vct26') {
     // Already populated statically in HTML
@@ -9298,6 +9305,25 @@ function switchEsportsTab(tab) {
   }
   else if (tab === 'news') {
     fetchEsportsNews();
+  }
+}
+
+function switchScheduleTab(tab) {
+  const upCol = document.getElementById('schedule-col-upcoming');
+  const resCol = document.getElementById('schedule-col-results');
+  const upTab = document.getElementById('sched-tab-upcoming');
+  const resTab = document.getElementById('sched-tab-results');
+  
+  if (tab === 'upcoming') {
+    if (upCol) upCol.style.display = 'block';
+    if (resCol) resCol.style.display = 'none';
+    if (upTab) upTab.classList.add('active');
+    if (resTab) resTab.classList.remove('active');
+  } else {
+    if (upCol) upCol.style.display = 'none';
+    if (resCol) resCol.style.display = 'block';
+    if (upTab) upTab.classList.remove('active');
+    if (resTab) resTab.classList.add('active');
   }
 }
 
@@ -13283,6 +13309,13 @@ body::after {
   .esp-schedule-grid {
     grid-template-columns: 1fr !important;
     gap: 16px !important;
+  }
+  /* Mobile Schedule Tabs */
+  .schedule-tabs {
+    display: flex !important;
+  }
+  #schedule-col-results {
+    display: none;
   }
   /* Match Cards */
   .esp-match-card {
