@@ -9,7 +9,7 @@
 <link rel="icon" type="image/png" href="logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
-<link rel="stylesheet" href="index.css?v=13.06">
+<link rel="stylesheet" href="index.css?v=13.08">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 </head>
@@ -7568,28 +7568,59 @@ function renderLandingProfile() {
 
 function buildAccuracyBodySvg(hsPct, bsPct, lsPct) {
   const headColor = hsPct >= 25 ? 'var(--win)' : (hsPct >= 15 ? 'var(--accent)' : '#ff4655');
-  const headFill = hsPct >= 25 ? 'rgba(62,207,142,0.18)' : (hsPct >= 15 ? 'rgba(232,255,71,0.12)' : 'rgba(255,70,85,0.12)');
+  const headFill = hsPct >= 25 ? 'rgba(62,207,142,0.15)' : (hsPct >= 15 ? 'rgba(232,255,71,0.09)' : 'rgba(255,70,85,0.09)');
+  const visorColor = hsPct >= 25 ? '#3ecf8e' : (hsPct >= 15 ? '#e8ff47' : '#ff4655');
   
-  const bodyColor = bsPct >= 50 ? 'rgba(255,70,85,0.8)' : 'rgba(255,255,255,0.25)';
-  const bodyFill = bsPct >= 50 ? 'rgba(255,70,85,0.15)' : 'rgba(255,255,255,0.03)';
+  const bodyColor = bsPct >= 50 ? '#ff4655' : 'rgba(255,255,255,0.25)';
+  const bodyFill = bsPct >= 50 ? 'rgba(255,70,85,0.12)' : 'rgba(255,255,255,0.02)';
+  const coreColor = bsPct >= 50 ? '#ff4655' : 'rgba(255,255,255,0.4)';
   
   const legsColor = 'rgba(255,255,255,0.2)';
   const legsFill = 'rgba(255,255,255,0.015)';
 
   return `
-    <svg class="acc-figure" width="56" height="110" viewBox="0 0 56 110" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4)); flex-shrink:0;">
-      <!-- Head (Tactical Helmet Shape) -->
-      <path d="M28,3 C33,3 37,7 37,13 C37,17 35,21 32,22 L28,25 L24,22 C21,21 19,17 19,13 C19,7 23,3 28,3 Z" fill="${headFill}" stroke="${headColor}" stroke-width="1.5"/>
-      <text x="28" y="16" text-anchor="middle" font-family="'DM Mono', monospace" font-size="7" fill="white" font-weight="700">${hsPct}%</text>
+    <svg class="acc-figure" width="90" height="120" viewBox="0 0 100 130" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: block !important; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5)); flex-shrink:0;">
+      <defs>
+        <!-- Scanner Scanline Grid Pattern -->
+        <pattern id="holo-grid" width="4" height="4" patternUnits="userSpaceOnUse">
+          <path d="M 4 0 L 0 0 0 4" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="0.5"/>
+        </pattern>
+      </defs>
       
-      <!-- Body (Torso Armor Plate) -->
-      <path d="M16,28 H40 C43,28 45,30 44,33 L40,66 C39,69 36,71 33,71 H23 C20,71 17,69 16,66 L12,33 C11,30 13,28 16,28 Z" fill="${bodyFill}" stroke="${bodyColor}" stroke-width="1"/>
-      <text x="28" y="52" text-anchor="middle" font-family="'DM Mono', monospace" font-size="7" fill="rgba(255,255,255,0.85)" font-weight="700">${bsPct}%</text>
+      <!-- Hologram Background Circle & Scanner Radar -->
+      <circle cx="50" cy="65" r="48" stroke="rgba(255, 255, 255, 0.03)" stroke-width="1" fill="none" />
+      <circle cx="50" cy="65" r="44" stroke="rgba(255, 255, 255, 0.02)" stroke-width="0.75" stroke-dasharray="4,4" fill="none" />
+      <circle cx="50" cy="65" r="54" stroke="rgba(255, 255, 255, 0.015)" stroke-width="0.5" fill="none" />
       
-      <!-- Legs (Armored Leg Plates) -->
-      <path d="M14,75 H24 L22,106 H15 Z" fill="${legsFill}" stroke="${legsColor}" stroke-width="1"/>
-      <path d="M32,75 H42 L41,106 H34 Z" fill="${legsFill}" stroke="${legsColor}" stroke-width="1"/>
-      <text x="28" y="94" text-anchor="middle" font-family="'DM Mono', monospace" font-size="7" fill="rgba(255,255,255,0.5)" font-weight="700">${lsPct}%</text>
+      <!-- Telemetry Corner Brackets -->
+      <path d="M 12 18 H 6 V 24" stroke="rgba(255,255,255,0.15)" stroke-width="0.75" fill="none" />
+      <path d="M 88 18 H 94 V 24" stroke="rgba(255,255,255,0.15)" stroke-width="0.75" fill="none" />
+      <path d="M 12 112 H 6 V 106" stroke="rgba(255,255,255,0.15)" stroke-width="0.75" fill="none" />
+      <path d="M 88 112 H 94 V 106" stroke="rgba(255,255,255,0.15)" stroke-width="0.75" fill="none" />
+      
+      <!-- Hologram grid fill underlay -->
+      <circle cx="50" cy="65" r="44" fill="url(#holo-grid)" />
+      
+      <!-- Head (Tactical Helmet) -->
+      <path d="M50,10 C56,10 60,14 60,20 C60,24 58,28 55,29 L50,32 L45,29 C42,28 40,24 40,20 C40,14 44,10 50,10 Z" fill="${headFill}" stroke="${headColor}" stroke-width="1.5"/>
+      <path d="M44,18 H56 V20 H44 Z" fill="${visorColor}" opacity="0.8" style="filter: drop-shadow(0 0 3px ${visorColor});"/>
+      <text x="50" y="27" text-anchor="middle" font-family="'DM Mono', monospace" font-size="7" fill="white" font-weight="700" style="letter-spacing:-0.2px;">${hsPct}%</text>
+      
+      <!-- Body (Torso Chest Armor) -->
+      <path d="M32,36 H68 C72,36 75,39 74,43 L69,72 C68,75 65,77 62,77 H38 C35,77 32,75 31,72 L26,43 C25,39 28,36 32,36 Z" fill="${bodyFill}" stroke="${bodyColor}" stroke-width="1.2"/>
+      <path d="M36,40 H64 L61,71 H39 Z" stroke="rgba(255,255,255,0.05)" stroke-width="0.75" fill="none"/>
+      <!-- Core Reactor -->
+      <circle cx="50" cy="48" r="3.5" fill="none" stroke="${coreColor}" stroke-width="1"/>
+      <circle cx="50" cy="48" r="1.5" fill="${coreColor}"/>
+      <text x="50" y="65" text-anchor="middle" font-family="'DM Mono', monospace" font-size="7" fill="rgba(255,255,255,0.9)" font-weight="700">${bsPct}%</text>
+      
+      <!-- Legs (Left/Right Armored Plates) -->
+      <path d="M30,82 H44 L40,118 H32 Z" fill="${legsFill}" stroke="${legsColor}" stroke-width="1"/>
+      <path d="M56,82 H70 L68,118 H60 Z" fill="${legsFill}" stroke="${legsColor}" stroke-width="1"/>
+      <!-- Knee Guard details -->
+      <path d="M33,100 H39" stroke="rgba(255,255,255,0.15)" stroke-width="0.75" />
+      <path d="M61,100 H67" stroke="rgba(255,255,255,0.15)" stroke-width="0.75" />
+      <text x="50" y="103" text-anchor="middle" font-family="'DM Mono', monospace" font-size="7" fill="rgba(255,255,255,0.65)" font-weight="700">${lsPct}%</text>
     </svg>
   `;
 }
