@@ -2782,24 +2782,47 @@ body::before {
   margin: 4px 0 !important;
   width: 100% !important;
 }
-.esp-compact-meta-row {
+.esp-compact-tourney-row {
   display: flex !important;
   align-items: center !important;
-  justify-content: space-between !important;
+  gap: 6px !important;
   width: 100% !important;
 }
-.esp-compact-tourney {
+.esp-compact-tourney-text {
   font-family: 'DM Mono', monospace !important;
   font-size: 10px !important;
-  color: var(--muted2) !important;
+  color: var(--muted) !important;
   text-transform: uppercase !important;
   letter-spacing: 0.5px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: calc(100% - 70px) !important;
 }
-.esp-compact-date {
+.esp-compact-date-row {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+.esp-compact-date-text {
   font-family: 'DM Mono', monospace !important;
   font-size: 10px !important;
   color: var(--muted2) !important;
 }
+
+/* Ensure VLR details button is always styled as a red button and never inherits default blue link styling */
+.esp-btn.vlr {
+  background: rgba(250, 68, 84, 0.12) !important;
+  border: 1px solid rgba(250, 68, 84, 0.3) !important;
+  color: #ff4655 !important;
+  text-decoration: none !important;
+}
+.esp-btn.vlr:hover {
+  background: #ff4655 !important;
+  color: #000 !important;
+  border-color: #ff4655 !important;
+}
+
 .esp-compact-action {
   margin-top: 6px !important;
   width: 100% !important;

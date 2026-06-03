@@ -9939,9 +9939,11 @@ function getEspHTML(m, type) {
           <span class="esp-compact-score ${w2}">${score2}</span>
         </div>
         <div class="esp-compact-divider"></div>
-        <div class="esp-compact-meta-row">
-          <span class="esp-compact-tourney">${tierBadge} ${event}</span>
-          <span class="esp-compact-date">${displayDate}</span>
+        <div class="esp-compact-tourney-row">
+          ${tierBadge} <span class="esp-compact-tourney-text">${event}</span>
+        </div>
+        <div class="esp-compact-date-row">
+          <span class="esp-compact-date-text">📅 ${displayDate}</span>
         </div>
         ${btnHtml ? `<div class="esp-compact-action">${btnHtml}</div>` : ''}
       </div>
@@ -10227,6 +10229,17 @@ async function initTeamsTab() {
       domEl.innerHTML = teams.map(t => `
         <div class="esp-sidebar-team-btn" data-team-id="${t.id}" onclick="selectFranchiseTeam('${regName}', '${t.id}')">${t.name}</div>
       `).join('');
+      
+      // Collapse all region lists except Pacific by default on initial load
+      const listId = `ov-${regName}`;
+      const header = document.querySelector(`.esp-sidebar-region-header[onclick*="${listId}"]`);
+      if (regName !== 'pacific') {
+        domEl.classList.add('collapsed');
+        if (header) header.classList.add('collapsed');
+      } else {
+        domEl.classList.remove('collapsed');
+        if (header) header.classList.remove('collapsed');
+      }
     });
     
     selectFranchiseTeam('pacific', '918');
@@ -10245,6 +10258,23 @@ function selectFranchiseTeam(region, teamId) {
   document.querySelectorAll('.esp-sidebar-team-btn').forEach(btn => btn.classList.remove('active'));
   const activeBtn = document.querySelector(`.esp-sidebar-team-btn[data-team-id="${teamId}"]`);
   if (activeBtn) activeBtn.classList.add('active');
+  
+  // Collapse other lists and expand the selected team's region list
+  const targetId = `ov-${region.toLowerCase()}`;
+  const allLists = ['ov-americas', 'ov-emea', 'ov-pacific', 'ov-china'];
+  allLists.forEach(id => {
+    const list = document.getElementById(id);
+    const header = document.querySelector(`.esp-sidebar-region-header[onclick*="${id}"]`);
+    if (list && header) {
+      if (id === targetId) {
+        list.classList.remove('collapsed');
+        header.classList.remove('collapsed');
+      } else {
+        list.classList.add('collapsed');
+        header.classList.add('collapsed');
+      }
+    }
+  });
   
   if (!vctFranchiseData) return;
   const team = (vctFranchiseData[region] || []).find(t => t.id === teamId);
@@ -13244,12 +13274,42 @@ body::after {
   ══════════════════════════════════════════ */
 
   .esports-subnav {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
     position: sticky !important;
     top: 0 !important;
     background: #0a0a0c !important;
     padding: 8px 14px !important;
     z-index: 9999 !important;
     border-bottom: 1px solid var(--border) !important;
+    gap: 12px !important;
+  }
+  .esports-pills-scroll {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 8px !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    flex-grow: 1 !important;
+    scrollbar-width: none !important;
+  }
+  .esports-pills-scroll::-webkit-scrollbar {
+    display: none !important;
+  }
+  .esports-pill {
+    display: inline-block !important;
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+  }
+  .tier-toggle-wrapper {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex-shrink: 0 !important;
   }
   /* Overview split grid → stack */
   #esp-sec-overview > div[style*="grid-template-columns: 1.8fr 1fr"] {
