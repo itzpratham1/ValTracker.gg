@@ -2712,72 +2712,91 @@ body::before {
   box-sizing: border-box !important;
 }
 
-/* Team details sidebar upcoming match card styling - horizontal but compact */
-#esp-active-team-matches-container .esp-match-card {
-  grid-template-columns: 1fr auto 1fr !important;
-  gap: 8px !important;
-  padding: 10px 8px !important;
-  align-items: center !important;
-}
-#esp-active-team-matches-container .esp-match-card .esp-team {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  gap: 6px !important;
-  width: auto !important;
-  flex: 1 !important;
-}
-#esp-active-team-matches-container .esp-match-card .esp-team.t-right {
-  flex-direction: row-reverse !important;
-  justify-content: flex-start !important;
-}
-#esp-active-team-matches-container .esp-match-card .esp-team .esp-tname {
-  font-size: 11px !important;
-  font-weight: 700 !important;
-  max-width: 65px !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
-}
-#esp-active-team-matches-container .esp-match-card .esp-team.t-right .esp-tlogo-wrap {
-  margin-left: 0 !important;
-  margin-right: 4px !important;
-}
-#esp-active-team-matches-container .esp-match-card .esp-match-info {
-  grid-row: auto !important;
-  border: none !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  text-align: center !important;
-  gap: 2px !important;
-  width: 95px !important;
-}
-#esp-active-team-matches-container .esp-match-card .esp-match-info .esp-tourney {
-  font-size: 9px !important;
-  line-height: 1.15 !important;
-  max-width: 100% !important;
-  word-break: break-word !important;
-  display: block !important;
-  white-space: normal !important;
-  overflow: visible !important;
-}
-#esp-active-team-matches-container .esp-match-card .esp-match-info .tier-badge {
-  display: none !important; /* Hide tier badge inside the sidebar card to save space */
-}
-#esp-active-team-matches-container .esp-match-card .esp-match-info .esp-status {
-  font-size: 9px !important;
-  padding: 1px 4px !important;
-}
-#esp-active-team-matches-container .esp-match-card .esp-match-info .esp-meta {
-  font-size: 8px !important;
-}
-#esp-active-team-matches-container .esp-match-card .esp-match-info .esp-btn {
-  font-size: 8px !important;
-  padding: 3px 6px !important;
-  margin-top: 2px !important;
+/* Team details sidebar upcoming match card styling - horizontal but compact on desktop only */
+@media (min-width: 901px) {
+  #esp-active-team-matches-container .esp-match-card {
+    grid-template-columns: 1fr auto 1fr !important;
+    gap: 4px !important;
+    padding: 8px 6px !important;
+    align-items: center !important;
+  }
+  #esp-active-team-matches-container .esp-match-card .esp-team {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 4px !important;
+    width: auto !important;
+    flex: 1 !important;
+  }
+  #esp-active-team-matches-container .esp-match-card .esp-team .esp-tname {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    max-width: 55px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+  #esp-active-team-matches-container .esp-match-card .esp-team img,
+  #esp-active-team-matches-container .esp-match-card .esp-team .team-logo-fallback {
+    width: 18px !important;
+    height: 18px !important;
+    margin: 0 !important;
+    flex-shrink: 0 !important;
+  }
+  #esp-active-team-matches-container .esp-match-card .esp-team.t-right {
+    flex-direction: row !important; /* normal row layout to prevent overlap/overflow */
+    justify-content: flex-end !important;
+  }
+  #esp-active-team-matches-container .esp-match-card .esp-team.t-right .esp-tlogo-wrap {
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    flex-shrink: 0 !important;
+  }
+  #esp-active-team-matches-container .esp-match-card .esp-team.t-right .esp-tname {
+    text-align: right !important;
+  }
+  #esp-active-team-matches-container .esp-match-card .esp-team.t-right .esp-tscore {
+    margin-right: auto !important;
+    margin-left: 0 !important;
+  }
+  #esp-active-team-matches-container .esp-match-card .esp-match-info {
+    grid-row: auto !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 2px !important;
+    width: 80px !important;
+  }
+  #esp-active-team-matches-container .esp-match-card .esp-match-info .esp-tourney {
+    font-size: 8.5px !important;
+    line-height: 1.15 !important;
+    max-width: 100% !important;
+    word-break: break-word !important;
+    display: block !important;
+    white-space: normal !important;
+    overflow: visible !important;
+  }
+  #esp-active-team-matches-container .esp-match-card .esp-match-info .tier-badge {
+    display: none !important;
+  }
+  #esp-active-team-matches-container .esp-match-card .esp-match-info .esp-status {
+    font-size: 9px !important;
+    padding: 1px 4px !important;
+  }
+  #esp-active-team-matches-container .esp-match-card .esp-match-info .esp-meta {
+    font-size: 8px !important;
+  }
+  #esp-active-team-matches-container .esp-match-card .esp-match-info .esp-btn {
+    font-size: 8px !important;
+    padding: 3px 6px !important;
+    margin-top: 2px !important;
+  }
 }
 
 
