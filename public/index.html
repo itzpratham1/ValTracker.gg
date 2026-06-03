@@ -10288,6 +10288,9 @@ document.addEventListener('click', (event) => {
 });
 
 
+let isProgrammaticScroll = false;
+let lastScrollY = window.scrollY;
+
 // HUD Ease of Access smooth scrolling
 function smoothScrollTo(elementId, event) {
   if (event) event.preventDefault();
@@ -10298,10 +10301,21 @@ function smoothScrollTo(elementId, event) {
     const elementRect = el.getBoundingClientRect().top;
     const elementPosition = elementRect - bodyRect;
     const offsetPosition = elementPosition - offset;
+    
+    // Temporarily disable scroll hide class changes during smooth scroll
+    isProgrammaticScroll = true;
+    document.body.classList.remove('scrolled-down');
+    document.body.classList.add('scrolled-up');
+    
     window.scrollTo({
       top: offsetPosition,
       behavior: 'smooth'
     });
+    
+    setTimeout(() => {
+      isProgrammaticScroll = false;
+      lastScrollY = window.scrollY;
+    }, 800);
   }
 }
 
@@ -12672,9 +12686,38 @@ function updateHeaderHeights() {
 }
 window.addEventListener('resize', updateHeaderHeights);
 
+function initHeaderScrollBehavior() {
+  window.addEventListener('scroll', () => {
+    if (isProgrammaticScroll) return;
+    
+    const currentScrollY = window.scrollY;
+    const body = document.body;
+    
+    // Only apply hiding past a reasonable offset from the top
+    if (currentScrollY > 150) {
+      if (currentScrollY > lastScrollY) {
+        // Scrolling down -> Hide header
+        body.classList.add('scrolled-down');
+        body.classList.remove('scrolled-up');
+      } else {
+        // Scrolling up -> Show header
+        body.classList.add('scrolled-up');
+        body.classList.remove('scrolled-down');
+      }
+    } else {
+      // Near top of page -> Show header
+      body.classList.remove('scrolled-down');
+      body.classList.remove('scrolled-up');
+    }
+    
+    lastScrollY = currentScrollY;
+  }, { passive: true });
+}
+
 document.addEventListener('DOMContentLoaded', () => { 
   setTimeout(checkUrlParams, 200); 
   setTimeout(initScrollSpy, 500);
+  initHeaderScrollBehavior();
   initSearchAutocomplete('l-name', 'l-tag', 'landing-search-dropdown', 'l-region');
   initSearchAutocomplete('player-name-input', 'player-tag-input', 'topbar-search-dropdown', 'region-select');
   setTimeout(updateHeaderHeights, 100);
@@ -12874,11 +12917,22 @@ body::after {
     position: sticky !important;
     top: 0 !important;
     z-index: 1000 !important;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease !important;
+    will-change: transform;
   }
   .tracker-nav {
     position: sticky !important;
     top: var(--topbar-height, 108px) !important;
     z-index: 999 !important;
+    transition: top 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    will-change: top;
+  }
+  body.scrolled-down .topbar {
+    transform: translateY(-100%) !important;
+    box-shadow: none !important;
+  }
+  body.scrolled-down .tracker-nav {
+    top: 0 !important;
   }
 }
 @media (max-width: 800px) {
