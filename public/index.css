@@ -2061,7 +2061,13 @@ body::before {
   color: var(--text); padding: 12px 14px; flex: 1;
 }
 .landing-input::placeholder { color: var(--muted2); }
-.landing-input-tag { width: 80px; flex: none; border-left: 1px solid var(--border) !important; }
+.landing-input-tag {
+  width: 90px;
+  flex: none;
+  border-left: 1px solid var(--border) !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
 .landing-input-hash { font-family: 'DM Mono', monospace; font-size: 14px; color: var(--muted2); padding: 12px 4px 12px 0; line-height: 1; align-self: center; }
 
 .landing-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
@@ -5159,8 +5165,9 @@ input:checked + .slider:before {
 /* Adjust mobile viewport spacing for landing page tag input */
 @media (max-width: 600px) {
   .landing-input-tag {
-    width: 95px !important;
-    padding-left: 10px !important;
-    padding-right: 10px !important;
+    width: 100px !important;
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+    text-align: center !important;
   }
 }
