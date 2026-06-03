@@ -612,12 +612,13 @@
 <!-- ESPORTS VIEW -->
 <div id="esports-view" style="display:none;">
   <div class="esports-subnav">
-    <div class="esports-pill active" onclick="switchEsportsTab('overview')">Overview</div>
-    <div class="esports-pill" onclick="switchEsportsTab('schedule')">Schedule</div>
-    <div class="esports-pill" onclick="switchEsportsTab('vct26')">VCT26</div>
-    <div class="esports-pill" onclick="switchEsportsTab('teams')">Teams</div>
-    <div class="esports-pill" onclick="switchEsportsTab('news')">News</div>
-    <div style="flex-grow:1"></div>
+    <div class="esports-pills-scroll">
+      <div class="esports-pill active" onclick="switchEsportsTab('overview')">Overview</div>
+      <div class="esports-pill" onclick="switchEsportsTab('schedule')">Schedule</div>
+      <div class="esports-pill" onclick="switchEsportsTab('vct26')">VCT26</div>
+      <div class="esports-pill" onclick="switchEsportsTab('teams')">Teams</div>
+      <div class="esports-pill" onclick="switchEsportsTab('news')">News</div>
+    </div>
     <div class="tier-toggle-wrapper">
       <span style="font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); text-transform:uppercase;">Tier 2/3</span>
       <label class="switch">
@@ -9100,6 +9101,8 @@ let vctFranchiseData = null;
 let allMatchesCache = [];
 
 function toggleMainView(view) {
+  document.body.classList.remove('scrolled-down');
+  document.body.classList.remove('scrolled-up');
   document.querySelectorAll('.topbar-tab').forEach(t => t.classList.remove('active'));
   const targetTab = document.getElementById('tab-' + view);
   if (targetTab) targetTab.classList.add('active');
@@ -10382,7 +10385,10 @@ function initUnifiedScrollManager() {
 
         // 2. Sticky Header Hiding (Desktop width > 800px)
         if (!isProgrammaticScroll) {
-          if (currentScrollY > 150) {
+          const activeTab = document.querySelector('.topbar-tab.active');
+          const isTrackerActive = activeTab && activeTab.id === 'tab-tracker';
+
+          if (isTrackerActive && currentScrollY > 150) {
             const diff = currentScrollY - lastScrollY;
             
             if ((diff > 0 && scrollAccumulator < 0) || (diff < 0 && scrollAccumulator > 0)) {
