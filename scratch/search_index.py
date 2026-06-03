@@ -1,17 +1,19 @@
-import re
+import sys
+
+def safe_print(text):
+    sys.stdout.buffer.write(text.encode('utf-8') + b'\n')
 
 with open("public/index.html", "r", encoding="utf-8", errors="ignore") as f:
     content = f.read()
 
-script_match = re.search(r'<script>([\s\S]*?)<\/script>', content)
-if script_match:
-    js = script_match.group(1)
-    
-    # Find all function names
-    funcs = re.findall(r'function\s+([a-zA-Z0-9_]+)\s*\(', js)
-    print("Found functions:", len(funcs))
-    for fn in sorted(funcs):
-        if any(term in fn.lower() for term in ["match", "render", "show", "card", "display"]):
-            print(f" - {fn}")
-else:
-    print("No script tag found")
+import re
+funcs = ["toggleSession", "renderSessionBanner", "startSession", "stopSession"]
+for func in funcs:
+    matches = [m.start() for m in re.finditer(r'function\s+' + func, content)]
+    for m in matches:
+        start_line = content[:m].count('\n') + 1
+        safe_print(f"=== {func} defined at line {start_line} ===")
+        lines = content[m:m+1500].split('\n')
+        for idx, l in enumerate(lines[:30]):
+            safe_print(f"  {start_line + idx}: {l}")
+        safe_print("-" * 50)

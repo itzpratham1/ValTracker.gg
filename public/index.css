@@ -5466,3 +5466,115 @@ input:checked + .slider:before {
     display: block !important;
   }
 }
+
+/* ── CLS PREVENTION: reserve dimensions for images before they load ── */
+.esp-tlogo {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  object-fit: contain;
+  aspect-ratio: 1;
+}
+.esp-tlogo-wrap {
+  min-width: 40px;
+  min-height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.search-rec-chip-avatar {
+  min-width: 20px;
+  min-height: 20px;
+  flex-shrink: 0;
+}
+.agent-portrait-fallback {
+  min-height: 140px;
+}
+
+/* ── TOUCH TARGETS: min 44px height on mobile ── */
+@media (max-width: 800px) {
+  .esp-btn {
+    min-height: 44px !important;
+    padding: 0 14px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  .search-rec-chip {
+    min-height: 44px !important;
+    padding: 10px !important;
+  }
+  .esports-pill {
+    min-height: 36px !important;
+    padding: 6px 16px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+  .stat-modal-close {
+    min-width: 44px !important;
+    min-height: 44px !important;
+    width: 44px !important;
+    height: 44px !important;
+  }
+}
+
+/* ── TABLE HORIZONTAL SCROLL on mobile ── */
+@media (max-width: 800px) {
+  .stat-modal .table-wrap,
+  .match-panel .table-wrap,
+  .stat-modal table,
+  .match-panel table {
+    display: block !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    max-width: 100% !important;
+    white-space: nowrap !important;
+  }
+  .stat-modal th,
+  .stat-modal td,
+  .match-panel th,
+  .match-panel td {
+    font-size: 11px !important;
+    padding: 6px 8px !important;
+  }
+  /* Generic table scroll guard for all sections */
+  .main table,
+  .card table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+  }
+}
+
+/* ── MODAL SCROLL LOCK: prevent background scroll when a modal is open ── */
+body.modal-open {
+  overflow: hidden !important;
+  /* position: fixed freezes scroll position on iOS */
+  position: fixed !important;
+  width: 100% !important;
+  /* preserve current scroll position */
+  top: var(--scroll-y, 0px);
+}
+
+/* ── BENTO GRID DENSITY: very narrow phones (< 360px) ── */
+@media (max-width: 360px) {
+  .agent-bento {
+    grid-column: span 6 !important;
+  }
+  .agent-stats-row {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+  }
+  .asr-item .asv {
+    font-size: 15px !important;
+  }
+  .asr-item .asl {
+    font-size: 9px !important;
+  }
+  .map-card-bento {
+    grid-column: span 6 !important;
+  }
+}
+

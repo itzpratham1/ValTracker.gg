@@ -1,1465 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="referrer" content="no-referrer">
-<meta name="theme-color" content="#030304">
-<title>ValTracker — Valorant Stats Tracker</title>
-<link rel="icon" type="image/png" href="logo.png">
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
-<link rel="stylesheet" href="index.css?v=13.06">
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
-</head>
-<body>
-
-<!-- LANDING PAGE -->
-<div id="landing">
-  <div class="landing-noise"></div>
-  <div class="landing-corners">
-    <div class="landing-corner tl"></div>
-    <div class="landing-corner tr"></div>
-    <div class="landing-corner bl"></div>
-    <div class="landing-corner br"></div>
-  </div>
-
-  <div class="landing-logo" style="display:flex; align-items:center; justify-content:center;">
-    <img src="logo.png" class="logo-icon" style="height:48px; width:auto; display:inline-block; vertical-align:middle; margin-right:16px; flex-shrink:0; filter: drop-shadow(0 0 12px rgba(255, 70, 85, 0.7)); object-fit: contain;">
-    <span>ValTracker</span>
-  </div>
-  <div class="landing-tagline">Valorant Performance Tracker</div>
-
-  <div class="landing-columns-wrap">
-    <div class="landing-card" style="margin: 0; flex: 1; min-width: 320px; max-width: 440px;">
-      <div class="landing-card-title">Look up a player</div>
-      <div class="landing-card-sub">Enter a Riot ID to view stats, match history &amp; analysis</div>
-
-      <div class="landing-field-label">Riot ID</div>
-      <div class="landing-input-row" style="position: relative;">
-        <input class="landing-input" id="l-name" type="text" placeholder="PlayerName" autocomplete="off" spellcheck="false">
-        <span class="landing-input-hash">#</span>
-        <input class="landing-input landing-input-tag" id="l-tag" type="text" placeholder="TAG" maxlength="8" autocomplete="off" spellcheck="false">
-        <div id="landing-search-dropdown" class="search-dropdown"></div>
-      </div>
-
-      <div class="landing-row2">
-        <div>
-          <div class="landing-field-label">Region</div>
-          <select class="landing-select" id="l-region">
-            <option value="ap">AP — Asia Pacific</option>
-            <option value="na">NA — North America</option>
-            <option value="eu">EU — Europe</option>
-            <option value="kr">KR — Korea</option>
-          </select>
-        </div>
-        <div>
-          <div class="landing-field-label">Mode</div>
-          <select class="landing-select" id="l-mode">
-            <option value="competitive">Competitive</option>
-            <option value="unrated">Unrated</option>
-            <option value="deathmatch">Deathmatch</option>
-            <option value="teamdeathmatch">Team DM</option>
-            <option value="swiftplay">Swiftplay</option>
-            <option value="spikerush">Spike Rush</option>
-          </select>
-        </div>
-      </div>
-
-      <button class="landing-btn" id="l-btn" onclick="landingFetch()">▶ View Stats</button>
-      <div class="landing-error" id="l-error"></div>
-
-      <div class="landing-divider">
-        <div class="landing-divider-line"></div>
-        <div class="landing-divider-txt">or jump to</div>
-        <div class="landing-divider-line"></div>
-      </div>
-
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <div class="landing-quick-label" style="margin-bottom:0">My Profile</div>
-        <button onclick="setMyProfile()" style="background:none;border:none;font-family:'DM Mono',monospace;font-size:9px;color:var(--accent);letter-spacing:1px;cursor:pointer;padding:0">SET AS MY PROFILE ›</button>
-      </div>
-      <div id="landing-profile-wrap"><!-- filled by JS --></div>
-    </div>
-
-    <!-- RECENT SEARCHES & BOOKMARKS CARD -->
-    <div class="landing-card" id="landing-history-card" style="margin: 0; flex: 1; min-width: 320px; max-width: 440px; display: flex; flex-direction: column; gap: 20px;">
-      <!-- Bookmarked Players Section -->
-      <div>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <div class="landing-card-title" style="margin:0; font-size:16px; color:#ffd700; display:flex; align-items:center; gap:6px;">★ Bookmarked Players</div>
-          <span style="font-family:'DM Mono',monospace; font-size:9px; color:var(--muted);" id="bookmarks-count">0 Players</span>
-        </div>
-        <div id="landing-bookmarks-list" style="display:flex; flex-direction:column; gap:8px; max-height:160px; overflow-y:auto; padding-right:4px;">
-          <div style="font-size:10px; color:var(--muted2); text-align:center; padding:16px 12px; font-family:'DM Mono',monospace; border:1px dashed rgba(255,255,255,0.05); border-radius:8px;">No bookmarked players.<br>Click ★ next to their name in header.</div>
-        </div>
-      </div>
-
-      <!-- Recent Searches Section -->
-      <div style="border-top:1px solid rgba(255,255,255,0.05); padding-top:16px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <div class="landing-card-title" style="margin:0; font-size:16px; color:var(--accent);">🕒 Recent Searches</div>
-          <button onclick="clearRecentSearches()" style="background:none; border:none; color:var(--muted); font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.5px; cursor:pointer;">CLEAR ALL</button>
-        </div>
-        <div id="landing-recent-list" style="display:flex; flex-direction:column; gap:8px; max-height:180px; overflow-y:auto; padding-right:4px;">
-          <div style="font-size:10px; color:var(--muted2); text-align:center; padding:16px 12px; font-family:'DM Mono',monospace; border:1px dashed rgba(255,255,255,0.05); border-radius:8px;">No recent searches yet.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- LANDING FOOTER -->
-  <div style="width:100%; border-top:1px solid rgba(255,255,255,0.05); padding-top:24px; margin-top:50px; display:flex; flex-direction:column; align-items:center; gap:12px; z-index:2; position:relative; box-sizing:border-box;">
-    <!-- Riot Games Legal Disclaimer -->
-    <div style="font-family:'DM Mono',monospace; font-size:9px; color:var(--muted2); text-align:center; max-width:760px; line-height:1.6; text-transform:uppercase; letter-spacing:0.5px;">
-      VALTRACKER IS NOT ENDORSED BY RIOT GAMES AND DOES NOT REFLECT THE VIEWS OR OPINIONS OF RIOT GAMES OR ANYONE OFFICIALLY INVOLVED IN PRODUCING OR MANAGING VALORANT. VALORANT AND RIOT GAMES ARE TRADEMARKS OR REGISTERED TRADEMARKS OF RIOT GAMES, INC. VALORANT © RIOT GAMES, INC.
-    </div>
-    
-    <!-- Developer socials -->
-    <div style="display:flex; align-items:center; justify-content:center; gap:16px; margin-top:8px;">
-      <span style="font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:800; color:var(--muted); letter-spacing:1px; text-transform:uppercase;">Developed by Pratham</span>
-      <div style="display:flex; align-items:center; gap:12px;">
-        <!-- GitHub -->
-        <a href="https://github.com/itzpratham1" target="_blank" title="GitHub" style="color:var(--muted); display:inline-block; transition:color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="display:block;">
-            <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.646.64.699 1.026 1.592 1.026 2.683 0 3.842-2.337 4.687-4.565 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.579.688.481C19.137 20.162 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
-          </svg>
-        </a>
-        <!-- Twitter/X -->
-        <a href="https://x.com/itzpratham01" target="_blank" title="Twitter / X" style="color:var(--muted); display:inline-block; transition:color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="display:block;">
-            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-          </svg>
-        </a>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- TOP BAR -->
-<div class="topbar">
-  <!-- Row 1: Main Header (Logo & Navigation) -->
-  <div class="topbar-main-row">
-    <div class="logo" onclick="toggleMainView('tracker')" style="cursor:pointer; display:flex; align-items:center;">
-      <img src="logo.png" class="logo-icon" style="height:24px; width:auto; display:inline-block; vertical-align:middle; margin-right:8px; flex-shrink:0; filter: drop-shadow(0 0 6px rgba(255, 70, 85, 0.6)); object-fit: contain;">
-      <span>ValTracker</span>
-    </div>
-    
-    <div class="topbar-tabs">
-      <div class="topbar-tab active" id="tab-tracker" onclick="toggleMainView('tracker')">Tracker</div>
-      <div class="topbar-tab" id="tab-esports" onclick="toggleMainView('esports')">Esports</div>
-      <div class="topbar-tab" id="tab-store" onclick="toggleMainView('store')">Skins Store</div>
-      <div class="topbar-tab" id="tab-coach" onclick="toggleMainView('coach')">Meta Comp Architect</div>
-      <div class="topbar-tab" id="tab-overlay" onclick="toggleMainView('overlay')">Stream Overlay</div>
-    </div>
-
-    <!-- Persistent Global Searchbar in Row 1 -->
-    <div class="player-search-wrap" style="position: relative;">
-      <input class="player-input" id="player-name-input" type="text" placeholder="Name" value="" autocomplete="off" spellcheck="false">
-      <span class="player-input-hash">#</span>
-      <input class="player-input player-input-tag" id="player-tag-input" type="text" placeholder="TAG" value="" maxlength="8" autocomplete="off" spellcheck="false">
-      <button class="topbar-search-submit-btn" onclick="fetchAll()" title="Search">
-        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-      </button>
-      <div id="topbar-search-dropdown" class="search-dropdown"></div>
-    </div>
-  </div>
-  
-  <!-- Row 2: Sub Header (Search Controls & Filters) -->
-  <div class="topbar-sub-row" id="topbar-sub-row" style="display: none;">
-    <div class="topbar-sub-left">
-      <div class="player-active-pill" id="player-active-pill" style="display: none;">
-        <div class="active-pill-avatar-wrap" id="active-pill-avatar-wrap">
-          <div class="active-pill-avatar-fallback">👤</div>
-        </div>
-        <div class="active-pill-name" id="active-pill-name"></div>
-        <button class="active-pill-btn bookmark-btn" id="active-pill-bookmark-btn" onclick="toggleActiveBookmark()" title="Bookmark Player">★</button>
-        <button class="active-pill-btn" onclick="copyRiotId()" title="Copy ID">
-          <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-          </svg>
-        </button>
-      </div>
-      <div class="player-tag" id="player-tag-display" style="display:none"></div>
-      <button class="mobile-filter-toggle" id="mobile-filter-toggle" onclick="toggleMobileFilters()" title="Toggle Filters" style="display: none;">
-        <span class="toggle-icon">⚙️</span>
-        <span>Filters</span>
-      </button>
-    </div>
-    
-    <div class="topbar-right" id="topbar-filters-group">
-      <div class="topbar-filter-capsule">
-        <div class="filter-item">
-          <span class="filter-icon">
-            <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="filter-icon-svg">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="2" y1="12" x2="22" y2="12"></line>
-              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-            </svg>
-          </span>
-          <select class="region-select" id="region-select">
-            <option value="ap">AP</option>
-            <option value="na">NA</option>
-            <option value="eu">EU</option>
-            <option value="kr">KR</option>
-          </select>
-          <span class="chevron-icon">
-            <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-          </span>
-        </div>
-        <div class="filter-divider"></div>
-        <div class="filter-item">
-          <span class="filter-icon">
-            <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="filter-icon-svg">
-              <rect x="2" y="6" width="20" height="12" rx="3"></rect>
-              <line x1="6" y1="12" x2="10" y2="12"></line>
-              <line x1="8" y1="10" x2="8" y2="14"></line>
-              <circle cx="15.5" cy="10.5" r="1" fill="currentColor"></circle>
-              <circle cx="15.5" cy="13.5" r="1" fill="currentColor"></circle>
-              <circle cx="18.5" cy="12" r="1" fill="currentColor"></circle>
-            </svg>
-          </span>
-          <select class="region-select" id="mode-select">
-            <option value="competitive">Competitive</option>
-            <option value="unrated">Unrated</option>
-            <option value="deathmatch">Deathmatch</option>
-            <option value="teamdeathmatch">Team DM</option>
-            <option value="swiftplay">Swiftplay</option>
-            <option value="spikerush">Spike Rush</option>
-          </select>
-          <span class="chevron-icon">
-            <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-          </span>
-        </div>
-        <div class="filter-divider"></div>
-        <div class="filter-item">
-          <span class="filter-icon">
-            <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="filter-icon-svg">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
-          </span>
-          <select class="region-select" id="act-select">
-            <option value="v26a3">V26 Act 3</option>
-            <option value="v26a2">V26 Act 2</option>
-            <option value="v26a1">V26 Act 1</option>
-            <option value="v25a6">V25 Act 6</option>
-            <option value="v25a5">V25 Act 5</option>
-            <option value="v25a4">V25 Act 4</option>
-            <option value="v25a3">V25 Act 3</option>
-            <option value="v25a2">V25 Act 2</option>
-            <option value="v25a1">V25 Act 1</option>
-            <option value="all">Lifetime</option>
-          </select>
-          <span class="chevron-icon">
-            <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-          </span>
-        </div>
-      </div>
-      <button class="fetch-btn" id="fetch-btn" onclick="fetchAll()">↻ Fetch Stats</button>
-    </div>
-  </div>
-</div>
-
-<div id="tracker-view" style="display: none;">
-
-<!-- HERO -->
-<div class="hero">
-  <div id="player-card-bg"></div>
-  <div class="hero-content">
-    <div class="hero-left">
-      <div class="hero-avatar-wrap">
-        <img id="player-avatar-img" class="player-avatar-img" src="" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-        <div class="hero-avatar-fallback" style="display:none; width:100%; height:100%; align-items:center; justify-content:center; background:var(--surface2); font-size:24px; color:rgba(255,255,255,0.4)">👤</div>
-      </div>
-      <div class="hero-player-details">
-        <div class="hero-eyebrow" id="hero-eyebrow">Competitive Tracker</div>
-        <div class="hero-title" id="hero-title">—</div>
-        <div class="hero-sub" id="hero-sub"></div>
-      </div>
-    </div>
-    <div class="hero-right">
-      <!-- Rank Block -->
-      <div class="hero-rank-block">
-        <div id="rank-icon"><div style="width:56px;height:56px;background:var(--surface2);border-radius:8px;"></div></div>
-        <div class="hero-rank-info">
-          <div class="hero-rank-name" id="rank-display">—</div>
-          <div class="hero-rank-rr">
-            <span id="peak-icon"></span>
-            <span id="rank-rr-txt">Current Rank</span>
-          </div>
-          <div class="hero-level" id="hero-level-badge" style="display:none"></div>
-          <div class="hero-rank-prediction" id="rank-prediction" style="display:none; margin-top:8px; font-family:'DM Mono',monospace; font-size:10px; color:var(--accent); letter-spacing:0.5px; border-top:1px solid var(--border); padding-top:6px;"></div>
-        </div>
-      </div>
-      <!-- Streak Block -->
-      <div class="hero-streak-block" id="streak-block" style="display:none">
-        <div class="streak-icon" id="streak-icon">🔥</div>
-        <div class="streak-info">
-          <div class="streak-label">Current Streak</div>
-          <div class="streak-val" id="streak-val">—</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- UNIFIED TRACKER NAVIGATION -->
-<div class="tracker-nav" id="tracker-nav">
-  <div class="tracker-nav-left">
-    <a class="tracker-nav-item active" onclick="smoothScrollTo('sec-combat', event)"><span class="nav-icon">⚔️</span> Combat</a>
-    <a class="tracker-nav-item" onclick="smoothScrollTo('sec-performance', event)"><span class="nav-icon">📈</span> Performance</a>
-    <a class="tracker-nav-item" onclick="smoothScrollTo('sec-trend', event)"><span class="nav-icon">📊</span> Trend</a>
-    <a class="tracker-nav-item" onclick="smoothScrollTo('sec-agents', event)"><span class="nav-icon">👤</span> Agents</a>
-    <a class="tracker-nav-item" onclick="smoothScrollTo('sec-maps', event)"><span class="nav-icon">🗺️</span> Maps</a>
-    <a class="tracker-nav-item" onclick="smoothScrollTo('sec-weapons', event)"><span class="nav-icon">🔫</span> Weapons</a>
-    <a class="tracker-nav-item" onclick="smoothScrollTo('sec-matches', event)"><span class="nav-icon">🎮</span> Matches</a>
-    <a class="tracker-nav-item" onclick="smoothScrollTo('sec-ai', event)"><span class="nav-icon">🤖</span> ValBot AI</a>
-    <a class="tracker-nav-item" onclick="smoothScrollTo('sec-deep', event)"><span class="nav-icon">🔬</span> Deep Analysis</a>
-    <a class="tracker-nav-item" onclick="smoothScrollTo('sec-lab', event)"><span class="nav-icon">🧪</span> Perf Lab</a>
-  </div>
-  
-  <!-- Session Actions & Utilities Grouped on Right -->
-  <div class="tracker-nav-right">
-    <!-- Session Actions -->
-    <div class="session-group">
-      <button class="nav-btn action" id="session-btn" onclick="toggleSession()">▶ Start Session</button>
-      <button class="nav-btn success" id="session-summary-btn" onclick="showSessionSummary()" style="display: none;">📊 Summary</button>
-    </div>
-    
-    <!-- Tools Dropdown -->
-    <div class="nav-dropdown" id="nav-tools-dropdown">
-      <button class="nav-btn dropdown-trigger" onclick="toggleToolsDropdown(event)" title="More Tools">
-        <span>⚡ Utilities</span>
-        <span class="dropdown-arrow">▼</span>
-      </button>
-      <div class="dropdown-menu" id="tools-dropdown-menu">
-        <button class="dropdown-item" id="share-profile-btn" onclick="shareProfile()">
-          <span class="dropdown-item-icon">🔗</span> Share Profile
-        </button>
-        <button class="dropdown-item" onclick="fetchLeaderboard()">
-          <span class="dropdown-item-icon">🏆</span> Top 500
-        </button>
-        <button class="dropdown-item" onclick="toggleHeadToHead()">
-          <span class="dropdown-item-icon">⚔️</span> Compare (Vs)
-        </button>
-        <button class="dropdown-item" id="export-btn" onclick="exportStatsCard()">
-          <span class="dropdown-item-icon">📤</span> Export Stats Card
-        </button>
-        <button class="dropdown-item" onclick="showBookmarksModal()">
-          <span class="dropdown-item-icon" style="color:#ffd700;">★</span> Bookmarked Players
-        </button>
-        <div class="dropdown-divider"></div>
-        <button class="dropdown-item danger" id="clear-btn" onclick="handleClear()" title="Clear all stored matches">
-          <span class="dropdown-item-icon">🗑️</span> Clear Stored Matches
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- MAIN BENTO GRID -->
-<div class="main" id="main-grid">
-
-
-
-  <!-- ── SECTION 01: COMBAT ── -->
-  <div class="section-label" id="sec-combat"><span class="sl-text">Combat</span><span class="sl-line"></span><span class="sl-num">01</span></div>
-
-  <div class="card span-2 clickable" onclick="openStatModal('kd')"><div class="card-accent-line"></div><div class="card-label">K/D Ratio</div><div class="card-val" id="v-kd">—</div><div class="card-sub">Competitive</div></div>
-  <div class="card span-2 clickable" onclick="openStatModal('kills')"><div class="card-accent-line"></div><div class="card-label">Avg Kills</div><div class="card-val" id="v-kills">—</div><div class="card-sub">Per match</div></div>
-  <div class="card span-2 clickable" onclick="openStatModal('deaths')"><div class="card-accent-line"></div><div class="card-label">Avg Deaths</div><div class="card-val" id="v-deaths">—</div><div class="card-sub">Per match</div></div>
-  <div class="card span-2 clickable" onclick="openStatModal('assists')"><div class="card-accent-line"></div><div class="card-label">Avg Assists</div><div class="card-val" id="v-assists">—</div><div class="card-sub">Per match</div></div>
-  <div class="card span-2 clickable" onclick="openStatModal('acs')"><div class="card-accent-line"></div><div class="card-label">Avg ACS</div><div class="card-val" id="v-acs">—</div><div class="card-sub">Combat Score</div></div>
-  <div class="card span-2 clickable" onclick="openStatModal('hs')"><div class="card-accent-line"></div><div class="card-label">HS Rate</div><div class="card-val" id="v-hs">—</div><div class="card-sub">Headshots</div></div>
-
-  <!-- ── SECTION 02: WIN RATE + RR ── -->
-  <div class="section-label" id="sec-performance"><span class="sl-text">Performance</span><span class="sl-line"></span><span class="sl-num">02</span></div>
-
-  <!-- Win Rate card -->
-  <div class="card wr-card span-4">
-    <div class="card-accent-line"></div>
-    <div class="card-label">Win Rate</div>
-    <div class="wr-big" id="v-wr">—%</div>
-    <div class="wr-bar-wrap"><div class="wr-track"><div class="wr-fill" id="wr-bar"></div></div></div>
-    <div class="wl-grid">
-      <div class="wl-block wins"><div class="wlv" id="v-wins">—</div><div class="wll">Wins</div></div>
-      <div class="wl-block losses"><div class="wlv" id="v-losses">—</div><div class="wll">Losses</div></div>
-    </div>
-    <div class="card-sub" id="wr-detail" style="margin-top:8px;">Last 20 competitive</div>
-  </div>
-
-  <!-- RR Graph -->
-  <div class="card graph-card span-8" id="rr-graph-card">
-    <div class="card-accent-line"></div>
-    <div class="card-label">RR Progression</div>
-    <div class="graph-canvas-wrap">
-      <canvas id="rr-chart" style="display:none;"></canvas>
-      <div class="placeholder-txt" id="rr-placeholder">Fetch stats to see RR graph</div>
-    </div>
-    <div class="graph-note" id="graph-note" style="display:none;"></div>
-  </div>
-
-  <!-- ── SECTION 02b: PERFORMANCE TREND ── -->
-  <div class="section-label" id="sec-trend"><span class="sl-text">Performance Trend</span><span class="sl-line"></span><span class="sl-num">03</span></div>
-  <div class="card span-12" id="perf-trend-card" style="min-height:200px;">
-    <div class="card-accent-line"></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
-      <div class="card-label" style="margin:0;">KD / ACS / HS% — Last 20 Matches</div>
-      <div style="display:flex;gap:8px;">
-        <div style="display:flex;align-items:center;gap:5px;"><div style="width:10px;height:2px;background:#e8ff47;border-radius:1px;"></div><span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;">K/D</span></div>
-        <div style="display:flex;align-items:center;gap:5px;"><div style="width:10px;height:2px;background:#3ecf8e;border-radius:1px;"></div><span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;">ACS/100</span></div>
-        <div style="display:flex;align-items:center;gap:5px;"><div style="width:10px;height:2px;background:#ff5757;border-radius:1px;"></div><span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;">HS%</span></div>
-      </div>
-    </div>
-    <div style="position:relative;height:160px;width:100%;">
-      <canvas id="perf-trend-chart"></canvas>
-      <div class="placeholder-txt" id="perf-trend-placeholder">Fetch stats to see trend</div>
-    </div>
-  </div>
-
-  <!-- ── SECTION 03: AGENTS ── -->
-  <div class="section-label" id="sec-agents"><span class="sl-text">Agent Roster</span><span class="sl-line"></span><span class="sl-num">04</span></div>
-  <div id="agents-wrap" style="display:contents;"><div class="card placeholder-card span-12"><div class="placeholder-txt">Fetch stats to see agents</div></div></div>
-
-  <!-- ── SECTION 04: MAPS ── -->
-  <div class="section-label" id="sec-maps"><span class="sl-text">Map Performance</span><span class="sl-line"></span><span class="sl-num">05</span></div>
-  <div id="maps-wrap" style="display:contents;"><div class="card placeholder-card span-12"><div class="placeholder-txt">Fetch stats to see maps</div></div></div>
-
-  <!-- ── SECTION 05: IMPACT ── -->
-  <div class="section-label" id="sec-clutch"><span class="sl-text">Clutch &amp; Impact</span><span class="sl-line"></span><span class="sl-num">06</span></div>
-  <div id="clutch-wrap" style="display:contents;"><div class="card placeholder-card span-12"><div class="placeholder-txt">Fetch stats to see impact</div></div></div>
-
-  <!-- ── SECTION 06: ACCURACY + ROLES ── -->
-  <div class="section-label" id="sec-accuracy"><span class="sl-text">Accuracy &amp; Roles</span><span class="sl-line"></span><span class="sl-num">07</span></div>
-
-  <!-- Accuracy Card -->
-  <div class="card acc-card" id="accuracy-card">
-    <div class="card-accent-line"></div>
-    <div class="card-label">Shot Accuracy</div>
-    <div class="acc-body-row" id="acc-body-row">
-      <div class="placeholder-txt" style="padding:20px 0">Fetch stats to see accuracy</div>
-    </div>
-  </div>
-
-  <!-- Roles Card -->
-  <div class="card roles-card" id="roles-breakdown-card">
-    <div class="card-accent-line"></div>
-    <div class="card-label">Performance by Role</div>
-    <div id="roles-breakdown-wrap" style="margin-top:12px;">
-      <div class="placeholder-txt" style="padding:20px 0">Fetch stats to see role breakdown</div>
-    </div>
-  </div>
-
-  <!-- ── SECTION 07: TOP WEAPONS ── -->
-  <div class="section-label" id="sec-weapons"><span class="sl-text">Top Weapons</span><span class="sl-line"></span><span class="sl-num">08</span></div>
-  <div class="card weapons-card" id="weapons-card">
-    <div class="card-accent-line"></div>
-    <div class="card-label">Weapon Performance — Based on stored match data</div>
-    <div id="weapons-grid-wrap">
-      <div class="placeholder-txt" style="padding:20px 0">Fetch stats to see weapon breakdown</div>
-    </div>
-  </div>
-
-  <!-- ── SECTION 08: RECENT MATCHES (renumbered) ── -->
-  <!-- ── SECTION 06: RECENT MATCHES ── -->
-  <div class="section-label" id="sec-matches"><span class="sl-text">Recent Matches</span><span class="sl-line"></span><span class="sl-num">09</span></div>
-
-  <!-- SESSION BANNER -->
-  <div class="session-banner" id="session-banner"></div>
-
-  <!-- FILTER BAR -->
-  <div class="filter-bar" id="filter-bar" style="grid-column:span 12;">
-    <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
-    <button class="filter-btn" onclick="setFilter('win',this)">Wins</button>
-    <button class="filter-btn" onclick="setFilter('loss',this)">Losses</button>
-    <button class="filter-btn" onclick="setFilter('today',this)">Today</button>
-    <input class="filter-search" id="filter-search" placeholder="Search agent or map..." oninput="applyFilters()">
-    <span class="filter-count" id="filter-count"></span>
-  </div>
-
-  <div id="matches-list" style="display:contents;"><div class="card placeholder-card span-12"><div class="placeholder-txt">Fetch stats to see match history</div></div></div>
-
-  <!-- ── SECTION 07: AI ANALYSIS ── -->
-  <div class="section-label" id="sec-ai"><span class="sl-text">AI Performance Analysis</span><span class="sl-line"></span><span class="sl-num">10</span></div>
-  <div class="ai-section" id="ai-section">
-    <div class="ai-card">
-      <div class="ai-card-header">
-        <div class="ai-header-left">
-          <div class="ai-icon">🤖</div>
-          <div>
-            <div class="ai-title">ValBot</div>
-            <div class="ai-subtitle">Powered by ValTracker AI · Analyses your stored match data</div>
-          </div>
-        </div>
-        <button class="ai-analyse-btn" id="ai-btn" onclick="runAnalysis()">
-          <span class="btn-icon">⚡</span> Analyse My Performance
-        </button>
-      </div>
-      <!-- Premium AI Clarification Card -->
-      <div class="ai-clarification-banner" style="background: linear-gradient(135deg, rgba(232, 255, 71, 0.05) 0%, rgba(255, 70, 85, 0.03) 100%); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; align-items: center; gap: 16px;">
-        <div style="font-size: 24px; filter: drop-shadow(0 0 6px var(--accent));">🧬</div>
-        <div style="flex-grow: 1;">
-          <div style="font-family:'Barlow Condensed', sans-serif; font-weight: 800; font-size: 14px; text-transform: uppercase; color: var(--accent); letter-spacing: 0.5px; margin-bottom: 2px;">ValBot Macro Diagnostic System</div>
-          <div style="font-size: 11.5px; color: var(--muted); line-height: 1.4;">
-            Fuses telemetry across your last 20+ matches to calculate your <strong>K/D Trends</strong>, <strong>Rank Readiness Index</strong>, and <strong>Combat Consistency</strong>. Pinpoints your absolute <strong>#1 Focus Priority</strong> to help break your current rank ceiling.
-          </div>
-        </div>
-      </div>
-      <div class="ai-body">
-        <div class="ai-loading" id="ai-loading">
-          <div class="ai-spinner"></div>
-          <div class="ai-loading-txt" id="ai-loading-txt">PROCESSING MATCH DATA...</div>
-        </div>
-        <div class="ai-placeholder" id="ai-placeholder">
-          <div class="ai-placeholder-icon">📊</div>
-          <div class="ai-placeholder-txt">Fetch your stats first, then hit "Analyse My Performance" to get personalised coaching tips based on your actual match data.</div>
-        </div>
-        <div class="ai-results" id="ai-results">
-          <div class="ai-summary-banner" id="ai-summary"></div>
-          <div class="ai-grid" id="ai-stats-grid"></div>
-          <div class="ai-sections-grid" id="ai-sections-grid"></div>
-          <div class="ai-verdict" id="ai-verdict" style="display:none">
-            <div class="ai-verdict-label">⚡ Coach's Verdict</div>
-            <div id="ai-verdict-txt"></div>
-          </div>
-        </div>
-        <div class="ai-error" id="ai-error"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── SECTION 08: DEEP ANALYSIS ── -->
-  <div class="section-label" id="sec-deep"><span class="sl-text">Deep Game Analysis</span><span class="sl-line"></span><span class="sl-num">11</span></div>
-
-  <div class="deep-wrap">
-    <!-- Premium Deep Self-Analysis Clarification Banner -->
-    <div class="deep-clarification-banner" style="background: linear-gradient(135deg, rgba(56, 189, 248, 0.08) 0%, rgba(20, 20, 22, 0.6) 100%); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 14px;">
-      <div style="font-size: 22px; filter: drop-shadow(0 0 6px #0ea5e9);">🔬</div>
-      <div>
-        <div style="font-family:'Barlow Condensed', sans-serif; font-weight: 800; font-size: 13px; text-transform: uppercase; color: #38bdf8; letter-spacing: 0.5px; margin-bottom: 2px;">Deep Self-Analysis Diagnostics</div>
-        <div style="font-size: 11px; color: var(--muted); line-height: 1.4;">
-          Your micro-tactical execution blueprint. Correlates rounds to calculate <strong>map side win rates</strong> (Attack vs Defense), evaluates <strong>agent-to-map performance fits</strong>, checks for <strong>multi-match consistency trends</strong>, and issues direct strategic recommendations.
-        </div>
-      </div>
-    </div>
-    <!-- Trigger -->
-    <div class="deep-trigger-card">
-      <div class="deep-trigger-info">
-        <div class="deep-trigger-title">🔬 Deep Self-Analysis</div>
-        <div class="deep-trigger-sub">MAP WEAKNESS · ATTACK VS DEFENCE · AGENT-MAP FIT · IMPROVEMENT TREND · PRIORITIES</div>
-      </div>
-      <button class="deep-run-btn" id="deep-btn" onclick="runDeepAnalysis()">
-        🔬 Run Analysis
-      </button>
-    </div>
-
-    <!-- Loading -->
-    <div class="deep-loading" id="deep-loading">
-      <div class="deep-spinner"></div>
-      <span class="deep-loading-txt" id="deep-loading-txt">PROCESSING MATCHES...</span>
-    </div>
-
-    <!-- Results -->
-    <div class="deep-results" id="deep-results"></div>
-  </div>
-
-  <!-- ── SECTION 09: PERFORMANCE LAB ── -->
-  <div class="section-label" id="sec-lab"><span class="sl-text">Performance Lab</span><span class="sl-line"></span><span class="sl-num">12</span></div>
-  <div class="plab-wrap">
-    <!-- Premium PLab Clarification Banner -->
-    <div class="plab-clarification-banner" style="background: linear-gradient(135deg, rgba(147, 51, 234, 0.08) 0%, rgba(20, 20, 22, 0.6) 100%); border: 1px solid rgba(147, 51, 234, 0.2); border-radius: 8px; padding: 14px 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 14px;">
-      <div style="font-size: 22px; filter: drop-shadow(0 0 6px #9333ea);">🧠</div>
-      <div>
-        <div style="font-family:'Barlow Condensed', sans-serif; font-weight: 800; font-size: 13px; text-transform: uppercase; color: #b794f4; letter-spacing: 0.5px; margin-bottom: 2px;">Performance Diagnostics Lab</div>
-        <div style="font-size: 11px; color: var(--muted); line-height: 1.4;">
-          Your mental game and scheduling defense system. Scans active sessions for <strong>tilt indicators</strong>, computes <strong>win probability dips</strong> due to fatigue, maps <strong>win rate by hour of the day</strong>, and generates dynamic keep-playing guidelines.
-        </div>
-      </div>
-    </div>
-    <div class="plab-trigger">
-      <div class="plab-trigger-info">
-        <div class="plab-trigger-title">🧪 Full Performance Lab</div>
-        <div class="plab-trigger-sub">DUELS · ECONOMY · TILT · TIME-OF-DAY · RANK GAP · WIN PROBABILITY · PEER BENCHMARKS</div>
-      </div>
-      <button class="plab-run-btn" id="plab-btn" onclick="runPerfLab()">▶ Run Lab</button>
-    </div>
-    <div class="plab-loading" id="plab-loading">
-      <div class="plab-spinner"></div>
-      <span class="plab-loading-txt" id="plab-loading-txt">CRUNCHING DATA...</span>
-    </div>
-    <div class="plab-results" id="plab-results"></div>
-  </div> <!-- END PLAB WRAP -->
-</div> <!-- END MAIN GRID -->
-
-
-</div> <!-- END TRACKER VIEW -->
-
-<!-- ESPORTS VIEW -->
-<div id="esports-view" style="display:none;">
-  <div class="esports-subnav">
-    <div class="esports-pills-scroll">
-      <div class="esports-pill active" onclick="switchEsportsTab('overview')">Overview</div>
-      <div class="esports-pill" onclick="switchEsportsTab('schedule')">Schedule</div>
-      <div class="esports-pill" onclick="switchEsportsTab('vct26')">VCT26</div>
-      <div class="esports-pill" onclick="switchEsportsTab('teams')">Teams</div>
-      <div class="esports-pill" onclick="switchEsportsTab('news')">News</div>
-    </div>
-    <div class="tier-toggle-wrapper">
-      <span style="font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); text-transform:uppercase;">Tier 2/3</span>
-      <label class="switch">
-        <input type="checkbox" id="tier-toggle" checked onchange="toggleTiers()">
-        <span class="slider round"></span>
-      </label>
-    </div>
-  </div>
-  
-  <div class="esports-content">
-    
-    <!-- OVERVIEW SECTION -->
-    <div id="esp-sec-overview" class="esports-section active">
-      <div class="section-label visible" style="margin-bottom:16px;">
-        <span class="sl-text">Live Action & Highlight Updates</span>
-        <div class="sl-line"></div>
-      </div>
-      
-      <!-- Split Overview Dashboard -->
-      <div style="display: grid; grid-template-columns: 1.8fr 1fr; gap: 24px; margin-bottom: 24px;">
-        <div>
-          <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:16px; text-transform:uppercase; margin-bottom:12px; color:var(--accent);">🔴 Active Matches</h4>
-          <div id="esp-ov-live-container"></div>
-          
-          <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:16px; text-transform:uppercase; margin-top:24px; margin-bottom:12px; color:var(--accent);">🏆 Highlight Matches</h4>
-          <div id="esp-ov-results-container"></div>
-        </div>
-        <div>
-          <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:16px; text-transform:uppercase; margin-bottom:12px; color:var(--accent);">📰 Latest headlines</h4>
-          <div id="esp-ov-news-container" style="display:flex; flex-direction:column; gap:12px;"></div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- SCHEDULE SECTION -->
-    <div id="esp-sec-schedule" class="esports-section">
-      <!-- Mobile Sub-tabs for Schedule Section -->
-      <div class="schedule-tabs" style="display: none; justify-content: center; gap: 8px; margin-bottom: 20px;">
-        <div class="esports-pill active" id="sched-tab-upcoming" onclick="switchScheduleTab('upcoming')">Upcoming</div>
-        <div class="esports-pill" id="sched-tab-results" onclick="switchScheduleTab('results')">Results</div>
-      </div>
-      
-      <div class="esp-schedule-grid">
-        <div id="schedule-col-upcoming">
-          <div class="section-label visible" style="margin-bottom:16px;">
-            <span class="sl-text">Upcoming Matches</span>
-            <div class="sl-line"></div>
-          </div>
-          <div id="esp-upcoming-container"></div>
-        </div>
-        <div id="schedule-col-results">
-          <div class="section-label visible" style="margin-bottom:16px;">
-            <span class="sl-text">Recent Results</span>
-            <div class="sl-line"></div>
-          </div>
-          <div id="esp-results-container"></div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- VCT26 ROADMAP TIMELINE SECTION -->
-    <div id="esp-sec-vct26" class="esports-section">
-      <div class="section-label visible" style="margin-bottom:16px;">
-        <span class="sl-text">VCT 2026 Season roadmap</span>
-        <div class="sl-line"></div>
-      </div>
-      
-      <!-- Roadmap scrollable container -->
-      <div class="vct-roadmap-wrap" id="vct-roadmap-timeline-container">
-        <!-- Timeline column 1 -->
-        <div class="vct-roadmap-col">
-          <div class="vct-roadmap-header concluded">International League</div>
-          <div class="vct-roadmap-card concluded" onclick="openVctTournamentModal('kickoff')" style="cursor: pointer;">
-            <div class="vct-roadmap-title">VCT Kickoff</div>
-            <div class="vct-roadmap-subtitle" style="color:var(--loss)">Concluded</div>
-            <div class="vct-roadmap-subtitle" style="font-size: 9px; margin-top: 4px; line-height: 1.3;">
-              AMER: SEN | PAC: GEN<br>EMEA: KC | CN: EDG
-            </div>
-          </div>
-        </div>
-        <!-- Timeline column 2 -->
-        <div class="vct-roadmap-col">
-          <div class="vct-roadmap-header concluded">Global Event</div>
-          <div class="vct-roadmap-card concluded tall" onclick="openVctTournamentModal('masters_santiago')" style="cursor: pointer;">
-            <div class="vct-roadmap-title" style="color: #c084fc;">Masters Santiago</div>
-            <div class="vct-roadmap-subtitle" style="color:var(--loss)">Concluded</div>
-            <div class="vct-roadmap-dates">Feb 28 - Mar 16, 2026</div>
-            <div class="vct-roadmap-subtitle" style="font-size: 9px; margin-top: 12px; color:#c084fc;">Winner: Nongshim RedForce</div>
-          </div>
-        </div>
-        <!-- Timeline column 3 -->
-        <div class="vct-roadmap-col">
-          <div class="vct-roadmap-header ongoing">International League</div>
-          <div class="vct-roadmap-card ongoing" onclick="openVctTournamentModal('stage1')" style="cursor: pointer;">
-            <div class="vct-roadmap-title">VCT Stage 1</div>
-            <div class="vct-roadmap-subtitle" style="color:var(--win)">Ongoing</div>
-            <div class="vct-roadmap-dates">Apr 11 - May 25, 2026</div>
-            <div class="vct-roadmap-subtitle" style="font-size: 9px; margin-top: 4px; line-height: 1.3; color: var(--accent);">
-              AMER: 100T | PAC: GEN<br>EMEA: FNC | CN: EDG
-            </div>
-          </div>
-        </div>
-        <!-- Timeline column 4 -->
-        <div class="vct-roadmap-col">
-          <div class="vct-roadmap-header">Global Event</div>
-          <div class="vct-roadmap-card tall" onclick="openVctTournamentModal('masters_london')" style="cursor: pointer;">
-            <div class="vct-roadmap-title" style="color: #a855f7;">Masters London</div>
-            <div class="vct-roadmap-subtitle" style="color:var(--muted)">Upcoming</div>
-            <div class="vct-roadmap-dates">June 5 - June 21, 2026</div>
-          </div>
-        </div>
-        <!-- Timeline column 5 -->
-        <div class="vct-roadmap-col">
-          <div class="vct-roadmap-header">International League</div>
-          <div class="vct-roadmap-card" onclick="openVctTournamentModal('stage2')" style="cursor: pointer;">
-            <div class="vct-roadmap-title">VCT Stage 2</div>
-            <div class="vct-roadmap-subtitle" style="color:var(--muted)">Upcoming</div>
-            <div class="vct-roadmap-dates">July 2026</div>
-          </div>
-        </div>
-        <!-- Timeline column 6 -->
-        <div class="vct-roadmap-col">
-          <div class="vct-roadmap-header">Global Event</div>
-          <div class="vct-roadmap-card tall champions" onclick="openVctTournamentModal('champions')" style="cursor: pointer;">
-            <div class="vct-roadmap-title" style="color: #fbbf24;">Champions Shanghai</div>
-            <div class="vct-roadmap-subtitle" style="color:var(--muted)">Upcoming</div>
-            <div class="vct-roadmap-dates">September 2026</div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Bottom Dotted Timeline diamond progression bar -->
-      <div class="vct-roadmap-tracker">
-        <div class="vct-roadmap-node active" title="Kickoff - Concluded"></div>
-        <div class="vct-roadmap-node active" title="Masters Santiago - Concluded"></div>
-        <div class="vct-roadmap-node active" title="Stage 1 - Ongoing"></div>
-        <div class="vct-roadmap-node" title="Masters London - Upcoming"></div>
-        <div class="vct-roadmap-node" title="Stage 2 - Upcoming"></div>
-        <div class="vct-roadmap-node" title="Champions Shanghai - Upcoming"></div>
-      </div>
-    </div>
-    
-    <!-- TEAMS FRANCHISE ROSTER EXPLORER SECTION -->
-    <div id="esp-sec-teams" class="esports-section">
-      <div class="esp-teams-layout">
-        <!-- Sidebar region selection -->
-        <div class="esp-sidebar">
-          <div class="esp-sidebar-region-header" onclick="toggleSidebarRegion('ov-americas')">VCT Americas</div>
-          <div class="esp-sidebar-team-list" id="ov-americas"></div>
-          
-          <div class="esp-sidebar-region-header" onclick="toggleSidebarRegion('ov-emea')">VCT EMEA</div>
-          <div class="esp-sidebar-team-list" id="ov-emea"></div>
-          
-          <div class="esp-sidebar-region-header" onclick="toggleSidebarRegion('ov-pacific')">VCT Pacific</div>
-          <div class="esp-sidebar-team-list" id="ov-pacific"></div>
-          
-          <div class="esp-sidebar-region-header" onclick="toggleSidebarRegion('ov-china')">VCT CN</div>
-          <div class="esp-sidebar-team-list" id="ov-china"></div>
-        </div>
-        
-        <!-- Team details central panel -->
-        <div class="esp-team-dashboard" id="esp-team-details-panel">
-          <div id="esp-team-main-area">
-            <div class="esp-team-hero">
-              <div class="esp-team-title-row">
-              <div style="display: flex; align-items: center; margin-bottom: 16px;">
-                <div id="esp-active-team-logo" style="margin-right: 16px; font-size: 24px;"></div>
-                <div class="esp-team-name-lg" id="esp-active-team-name" style="margin-bottom: 0;">Select a Team</div>
-              </div>
-              </div>
-              <div class="esp-team-desc" id="esp-active-team-desc">Select a VCT Franchise team from the left sidebar to explorer their full roster players, coach staff, and capsule skin details.</div>
-              
-              <!-- Capsule Promos -->
-              <div class="capsule-promo-card" id="esp-active-team-capsule-wrap" style="display:none;">
-                <img class="capsule-promo-img" id="esp-active-team-capsule-img" src="" alt="VCT Capsule" onerror="this.style.display='none'; document.getElementById('esp-active-team-capsule-fallback-badge').style.display='flex';"/>
-                <div id="esp-active-team-capsule-fallback-badge" style="display:none; width:48px; height:48px; border-radius:4px; border:1px solid rgba(255,70,85,0.3); background:rgba(255,70,85,0.1); align-items:center; justify-content:center; font-size:20px; color:var(--accent); font-weight:bold; margin-right:12px;">🔫</div>
-                <div class="capsule-promo-info">
-                  <div class="capsule-promo-title" id="esp-active-team-capsule-title">VCT Capsule</div>
-                  <div class="capsule-promo-desc" id="esp-active-team-capsule-desc">Support your favorite team.</div>
-                </div>
-              </div>
-            </div>
-            
-            <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:18px; text-transform:uppercase; margin-top:20px; color:#fff;">Team Roster</h4>
-            <div class="player-card-grid" id="esp-active-team-roster-grid"></div>
-          </div>
-          
-          <!-- Team-specific upcoming matches -->
-          <div>
-            <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:16px; text-transform:uppercase; color:var(--accent); margin-bottom:12px;">Upcoming Matches</h4>
-            <div id="esp-active-team-matches-container">
-              <div class="placeholder-txt" style="font-size:11px; padding:16px;">Select a team.</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-
-    
-    <!-- NEWS SECTION -->
-    <div id="esp-sec-news" class="esports-section">
-      <div class="section-label visible" style="margin-bottom:16px;">
-        <span class="sl-text">Latest News</span>
-        <div class="sl-line"></div>
-      </div>
-      <div id="esp-news-container" class="esp-news-grid"></div>
-    </div>
-
-  </div>
-</div> <!-- END ESPORTS VIEW -->
-
-<div class="stat-modal-overlay" id="stat-modal-overlay" onclick="if(event.target===this)closeStatModal()">
-  <div class="stat-modal">
-    <div class="stat-modal-header">
-      <div class="stat-modal-title" id="stat-modal-title">—</div>
-      <button class="stat-modal-close" onclick="closeStatModal()">✕</button>
-    </div>
-    <div class="stat-modal-avg-row" id="stat-modal-avgs"></div>
-    <div class="stat-chart-wrap">
-      <canvas class="stat-chart-canvas" id="stat-chart-canvas"></canvas>
-    </div>
-    <div class="stat-modal-footer">Last <span id="stat-modal-count">—</span> matches · oldest → newest · click bars to see match details</div>
-  </div>
-</div>
-
-<!-- PREMIUM MATCH SHARE MODAL -->
-<div class="stat-modal-overlay" id="share-modal-overlay" onclick="if(event.target===this)closeShareModal()" style="z-index: 10000;">
-  <div class="stat-modal" style="max-width: 600px; border-color: rgba(255, 70, 85, 0.4); background: linear-gradient(180deg, var(--surface) 0%, rgba(20,20,20,0.98) 100%);">
-    <div class="stat-modal-header" style="border-bottom: 1px solid rgba(255, 70, 85, 0.2); padding-bottom: 12px;">
-      <div class="stat-modal-title" style="color: var(--accent); font-size: 20px; font-family:'Barlow Condensed',sans-serif; font-weight:900; letter-spacing:0.5px; text-transform:uppercase; display:flex; align-items:center; gap:8px;">
-        ✨ Share Your Performance Flex Card
-      </div>
-      <button class="stat-modal-close" onclick="closeShareModal()">✕</button>
-    </div>
-    
-    <div class="stat-modal-body" style="padding: 20px 0; display:flex; flex-direction:column; gap:16px;">
-      
-      <!-- Generating/Loading state -->
-      <div id="share-modal-loading" style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 0; gap:16px;">
-        <div class="share-spinner"></div>
-        <div style="font-family:'DM Mono',monospace; font-size:11px; color:var(--accent); letter-spacing:1px;" id="share-modal-loading-txt">GENERATING INFOGRAPHIC CARD...</div>
-      </div>
-      
-      <!-- Loaded State -->
-      <div id="share-modal-loaded" style="display:none; flex-direction:column; gap:16px;">
-        <!-- Card Image Preview -->
-        <div style="position:relative; width:100%; border-radius:12px; overflow:hidden; border:1px solid rgba(255,255,255,0.08); background:rgba(0,0,0,0.3); box-shadow:0 8px 32px rgba(0,0,0,0.5);">
-          <img id="share-modal-img-preview" style="width:100%; height:auto; display:block;" alt="Flex Card Preview">
-          <div style="position:absolute; bottom:8px; right:8px; padding:4px 8px; border-radius:4px; background:rgba(0,0,0,0.7); font-family:'DM Mono',monospace; font-size:8px; color:rgba(255,255,255,0.5); letter-spacing:0.5px; text-transform:uppercase;">
-            Flex Card Preview
-          </div>
-        </div>
-        
-
-        
-        <!-- Post template customization -->
-        <div>
-          <div style="font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:800; text-transform:uppercase; color:var(--muted); letter-spacing:1px; margin-bottom:6px;">Post Template Text</div>
-          <textarea id="share-modal-template-text" style="width:100%; height:80px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:10px; font-family:'Inter',sans-serif; font-size:12px; color:#fff; resize:none; outline:none; box-sizing:border-box; transition:border-color 0.2s;" onfocus="this.style.borderColor='rgba(255,70,85,0.5)'" onblur="this.style.borderColor='var(--border)'"></textarea>
-        </div>
-        
-        <!-- Sharing buttons grid -->
-        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-top:8px;">
-          <!-- Twitter / X -->
-          <button onclick="shareToPlatform('twitter')" style="background:#1d9bf0; color:#fff; border:none; border-radius:8px; padding:12px 10px; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:13px; text-transform:uppercase; letter-spacing:0.5px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="display:block;">
-              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-            </svg>
-            Post on X
-          </button>
-          
-          <!-- Reddit -->
-          <button onclick="shareToPlatform('reddit')" style="background:#ff4500; color:#fff; border:none; border-radius:8px; padding:12px 10px; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:13px; text-transform:uppercase; letter-spacing:0.5px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="display:block;">
-              <path d="M12 2C6.48 2 2 6.48 2 12c0 2.23.73 4.29 1.97 5.95l-1.39 4.16c-.1.31.18.61.5.5l4.16-1.39C8.89 21.68 10.39 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm4.19 12.35c-.44.44-1.15.44-1.59 0L12 11.76l-2.6 2.6c-.44.44-1.15.44-1.59 0-.44-.44-.44-1.15 0-1.59l2.6-2.6-2.6-2.6c-.44-.44-.44-1.15 0-1.59.44-.44 1.15-.44 1.59 0l2.6 2.6 2.6-2.6c.44-.44 1.15-.44 1.59 0 .44.44.44 1.15 0 1.59l-2.6 2.6 2.6 2.6c.44.44.44 1.15 0 1.59z"/>
-            </svg>
-            Post on Reddit
-          </button>
-          
-          <!-- Download -->
-          <button onclick="shareToPlatform('download')" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); color:#fff; border-radius:8px; padding:12px 10px; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:13px; text-transform:uppercase; letter-spacing:0.5px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
-            📥 Download PNG
-          </button>
-        </div>
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-<!-- VCT ROADMAP TOURNAMENT MODAL -->
-<div class="stat-modal-overlay" id="vct-modal-overlay" onclick="if(event.target===this)closeVctModal()">
-  <div class="stat-modal" style="max-width: 640px; border-color: rgba(255, 70, 85, 0.4); background: linear-gradient(180deg, var(--surface) 0%, rgba(20,20,20,0.95) 100%);">
-    <div class="stat-modal-header" style="border-bottom: 1px solid rgba(255, 70, 85, 0.2); padding-bottom: 12px;">
-      <div class="stat-modal-title" id="vct-modal-title" style="color: var(--loss); font-size: 20px; font-family:'Barlow Condensed',sans-serif; font-weight:900; letter-spacing:0.5px; text-transform:uppercase;">VCT Tournament details</div>
-      <button class="stat-modal-close" onclick="closeVctModal()">✕</button>
-    </div>
-    <div class="stat-modal-body" style="padding: 20px 0; max-height: 480px; overflow-y: auto;">
-      <!-- Regional Tabs Selector -->
-      <div id="vct-modal-tabs" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:10px;"></div>
-
-      <!-- Regional Winners -->
-      <h4 id="vct-modal-winners-title" style="font-family:'Barlow Condensed', sans-serif; font-size:14px; text-transform:uppercase; color:var(--accent); margin-bottom:12px; letter-spacing:0.5px; display:flex; align-items:center; gap:6px;">🏆 Regional Winners</h4>
-      <div id="vct-modal-winners" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; margin-bottom:24px;"></div>
-      
-      <!-- Participating Teams -->
-      <h4 id="vct-modal-teams-title" style="font-family:'Barlow Condensed', sans-serif; font-size:14px; text-transform:uppercase; color:#fff; margin-bottom:12px; letter-spacing:0.5px; display:flex; align-items:center; gap:6px;">👥 Participating Teams</h4>
-      <div id="vct-modal-teams" class="player-card-grid" style="grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px;"></div>
-    </div>
-  </div>
-</div>
-
-<div id="store-view" style="display:none; padding: 24px; max-width: 1400px; margin: 0 auto;">
-  
-  <!-- Banner Header -->
-  <div style="background: linear-gradient(135deg, rgba(250, 68, 84, 0.12) 0%, rgba(20, 20, 22, 0.45) 100%); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 8px;">
-    <h2 style="font-family:'Barlow Condensed', sans-serif; font-size: 32px; font-weight: 900; text-transform: uppercase; color: #fff; letter-spacing: 1.5px; margin: 0;">Valorant Store & Cosmetics Explorer</h2>
-    <p style="font-size: 13px; color: var(--muted); margin: 0; max-width: 700px;">Track global featured bundles with pricing in VP, live countdown timers, and browse the complete Valorant weapon skins database. Click on any skin to explore chroma color variants and watch high-definition video finisher previews inline.</p>
-  </div>
-
-  <!-- Store Split Grid -->
-  <div style="display: grid; grid-template-columns: 1fr; gap: 28px; margin-bottom: 30px;" class="store-grid">
-    
-    <!-- LEFT PANEL: Featured Bundles -->
-    <div style="display: flex; flex-direction: column; gap: 20px;">
-      <div class="section-label visible" style="margin-bottom: 0;">
-        <span class="sl-text">Featured Store Bundles</span>
-        <div class="sl-line"></div>
-      </div>
-      <div id="store-featured-container" style="display: flex; flex-direction: column; gap: 20px;">
-        <!-- Loaded dynamically -->
-      </div>
-    </div>
-
-    <!-- RIGHT PANEL: Skins Search & Catalog Explorer -->
-    <div style="display: flex; flex-direction: column; gap: 20px;">
-      <div class="section-label visible" style="margin-bottom: 0;">
-        <span class="sl-text">Weapon Skins Catalog Explorer</span>
-        <div class="sl-line"></div>
-      </div>
-      
-      <!-- Search & Filters Bar -->
-      <div class="card" style="padding: 16px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; border-radius: 12px; background: rgba(20, 20, 22, 0.45); border: 1px solid var(--border);">
-        <div style="flex: 1; min-width: 280px; position: relative;">
-          <input type="text" id="skin-search-input" placeholder="Search weapon skins (e.g. Prime, Reaver, RGX)..." style="width: 100%; padding: 11px 16px; border: 1px solid var(--border); border-radius: 8px; background: rgba(0,0,0,0.4); color: #fff; font-size: 13px; outline: none; transition: var(--transition);" oninput="filterSkins()">
-        </div>
-        
-        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-          <select id="skin-weapon-select" onchange="filterSkins()" style="padding: 11px 14px; border: 1px solid var(--border); border-radius: 8px; background: rgba(0,0,0,0.4); color: #fff; font-size: 13px; outline: none; cursor: pointer; transition: var(--transition);">
-            <option value="all">All Weapons</option>
-            <option value="vandal">Vandal</option>
-            <option value="phantom">Phantom</option>
-            <option value="sheriff">Sheriff</option>
-            <option value="operator">Operator</option>
-            <option value="spectre">Spectre</option>
-            <option value="ghost">Ghost</option>
-            <option value="classic">Classic</option>
-            <option value="melee">Melee / Knives</option>
-            <option value="guardian">Guardian</option>
-            <option value="bulldog">Bulldog</option>
-            <option value="marshal">Marshal</option>
-            <option value="outlaw">Outlaw</option>
-            <option value="stinger">Stinger</option>
-            <option value="shorty">Shorty</option>
-            <option value="frenzy">Frenzy</option>
-            <option value="bucky">Bucky</option>
-            <option value="judge">Judge</option>
-            <option value="odin">Odin</option>
-            <option value="ares">Ares</option>
-          </select>
-
-          <select id="skin-rarity-select" onchange="filterSkins()" style="padding: 11px 14px; border: 1px solid var(--border); border-radius: 8px; background: rgba(0,0,0,0.4); color: #fff; font-size: 13px; outline: none; cursor: pointer; transition: var(--transition);">
-            <option value="all">All Rarities</option>
-            <option value="exclusive">Exclusive (Gold)</option>
-            <option value="ultra">Ultra (Purple)</option>
-            <option value="premium">Premium (Pink)</option>
-            <option value="deluxe">Deluxe (Blue)</option>
-            <option value="select">Select (Green)</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Catalog grid -->
-      <div id="skin-catalog-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px;">
-        <!-- Loaded dynamically -->
-      </div>
-      
-      <!-- Pagination / Show More -->
-      <div style="display: flex; justify-content: center; margin-top: 15px; margin-bottom: 30px;">
-        <button class="fetch-btn" id="skin-show-more-btn" onclick="showMoreSkins()" style="padding: 11px 32px; font-size: 12px;">Load More Skins</button>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- SKIN DETAIL MODAL -->
-  <div class="stat-modal-overlay" id="skin-modal-overlay" onclick="if(event.target===this)closeSkinModal()">
-    <div class="stat-modal" style="max-width: 780px; border-color: rgba(255,255,255,0.1); background: linear-gradient(180deg, var(--surface) 0%, rgba(10,10,12,0.98) 100%); width: 95vw; border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.6);">
-      <div class="stat-modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px; display:flex; align-items:center;">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <div id="skin-modal-rarity-icon" style="width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); border-radius: 6px;"></div>
-          <div class="stat-modal-title" id="skin-modal-title" style="color: #fff; font-size: 22px; font-family:'Barlow Condensed',sans-serif; font-weight:900; text-transform:uppercase; letter-spacing: 0.5px;">Skin Name</div>
-        </div>
-        <button class="stat-modal-close" onclick="closeSkinModal()">✕</button>
-      </div>
-      
-      <div class="stat-modal-body" style="padding: 20px 0; max-height: 75vh; overflow-y: auto;">
-        
-        <!-- Big Preview Image -->
-        <div style="background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0.5) 100%); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 40px 30px; display: flex; align-items: center; justify-content: center; min-height: 260px; position: relative; overflow: hidden; margin-bottom: 24px;">
-          <img id="skin-modal-large-img" src="" alt="Skin Preview" style="max-width: 90%; max-height: 180px; object-fit: contain; filter: drop-shadow(0 12px 24px rgba(0,0,0,0.75)); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);">
-          <div id="skin-modal-price-badge" style="position: absolute; bottom: 14px; right: 14px; background: rgba(250, 68, 84, 0.12); border: 1px solid rgba(250, 68, 84, 0.3); padding: 7px 14px; border-radius: 20px; font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(250, 68, 84, 0.15);">
-            <span style="font-size: 13px;">🪙</span> <span id="skin-modal-price-val">1775</span> VP
-          </div>
-        </div>
-
-        <!-- Dynamic Chroma Selector -->
-        <div style="margin-bottom: 24px;">
-          <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:13px; text-transform:uppercase; color:var(--muted); margin-bottom:12px; letter-spacing:0.5px; display:flex; align-items:center; gap:6px;">🎨 Chroma Color Variants</h4>
-          <div id="skin-modal-chromas" style="display: flex; gap: 12px; flex-wrap: wrap;"></div>
-        </div>
-
-        <!-- Levels / Media Preview Selector -->
-        <div>
-          <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:13px; text-transform:uppercase; color:var(--muted); margin-bottom:12px; letter-spacing:0.5px; display:flex; align-items:center; gap:6px;">🎬 Upgrade Levels & Finisher Demos</h4>
-          <div id="skin-modal-levels" style="display: flex; flex-direction: column; gap: 8px;"></div>
-        </div>
-        
-        <!-- Inline Video Player -->
-        <div id="skin-modal-video-container" style="display: none; margin-top: 24px; background: #000; border-radius: 8px; border: 1px solid var(--border); overflow: hidden; aspect-ratio: 16/9; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
-          <video id="skin-modal-video-player" controls style="width: 100%; height: 100%; object-fit: contain;"></video>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-</div>
-
-
-
-  <!-- DRAFT COMPOSITION COACH VIEW -->
-  <div id="coach-view" style="display:none; padding: 24px; max-width: 1400px; margin: 0 auto;">
-    <div style="background: linear-gradient(135deg, rgba(250, 68, 84, 0.12) 0%, rgba(20, 20, 22, 0.45) 100%); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 8px;">
-      <h2 style="font-family:'Barlow Condensed', sans-serif; font-size: 32px; font-weight: 900; text-transform: uppercase; color: #fff; letter-spacing: 1.5px; margin: 0;">VCT Meta Comp Architect</h2>
-      <p style="font-size: 13px; color: var(--muted); margin: 0; max-width: 700px;">Draft 5-agent team compositions for any active Valorant map. Our real-time coaching heuristics engine evaluates role balances, maps suitability, and triggers synergies to flag tactical vulnerabilities before you queue.</p>
-    </div>
-
-    <div class="coach-grid">
-      <!-- LEFT PANEL: Draft Roster & Map Selector -->
-      <div style="display: flex; flex-direction: column; gap: 20px;">
-        <div class="section-label visible" style="margin-bottom: 0;">
-          <span class="sl-text">Draft Composition Board</span>
-          <div class="sl-line"></div>
-        </div>
-
-        <div class="card" style="padding: 16px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 12px; display:flex; flex-direction:column; gap:16px; margin: 0;">
-          <div>
-            <label style="font-family:'Barlow Condensed', sans-serif; font-size: 11px; color: var(--muted); text-transform: uppercase; display: block; margin-bottom: 6px;">Select Tactical Map</label>
-            <select id="dc-map-select" onchange="evaluateDraft()" style="width: 100%; padding: 11px 14px; border: 1px solid var(--border); border-radius: 8px; background: rgba(0,0,0,0.5); color: #fff; font-size: 13px; outline: none; cursor: pointer;">
-              <option value="ascent">Ascent</option>
-              <option value="bind">Bind</option>
-              <option value="haven">Haven</option>
-              <option value="split">Split</option>
-              <option value="breeze">Breeze</option>
-              <option value="sunset">Sunset</option>
-              <option value="lotus">Lotus</option>
-              <option value="icebox">Icebox</option>
-              <option value="abyss">Abyss</option>
-            </select>
-          </div>
-
-          <div style="font-family:'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; color: #fff; text-transform: uppercase; margin-bottom: 4px;">Selected Agent Draft</div>
-          <div style="display: flex; justify-content: space-around; gap: 10px; flex-wrap: wrap;">
-            <div class="dc-slot-card" onclick="openDraftSelector(0)">
-              <div id="dc-slot-avatar-0" class="dc-slot-avatar">➕</div>
-              <div id="dc-slot-name-0" class="dc-slot-name">Slot 1</div>
-            </div>
-            <div class="dc-slot-card" onclick="openDraftSelector(1)">
-              <div id="dc-slot-avatar-1" class="dc-slot-avatar">➕</div>
-              <div id="dc-slot-name-1" class="dc-slot-name">Slot 2</div>
-            </div>
-            <div class="dc-slot-card" onclick="openDraftSelector(2)">
-              <div id="dc-slot-avatar-2" class="dc-slot-avatar">➕</div>
-              <div id="dc-slot-name-2" class="dc-slot-name">Slot 3</div>
-            </div>
-            <div class="dc-slot-card" onclick="openDraftSelector(3)">
-              <div id="dc-slot-avatar-3" class="dc-slot-avatar">➕</div>
-              <div id="dc-slot-name-3" class="dc-slot-name">Slot 4</div>
-            </div>
-            <div class="dc-slot-card" onclick="openDraftSelector(4)">
-              <div id="dc-slot-avatar-4" class="dc-slot-avatar">➕</div>
-              <div id="dc-slot-name-4" class="dc-slot-name">Slot 5</div>
-            </div>
-          </div>
-
-          <div style="display: flex; gap: 10px; margin-top: 10px;">
-            <button class="fetch-btn" style="flex: 1.5; margin: 0; background: linear-gradient(135deg, var(--accent) 0%, #ff4655 100%); color: #0d0d0f; font-weight: 800;" onclick="buildAroundMe()">✨ Build Around Me</button>
-            <button class="fetch-btn" style="flex: 0.8; margin: 0; background: rgba(255,255,255,0.05); border: 1px solid var(--border);" onclick="resetDraftComp()">↻ Clear</button>
-          </div>
-          
-          <div style="display: flex; gap: 10px; margin-top: 10px;">
-            <button class="fetch-btn" style="flex: 1; margin: 0; background: var(--accent); color: #0d0d0f;" onclick="saveCurrentDraftComp()">💾 Save Draft</button>
-            <button class="fetch-btn" style="flex: 1; margin: 0; background: rgba(255,255,255,0.05); border: 1px solid var(--border);" onclick="exportCurrentDraftCompPNG()">📥 Export Lineup</button>
-          </div>
-        </div>
-
-        <!-- My Saved Compositions Card -->
-        <div class="section-label visible" id="saved-comps-label" style="margin-top: 15px; margin-bottom: 0; display: none;">
-          <span class="sl-text">My Saved Compositions</span>
-          <div class="sl-line"></div>
-        </div>
-        <div class="card" id="saved-comps-card" style="padding: 16px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 12px; display: none; flex-direction: column; gap: 12px; margin: 0;">
-          <div id="saved-comps-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto; padding-right: 4px;">
-            <!-- Populated dynamically by JS -->
-          </div>
-        </div>
-
-        <!-- Compare Against the Pros Card -->
-        <div class="section-label visible" style="margin-top: 10px; margin-bottom: 0;">
-          <span class="sl-text">Compare Against the Pros</span>
-          <div class="sl-line"></div>
-        </div>
-
-        <div class="card" style="padding: 16px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 12px; display:flex; flex-direction:column; gap:16px; margin: 0;">
-          <!-- Pro Compositions Side-by-Side -->
-          <div class="pro-compositions-grid">
-            <!-- Meta Favorite -->
-            <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-family:'Barlow Condensed', sans-serif; font-size: 11px; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">🔥 VCT Meta Favorite</span>
-                <span id="dc-pro-fav-stats" style="font-size: 9px; font-family:'DM Mono', monospace; color: var(--muted);">0 Picks</span>
-              </div>
-              <div id="dc-pro-fav-lineup" style="display: flex; gap: 6px; justify-content: start; min-height: 38px; align-items: center;">
-                <div style="font-size: 10px; color: var(--muted); text-align: center; width: 100%;">No data</div>
-              </div>
-              <div style="font-size: 9px; color: var(--muted); display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 4px; margin-top: 2px;">
-                <span>Most Played Comp</span>
-                <span id="dc-pro-fav-wr" style="color: #fff; font-weight: bold;">0% WR</span>
-              </div>
-            </div>
-
-            <!-- Win Rate Champion -->
-            <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-family:'Barlow Condensed', sans-serif; font-size: 11px; color: #ffd700; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">👑 Elite Win-Rate Champion</span>
-                <span id="dc-pro-champ-stats" style="font-size: 9px; font-family:'DM Mono', monospace; color: var(--muted);">0 Picks</span>
-              </div>
-              <div id="dc-pro-champ-lineup" style="display: flex; gap: 6px; justify-content: start; min-height: 38px; align-items: center;">
-                <div style="font-size: 10px; color: var(--muted); text-align: center; width: 100%;">No data</div>
-              </div>
-              <div style="font-size: 9px; color: var(--muted); display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 4px; margin-top: 2px;">
-                <span>Highest Win Rate Comp</span>
-                <span id="dc-pro-champ-wr" style="color: #ffd700; font-weight: bold;">0% WR</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Heatmap of agent pick rates -->
-          <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-              <h4 style="font-family:'Barlow Condensed', sans-serif; font-size: 12px; text-transform: uppercase; color: #fff; margin: 0;">📈 VCT Agent Heatmap (<span id="dc-pro-patch-txt" style="color: var(--accent);">Patch --</span>)</h4>
-              <span id="dc-pro-total-matches" style="font-family:'DM Mono', monospace; font-size: 9px; color: var(--muted);">0 maps parsed</span>
-            </div>
-            <div id="dc-pro-heatmap-list" style="max-height: 220px; overflow-y: auto; padding-right: 4px;">
-              <div style="grid-column: 1 / -1; font-size: 11px; color: var(--muted); text-align: center; padding: 12px;">No pro stats available for this map.</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- RIGHT PANEL: Heuristics review board -->
-      <div style="display: flex; flex-direction: column; gap: 20px;">
-        <div class="section-label visible" style="margin-bottom: 0;">
-          <span class="sl-text">Tactical Coach Verdict</span>
-          <div class="sl-line"></div>
-        </div>
-
-        <div class="card" style="padding: 20px; border-radius: 16px; border: 1px solid var(--border); display:flex; flex-direction:column; gap:16px; margin: 0;">
-          <div style="display:flex; align-items:center; gap:20px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:16px;">
-            <div style="width: 80px; height: 80px; border-radius: 50%; border: 4px solid var(--border); display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; box-shadow: 0 0 16px rgba(250, 68, 84, 0.1);">
-              <div id="dc-score-meter" style="font-family:'Barlow Condensed', sans-serif; font-size: 26px; font-weight: 900; color: var(--muted);">0</div>
-              <div style="font-size: 8px; color: var(--muted); text-transform:uppercase; font-weight:bold;">SCORE</div>
-            </div>
-            <div>
-              <div id="dc-verdict-title" style="font-family:'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 800; color:#fff; text-transform:uppercase;">Incomplete Draft</div>
-              <p id="dc-verdict-desc" style="font-size: 11px; color: var(--muted); margin: 4px 0 0 0; max-width: 320px;">Add 5 agents to evaluate the comp synergy and receive coaching advice.</p>
-            </div>
-          </div>
-
-          <div>
-            <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:12px; text-transform:uppercase; color:#fff; margin-bottom:12px;">📊 Role Allocations</h4>
-            <div style="display:flex; flex-direction:column; gap:10px;">
-              <div>
-                <div style="display:flex; justify-content:space-between; font-size: 10px; font-family:'DM Mono', monospace; color: var(--muted); margin-bottom: 2px;"><span>Duelists</span><span id="dc-bar-duelists-txt">0 / 2</span></div>
-                <div class="dc-track-bar"><div id="dc-bar-duelists" class="dc-fill-bar duelists" style="width: 0%"></div></div>
-              </div>
-              <div>
-                <div style="display:flex; justify-content:space-between; font-size: 10px; font-family:'DM Mono', monospace; color: var(--muted); margin-bottom: 2px;"><span>Initiators</span><span id="dc-bar-initiators-txt">0 / 1</span></div>
-                <div class="dc-track-bar"><div id="dc-bar-initiators" class="dc-fill-bar initiators" style="width: 0%"></div></div>
-              </div>
-              <div>
-                <div style="display:flex; justify-content:space-between; font-size: 10px; font-family:'DM Mono', monospace; color: var(--muted); margin-bottom: 2px;"><span>Controllers (Smokes)</span><span id="dc-bar-controllers-txt">0 / 1</span></div>
-                <div class="dc-track-bar"><div id="dc-bar-controllers" class="dc-fill-bar controllers" style="width: 0%"></div></div>
-              </div>
-              <div>
-                <div style="display:flex; justify-content:space-between; font-size: 10px; font-family:'DM Mono', monospace; color: var(--muted); margin-bottom: 2px;"><span>Sentinels (Flank watch)</span><span id="dc-bar-sentinels-txt">0 / 1</span></div>
-                <div class="dc-track-bar"><div id="dc-bar-sentinels" class="dc-fill-bar sentinels" style="width: 0%"></div></div>
-              </div>
-            </div>
-          </div>
-
-          <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top:16px;">
-            <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:12px; text-transform:uppercase; color:#fff; margin-bottom:12px; display:flex; align-items:center; gap:6px;">📈 Advanced Coordination Metrics</h4>
-            <div style="display:flex; flex-direction:column; gap:10px;">
-              <div>
-                <div style="display:flex; justify-content:space-between; font-size: 10px; font-family:'DM Mono', monospace; color: var(--muted); margin-bottom: 2px;">
-                  <span>Site Entry &amp; Execution Power</span>
-                  <span id="dc-metric-entry-txt">0%</span>
-                </div>
-                <div class="dc-track-bar"><div id="dc-metric-entry" class="dc-fill-bar" style="width: 0%; background: linear-gradient(90deg, #ff4655, #ff8080);"></div></div>
-              </div>
-              <div>
-                <div style="display:flex; justify-content:space-between; font-size: 10px; font-family:'DM Mono', monospace; color: var(--muted); margin-bottom: 2px;">
-                  <span>Defensive Lock &amp; Site Delay</span>
-                  <span id="dc-metric-defense-txt">0%</span>
-                </div>
-                <div class="dc-track-bar"><div id="dc-metric-defense" class="dc-fill-bar" style="width: 0%; background: linear-gradient(90deg, #3ecf8e, #00f2fe);"></div></div>
-              </div>
-              <div>
-                <div style="display:flex; justify-content:space-between; font-size: 10px; font-family:'DM Mono', monospace; color: var(--muted); margin-bottom: 2px;">
-                  <span>Retake &amp; Scouting Capability</span>
-                  <span id="dc-metric-retake-txt">0%</span>
-                </div>
-                <div class="dc-track-bar"><div id="dc-metric-retake" class="dc-fill-bar" style="width: 0%; background: linear-gradient(90deg, #ffb01f, #f53b57);"></div></div>
-              </div>
-              <div>
-                <div style="display:flex; justify-content:space-between; font-size: 10px; font-family:'DM Mono', monospace; color: var(--muted); margin-bottom: 2px;">
-                  <span>Inter-Agent Synergy Factor</span>
-                  <span id="dc-metric-synergy-txt">0%</span>
-                </div>
-                <div class="dc-track-bar"><div id="dc-metric-synergy" class="dc-fill-bar" style="width: 0%; background: linear-gradient(90deg, #8c46ff, #e8ff47);"></div></div>
-              </div>
-            </div>
-          </div>
-
-          <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top:16px;">
-            <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:12px; text-transform:uppercase; color:#fff; margin-bottom:12px;">⚡ Draft Analysis Insights</h4>
-            <div id="dc-insights-wrap" style="display:flex; flex-direction:column; gap:8px;">
-              <div style="font-size:11px; color:var(--muted); text-align:center; padding:16px;">Insights panel will fill once draft is parsed.</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="stat-modal-overlay" id="dc-agent-modal" onclick="if(event.target===this)closeDraftSelector()">
-      <div class="stat-modal" style="max-width: 580px; border-color: rgba(255,255,255,0.08); background: #0c0c0f; border-radius: 16px;">
-        <div class="stat-modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px;">
-          <div class="stat-modal-title" style="font-size: 18px; font-family:'Barlow Condensed',sans-serif; text-transform:uppercase;">Select Draft Agent</div>
-          <button class="stat-modal-close" onclick="closeDraftSelector()">✕</button>
-        </div>
-        <div class="stat-modal-body" style="padding: 16px 0; max-height: 400px; overflow-y: auto;">
-          <div id="dc-agent-list" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap:10px;"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-
-  <div id="overlay-view" style="display:none; padding: 24px; max-width: 1400px; margin: 0 auto;">
-    <!-- Header Banner -->
-    <div style="background: linear-gradient(135deg, rgba(232, 255, 71, 0.12) 0%, rgba(20, 20, 22, 0.45) 100%); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 8px;">
-      <h2 style="font-family:'Barlow Condensed', sans-serif; font-size: 32px; font-weight: 900; text-transform: uppercase; color: #fff; letter-spacing: 1.5px; margin: 0;">OBS Stream Overlay Studio</h2>
-      <p style="font-size: 13px; color: var(--muted); margin: 0; max-width: 700px;">Design premium, real-time telemetry overlays for your stream. Configure color schemes, layout scaling, and stats packages, then paste the generated URL into an OBS Browser Source.</p>
-    </div>
-
-    <!-- Dashboard Split Grid -->
-    <div class="overlay-studio-grid">
-      
-      <!-- LEFT PANEL: Simulated Live Stream Preview -->
-      <div class="overlay-studio-preview-col">
-        <div class="overlay-studio-label">Live Overlay Preview (Scale Simulator)</div>
-        <div class="overlay-studio-canvas" id="overlay-preview-canvas">
-          <div class="overlay-studio-backdrop"></div>
-          <!-- Injected Overlay Preview Sandbox -->
-          <div class="overlay-studio-sandbox" id="overlay-preview-sandbox">
-            <!-- Rendered dynamically by JS -->
-          </div>
-        </div>
-      </div>
-
-      <!-- RIGHT PANEL: Settings Sidebar -->
-      <div class="overlay-studio-settings-col">
-        <!-- 1. Profile Linker -->
-        <div class="overlay-settings-group">
-          <h3>1. Link Player Profile</h3>
-          <div class="overlay-settings-row">
-            <input class="overlay-studio-input" id="overlay-name-input" type="text" placeholder="Name" value="" autocomplete="off" spellcheck="false" oninput="updateOverlayPreview()">
-            <span class="overlay-studio-hash">#</span>
-            <input class="overlay-studio-input overlay-studio-tag-input" id="overlay-tag-input" type="text" placeholder="TAG" value="" maxlength="8" autocomplete="off" spellcheck="false" oninput="updateOverlayPreview()">
-            <select class="overlay-studio-select" id="overlay-region-select" onchange="updateOverlayPreview()">
-              <option value="ap">AP</option>
-              <option value="na">NA</option>
-              <option value="eu">EU</option>
-              <option value="kr">KR</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- 2. Select Layout -->
-        <div class="overlay-settings-group">
-          <h3>2. Select Layout Preset</h3>
-          <select class="overlay-studio-select-large" id="overlay-variant-select" onchange="onOverlayVariantChange()">
-            <option value="competitive">Competitive Overlay (Agent History & Rank Info)</option>
-            <option value="center">Center HUD Overlay (Horizontal Bar HUD)</option>
-            <option value="flexible">Flexible Stats Panel (Vertical Custom Checklist)</option>
-          </select>
-        </div>
-
-        <!-- 3. Flexible Stats selection -->
-        <div class="overlay-settings-group" id="flex-stats-checklist-group" style="display:none;">
-          <h3>3. Select Display Stats</h3>
-          <div class="stats-checklist-grid">
-            <label class="chk-label"><input type="checkbox" value="rank" checked onchange="updateOverlayPreview()"> Current Rank</label>
-            <label class="chk-label"><input type="checkbox" value="peak" checked onchange="updateOverlayPreview()"> Peak Rank</label>
-            <label class="chk-label"><input type="checkbox" value="winrate" checked onchange="updateOverlayPreview()"> Win Rate %</label>
-            <label class="chk-label"><input type="checkbox" value="kd" checked onchange="updateOverlayPreview()"> K/D Ratio</label>
-            <label class="chk-label"><input type="checkbox" value="acs" checked onchange="updateOverlayPreview()"> Avg ACS</label>
-            <label class="chk-label"><input type="checkbox" value="avg_kills" onchange="updateOverlayPreview()"> Avg Kills</label>
-            <label class="chk-label"><input type="checkbox" value="assists" onchange="updateOverlayPreview()"> Assists</label>
-            <label class="chk-label"><input type="checkbox" value="daily_wl" onchange="updateOverlayPreview()"> Session W/L</label>
-            <label class="chk-label"><input type="checkbox" value="session_winrate" onchange="updateOverlayPreview()"> Session Win %</label>
-            <label class="chk-label"><input type="checkbox" value="session_kd" onchange="updateOverlayPreview()"> Session K/D</label>
-            <label class="chk-label"><input type="checkbox" value="session_acs" onchange="updateOverlayPreview()"> Session ACS</label>
-          </div>
-        </div>
-
-        <!-- 4. Theme customization -->
-        <div class="overlay-settings-group">
-          <h3>3. Customize Colors &amp; Scale</h3>
-          <div class="colors-controls-grid">
-            <div class="color-picker-control">
-              <label>Accent Color</label>
-              <div class="color-picker-input-wrap">
-                <input type="color" id="ov-color-accent" value="#e8ff47" onchange="syncColorInput('accent')">
-                <input type="text" id="ov-txt-accent" value="e8ff47" oninput="syncColorPicker('accent')">
-              </div>
-            </div>
-            <div class="color-picker-control">
-              <label>Background</label>
-              <div class="color-picker-input-wrap">
-                <input type="color" id="ov-color-bg" value="#0f0f12" onchange="syncColorInput('bg')">
-                <input type="text" id="ov-txt-bg" value="rgba(15, 15, 18, 0.85)" oninput="syncColorPicker('bg')">
-              </div>
-            </div>
-            <div class="color-picker-control">
-              <label>Text Color</label>
-              <div class="color-picker-input-wrap">
-                <input type="color" id="ov-color-text" value="#f4f4f7" onchange="syncColorInput('text')">
-                <input type="text" id="ov-txt-text" value="f4f4f7" oninput="syncColorPicker('text')">
-              </div>
-            </div>
-            <div class="color-picker-control">
-              <label>Border Color</label>
-              <div class="color-picker-input-wrap">
-                <input type="color" id="ov-color-border" value="#333333" onchange="syncColorInput('border')">
-                <input type="text" id="ov-txt-border" value="rgba(255, 255, 255, 0.08)" oninput="syncColorPicker('border')">
-              </div>
-            </div>
-          </div>
-          <div class="scale-slider-control" style="margin-top: 14px;">
-            <div style="display:flex; justify-content:space-between; margin-bottom: 6px;">
-              <label style="font-family:'DM Mono',monospace; font-size:11px; color:var(--muted);">Overlay Scale (OBS Multiplier)</label>
-              <span id="overlay-scale-val" style="font-family:'DM Mono',monospace; font-size:11px; color:var(--accent); font-weight:700;">1.0x</span>
-            </div>
-            <input type="range" id="ov-scale-range" min="0.5" max="1.5" step="0.05" value="1.0" oninput="updateOverlayScale()" style="width:100%; accent-color:var(--accent); cursor:pointer;">
-          </div>
-        </div>
-
-        <!-- 5. Generate Link & Setup Guide -->
-        <div class="overlay-settings-group final-link-box" style="border: 1px solid rgba(232, 255, 71, 0.16); background: rgba(232, 255, 71, 0.02);">
-          <h3>4. Generate OBS URL</h3>
-          <div class="obs-url-row" style="display: flex; gap: 8px; margin-bottom: 12px;">
-            <input type="text" id="obs-generated-url" readonly value="" onclick="this.select()" style="flex-grow:1; background:var(--surface2); border:1px solid var(--border); color:#fff; padding:8px 12px; border-radius:6px; font-family:'DM Mono',monospace; font-size:11px; outline:none; text-overflow:ellipsis;">
-            <button class="fetch-btn" onclick="copyObsUrl()" style="padding: 8px 16px;">Copy URL</button>
-          </div>
-          
-          <div class="obs-setup-guide" style="font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); padding-top: 12px;">
-            <h4 style="color:#fff; font-family:'Barlow Condensed',sans-serif; font-size:14px; text-transform:uppercase; margin-bottom:6px; letter-spacing:0.5px;">How to add to OBS Studio:</h4>
-            <ol style="padding-left: 16px; margin: 0; display:flex; flex-direction:column; gap:4px; line-height:1.4;">
-              <li>In OBS, click <strong>+</strong> under the <em>Sources</em> panel.</li>
-              <li>Select <strong>Browser Source</strong> and name it (e.g. "Valorant Overlay").</li>
-              <li>Paste the copied URL into the <strong>URL</strong> field.</li>
-              <li>Set the Width and Height based on your layout:
-                <ul style="margin-top: 2px; padding-left: 16px; color: var(--accent); list-style-type: square;">
-                  <li>Competitive: <strong>600 x 200</strong></li>
-                  <li>Center HUD: <strong>720 x 120</strong></li>
-                  <li>Flexible Panel: <strong>320 x 480</strong></li>
-                </ul>
-              </li>
-              <li>Click <strong>OK</strong> and position it on your stream canvas!</li>
-            </ol>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- GLOBAL FOOTER -->
-  <div id="global-footer" style="display: none; width: calc(100% - 56px); max-width: 1200px; margin: 40px auto 20px; border-top:1px solid rgba(255,255,255,0.05); padding-top:24px; flex-direction:column; align-items:center; gap:12px; box-sizing:border-box;">
-    <!-- Riot Games Legal Disclaimer -->
-    <div style="font-family:'DM Mono',monospace; font-size:9px; color:var(--muted2); text-align:center; max-width:760px; line-height:1.6; text-transform:uppercase; letter-spacing:0.5px;">
-      VALTRACKER IS NOT ENDORSED BY RIOT GAMES AND DOES NOT REFLECT THE VIEWS OR OPINIONS OF RIOT GAMES OR ANYONE OFFICIALLY INVOLVED IN PRODUCING OR MANAGING VALORANT. VALORANT AND RIOT GAMES ARE TRADEMARKS OR REGISTERED TRADEMARKS OF RIOT GAMES, INC. VALORANT © RIOT GAMES, INC.
-    </div>
-    
-    <!-- Developer socials -->
-    <div style="display:flex; align-items:center; justify-content:center; gap:16px; margin-top:8px;">
-      <span style="font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:800; color:var(--muted); letter-spacing:1px; text-transform:uppercase;">Developed by Pratham</span>
-      <div style="display:flex; align-items:center; gap:12px;">
-        <!-- GitHub -->
-        <a href="https://github.com/itzpratham1" target="_blank" title="GitHub" style="color:var(--muted); display:inline-block; transition:color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="display:block;">
-            <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.646.64.699 1.026 1.592 1.026 2.683 0 3.842-2.337 4.687-4.565 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.579.688.481C19.137 20.162 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
-          </svg>
-        </a>
-        <!-- Twitter/X -->
-        <a href="https://x.com/itzpratham01" target="_blank" title="Twitter / X" style="color:var(--muted); display:inline-block; transition:color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="display:block;">
-            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-          </svg>
-        </a>
-      </div>
-    </div>
-  </div>
-
-<div class="toast" id="toast"></div>
-
-<script>
 function expandTeamName(name) {
   if (!name) return 'TBD';
   const clean = name.trim();
@@ -1535,11 +74,6 @@ function getPlayerList(match) {
 // API_KEY has been securely moved to the backend
 let PLAYER_NAME = '';
 let PLAYER_TAG  = '';
-let LAST_SUCCESSFUL_NAME = '';
-let LAST_SUCCESSFUL_TAG = '';
-let LAST_SUCCESSFUL_REGION = '';
-let LAST_SUCCESSFUL_MODE = '';
-let statsLoaded = false;
 
 const ACTS_TIMELINE = {
   'v26a3': { name: 'V26 Act 3', start: new Date('2026-04-29T00:00:00Z').getTime(), end: new Date('2026-06-24T00:00:00Z').getTime() },
@@ -1806,10 +340,26 @@ function copyRiotId() {
   const id = tag ? `${name}#${tag}` : name;
   navigator.clipboard.writeText(id).then(() => {
     showToast(`Copied: ${id}`);
+    const btn = document.getElementById('copy-riot-btn');
+    if (btn) {
+      btn.classList.add('copied');
+      const span = btn.querySelector('span');
+      if (span) span.textContent = 'Copied!';
+      setTimeout(() => { 
+        btn.classList.remove('copied'); 
+        if (span) span.textContent = 'Copy ID';
+      }, 1500);
+    }
   }).catch(() => { showToast('Copy failed — check browser permissions'); });
 }
 
-// ── Back to Top visibility is now managed by the Unified Scroll Manager ──
+// ── Back to Top visibility ──
+window.addEventListener('scroll', () => {
+  const btn = document.getElementById('back-to-top');
+  if (!btn) return;
+  if (window.scrollY > 300) btn.classList.add('visible');
+  else btn.classList.remove('visible');
+}, { passive: true });
 
 // ── Performance Trend Chart ──
 let _perfTrendChart = null;
@@ -1824,7 +374,6 @@ function renderTrendChart(matches) {
     return;
   }
 
-  const isMobile = window.innerWidth <= 600;
   const data = matches.slice().reverse(); // oldest → newest
   const labels = data.map((m, i) => {
     const ag = (m.agentName || '').substring(0, 3).toUpperCase();
@@ -1853,7 +402,7 @@ function renderTrendChart(matches) {
           borderColor: '#e8ff47',
           backgroundColor: 'rgba(232,255,71,0.06)',
           borderWidth: 2,
-          pointRadius: isMobile ? 0 : 3,
+          pointRadius: 3,
           pointHoverRadius: 5,
           pointBackgroundColor: '#e8ff47',
           tension: 0.35,
@@ -1865,7 +414,7 @@ function renderTrendChart(matches) {
           borderColor: '#3ecf8e',
           backgroundColor: 'rgba(62,207,142,0.06)',
           borderWidth: 2,
-          pointRadius: isMobile ? 0 : 3,
+          pointRadius: 3,
           pointHoverRadius: 5,
           pointBackgroundColor: '#3ecf8e',
           tension: 0.35,
@@ -1877,7 +426,7 @@ function renderTrendChart(matches) {
           borderColor: '#ff5757',
           backgroundColor: 'rgba(255,87,87,0.06)',
           borderWidth: 2,
-          pointRadius: isMobile ? 0 : 3,
+          pointRadius: 3,
           pointHoverRadius: 5,
           pointBackgroundColor: '#ff5757',
           tension: 0.35,
@@ -1918,8 +467,8 @@ function renderTrendChart(matches) {
       },
       scales: {
         x: {
-          grid: { display: !isMobile, color: 'rgba(255,255,255,0.04)' },
-          ticks: { display: !isMobile, color: '#555', font: { family: 'DM Mono', size: 8 }, maxRotation: 45, autoSkip: true, maxTicksLimit: 20 }
+          grid: { color: 'rgba(255,255,255,0.04)' },
+          ticks: { color: '#555', font: { family: 'DM Mono', size: 8 }, maxRotation: 45, autoSkip: true, maxTicksLimit: 20 }
         },
         y: {
           grid: { color: 'rgba(255,255,255,0.05)' },
@@ -2088,12 +637,6 @@ window.addEventListener('DOMContentLoaded', async () => {
       PLAYER_TAG = savedProfile.tag;
       window._currentMode = savedProfile.mode || 'competitive';
       
-      // Initialize last successful lookup state on page load
-      LAST_SUCCESSFUL_NAME = savedProfile.name;
-      LAST_SUCCESSFUL_TAG = savedProfile.tag;
-      LAST_SUCCESSFUL_REGION = savedProfile.region || 'ap';
-      LAST_SUCCESSFUL_MODE = savedProfile.mode || 'competitive';
-      
       const mmrKey = `vt_mmr_${PLAYER_NAME.toLowerCase()}_${PLAYER_TAG.toLowerCase()}`;
       try { window._rawMmrData = JSON.parse(localStorage.getItem(mmrKey)); } catch(e) {}
       
@@ -2186,10 +729,6 @@ async function handleClear(){
 }
 
 async function fetchAll(){
-  // Close search dropdowns immediately
-  document.getElementById('landing-search-dropdown')?.classList.remove('open');
-  document.getElementById('topbar-search-dropdown')?.classList.remove('open');
-
   // Read player from inputs
   const inputName = document.getElementById('player-name-input')?.value.trim();
   const inputTag  = document.getElementById('player-tag-input')?.value.trim().replace(/^#/,'');
@@ -2223,43 +762,24 @@ async function fetchAll(){
     const matchData=matchRes.ok?await matchRes.json():null;
     const accountData=accountRes.ok?await accountRes.json():null;
     const mmrHistData=mmrHistRes?.ok?await mmrHistRes.json():null;
-    if(!matchData)throw new Error(`Invalid Riot ID or player not found. Check spelling, tag and region.`);
+    if(!matchData)throw new Error(`API error — check player name/tag`);
 
     if(accountData?.data){
       const a=accountData.data;
       const cardUrl=a.card?.wide||a.card?.large||(typeof a.card==='string'?`https://media.valorant-api.com/playercards/${a.card}/wideart.png`:null);
-      const smallCardUrl=a.card?.small||(typeof a.card==='string'?`https://media.valorant-api.com/playercards/${a.card}/smallart.png`:null);
       const lvl=`LVL ${a.account_level||'—'}`;
-      
-      const lvlEl = document.getElementById('player-level');
-      if (lvlEl) lvlEl.textContent = lvl;
-      const heroLvlEl = document.getElementById('hero-level-badge');
-      if (heroLvlEl) {
-        heroLvlEl.textContent = lvl;
-        heroLvlEl.style.display = 'inline-block';
-      }
-      
-      // Update avatar image
-      const avatarImg = document.getElementById('player-avatar-img');
-      if (avatarImg) {
-        if (smallCardUrl) {
-          avatarImg.src = smallCardUrl;
-          avatarImg.style.display = 'block';
-          const fallback = avatarImg.nextElementSibling;
-          if (fallback) fallback.style.display = 'none';
-        } else {
-          avatarImg.style.display = 'none';
-          const fallback = avatarImg.nextElementSibling;
-          if (fallback) fallback.style.display = 'flex';
-        }
-      }
-      
+      document.getElementById('player-level').textContent=lvl;
+      document.getElementById('hero-level-badge').textContent=lvl;
+      document.getElementById('hero-level-badge').style.display='inline-block';
+      document.getElementById('banner-lvl').textContent=lvl;
       if(cardUrl){
         const bg=document.getElementById('player-card-bg');
-        if (bg) {
-          bg.style.backgroundImage=`url('${cardUrl}')`;
-          bg.style.opacity='0.26';
-        }
+        bg.style.backgroundImage=`url('${cardUrl}')`;
+        bg.style.opacity='0.22';
+        // Also populate the banner card
+        const bannerImg=document.getElementById('player-banner-img');
+        bannerImg.src=cardUrl;
+        bannerImg.style.display='block';
       }
     }
 
@@ -2305,50 +825,17 @@ async function fetchAll(){
       showToast(`${totalCount} matches total ✓`);
       addToRecentSearches(PLAYER_NAME, PLAYER_TAG, region, mode);
       renderActiveBookmarkButton();
-      
-      // Store successful lookup parameters
-      LAST_SUCCESSFUL_NAME = PLAYER_NAME;
-      LAST_SUCCESSFUL_TAG = PLAYER_TAG;
-      LAST_SUCCESSFUL_REGION = region;
-      LAST_SUCCESSFUL_MODE = mode;
-      
       dismissLanding();
     }else{
       setStatus(`No ${mode} matches found — try a different region`,'error');
       showToast('No data');
-      throw new Error(`No ${mode} matches found for this player in this region.`);
     }
   }catch(e){
     console.error(e);
     setStatus('Error: '+(e.message||'Check region'),'error');
     showToast('Fetch failed');
-    
-    // Revert inputs and variables to last successful profile if we had one
-    if (LAST_SUCCESSFUL_NAME) {
-      PLAYER_NAME = LAST_SUCCESSFUL_NAME;
-      PLAYER_TAG  = LAST_SUCCESSFUL_TAG;
-      window._currentMode = LAST_SUCCESSFUL_MODE;
-      
-      const pNameInput = document.getElementById('player-name-input');
-      const pTagInput  = document.getElementById('player-tag-input');
-      const regSelect  = document.getElementById('region-select');
-      const modeSelect = document.getElementById('mode-select');
-      
-      if (pNameInput) pNameInput.value = LAST_SUCCESSFUL_NAME;
-      if (pTagInput)  pTagInput.value  = LAST_SUCCESSFUL_TAG;
-      if (regSelect)  regSelect.value  = LAST_SUCCESSFUL_REGION;
-      if (modeSelect) modeSelect.value = LAST_SUCCESSFUL_MODE;
-      
-      updateHeroName();
-      applyModeUI();
-      updateActivePill();
-      renderActiveBookmarkButton();
-    }
-    
-    throw e;
-  }finally{
-    btn.disabled=false;btn.textContent='↻ Fetch Stats';
   }
+  btn.disabled=false;btn.textContent='↻ Fetch Stats';
 }
 
 async function prefetchMatchDetails(matchesToFetch) {
@@ -2523,9 +1010,6 @@ function renderRRGraph(history,currentTotalRR,mmrHistory={}){
   document.getElementById('rr-placeholder').style.display='none';
   document.getElementById('rr-chart').style.display='block';
   document.getElementById('graph-note').style.display='block';
-  
-  const isMobile = window.innerWidth <= 600;
-  
   const hasRealRR=history.some(m=>mmrHistory[m.matchId]!==undefined);
   let totalRR=currentTotalRR||600;
   const points=[];
@@ -2548,7 +1032,7 @@ function renderRRGraph(history,currentTotalRR,mmrHistory={}){
   for(let i=0;i<RANKS.length-1;i++){const t=RANKS[i].name.split(' ')[0];rankZones.push({yMin:RANKS[i].rr,yMax:RANKS[i+1].rr,color:RANK_COLORS[t]||'#fff',label:RANKS[i].name});}
   const minRR=Math.max(0,Math.min(...data)-150);
   const maxRR=Math.max(...data)+150;
-  rrChart=new Chart(ctx,{type:'line',data:{labels,datasets:[{data,borderColor:'rgba(232,255,71,0.9)',backgroundColor:'rgba(232,255,71,0.04)',borderWidth:2,pointBackgroundColor:colors,pointBorderColor:colors,pointRadius:isMobile?0:4,pointHoverRadius:6,tension:0.3,fill:true}]},options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{backgroundColor:'#141416',borderColor:'rgba(255,255,255,0.1)',borderWidth:1,titleColor:'#f0f0f2',bodyColor:'#f0f0f2',titleFont:{family:'DM Mono',size:9},bodyFont:{family:'Barlow Condensed',size:16},callbacks:{title:c=>`Match ${c[0].label} · ${rankLabels[c[0].dataIndex]?.rank||''}`,label:c=>{const rl=rankLabels[c.dataIndex];const cs=rl?.change!=null?(rl.change>0?` (+${rl.change})`:(` (${rl.change})`)):'';return rl?` ${rl.rr} RR${cs}`:` ${c.parsed.y} RR`;}}}},scales:{x:{grid:{display:!isMobile,color:'rgba(255,255,255,0.03)'},ticks:{display:!isMobile,color:'#3a3a40',font:{family:'DM Mono',size:8}}},y:{grid:{color:'rgba(255,255,255,0.03)'},ticks:{color:'#4a4a52',font:{family:'DM Mono',size:8},callback(v){const r=getRankFromRR(v);return r?r.name:'';}},min:minRR,max:maxRR}}},plugins:[{id:'rankBands',beforeDraw(chart){const{ctx,chartArea,scales}=chart;if(!chartArea)return;rankZones.forEach(zone=>{const yTop=scales.y.getPixelForValue(Math.min(zone.yMax,maxRR));const yBot=scales.y.getPixelForValue(Math.max(zone.yMin,minRR));if(yBot<chartArea.top||yTop>chartArea.bottom)return;ctx.save();ctx.fillStyle=zone.color+'12';ctx.fillRect(chartArea.left,Math.max(yTop,chartArea.top),chartArea.width,Math.min(yBot,chartArea.bottom)-Math.max(yTop,chartArea.top));ctx.fillStyle=zone.color+'66';ctx.font='8px DM Mono';ctx.fillText(zone.label,chartArea.left+6,Math.min(yBot,chartArea.bottom)-4);ctx.restore();});}}]});
+  rrChart=new Chart(ctx,{type:'line',data:{labels,datasets:[{data,borderColor:'rgba(232,255,71,0.9)',backgroundColor:'rgba(232,255,71,0.04)',borderWidth:2,pointBackgroundColor:colors,pointBorderColor:colors,pointRadius:4,pointHoverRadius:6,tension:0.3,fill:true}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{backgroundColor:'#141416',borderColor:'rgba(255,255,255,0.1)',borderWidth:1,titleColor:'#f0f0f2',bodyColor:'#f0f0f2',titleFont:{family:'DM Mono',size:9},bodyFont:{family:'Barlow Condensed',size:16},callbacks:{title:c=>`Match ${c[0].label} · ${rankLabels[c[0].dataIndex]?.rank||''}`,label:c=>{const rl=rankLabels[c.dataIndex];const cs=rl?.change!=null?(rl.change>0?` (+${rl.change})`:(` (${rl.change})`)):'';return rl?` ${rl.rr} RR${cs}`:` ${c.parsed.y} RR`;}}}},scales:{x:{grid:{color:'rgba(255,255,255,0.03)'},ticks:{color:'#3a3a40',font:{family:'DM Mono',size:8}}},y:{grid:{color:'rgba(255,255,255,0.03)'},ticks:{color:'#4a4a52',font:{family:'DM Mono',size:8},callback(v){const r=getRankFromRR(v);return r?r.name:'';}},min:minRR,max:maxRR}}},plugins:[{id:'rankBands',beforeDraw(chart){const{ctx,chartArea,scales}=chart;if(!chartArea)return;rankZones.forEach(zone=>{const yTop=scales.y.getPixelForValue(Math.min(zone.yMax,maxRR));const yBot=scales.y.getPixelForValue(Math.max(zone.yMin,minRR));if(yBot<chartArea.top||yTop>chartArea.bottom)return;ctx.save();ctx.fillStyle=zone.color+'12';ctx.fillRect(chartArea.left,Math.max(yTop,chartArea.top),chartArea.width,Math.min(yBot,chartArea.bottom)-Math.max(yTop,chartArea.top));ctx.fillStyle=zone.color+'66';ctx.font='8px DM Mono';ctx.fillText(zone.label,chartArea.left+6,Math.min(yBot,chartArea.bottom)-4);ctx.restore();});}}]});
 }
 
 function renderAgents(agentMap, allMatches=[]){
@@ -6178,9 +4662,6 @@ function openStatModal(statKey) {
   );
 
   document.getElementById('stat-modal-overlay').classList.add('open');
-  const _scrollY = window.scrollY;
-  document.documentElement.style.setProperty('--scroll-y', `-${_scrollY}px`);
-  document.body.classList.add('modal-open');
 
   // Destroy previous chart
   if (_statChartInstance) { _statChartInstance.destroy(); _statChartInstance = null; }
@@ -6270,9 +4751,6 @@ function openStatModal(statKey) {
 function closeStatModal() {
   document.getElementById('stat-modal-overlay').classList.remove('open');
   if (_statChartInstance) { _statChartInstance.destroy(); _statChartInstance = null; }
-  document.body.classList.remove('modal-open');
-  const scrollY = document.documentElement.style.getPropertyValue('--scroll-y');
-  window.scrollTo(0, parseInt(scrollY || '0') * -1);
 }
 
 // Close on Escape
@@ -7049,9 +5527,7 @@ function updateHeroName() {
   const titleEl = document.getElementById('hero-title');
   if (titleEl) titleEl.innerHTML = base + (suffix ? `<span class="dim">${suffix}</span>` : '');
   const subEl = document.getElementById('hero-sub');
-  if (subEl) {
-    subEl.innerHTML = `<span style="font-size:15px; color:var(--muted); letter-spacing:0.5px;">#${tag}</span><span class="hero-level-badge-new" id="player-level">LVL —</span>`;
-  }
+  if (subEl) subEl.innerHTML = `#${tag} · <span id="player-level"></span>`;
   const eyebrowEl = document.getElementById('hero-eyebrow');
   if (eyebrowEl) eyebrowEl.textContent = `${modeLabel} Tracker`;
   const bannerNameEl = document.getElementById('banner-name');
@@ -7157,21 +5633,8 @@ async function landingFetch() {
   const errEl  = document.getElementById('l-error');
   const btn    = document.getElementById('l-btn');
 
-  if (!name || !tag) { 
-    errEl.innerHTML = `
-      <svg viewBox="0 0 24 24" width="16" height="16" stroke="#ff4655" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
-        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-        <line x1="12" y1="9" x2="12" y2="13"></line>
-        <line x1="12" y1="17" x2="12.01" y2="17"></line>
-      </svg>
-      <span>Enter a name and tag first</span>
-    `;
-    errEl.classList.add('active');
-    return; 
-  }
-  
-  errEl.innerHTML = '';
-  errEl.classList.remove('active');
+  if (!name || !tag) { errEl.textContent = 'Enter a name and tag first'; return; }
+  errEl.textContent = '';
   btn.disabled = true;
   btn.textContent = 'Loading...';
 
@@ -7186,41 +5649,14 @@ async function landingFetch() {
   PLAYER_TAG  = tag;
   window._currentMode = mode;
 
-  try {
-    await fetchAll();
-  } catch (err) {
-    console.error("Landing fetch failed:", err);
-    
-    // Nice Valorant-styled error box message
-    const msg = err.message || 'Player not found or API error. Check spelling, region & tag.';
-    errEl.innerHTML = `
-      <svg viewBox="0 0 24 24" width="16" height="16" stroke="#ff4655" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
-        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-        <line x1="12" y1="9" x2="12" y2="13"></line>
-        <line x1="12" y1="17" x2="12.01" y2="17"></line>
-      </svg>
-      <span>${msg}</span>
-    `;
-    errEl.classList.add('active');
-    
-    // Restore landing page view
-    const landing = document.getElementById('landing');
-    if (landing) {
-      landing.classList.remove('hidden');
-      landing.style.display = 'flex';
-    }
-    const tv = document.getElementById('tracker-view');
-    if (tv) tv.style.display = 'none';
-    const gf = document.getElementById('global-footer');
-    if (gf) gf.style.display = 'none';
-  } finally {
-    btn.disabled = false;
-    btn.textContent = '▶ View Stats';
-  }
+  // Dismiss landing
+  dismissLanding();
+
+  // Trigger fetch
+  await fetchAll();
 }
 
 function dismissLanding() {
-  statsLoaded = true;
   const el = document.getElementById('landing');
   if (el) {
     el.classList.add('hidden');
@@ -7228,9 +5664,6 @@ function dismissLanding() {
   }
   const tv = document.getElementById('tracker-view');
   if (tv) tv.style.display = 'block';
-  
-  const subRow = document.getElementById('topbar-sub-row');
-  if (subRow) subRow.style.display = 'flex';
   
   const gf = document.getElementById('global-footer');
   if (gf) gf.style.display = 'flex';
@@ -7248,31 +5681,41 @@ function dismissLanding() {
     }
   }
   const fb = document.getElementById('fetch-btn');
-  if (fb) fb.style.display = ''; // Let CSS manage visibility
+  if (fb) fb.style.display = window.innerWidth > 800 ? 'inline-block' : 'none';
   const h2hb = document.getElementById('h2h-trigger-btn');
   if (h2hb) h2hb.style.display = 'inline-block';
   
   setTimeout(updateFilterToggleText, 50); // Initialize mobile filter text indicators!
-  setTimeout(updateHeaderHeights, 60);
 }
 
 function toggleSearchMode(showSearch) {
   const psw = document.querySelector('.player-search-wrap');
   const div2 = document.getElementById('tracker-divider-2');
+  const copyBtn = document.getElementById('copy-riot-btn');
   const activePill = document.getElementById('player-active-pill');
   const mft = document.getElementById('mobile-filter-toggle');
   
-  // The search bar in topbar-main-row should always remain visible
-  if (psw) psw.style.display = 'flex';
-  if (div2) div2.style.display = 'block';
-  
-  if (PLAYER_NAME) {
-    if (activePill) activePill.style.display = 'flex';
-    if (mft) mft.style.display = 'inline-flex';
-    updateActivePill();
-  } else {
+  if (showSearch) {
+    if (psw) psw.style.display = 'flex';
+    if (div2) div2.style.display = 'block';
+    if (copyBtn) copyBtn.style.display = 'inline-flex';
     if (activePill) activePill.style.display = 'none';
     if (mft) mft.style.display = 'none';
+  } else {
+    if (PLAYER_NAME) {
+      if (psw) psw.style.display = 'none';
+      if (div2) div2.style.display = 'none';
+      if (copyBtn) copyBtn.style.display = 'none';
+      if (activePill) activePill.style.display = 'flex';
+      if (mft) mft.style.display = 'inline-flex';
+      updateActivePill();
+    } else {
+      if (psw) psw.style.display = 'flex';
+      if (div2) div2.style.display = 'block';
+      if (copyBtn) copyBtn.style.display = 'inline-flex';
+      if (activePill) activePill.style.display = 'none';
+      if (mft) mft.style.display = 'none';
+    }
   }
 }
 
@@ -9117,14 +7560,19 @@ let vctFranchiseData = null;
 let allMatchesCache = [];
 
 function toggleMainView(view) {
-  document.body.classList.remove('scrolled-down');
-  document.body.classList.remove('scrolled-up');
   document.querySelectorAll('.topbar-tab').forEach(t => t.classList.remove('active'));
   const targetTab = document.getElementById('tab-' + view);
   if (targetTab) targetTab.classList.add('active');
   
+  // Hide landing overlay to prevent it from overlaying the active view
   const landing = document.getElementById('landing');
+  if (landing) {
+    landing.classList.add('hidden');
+    landing.style.display = 'none';
+  }
+  
   const gf = document.getElementById('global-footer');
+  if (gf) gf.style.display = 'flex';
   
   // Hide all views first
   document.getElementById('tracker-view').style.display = 'none';
@@ -9135,56 +7583,37 @@ function toggleMainView(view) {
   const oView = document.getElementById('overlay-view');
   if (oView) oView.style.display = 'none';
   
+  const filterGroup = document.getElementById('topbar-filters-group');
   const mft = document.getElementById('mobile-filter-toggle');
-  const subRow = document.getElementById('topbar-sub-row');
   
   if (view === 'tracker') {
-    if (statsLoaded) {
-      if (landing) {
-        landing.classList.add('hidden');
-        landing.style.display = 'none';
-      }
-      if (gf) gf.style.display = 'flex';
-      
-      document.getElementById('tracker-view').style.display = 'block';
-      if (subRow) subRow.style.display = 'flex';
-      
-      const activePill = document.getElementById('player-active-pill');
-      if (mft) {
-        mft.style.display = (activePill && activePill.style.display === 'flex') ? 'inline-flex' : 'none';
-      }
-      
-      const h2hb = document.getElementById('h2h-trigger-btn');
-      if (h2hb) h2hb.style.display = 'inline-block';
-      if(esportsLiveInterval) clearInterval(esportsLiveInterval);
-      if(esportsCountdownInterval) clearInterval(esportsCountdownInterval);
-      dismissLanding();
-    } else {
-      if (landing) {
-        landing.classList.remove('hidden');
-        landing.style.display = 'flex';
-      }
-      if (gf) gf.style.display = 'none';
-      
-      document.getElementById('tracker-view').style.display = 'none';
-      if (subRow) subRow.style.display = 'none';
-      if (mft) mft.style.display = 'none';
-      
-      const h2hb = document.getElementById('h2h-trigger-btn');
-      if (h2hb) h2hb.style.display = 'none';
-      if(esportsLiveInterval) clearInterval(esportsLiveInterval);
-      if(esportsCountdownInterval) clearInterval(esportsCountdownInterval);
+    document.getElementById('tracker-view').style.display = 'block';
+    document.querySelector('.player-search-wrap').style.display = 'flex';
+    if (filterGroup) filterGroup.style.display = window.innerWidth > 800 ? 'flex' : '';
+    
+    // Only show mobile toggle on tracker view if stats have been loaded (active pill is displayed)
+    const activePill = document.getElementById('player-active-pill');
+    if (mft) {
+      mft.style.display = (activePill && activePill.style.display === 'flex') ? 'inline-flex' : 'none';
     }
+    
+    const h2hb = document.getElementById('h2h-trigger-btn');
+    if (h2hb) h2hb.style.display = 'inline-block';
+    if(esportsLiveInterval) clearInterval(esportsLiveInterval);
+    if(esportsCountdownInterval) clearInterval(esportsCountdownInterval);
+    dismissLanding();
   } else {
     // Hide tracker-specific filters and search on other tabs
-    if (subRow) subRow.style.display = 'none';
+    document.querySelector('.player-search-wrap').style.display = 'none';
+    if (filterGroup) filterGroup.style.display = 'none';
+    if (mft) mft.style.display = 'none';
     
     const h2hb = document.getElementById('h2h-trigger-btn');
     if (h2hb) h2hb.style.display = 'none';
     
     if (view === 'esports') {
       document.getElementById('esports-view').style.display = 'block';
-      const activeTab = document.querySelector('.esports-pills-scroll .esports-pill.active').textContent.toLowerCase();
+      const activeTab = document.querySelector('.esports-pill.active').textContent.toLowerCase();
       switchEsportsTab(activeTab);
     } else if (view === 'store') {
       document.getElementById('store-view').style.display = 'block';
@@ -9211,7 +7640,6 @@ function toggleMainView(view) {
       updateOverlayPreview();
     }
   }
-  setTimeout(updateHeaderHeights, 50);
 }
 
 function goToAISubsystem(system) {
@@ -9287,9 +7715,9 @@ function updateFilterToggleText() {
 }
 
 function switchEsportsTab(tab) {
-  document.querySelectorAll('.esports-pills-scroll .esports-pill').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.esports-pill').forEach(p => p.classList.remove('active'));
   
-  const activePill = Array.from(document.querySelectorAll('.esports-pills-scroll .esports-pill')).find(p => p.textContent.toLowerCase() === tab.toLowerCase());
+  const activePill = Array.from(document.querySelectorAll('.esports-pill')).find(p => p.textContent.toLowerCase() === tab.toLowerCase());
   if (activePill) activePill.classList.add('active');
   
   document.querySelectorAll('.esports-section').forEach(s => s.classList.remove('active'));
@@ -9305,7 +7733,6 @@ function switchEsportsTab(tab) {
   else if (tab === 'schedule') {
     fetchEsportsUpcoming();
     fetchEsportsResults();
-    switchScheduleTab('upcoming');
   }
   else if (tab === 'vct26') {
     // Already populated statically in HTML
@@ -9315,25 +7742,6 @@ function switchEsportsTab(tab) {
   }
   else if (tab === 'news') {
     fetchEsportsNews();
-  }
-}
-
-function switchScheduleTab(tab) {
-  const upCol = document.getElementById('schedule-col-upcoming');
-  const resCol = document.getElementById('schedule-col-results');
-  const upTab = document.getElementById('sched-tab-upcoming');
-  const resTab = document.getElementById('sched-tab-results');
-  
-  if (tab === 'upcoming') {
-    if (upCol) upCol.style.display = 'block';
-    if (resCol) resCol.style.display = 'none';
-    if (upTab) upTab.classList.add('active');
-    if (resTab) resTab.classList.remove('active');
-  } else {
-    if (upCol) upCol.style.display = 'none';
-    if (resCol) resCol.style.display = 'block';
-    if (upTab) upTab.classList.remove('active');
-    if (resTab) resTab.classList.add('active');
   }
 }
 
@@ -9595,16 +8003,10 @@ const VCT_STAGE_DATA = {
 
 function openVctModal() {
   document.getElementById('vct-modal-overlay').classList.add('open');
-  const _sy = window.scrollY;
-  document.documentElement.style.setProperty('--scroll-y', `-${_sy}px`);
-  document.body.classList.add('modal-open');
 }
 
 function closeVctModal() {
   document.getElementById('vct-modal-overlay').classList.remove('open');
-  document.body.classList.remove('modal-open');
-  const scrollY = document.documentElement.style.getPropertyValue('--scroll-y');
-  window.scrollTo(0, parseInt(scrollY || '0') * -1);
 }
 
 function openVctTournamentModal(stage) {
@@ -9949,8 +8351,6 @@ function getEspHTML(m, type) {
   const tierClass = isTier2 ? 'tier-t2' : 'tier-t1';
   const tierBadge = isTier2 ? '<span class="tier-badge t2">Tier 2</span>' : '<span class="tier-badge t1">VCT Tier 1</span>';
   
-
-  
   let statusHtml = '';
   let mediaBtn = '';
   const vlrUrl = m.vlr_path ? `https://www.vlr.gg${m.vlr_path}` : null;
@@ -10230,17 +8630,6 @@ async function initTeamsTab() {
       domEl.innerHTML = teams.map(t => `
         <div class="esp-sidebar-team-btn" data-team-id="${t.id}" onclick="selectFranchiseTeam('${regName}', '${t.id}')">${t.name}</div>
       `).join('');
-      
-      // Collapse all region lists except Pacific by default on initial load
-      const listId = `ov-${regName}`;
-      const header = document.querySelector(`.esp-sidebar-region-header[onclick*="${listId}"]`);
-      if (regName !== 'pacific') {
-        domEl.classList.add('collapsed');
-        if (header) header.classList.add('collapsed');
-      } else {
-        domEl.classList.remove('collapsed');
-        if (header) header.classList.remove('collapsed');
-      }
     });
     
     selectFranchiseTeam('pacific', '918');
@@ -10259,23 +8648,6 @@ function selectFranchiseTeam(region, teamId) {
   document.querySelectorAll('.esp-sidebar-team-btn').forEach(btn => btn.classList.remove('active'));
   const activeBtn = document.querySelector(`.esp-sidebar-team-btn[data-team-id="${teamId}"]`);
   if (activeBtn) activeBtn.classList.add('active');
-  
-  // Collapse other lists and expand the selected team's region list
-  const targetId = `ov-${region.toLowerCase()}`;
-  const allLists = ['ov-americas', 'ov-emea', 'ov-pacific', 'ov-china'];
-  allLists.forEach(id => {
-    const list = document.getElementById(id);
-    const header = document.querySelector(`.esp-sidebar-region-header[onclick*="${id}"]`);
-    if (list && header) {
-      if (id === targetId) {
-        list.classList.remove('collapsed');
-        header.classList.remove('collapsed');
-      } else {
-        list.classList.add('collapsed');
-        header.classList.add('collapsed');
-      }
-    }
-  });
   
   if (!vctFranchiseData) return;
   const team = (vctFranchiseData[region] || []).find(t => t.id === teamId);
@@ -10323,27 +8695,7 @@ function selectFranchiseTeam(region, teamId) {
   const matchContainer = document.getElementById('esp-active-team-matches-container');
   const teamMatches = allMatchesCache.filter(m => {
     const teams = m.match?.teams || [];
-    return teams.some(t => {
-      const rawVlr = t.name || '';
-      const rawFilter = team.name || '';
-      
-      // Clean names: remove accents (e.g. á -> a), remove non-alphanumeric chars (like \uFFFD replacement chars)
-      const cleanVlr = rawVlr.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\s]/g, "").trim();
-      const cleanFilter = rawFilter.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\s]/g, "").trim();
-      
-      if (cleanVlr === cleanFilter) return true;
-      
-      const isGcMatch = cleanVlr.includes('gc') || cleanVlr.includes('game changers') || cleanVlr.includes('female');
-      const isAcademyMatch = cleanVlr.includes('academy') || cleanVlr.includes('acad');
-      
-      const isFilterGc = cleanFilter.includes('gc') || cleanFilter.includes('game changers') || cleanFilter.includes('female');
-      const isFilterAcademy = cleanFilter.includes('academy') || cleanFilter.includes('acad');
-      
-      if (isGcMatch && !isFilterGc) return false;
-      if (isAcademyMatch && !isFilterAcademy) return false;
-      
-      return cleanVlr.includes(cleanFilter) || cleanFilter.includes(cleanVlr);
-    });
+    return teams.some(t => t.name?.toLowerCase().includes(team.name.toLowerCase()) || team.name.toLowerCase().includes(t.name?.toLowerCase()));
   });
   
   if (teamMatches.length === 0) {
@@ -10382,67 +8734,29 @@ document.addEventListener('click', (event) => {
 });
 
 
-let isProgrammaticScroll = false;
-let lastScrollY = window.scrollY;
-
 // HUD Ease of Access smooth scrolling
 function smoothScrollTo(elementId, event) {
   if (event) event.preventDefault();
   const el = document.getElementById(elementId);
   if (el) {
-    const trackerNav = document.getElementById('tracker-nav');
-    const offset = trackerNav ? trackerNav.getBoundingClientRect().height : 50;
-    
+    const offset = 110; // Sticky top header heights combined
     const bodyRect = document.body.getBoundingClientRect().top;
     const elementRect = el.getBoundingClientRect().top;
     const elementPosition = elementRect - bodyRect;
     const offsetPosition = elementPosition - offset;
-    
-    // Set the header to scrolled-down state immediately to hide the topbar in parallel
-    isProgrammaticScroll = true;
-    document.body.classList.remove('scrolled-up');
-    document.body.classList.add('scrolled-down');
-    
     window.scrollTo({
       top: offsetPosition,
       behavior: 'smooth'
     });
-    
-    setTimeout(() => {
-      isProgrammaticScroll = false;
-      lastScrollY = window.scrollY;
-    }, 800);
   }
 }
 
 // HUD Scrollspy active indicator tracking
-let cachedSectionOffsets = [];
-function cacheSectionOffsets() {
+function initScrollSpy() {
   const sections = [
     'sec-combat', 'sec-performance', 'sec-trend', 'sec-agents',
     'sec-maps', 'sec-weapons', 'sec-matches', 'sec-ai', 'sec-deep', 'sec-lab'
   ];
-  cachedSectionOffsets = sections.map(id => {
-    const el = document.getElementById(id);
-    let offsetTop = 0;
-    if (el) {
-      const rect = el.getBoundingClientRect();
-      offsetTop = rect.top + window.scrollY;
-    }
-    return {
-      id: id,
-      offsetTop: offsetTop
-    };
-  });
-}
-
-let unifiedScrollInitialized = false;
-function initUnifiedScrollManager() {
-  if (unifiedScrollInitialized) return;
-  unifiedScrollInitialized = true;
-
-  const body = document.body;
-  const backToTopBtn = document.getElementById('back-to-top');
   
   const navItems = {
     'sec-combat': document.querySelector('#tracker-nav a[onclick*="sec-combat"]'),
@@ -10457,109 +8771,27 @@ function initUnifiedScrollManager() {
     'sec-lab': document.querySelector('#tracker-nav a[onclick*="sec-lab"]')
   };
 
-  let lastActiveId = '';
-  let backToTopVisible = false;
-  let headerState = ''; // 'up', 'down', or ''
-  let scrollAccumulator = 0;
-  let rAFScheduled = false;
-  let lastScrollHeight = 0;
-
   window.addEventListener('scroll', () => {
-    if (!rAFScheduled) {
-      rAFScheduled = true;
-      requestAnimationFrame(() => {
-        const currentScrollY = window.scrollY;
-        
-        // Recalculate section offsets dynamically if layout height changes (e.g., loaded data, expanded cards)
-        const currentScrollHeight = document.documentElement.scrollHeight;
-        if (currentScrollHeight !== lastScrollHeight) {
-          lastScrollHeight = currentScrollHeight;
-          if (typeof cacheSectionOffsets === 'function') {
-            cacheSectionOffsets();
-          }
-        }
+    let currentSectionId = '';
+    const scrollPosition = window.scrollY + 150; // offset for detection
+    
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.offsetTop <= scrollPosition) {
+        currentSectionId = id;
+      }
+    });
 
-        // 1. Back to Top Button
-        const shouldShowB2T = currentScrollY > 300;
-        if (shouldShowB2T !== backToTopVisible) {
-          backToTopVisible = shouldShowB2T;
-          if (backToTopBtn) {
-            if (backToTopVisible) {
-              backToTopBtn.classList.add('visible');
-            } else {
-              backToTopBtn.classList.remove('visible');
-            }
-          }
-        }
-
-        // 2. Sticky Header Hiding (Desktop width > 800px)
-        if (!isProgrammaticScroll) {
-          const activeTab = document.querySelector('.topbar-tab.active');
-          const isTrackerActive = activeTab && activeTab.id === 'tab-tracker';
-
-          if (isTrackerActive && currentScrollY > 150) {
-            const diff = currentScrollY - lastScrollY;
-            
-            if ((diff > 0 && scrollAccumulator < 0) || (diff < 0 && scrollAccumulator > 0)) {
-              scrollAccumulator = 0;
-            }
-            scrollAccumulator += diff;
-            
-            const threshold = 15; // Requires 15px of continuous scroll in one direction to trigger transition
-            if (scrollAccumulator > threshold) {
-              if (headerState !== 'down') {
-                headerState = 'down';
-                body.classList.add('scrolled-down');
-                body.classList.remove('scrolled-up');
-              }
-              scrollAccumulator = 0;
-            } else if (scrollAccumulator < -threshold) {
-              if (headerState !== 'up') {
-                headerState = 'up';
-                body.classList.add('scrolled-up');
-                body.classList.remove('scrolled-down');
-              }
-              scrollAccumulator = 0;
-            }
+    if (currentSectionId) {
+      Object.keys(navItems).forEach(key => {
+        const item = navItems[key];
+        if (item) {
+          if (key === currentSectionId) {
+            item.classList.add('active');
           } else {
-            if (headerState !== '') {
-              headerState = '';
-              body.classList.remove('scrolled-down');
-              body.classList.remove('scrolled-up');
-            }
-            scrollAccumulator = 0;
+            item.classList.remove('active');
           }
         }
-
-        // 3. Scrollspy active section tracking
-        if (cachedSectionOffsets.length > 0) {
-          const trackerNav = document.getElementById('tracker-nav');
-          const navHeight = trackerNav ? trackerNav.getBoundingClientRect().height : 50;
-          const scrollPosition = currentScrollY + navHeight + 20; // dynamically calculated offset for exact sync
-          let currentSectionId = '';
-          for (let i = 0; i < cachedSectionOffsets.length; i++) {
-            const sec = cachedSectionOffsets[i];
-            if (sec.offsetTop && sec.offsetTop <= scrollPosition) {
-              currentSectionId = sec.id;
-            }
-          }
-          if (currentSectionId && currentSectionId !== lastActiveId) {
-            lastActiveId = currentSectionId;
-            Object.keys(navItems).forEach(key => {
-              const item = navItems[key];
-              if (item) {
-                if (key === currentSectionId) {
-                  item.classList.add('active');
-                } else {
-                  item.classList.remove('active');
-                }
-              }
-            });
-          }
-        }
-
-        lastScrollY = currentScrollY;
-        rAFScheduled = false;
       });
     }
   }, { passive: true });
@@ -11053,16 +9285,10 @@ function openSkinModal(uuid) {
 
   // Open the Modal
   document.getElementById('skin-modal-overlay').classList.add('open');
-  const _sy = window.scrollY;
-  document.documentElement.style.setProperty('--scroll-y', `-${_sy}px`);
-  document.body.classList.add('modal-open');
 }
 
 function closeSkinModal() {
   document.getElementById('skin-modal-overlay').classList.remove('open');
-  document.body.classList.remove('modal-open');
-  const scrollY = document.documentElement.style.getPropertyValue('--scroll-y');
-  window.scrollTo(0, parseInt(scrollY || '0') * -1);
   const videoPlayer = document.getElementById('skin-modal-video-player');
   if (videoPlayer) {
     videoPlayer.pause();
@@ -11090,17 +9316,11 @@ const draftMapRecommendations = {
 function openDraftSelector(slotIndex) {
   activeSlotIndex = slotIndex;
   document.getElementById('dc-agent-modal').classList.add('open');
-  const _sy = window.scrollY;
-  document.documentElement.style.setProperty('--scroll-y', `-${_sy}px`);
-  document.body.classList.add('modal-open');
   renderDraftAgentList();
 }
 
 function closeDraftSelector() {
   document.getElementById('dc-agent-modal').classList.remove('open');
-  document.body.classList.remove('modal-open');
-  const scrollY = document.documentElement.style.getPropertyValue('--scroll-y');
-  window.scrollTo(0, parseInt(scrollY || '0') * -1);
   activeSlotIndex = null;
 }
 
@@ -12661,1314 +10881,7 @@ function copyObsUrl() {
   }
 }
 
-// Search autocomplete recommendations & search
-const POPULAR_RECOMMENDATIONS = [];
-
-function initSearchAutocomplete(inputId, tagInputId, dropdownId, regionSelectId) {
-  const input = document.getElementById(inputId);
-  const tagInput = document.getElementById(tagInputId);
-  const dropdown = document.getElementById(dropdownId);
-  let debounceTimeout = null;
-
-  if (!input || !dropdown) return;
-
-  const showRecsIfEmpty = () => {
-    const val = input.value.trim();
-    if (val.length < 2) {
-      renderRecommendations(dropdown, input, tagInput, regionSelectId);
-    }
-  };
-
-  input.addEventListener('focus', showRecsIfEmpty);
-  input.addEventListener('click', showRecsIfEmpty);
-
-  input.addEventListener('input', () => {
-    const val = input.value.trim();
-    clearTimeout(debounceTimeout);
-
-    if (val.length < 2) {
-      renderRecommendations(dropdown, input, tagInput, regionSelectId);
-      return;
-    }
-
-    // Initial render showing loading status
-    renderSearchDropdown([], [], dropdown, input, tagInput, regionSelectId, val, true);
-
-    debounceTimeout = setTimeout(async () => {
-      try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(val)}`);
-        if (res.ok) {
-          const players = await res.json();
-          renderSearchDropdown(players, [], dropdown, input, tagInput, regionSelectId, val, false);
-        } else {
-          renderSearchDropdown([], [], dropdown, input, tagInput, regionSelectId, val, false);
-        }
-      } catch (e) {
-        console.error("Autocomplete search failed:", e);
-        renderSearchDropdown([], [], dropdown, input, tagInput, regionSelectId, val, false);
-      }
-    }, 250);
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!input.contains(e.target) && !dropdown.contains(e.target)) {
-      dropdown.classList.remove('open');
-    }
-  });
-}
-
-function renderRecommendations(dropdown, input, tagInput, regionSelectId) {
-  let bookmarks = [];
-  try { bookmarks = JSON.parse(localStorage.getItem('valtracker_bookmarks')) || []; } catch(e) {}
-  let recent = [];
-  try { recent = JSON.parse(localStorage.getItem('valtracker_recent_searches')) || []; } catch(e) {}
-
-  let html = '<div class="search-rec-container">';
-  let hasContent = false;
-
-  // 1. Bookmarks section
-  if (bookmarks && bookmarks.length > 0) {
-    hasContent = true;
-    html += `
-      <div class="search-rec-section">
-        <div class="search-rec-header">★ Bookmarked Players</div>
-        <div class="search-rec-list">
-    `;
-    bookmarks.slice(0, 4).forEach(p => {
-      const rankImg = getRankImgUrl(p.rankName);
-      html += `
-        <div class="search-item" data-name="${p.name}" data-tag="${p.tag}" data-region="${p.region}">
-          <div class="search-item-left">
-            <div class="search-item-card">👤</div>
-            <div class="search-item-details">
-              <span class="search-item-name">${p.name}<span class="search-item-tag">#${p.tag}</span></span>
-              <span class="search-item-meta">${(p.rankName || 'Unranked').toUpperCase()}</span>
-            </div>
-          </div>
-          <div class="search-item-right">
-            ${rankImg ? `<img class="search-item-rank-img" src="${rankImg}">` : ''}
-            <span class="search-item-region-badge">${p.region}</span>
-          </div>
-        </div>
-      `;
-    });
-    html += '</div></div>';
-  }
-
-  // 2. Recent Searches section
-  if (recent && recent.length > 0) {
-    hasContent = true;
-    html += `
-      <div class="search-rec-section">
-        <div class="search-rec-header">🕒 Recent Searches</div>
-        <div class="search-rec-list">
-    `;
-    recent.slice(0, 4).forEach(p => {
-      const rankImg = getRankImgUrl(p.rankName);
-      html += `
-        <div class="search-item" data-name="${p.name}" data-tag="${p.tag}" data-region="${p.region}">
-          <div class="search-item-left">
-            <div class="search-item-card">👤</div>
-            <div class="search-item-details">
-              <span class="search-item-name">${p.name}<span class="search-item-tag">#${p.tag}</span></span>
-              <span class="search-item-meta">${(p.rankName || 'Unranked').toUpperCase()}</span>
-            </div>
-          </div>
-          <div class="search-item-right">
-            ${rankImg ? `<img class="search-item-rank-img" src="${rankImg}">` : ''}
-            <span class="search-item-region-badge">${p.region}</span>
-          </div>
-        </div>
-      `;
-    });
-    html += '</div></div>';
-  }
-
-  html += '</div>';
-
-  if (!hasContent) {
-    dropdown.innerHTML = `
-      <div style="padding: 18px; text-align: center; font-size: 11px; color: var(--muted2); font-family: 'DM Mono', monospace;">
-        Search for players to build your history...
-      </div>
-    `;
-  } else {
-    dropdown.innerHTML = html;
-  }
-
-  dropdown.classList.add('open');
-  attachDropdownClickEvents(dropdown, input, tagInput, regionSelectId);
-}
-
-function renderSearchDropdown(dbPlayers, localMatches, dropdown, input, tagInput, regionSelectId, val, isLoading) {
-  const hasDb = dbPlayers && dbPlayers.length > 0;
-
-  if (!hasDb) {
-    if (isLoading) {
-      dropdown.innerHTML = `
-        <div style="padding: 18px; text-align: center; font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; display: flex; align-items: center; justify-content: center; gap: 8px;">
-          <div class="spinner-mini" style="width: 12px; height: 12px; border: 2px solid rgba(255,255,255,0.1); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
-          Searching database...
-        </div>
-      `;
-      dropdown.classList.add('open');
-      return;
-    }
-
-    // No matches fallback
-    dropdown.innerHTML = `
-      <div style="padding: 18px; text-align: center; font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; display: flex; align-items: center; justify-content: center; gap: 8px;">
-        <span style="color: var(--accent);">⚠️</span> No players found. Check Riot ID &amp; Tag.
-      </div>
-    `;
-    dropdown.classList.add('open');
-    return;
-  }
-
-  let html = '';
-
-  // Render Database matches
-  if (hasDb) {
-    html += `
-      <div class="search-rec-section">
-        <div class="search-rec-header">🔍 Database Matches</div>
-        <div class="search-rec-list">
-    `;
-    dbPlayers.forEach(p => {
-      const rankImg = getRankImgUrl(p.current_tier_patched);
-      const cardUrl = p.card_id ? `https://media.valorant-api.com/playercards/${p.card_id}/smallart.png` : '';
-      const avatarHtml = cardUrl ? `<img src="${cardUrl}">` : '👤';
-      const cleanRank = (p.current_tier_patched || 'Unranked').toUpperCase();
-
-      html += `
-        <div class="search-item" data-name="${p.name}" data-tag="${p.tag}" data-region="${p.region}">
-          <div class="search-item-left">
-            <div class="search-item-card">${avatarHtml}</div>
-            <div class="search-item-details">
-              <span class="search-item-name">${p.name}<span class="search-item-tag">#${p.tag}</span></span>
-              <span class="search-item-meta">${cleanRank}</span>
-            </div>
-          </div>
-          <div class="search-item-right">
-            ${rankImg ? `<img class="search-item-rank-img" src="${rankImg}">` : ''}
-            <span class="search-item-region-badge">${p.region}</span>
-          </div>
-        </div>
-      `;
-    });
-    html += '</div></div>';
-  }
-
-  dropdown.innerHTML = html;
-  dropdown.classList.add('open');
-  attachDropdownClickEvents(dropdown, input, tagInput, regionSelectId);
-}
-
-function attachDropdownClickEvents(dropdown, input, tagInput, regionSelectId) {
-  dropdown.querySelectorAll('.search-item, .search-rec-chip').forEach(item => {
-    item.addEventListener('click', () => {
-      const name = item.getAttribute('data-name');
-      const tag = item.getAttribute('data-tag');
-      const region = item.getAttribute('data-region');
-
-      input.value = name;
-      tagInput.value = tag;
-      if (regionSelectId) {
-        const regSelect = document.getElementById(regionSelectId);
-        if (regSelect) regSelect.value = region;
-      }
-
-      dropdown.classList.remove('open');
-
-      if (input.id === 'l-name') {
-        landingFetch();
-      } else {
-        fetchAll();
-      }
-    });
-  });
-}
-
-function updateHeaderHeights() {
-  const topbar = document.querySelector('.topbar');
-  if (topbar) {
-    const rect = topbar.getBoundingClientRect();
-    document.documentElement.style.setProperty('--topbar-height', `${rect.height}px`);
-  }
-  if (typeof cacheSectionOffsets === 'function') {
-    cacheSectionOffsets();
-  }
-}
-window.addEventListener('resize', updateHeaderHeights);
-
 document.addEventListener('DOMContentLoaded', () => { 
   setTimeout(checkUrlParams, 200); 
-  setTimeout(initUnifiedScrollManager, 500);
-  initSearchAutocomplete('l-name', 'l-tag', 'landing-search-dropdown', 'l-region');
-  initSearchAutocomplete('player-name-input', 'player-tag-input', 'topbar-search-dropdown', 'region-select');
-  setTimeout(updateHeaderHeights, 100);
-  setTimeout(updateHeaderHeights, 500);
+  setTimeout(initScrollSpy, 500);
 });
-</script>
-<style>/* ── GLASSMORPHISM OVERRIDES & VALORANT CRIMSON THEME ── */
-html {
-  background-color: #050508 !important;
-}
-
-:root {
-  --bg:       #060608;
-  --surface:  rgba(20, 20, 26, 0.5);
-  --surface2: rgba(26, 26, 34, 0.6);
-  --surface3: rgba(32, 32, 42, 0.7);
-  --border:   rgba(255, 255, 255, 0.05);
-  --border2:  rgba(255, 255, 255, 0.1);
-  --accent:   #fa4454;       /* Valorant Crimson Red */
-  --accentdim:rgba(250, 68, 84, 0.15);
-  --accentborder:rgba(250, 68, 84, 0.35);
-  --radius:   12px;
-  --radius-sm:8px;
-}
-
-/* Carbon-Obsidian radial gradient background */
-body {
-  background: radial-gradient(circle at 50% 0%, #111019 0%, #050508 100%) !important;
-}
-
-/* Glow-borders on Match panel containers */
-.match-panel {
-  background: rgba(14, 14, 20, 0.8) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.06) !important;
-  border-top: none !important;
-  backdrop-filter: blur(16px);
-  border-radius: 0 0 12px 12px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
-}
-
-/* Premium 3D glowing Grade badges */
-.panel-grade-badge {
-  width: 52px !important;
-  height: 52px !important;
-  border-radius: 12px !important;
-  font-size: 26px !important;
-  font-weight: 900 !important;
-  font-family: 'Barlow Condensed', sans-serif !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-}
-
-.panel-grade-badge:hover {
-  transform: scale(1.1) rotate(4deg);
-}
-
-.panel-grade-badge.S {
-  color: #ffd700 !important;
-  border: 2.5px solid #ffd700 !important;
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(218, 165, 32, 0.05) 100%) !important;
-  box-shadow: 0 0 15px rgba(255, 215, 0, 0.45), inset 0 0 8px rgba(255, 215, 0, 0.2) !important;
-  text-shadow: 0 0 6px rgba(255, 215, 0, 0.6) !important;
-}
-
-.panel-grade-badge.A {
-  color: #3ecf8e !important;
-  border: 2.5px solid #3ecf8e !important;
-  background: linear-gradient(135deg, rgba(62, 207, 142, 0.2) 0%, rgba(50, 205, 50, 0.05) 100%) !important;
-  box-shadow: 0 0 15px rgba(62, 207, 142, 0.35), inset 0 0 8px rgba(62, 207, 142, 0.15) !important;
-  text-shadow: 0 0 6px rgba(62, 207, 142, 0.5) !important;
-}
-
-.panel-grade-badge.B {
-  color: #38bdf8 !important;
-  border: 2.5px solid #38bdf8 !important;
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.2) 0%, rgba(3, 105, 161, 0.05) 100%) !important;
-  box-shadow: 0 0 15px rgba(56, 189, 248, 0.35), inset 0 0 8px rgba(56, 189, 248, 0.15) !important;
-  text-shadow: 0 0 6px rgba(56, 189, 248, 0.5) !important;
-}
-
-.panel-grade-badge.C {
-  color: #ffb01f !important;
-  border: 2.5px solid #ffb01f !important;
-  background: linear-gradient(135deg, rgba(255, 176, 31, 0.2) 0%, rgba(180, 83, 9, 0.05) 100%) !important;
-  box-shadow: 0 0 15px rgba(255, 176, 31, 0.35), inset 0 0 8px rgba(255, 176, 31, 0.15) !important;
-  text-shadow: 0 0 6px rgba(255, 176, 31, 0.5) !important;
-}
-
-.panel-grade-badge.D {
-  color: #ff4655 !important;
-  border: 2.5px solid #ff4655 !important;
-  background: linear-gradient(135deg, rgba(255, 70, 85, 0.2) 0%, rgba(190, 24, 74, 0.05) 100%) !important;
-  box-shadow: 0 0 15px rgba(255, 70, 85, 0.35), inset 0 0 8px rgba(255, 70, 85, 0.15) !important;
-  text-shadow: 0 0 6px rgba(255, 70, 85, 0.5) !important;
-}
-
-/* Premium stat row & cards overrides */
-.panel-stat-row {
-  display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)) !important;
-  gap: 12px !important;
-  margin-top: 16px !important;
-  background: rgba(8, 8, 12, 0.5) !important;
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
-  border-radius: 12px !important;
-  padding: 16px !important;
-  backdrop-filter: blur(10px) !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-}
-
-.ps-item {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  padding: 10px 8px !important;
-  background: rgba(255, 255, 255, 0.015) !important;
-  border: 1px solid rgba(255, 255, 255, 0.03) !important;
-  border-radius: 8px !important;
-  transition: all 0.2s ease !important;
-  min-height: 64px !important;
-}
-
-.ps-item:hover {
-  transform: translateY(-2px) !important;
-  background: rgba(255, 255, 255, 0.04) !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
-}
-
-.psv {
-  font-family: 'Barlow Condensed', sans-serif !important;
-  font-size: 26px !important;
-  font-weight: 900 !important;
-  letter-spacing: 0.5px !important;
-  line-height: 1 !important;
-}
-
-.psl {
-  font-family: 'DM Mono', monospace !important;
-  font-size: 8px !important;
-  color: var(--muted) !important;
-  text-transform: uppercase !important;
-  letter-spacing: 1px !important;
-  margin-top: 6px !important;
-  line-height: 1 !important;
-  opacity: 0.8 !important;
-}
-
-/* Glowing text shadows for each specific metric card */
-.ps-item:nth-child(1) .psv {
-  color: #f1f5f9 !important;
-  text-shadow: 0 0 12px rgba(241, 245, 249, 0.3) !important;
-}
-
-.ps-item:nth-child(2) .psv {
-  color: #e8ff47 !important;
-  text-shadow: 0 0 12px rgba(232, 255, 71, 0.3) !important;
-}
-
-.ps-item:nth-child(3) .psv {
-  color: #ffd700 !important;
-  text-shadow: 0 0 12px rgba(255, 215, 0, 0.3) !important;
-}
-
-.ps-item:nth-child(4) .psv {
-  color: #38bdf8 !important;
-  text-shadow: 0 0 12px rgba(56, 189, 248, 0.35) !important;
-}
-
-.ps-item:nth-child(5) .psv {
-  text-shadow: 0 0 12px currentColor !important;
-}
-
-.ps-item:nth-child(6) .psv {
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.15) !important;
-}
-
-body::after {
-  content: '';
-  position: fixed; top: -10%; left: -10%; width: 50vw; height: 50vw;
-  background: radial-gradient(circle, rgba(250, 68, 84, 0.12) 0%, transparent 60%);
-  filter: blur(100px); z-index: -1; pointer-events: none;
-}
-
-.glass-orb-2 {
-  position: fixed; bottom: -20%; right: -10%; width: 60vw; height: 60vw;
-  background: radial-gradient(circle, rgba(77, 159, 255, 0.06) 0%, transparent 60%);
-  filter: blur(120px); z-index: -1; pointer-events: none;
-}
-
-@media (min-width: 801px) {
-  .topbar {
-    position: sticky !important;
-    top: 0 !important;
-    z-index: 1000 !important;
-    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1) !important;
-    will-change: transform;
-  }
-  .tracker-nav {
-    position: sticky !important;
-    top: calc(var(--topbar-height, 108px) - 1.5px) !important;
-    z-index: 999 !important;
-    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1) !important;
-    will-change: transform;
-  }
-  body.scrolled-down .topbar {
-    transform: translateY(-100%) !important;
-  }
-  body.scrolled-down .tracker-nav {
-    transform: translateY(calc(-1 * var(--topbar-height, 108px) - 1.5px)) !important;
-  }
-}
-@media (max-width: 800px) {
-  .topbar {
-    position: relative !important;
-    box-shadow: none !important;
-  }
-  .tracker-nav {
-    position: sticky !important;
-    top: 0 !important;
-    z-index: 9999 !important;
-  }
-  /* Increase active pill name width so Japanese/long names don't truncate aggressively on mobile */
-  .active-pill-name {
-    max-width: 130px !important;
-  }
-}
-@media (max-width: 600px) {
-  /* Prevent word-by-word stretching in rank & streak blocks by stacking them vertically */
-  .hero-right {
-    flex-direction: column !important;
-    gap: 12px !important;
-  }
-  .hero-rank-block, .hero-streak-block {
-    width: 100% !important;
-  }
-  
-  /* Keep name suffix inline to avoid splitting "ItzPratham" and "エース" into two lines */
-  .hero-title .dim {
-    display: inline-block !important;
-    margin-left: 6px !important;
-    margin-top: 0 !important;
-    font-size: 0.6em !important;
-  }
-}
-
-/* Optimize static components by removing backdrop-filter for smooth scroll performance */
-.card, .agent-bento, .map-card-bento, .impact-bento, .match-row, .match-panel, .hero-rank-block, .player-banner-card, .ai-card, .deep-trigger-card, .deep-card, .live-banner {
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  background: rgba(11, 11, 15, 0.93) !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.2s ease, box-shadow 0.25s ease;
-  will-change: transform, opacity;
-  backface-visibility: hidden;
-  transform: translateZ(0);
-}
-
-/* Keep backdrop-filter ONLY on overlay items, tuned down to 12px for low GPU composition cost */
-.stat-modal {
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
-  transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.2s ease, box-shadow 0.25s ease;
-  will-change: transform, opacity;
-  backface-visibility: hidden;
-  transform: translateZ(0);
-}
-
-/* Also tune sticky headers' backdrop-blur to 12px for better composition frame-rates during transitions */
-.topbar, .tracker-nav {
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-}
-
-.card:hover, .agent-bento:hover, .map-card-bento:hover, .impact-bento:hover, .match-row:hover, .deep-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--accentborder);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35), inset 0 0 0 1px rgba(250, 68, 84, 0.15);
-}
-
-.agent-portrait { transition: all 0.3s ease; }
-
-.agent-bento:hover .agent-portrait { 
-  filter: saturate(1.2) contrast(1.15) drop-shadow(0 0 20px rgba(250, 68, 84, 0.35)); 
-  transform: scale(1.08); 
-}
-
-.wr-fill, .sb-kd-fill { background: linear-gradient(90deg, #ff5757, var(--accent)); box-shadow: 0 0 10px rgba(250, 68, 84, 0.4); }
-
-.wlv, .ai-stat-pill-val.good, .mr-result.win { text-shadow: 0 0 12px rgba(62,207,142,0.4); }
-
-.wl-block.losses .wlv, .mr-result.loss { text-shadow: 0 0 12px rgba(255,87,87,0.4); }
-
-.card-val, .impact-val, .hero-title, .streak-val { text-shadow: 0 4px 12px rgba(0,0,0,0.5); }
-
-.map-splash { opacity: 0.8; mix-blend-mode: overlay; filter: saturate(1.2) brightness(0.6); }
-
-.map-card-bento:hover .map-splash { transform: scale(1.08); opacity: 1; filter: saturate(1.3) brightness(0.8); }
-
-/* ═══════════════════════════════════════════════════════
-   COMPREHENSIVE MOBILE & TABLET RESPONSIVE OVERRIDES
-   Breakpoints:  ≤800px (tablet+mobile)  |  ≤480px (phone)
-═══════════════════════════════════════════════════════ */
-@media(max-width: 800px) {
-  /* Premium stat row responsive layout: 3 cols on tablet/large mobile */
-  .panel-stat-row {
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 10px !important;
-    padding: 12px !important;
-  }
-  .ps-item {
-    padding: 8px 6px !important;
-  }
-  .ps-item .psv {
-    font-size: 18px !important;
-  }
-  /* ── BASE RESET ── */
-  html, body {
-    overflow-x: clip;
-    width: 100%;
-    max-width: 100vw;
-    margin: 0;
-    padding: 0;
-    position: relative;
-  }
-  body::after { width: 150vw; height: 150vw; top: -15%; left: -25%; filter: blur(70px); }
-  .glass-orb-2 { width: 180vw; height: 180vw; bottom: -20%; right: -30%; filter: blur(80px); border-radius: 50%; }
-  @keyframes slideDownMobile {
-    from { opacity: 0; transform: translateY(-8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  /* ── ACTION BAR ── */
-  .action-bar {
-    padding: 6px 10px !important;
-    gap: 6px !important;
-    flex-wrap: nowrap !important;
-    overflow-x: auto !important;
-    overflow-y: visible;
-    -webkit-overflow-scrolling: touch;
-    justify-content: flex-start !important;
-  }
-  .action-bar::-webkit-scrollbar { display: none; }
-  .action-bar > * {
-    flex-shrink: 0 !important;
-    white-space: nowrap !important;
-    font-size: 11px !important;
-    padding: 6px 9px !important;
-  }
-  /* ── MAIN LAYOUT ── */
-  .main { display: flex !important; flex-direction: column !important; }
-  /* ── HERO / PLAYER HEADER ── */
-  .hero-title { font-size: clamp(26px, 8vw, 36px); line-height: 1.1; margin-bottom: 4px; }
-  .hero-rank-name { font-size: 16px; }
-  /* ── TRACKER STATS GRIDS ── */
-  .agent-stats-row { grid-template-columns: repeat(3, 1fr) !important; }
-  .map-stats-mini { grid-template-columns: repeat(2, 1fr) !important; }
-  /* Stat grids with inline 5-column layout */
-  [style*="grid-template-columns:repeat(5,1fr)"],
-  [style*="grid-template-columns: repeat(5, 1fr)"] {
-    grid-template-columns: repeat(3, 1fr) !important;
-  }
-  /* ── MATCH ROW ── */
-  .match-row {
-    grid-template-columns: 46px 1fr auto 24px;
-    padding-right: 6px;
-  }
-  .mr-agent-name { max-width: 70px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 14px; }
-  .mr-result { padding: 12px 0; font-size: 12px; }
-  /* ── SCOREBOARD ── */
-  .scoreboard-wrap { display: block; overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch; }
-  .scoreboard { min-width: 500px; }
-  /* ── LIVE CHIP ── */
-  .live-chip { font-size: 9px !important; padding: 3px 8px !important; }
-  /* ══════════════════════════════════════════
-     ESPORTS SECTION
-  ══════════════════════════════════════════ */
-
-  .esports-subnav {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: stretch !important;
-    position: sticky !important;
-    top: 0 !important;
-    background: #0a0a0c !important;
-    padding: 10px 14px !important;
-    z-index: 9999 !important;
-    border-bottom: 1px solid var(--border) !important;
-    gap: 8px !important;
-  }
-  .esports-pills-scroll {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    gap: 8px !important;
-    overflow-x: auto !important;
-    white-space: nowrap !important;
-    width: 100% !important;
-    scrollbar-width: none !important;
-    -webkit-overflow-scrolling: touch !important;
-  }
-  .esports-pills-scroll::-webkit-scrollbar {
-    display: none !important;
-  }
-  .esports-pill {
-    display: inline-block !important;
-    flex-shrink: 0 !important;
-    white-space: nowrap !important;
-    padding: 6px 12px !important;
-    font-size: 13px !important;
-  }
-  .tier-toggle-wrapper {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: flex-end !important;
-    gap: 8px !important;
-    flex-shrink: 0 !important;
-    width: 100% !important;
-    margin-top: 4px !important;
-  }
-  /* Overview split grid → stack */
-  #esp-sec-overview > div[style*="grid-template-columns: 1.8fr 1fr"] {
-    grid-template-columns: 1fr !important;
-    gap: 20px !important;
-  }
-  /* Schedule grid → stack */
-  .esp-schedule-grid {
-    grid-template-columns: 1fr !important;
-    gap: 16px !important;
-  }
-  /* Mobile Schedule Tabs */
-  .schedule-tabs {
-    display: flex !important;
-  }
-  #schedule-col-results {
-    display: none;
-  }
-  /* Match Cards */
-  .esp-match-card {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    grid-template-rows: auto auto !important;
-    gap: 12px !important;
-    padding: 12px 14px !important;
-  }
-  .esp-match-info {
-    grid-column: span 2 !important;
-    grid-row: 1 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 100% !important;
-    gap: 4px !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-    padding-bottom: 8px !important;
-    margin-bottom: 4px !important;
-  }
-  .esp-match-info > div { margin-top: 0 !important; }
-  .esp-match-info > .esp-tourney { font-size: 10px !important; color: var(--muted) !important; text-align: center !important; max-width: 90% !important; line-height: 1.2 !important; }
-  .esp-status { font-size: 11px !important; padding: 2px 6px !important; border-radius: 4px !important; margin: 2px 0 !important; }
-  .esp-meta { font-size: 9px !important; color: var(--muted2) !important; }
-  /* Match card VLR/Highlights buttons on mobile */
-  .esp-match-info > div[style*="display:flex"] {
-    flex-wrap: wrap !important;
-    justify-content: center !important;
-    gap: 6px !important;
-  }
-  .esp-btn {
-    font-size: 9px !important;
-    padding: 4px 8px !important;
-  }
-  .esp-team {
-    grid-column: 1 !important;
-    grid-row: 2 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    text-align: center !important;
-    gap: 6px !important;
-    width: 100% !important;
-    padding: 0 !important;
-  }
-  .esp-team.t-right {
-    grid-column: 2 !important;
-    grid-row: 2 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    text-align: center !important;
-    gap: 6px !important;
-    width: 100% !important;
-    padding: 0 !important;
-  }
-  .esp-tname {
-    order: 2 !important;
-    font-size: 14px !important;
-    font-weight: 700 !important;
-    color: #fff !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    text-align: center !important;
-    line-height: 1.1 !important;
-    margin: 0 auto !important;
-    display: block !important;
-  }
-  .esp-team.t-right .esp-tname { text-align: center !important; margin: 0 auto !important; }
-  .esp-tscore {
-    order: 3 !important;
-    font-size: 22px !important;
-    font-weight: 900 !important;
-    text-align: center !important;
-    margin: 0 auto !important;
-    width: 100% !important;
-    display: block !important;
-  }
-  .esp-team.t-right .esp-tscore { text-align: center !important; margin: 0 auto !important; }
-  /* Esports Teams section */
-  .esp-teams-layout { grid-template-columns: 1fr !important; gap: 16px !important; }
-  .esp-sidebar { max-height: 260px !important; overflow-y: auto !important; }
-  .esp-team-dashboard { grid-template-columns: 1fr !important; }
-  /* VCT Modal */
-  #vct-modal-winners { grid-template-columns: 1fr !important; gap: 10px !important; }
-  #vct-modal-tabs {
-    flex-wrap: nowrap !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 8px !important;
-  }
-  .vct-modal-tab-btn { flex-shrink: 0 !important; }
-  /* ══════════════════════════════════════════
-     SKINS STORE SECTION
-  ══════════════════════════════════════════ */
-
-  #store-view {
-    padding: 14px !important;
-  }
-  /* Store header banner */
-  #store-view > div:first-child {
-    padding: 16px !important;
-  }
-  #store-view h2 { font-size: clamp(20px, 6vw, 28px) !important; }
-  #store-view p { font-size: 12px !important; }
-  /* Store grid → single column (already 1fr but enforce on mobile) */
-  .store-grid {
-    grid-template-columns: 1fr !important;
-    gap: 20px !important;
-  }
-  /* Bundle item cards grid — allow tighter wrap */
-  #store-featured-container [style*="grid-template-columns:repeat(auto-fill, minmax(130px, 1fr))"],
-  [style*="grid-template-columns:repeat(auto-fill, minmax(130px, 1fr))"] {
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
-    gap: 8px !important;
-  }
-  /* Skin catalog grid — tighter on mobile */
-  #skin-catalog-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
-    gap: 12px !important;
-  }
-  /* Skin search/filter row → wrap */
-  #store-view [style*="display: flex"][style*="gap:12px"],
-  #store-view [style*="display:flex"][style*="gap:12px"] {
-    flex-wrap: wrap !important;
-  }
-  /* ══════════════════════════════════════════
-     META COMP ARCHITECT SECTION
-  ══════════════════════════════════════════ */
-
-  /* DC agent slot cards row → wrap */
-  #dc-team-slots {
-    flex-wrap: wrap !important;
-    justify-content: center !important;
-    gap: 8px !important;
-  }
-  .dc-slot-card {
-    min-width: 75px !important;
-    max-width: 90px !important;
-    padding: 10px 4px !important;
-  }
-  .dc-slot-avatar { width: 40px !important; height: 40px !important; }
-  .dc-slot-name { font-size: 10px !important; max-width: 70px !important; }
-  /* Agent picker grid */
-  #dc-agent-list {
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)) !important;
-    gap: 8px !important;
-  }
-  /* Insight cards */
-  .dc-insight-card { padding: 8px 10px !important; font-size: 10px !important; }
-  /* Stats grid in meta comp → 2 cols */
-  [style*="grid-template-columns:1fr 1fr"][style*="gap:12px"],
-  [style*="grid-template-columns: 1fr 1fr"][style*="gap:10px"],
-  [style*="grid-template-columns: 1fr 1fr"][style*="gap:16px"] {
-    grid-template-columns: 1fr !important;
-  }
-  /* ══════════════════════════════════════════
-     MODALS — GLOBAL RULES
-  ══════════════════════════════════════════ */
-
-  /* All modal cards → full-width on mobile */
-  #h2h-modal .card,
-  #h2h-modal .h2h-modal-card {
-    max-width: 96vw !important;
-    width: 96vw !important;
-    max-height: 90vh !important;
-    overflow-y: auto !important;
-    padding: 16px !important;
-    box-sizing: border-box !important;
-  }
-  /* H2H player input grid → stack */
-  #h2h-modal [style*="grid-template-columns:1fr 1fr"],
-  #h2h-modal [style*="grid-template-columns: 1fr 1fr"] {
-    grid-template-columns: 1fr !important;
-    gap: 12px !important;
-  }
-  /* H2H quick scroll */
-  .h2h-quick-scroll {
-    overflow-x: auto !important;
-    flex-wrap: nowrap !important;
-    -webkit-overflow-scrolling: touch !important;
-  }
-  /* Leaderboard modal */
-  #leaderboard-modal .card {
-    max-width: 96vw !important;
-    width: 96vw !important;
-    height: 85vh !important;
-  }
-  #leaderboard-modal .scoreboard { min-width: 400px; font-size: 12px; }
-  /* Session modal */
-  #session-card-export {
-    max-width: 96vw !important;
-    width: 96vw !important;
-    padding: 16px !important;
-    box-sizing: border-box !important;
-  }
-  /* Bookmarks modal */
-  #bookmarks-modal .card {
-    max-width: 96vw !important;
-    width: 96vw !important;
-    padding: 16px !important;
-    box-sizing: border-box !important;
-  }
-  /* Feedback modal */
-  #feedback-modal .card {
-    max-width: 96vw !important;
-    width: 96vw !important;
-    padding: 16px !important;
-    box-sizing: border-box !important;
-  }
-  /* Feedback trigger button — move to bottom-right to avoid overlap */
-  #feedback-trigger-btn {
-    bottom: 16px !important;
-    left: 12px !important;
-    padding: 8px 12px !important;
-    font-size: 10px !important;
-  }
-  /* Back-to-top button */
-  #back-to-top {
-    bottom: 16px !important;
-    right: 12px !important;
-    width: 38px !important;
-    height: 38px !important;
-    font-size: 14px !important;
-  }
-  /* ══════════════════════════════════════════
-     GENERIC UTILITY OVERRIDES
-  ══════════════════════════════════════════ */
-
-  /* Any section's padding */
-  .esports-section, #store-view > *, #meta-view > * {
-    box-sizing: border-box !important;
-  }
-  /* Prevent overflow from inline fixed widths */
-  .card {
-    box-sizing: border-box !important;
-    max-width: 100% !important;
-  }
-  /* Section labels */
-  .section-label { margin-bottom: 12px !important; }
-  .sl-text { font-size: clamp(11px, 3vw, 14px) !important; }
-  /* VLR btn layout on narrow */
-  .esp-btn.vlr { padding: 3px 7px !important; font-size: 9px !important; }
-}
-
-/* ═══════════════════════════════════════════════
-   ULTRA-SMALL PHONE BREAKPOINT  (≤480px)
-═══════════════════════════════════════════════ */
-@media(max-width: 480px) {
-  /* Premium stat row responsive layout: 2 cols on mobile phones */
-  .panel-stat-row {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 8px !important;
-    padding: 10px !important;
-  }
-  .ps-item {
-    padding: 8px 4px !important;
-    min-height: 52px !important;
-  }
-  .ps-item .psv {
-    font-size: 15px !important;
-  }
-  .ps-item .psl {
-    font-size: 8px !important;
-    margin-top: 4px !important;
-    letter-spacing: 0.5px !important;
-  }
-  /* Stats grids: 5-col → 2-col */
-  [style*="grid-template-columns:repeat(5,1fr)"],
-  [style*="grid-template-columns: repeat(5, 1fr)"] {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-  .agent-stats-row { grid-template-columns: repeat(2, 1fr) !important; }
-  /* Skin catalog — 1 col on tiny phones */
-  #skin-catalog-grid {
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
-    gap: 10px !important;
-  }
-  /* Store bundle items — 2 cols max */
-  #store-featured-container [style*="grid-template-columns:repeat(auto-fill, minmax(130px, 1fr))"],
-  [style*="grid-template-columns:repeat(auto-fill, minmax(130px, 1fr))"] {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-  /* Esports match cards — font sizes tighter */
-  .esp-tname { font-size: 12px !important; }
-  .esp-tscore { font-size: 18px !important; }
-  /* Meta comp slots wrap tighter */
-  .dc-slot-card { min-width: 65px !important; max-width: 78px !important; }
-  /* Hero title smaller */
-  .hero-title { font-size: clamp(22px, 7vw, 28px) !important; }
-  /* Action bar items even smaller */
-  .action-bar > * { font-size: 10px !important; padding: 5px 8px !important; }
-  /* H2H modal inputs stack label */
-  #h2h-modal .h2h-input-block { width: 100% !important; }
-  /* Store view padding tighter */
-  #store-view { padding: 10px !important; }
-  /* Feedback button: hide text, show icon only */
-  #feedback-trigger-btn span + * { display: none !important; }
-  #feedback-trigger-btn { padding: 10px 12px !important; border-radius: 50% !important; }
-}
-
-/* ── TIER TOGGLE SWITCH & BADGES ── */
-.tier-toggle-wrapper { display:flex; align-items:center; gap:8px; }
-
-.switch { position:relative; display:inline-block; width:34px; height:20px; }
-
-.switch input { opacity:0; width:0; height:0; }
-
-.slider { position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:var(--surface3); transition:.4s; border-radius:34px; }
-
-.slider:before { position:absolute; content:""; height:14px; width:14px; left:3px; bottom:3px; background-color:var(--muted); transition:.4s; border-radius:50%; }
-
-input:checked + .slider { background-color:var(--accent); }
-
-input:checked + .slider:before { transform:translateX(14px); background-color:#fff; }
-
-.tier-badge { display:inline-block; padding:2px 6px; border-radius:4px; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-right:6px; vertical-align:middle; }
-
-.tier-badge.t1 { background:rgba(232,255,71,0.15); color:#e8ff47; border:1px solid rgba(232,255,71,0.3); }
-
-.tier-badge.t2 { background:rgba(255,255,255,0.1); color:var(--muted); border:1px solid var(--border); }
-
-/* ── SKIN EXPLORER CARD OVERRIDES ── */
-.skin-level-card {
-  padding: 10px 14px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: rgba(255, 255, 255, 0.015);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 6px;
-  font-size: 11px;
-  transition: var(--transition);
-  width: 100%;
-}
-
-.skin-level-card:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.15);
-}
-
-.skin-chroma-card {
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 6px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 18px;
-  font-size: 10px;
-  font-family: 'DM Mono', monospace;
-  font-weight: 800;
-  background: rgba(255, 255, 255, 0.02);
-  transition: var(--transition);
-}
-
-.skin-chroma-card:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-/* Draft Comp Coach Styles */
-.dc-slot-card {
-  flex: 1;
-  min-width: 90px;
-  max-width: 110px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px 6px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.dc-slot-card:hover {
-  border-color: var(--accentborder);
-  background: rgba(250, 68, 84, 0.04);
-  transform: translateY(-2px);
-}
-
-.dc-slot-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.04);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  color: var(--muted);
-  border: 1px solid var(--border);
-  overflow: hidden;
-  transition: all 0.2s ease;
-}
-
-.dc-slot-card:hover .dc-slot-avatar {
-  border-color: var(--accent);
-  color: #fff;
-  box-shadow: 0 0 10px var(--accentdim);
-}
-
-.dc-slot-avatar-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.dc-slot-name {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  color: #fff;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  text-align: center;
-  max-width: 80px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Comp bar tracks */
-.dc-track-bar {
-  width: 100%;
-  height: 6px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.dc-fill-bar {
-  height: 100%;
-  border-radius: 3px;
-  width: 0;
-  transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-
-.dc-fill-bar.duelists { background: #ff5757; box-shadow: 0 0 6px rgba(255,87,87,0.3); }
-
-.dc-fill-bar.initiators { background: #ffd700; box-shadow: 0 0 6px rgba(255,215,0,0.3); }
-
-.dc-fill-bar.controllers { background: #00d4e0; box-shadow: 0 0 6px rgba(0,212,224,0.3); }
-
-.dc-fill-bar.sentinels { background: #3ecf8e; box-shadow: 0 0 6px rgba(62,207,142,0.3); }
-
-.dc-insight-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  font-size: 11px;
-  line-height: 1.4;
-  border-left: 3px solid transparent;
-}
-
-.dc-insight-card.good {
-  background: rgba(62, 207, 142, 0.04);
-  border-color: var(--win);
-  color: #fff;
-}
-
-.dc-insight-card.warn {
-  background: rgba(250, 68, 84, 0.04);
-  border-color: var(--loss);
-  color: #fff;
-}
-
-.dc-insight-card.tip {
-  background: rgba(232, 255, 71, 0.04);
-  border-color: #e8ff47;
-  color: #fff;
-}
-
-.dc-insight-card-icon {
-  font-size: 14px;
-}</style>
-<div class="glass-orb-2"></div>
-<!-- SESSION SUMMARY MODAL -->
-<div id="session-modal" style="display:none; position:fixed; inset:0; background:rgba(10,10,12,0.85); backdrop-filter:blur(10px); z-index:9999; align-items:center; justify-content:center;">
-  <div id="session-card-export" class="card" style="width:400px; max-width:90vw; border:1px solid var(--accentborder); background:var(--surface);">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;" data-html2canvas-ignore>
-      <div style="font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:24px; color:var(--accent); text-transform:uppercase;">Session Summary</div>
-      <button onclick="document.getElementById('session-modal').style.display='none'" style="background:none; border:none; color:var(--muted); font-size:20px; cursor:pointer;">×</button>
-    </div>
-    <div id="session-content" style="display:flex; flex-direction:column; gap:16px;">
-      <!-- Populated by JS -->
-    </div>
-    <div style="margin-top:24px; text-align:center;" data-html2canvas-ignore>
-      <button class="fetch-btn" onclick="exportSessionCard()" style="width:100%; background:var(--accent); color:#0d0d0f;">📥 Save as Image</button>
-    </div>
-  </div>
-</div>
-
-
-
-
-<!-- LEADERBOARD MODAL -->
-<div id="leaderboard-modal" style="display:none; position:fixed; inset:0; background:rgba(10,10,12,0.85); backdrop-filter:blur(10px); z-index:9999; align-items:center; justify-content:center;">
-  <div class="card" style="width:800px; max-width:95vw; height:80vh; display:flex; flex-direction:column; border:1px solid rgba(245,166,35,0.3); background:var(--surface);">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-shrink:0;">
-      <div style="font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:24px; color:#f5a623; text-transform:uppercase;">🏆 Radiant Top 500 <span id="lb-region-txt" style="color:var(--muted); font-size:16px;"></span></div>
-      <button onclick="document.getElementById('leaderboard-modal').style.display='none'" style="background:none; border:none; color:var(--muted); font-size:20px; cursor:pointer;">×</button>
-    </div>
-    <div id="leaderboard-content" style="flex:1; overflow-y:auto;">
-      <!-- Populated by JS -->
-    </div>
-  </div>
-</div>
-
-<!-- HEAD-TO-HEAD MODAL -->
-<div id="h2h-modal" style="display:none; position:fixed; inset:0; background:rgba(6,6,8,0.8); z-index:9999; align-items:center; justify-content:center;">
-  <div class="h2h-modal-card">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:12px;">
-      <div style="font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:26px; color:#b366ff; text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; gap:8px;">
-        <span>⚔️</span> HEAD-TO-HEAD BATTLEGROUND
-      </div>
-      <button onclick="document.getElementById('h2h-modal').style.display='none'" style="background:none; border:none; color:var(--muted); font-size:28px; cursor:pointer; transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--muted)'">×</button>
-    </div>
-    
-    <div class="h2h-quick-section">
-      <div class="h2h-quick-title">⚡ Quick Comparisons</div>
-      <div class="h2h-quick-scroll" id="h2h-quick-scroll"></div>
-    </div>
-    
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;">
-      <div class="h2h-input-block">
-        <div style="font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:12px; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-          <span style="display:inline-block; width:6px; height:6px; background:#3b82f6; border-radius:50%"></span> PLAYER 1 (YOU)
-        </div>
-        <div class="landing-input-row" style="margin-bottom:0; display:flex; gap:6px; align-items:center;">
-          <input class="landing-input" id="h2h-p1-name" type="text" placeholder="Name" style="background:rgba(0,0,0,0.3); border-color:rgba(255,255,255,0.08); flex:1">
-          <span class="landing-input-hash" style="color:rgba(255,255,255,0.2)">#</span>
-          <input class="landing-input landing-input-tag" id="h2h-p1-tag" type="text" placeholder="TAG" style="background:rgba(0,0,0,0.3); border-color:rgba(255,255,255,0.08); width:100px">
-        </div>
-      </div>
-      <div class="h2h-input-block">
-        <div style="font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:12px; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-          <span style="display:inline-block; width:6px; height:6px; background:#b366ff; border-radius:50%"></span> PLAYER 2 (OPPONENT / PRO)
-        </div>
-        <div class="landing-input-row" style="margin-bottom:0; display:flex; gap:6px; align-items:center;">
-          <input class="landing-input" id="h2h-p2-name" type="text" placeholder="Riot ID Name" style="background:rgba(0,0,0,0.3); border-color:rgba(255,255,255,0.08); flex:1">
-          <span class="landing-input-hash" style="color:rgba(255,255,255,0.2)">#</span>
-          <input class="landing-input landing-input-tag" id="h2h-p2-tag" type="text" placeholder="TAG" style="background:rgba(0,0,0,0.3); border-color:rgba(255,255,255,0.08); width:100px">
-        </div>
-      </div>
-    </div>
-    
-    <button class="fetch-btn" onclick="fetchH2H()" style="width:100%; background:linear-gradient(90deg, #b366ff 0%, #8c26ff 100%); color:#fff; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:16px; letter-spacing:1px; border:none; padding:12px 0; border-radius:var(--radius-sm); cursor:pointer; box-shadow:0 4px 15px rgba(179,102,255,0.3); transition:all 0.3s ease; margin-bottom:25px;" onmouseover="this.style.filter='brightness(1.1)'; this.style.transform='translateY(-1px)'" onmouseout="this.style.filter='none'; this.style.transform='none'">
-      ⚡ RETRIEVE DUAL PERFORMANCE SUMMARY
-    </button>
-    
-    <div id="h2h-content"></div>
-  </div>
-</div>
-<!-- hidden container for high-density draft comp PNG export -->
-<div id="dc-export-container" style="position: absolute; left: -9999px; top: -9999px; pointer-events: none; z-index: -9999;"></div>
-
-<!-- hidden container for high-density player stats PNG export -->
-<div id="stats-export-container" style="position: absolute; left: -9999px; top: -9999px; pointer-events: none; z-index: -9999;"></div>
-
-<!-- hidden container for high-density match stats PNG export -->
-<div id="match-export-container" style="position: absolute; left: -9999px; top: -9999px; pointer-events: none; z-index: -9999;"></div>
-
-
-<!-- GLOBAL BOOKMARKS NAV MODAL -->
-<div id="bookmarks-modal" style="display:none; position:fixed; inset:0; background:rgba(10,10,12,0.85); backdrop-filter:blur(15px); -webkit-backdrop-filter:blur(15px); z-index:9999; align-items:center; justify-content:center;" onclick="if(event.target===this)closeBookmarksModal()">
-  <div class="card" style="width:480px; max-width:95vw; max-height:80vh; display:flex; flex-direction:column; border:1px solid rgba(255,215,0,0.3); background:linear-gradient(135deg, #121216 0%, #08080a 100%); border-radius:16px; padding:24px; box-sizing:border-box; box-shadow:0 8px 32px rgba(0,0,0,0.5);">
-    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,215,0,0.15); padding-bottom:14px; margin-bottom:16px; flex-shrink:0;">
-      <div style="font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:24px; color:#ffd700; text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; gap:8px;">
-        <span style="color:#ffd700; text-shadow:0 0 10px rgba(255,215,0,0.4);">★</span> Bookmarked Players
-      </div>
-      <button onclick="closeBookmarksModal()" style="background:none; border:none; color:var(--muted); font-size:24px; cursor:pointer; transition:color 0.2s;" onmouseover="this.style.color='#ff4655'" onmouseout="this.style.color='var(--muted)'">×</button>
-    </div>
-    
-    <div id="bookmarks-modal-list" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:10px; padding-right:4px;">
-      <!-- Populated by JS -->
-    </div>
-    
-    <div style="margin-top:16px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.05); font-family:'DM Mono',monospace; font-size:9px; color:var(--muted); text-align:center; flex-shrink:0;">
-      Click a player card to load stats directly · Click ★ to delete
-    </div>
-  </div>
-</div>
-
-<button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
-
-<!-- GLOBAL FEEDBACK SYSTEM -->
-<button id="feedback-trigger-btn" onclick="openFeedbackModal()" style="position:fixed; bottom:20px; left:20px; background:rgba(18,20,26,0.85); border:1px solid rgba(255, 70, 85, 0.4); border-radius:30px; color:#fff; font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:900; letter-spacing:1px; text-transform:uppercase; padding:10px 18px; cursor:pointer; z-index:9998; box-shadow:0 6px 15px rgba(0,0,0,0.4); display:flex; align-items:center; gap:8px; backdrop-filter:blur(8px); transition:all 0.3s ease;" onmouseover="this.style.background='var(--accent)'; this.style.color='#0d0d0f'; this.style.borderColor='var(--accent)'; this.style.boxShadow='0 0 15px var(--accent)'" onmouseout="this.style.background='rgba(18,20,26,0.85)'; this.style.color='#fff'; this.style.borderColor='rgba(255, 70, 85, 0.4)'; this.style.boxShadow='0 6px 15px rgba(0,0,0,0.4)'">
-  <span>⚡</span> FEEDBACK
-</button>
-
-<div id="feedback-modal" style="display:none; position:fixed; inset:0; background:rgba(10,10,12,0.85); backdrop-filter:blur(15px); -webkit-backdrop-filter:blur(15px); z-index:9999; align-items:center; justify-content:center;" onclick="if(event.target===this)closeFeedbackModal()">
-  <div class="card" style="width:400px; max-width:95vw; border:1px solid rgba(255,70,85,0.3); background:linear-gradient(135deg, #121216 0%, #08080a 100%); border-radius:16px; padding:24px; box-sizing:border-box; box-shadow:0 8px 32px rgba(0,0,0,0.5); position:relative;">
-    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,70,85,0.15); padding-bottom:14px; margin-bottom:16px;">
-      <div style="font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:24px; color:var(--accent); text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; gap:8px;">
-        <span>⚡</span> Feedback Transmission
-      </div>
-      <button onclick="closeFeedbackModal()" style="background:none; border:none; color:var(--muted); font-size:24px; cursor:pointer; transition:color 0.2s;" onmouseover="this.style.color='#ff4655'" onmouseout="this.style.color='var(--muted)'">×</button>
-    </div>
-    
-    <div style="display:flex; flex-direction:column; gap:14px;">
-      <div style="text-align:left;">
-        <label style="font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:11px; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; display:block; margin-bottom:6px;">MESSAGE // REPORT CONTENT</label>
-        <textarea id="feedback-text" placeholder="Found a bug? Have an idea? Tell us here..." style="width:100%; height:120px; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:10px; font-family:sans-serif; font-size:13px; color:#fff; resize:none; box-sizing:border-box; outline:none; transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--accent)'"></textarea>
-      </div>
-      
-      <div style="text-align:left;">
-        <label style="font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:11px; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; display:block; margin-bottom:6px;">CONTACT INFO // DISCORD OR EMAIL (OPTIONAL)</label>
-        <input id="feedback-contact" type="text" placeholder="RiotID#TAG, Discord tag, or email" style="width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:10px; font-family:sans-serif; font-size:13px; color:#fff; box-sizing:border-box; outline:none; transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--accent)'">
-      </div>
-      
-      <button class="fetch-btn" onclick="submitFeedbackForm()" style="width:100%; background:var(--accent); color:#0d0d0f; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:15px; letter-spacing:1px; border:none; padding:12px 0; border-radius:8px; cursor:pointer; box-shadow:0 4px 15px rgba(255,70,85,0.2); transition:all 0.2s ease;">
-        TRANSMIT REPORT
-      </button>
-    </div>
-  </div>
-</div>
-</body>
-</html>
