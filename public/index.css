@@ -1994,10 +1994,13 @@ body::before {
   background: var(--bg);
   display: flex; flex-direction: column;
   align-items: center; justify-content: flex-start;
-  padding: 40px 16px;
+  padding: calc(var(--topbar-height, 60px) + 32px) 16px 40px !important;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   animation: fadeIn 0.4s ease;
+}
+#landing:not(.hidden) ~ .topbar .player-search-wrap {
+  display: none !important;
 }
 @media (min-height: 850px) and (min-width: 800px) {
   #landing {
@@ -2899,6 +2902,9 @@ input:checked + .slider:before {
     gap: 6px !important;
     max-width: 190px !important;
   }
+  .player-active-pill button[onclick="copyRiotId()"] {
+    display: none !important;
+  }
   .active-pill-name {
     max-width: 85px !important;
     font-size: 11px !important;
@@ -2921,7 +2927,7 @@ input:checked + .slider:before {
   .hero-eyebrow::before { display: none; }
   .hero-title { font-size: clamp(26px, 8vw, 36px); white-space: normal; }
   .hero-title .dim { font-size: 0.55em; display: block; margin-left: 0; margin-top: 2px; }
-  .hero-right { flex-direction: column; width: 100%; gap: 10px; }
+  .hero-right { flex-direction: column !important; width: 100% !important; gap: 10px !important; }
   .hero-rank-block, .hero-streak-block { width: 100% !important; min-width: unset; height: auto; padding: 12px 16px; justify-content: center; }
   .hero-rank-name { font-size: 18px; }
 

@@ -8,7 +8,7 @@
 <link rel="icon" type="image/png" href="logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
-<link rel="stylesheet" href="index.css?v=13.03">
+<link rel="stylesheet" href="index.css?v=13.04">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 </head>
@@ -12419,17 +12419,7 @@ function copyObsUrl() {
 }
 
 // Search autocomplete recommendations & search
-const POPULAR_RECOMMENDATIONS = [
-  { name: "TenZ", tag: "SEN", region: "na", current_tier_patched: "Radiant", card_id: "9e5c3c2b-dd6c-4b3c-25b7-c25b7c25b7c2" },
-  { name: "aspas", tag: "LEV", region: "na", current_tier_patched: "Radiant", card_id: "6977f8cf-0996-4ee6-7b89-6977f8cf0996" },
-  { name: "saadhak", tag: "LOUD", region: "na", current_tier_patched: "Immortal 3", card_id: "5def384f-47ce-ee1e-8a4c-d1a394fef0b5" },
-  { name: "Cryocells", tag: "100T", region: "na", current_tier_patched: "Radiant", card_id: "69704e38-872a-4646-872a-4646872a4646" },
-  { name: "t3xture", tag: "GEN", region: "kr", current_tier_patched: "Radiant", card_id: "d6e79ba5-4a68-036c-d121-5bb893eafa47" },
-  { name: "Suresh reyna", tag: "2908", region: "ap", current_tier_patched: "Unranked", card_id: "" },
-  { name: "kratos", tag: "game", region: "ap", current_tier_patched: "Unranked", card_id: "eef542d2-4724-bc47-f53f-239f8c9c2623" },
-  { name: "Boogeyman", tag: "game", region: "ap", current_tier_patched: "Unranked", card_id: "51dcf475-4078-2dce-883b-48bb77670ea8" },
-  { name: "Harsh", tag: "khel", region: "ap", current_tier_patched: "Unranked", card_id: "a8b2e213-4aac-95bb-9329-809d5e53e59d" }
-];
+const POPULAR_RECOMMENDATIONS = [];
 
 function initSearchAutocomplete(inputId, tagInputId, dropdownId, regionSelectId) {
   const input = document.getElementById(inputId);
@@ -12458,27 +12448,21 @@ function initSearchAutocomplete(inputId, tagInputId, dropdownId, regionSelectId)
       return;
     }
 
-    // Local filter of VCT profiles immediately to feel fast
-    const localMatches = POPULAR_RECOMMENDATIONS.filter(p =>
-      p.name.toLowerCase().includes(val.toLowerCase()) ||
-      p.tag.toLowerCase().includes(val.toLowerCase())
-    );
-
-    // Initial render with local matches while loading
-    renderSearchDropdown([], localMatches, dropdown, input, tagInput, regionSelectId, val, true);
+    // Initial render showing loading status
+    renderSearchDropdown([], [], dropdown, input, tagInput, regionSelectId, val, true);
 
     debounceTimeout = setTimeout(async () => {
       try {
         const res = await fetch(`/api/search?q=${encodeURIComponent(val)}`);
         if (res.ok) {
           const players = await res.json();
-          renderSearchDropdown(players, localMatches, dropdown, input, tagInput, regionSelectId, val, false);
+          renderSearchDropdown(players, [], dropdown, input, tagInput, regionSelectId, val, false);
         } else {
-          renderSearchDropdown([], localMatches, dropdown, input, tagInput, regionSelectId, val, false);
+          renderSearchDropdown([], [], dropdown, input, tagInput, regionSelectId, val, false);
         }
       } catch (e) {
         console.error("Autocomplete search failed:", e);
-        renderSearchDropdown([], localMatches, dropdown, input, tagInput, regionSelectId, val, false);
+        renderSearchDropdown([], [], dropdown, input, tagInput, regionSelectId, val, false);
       }
     }, 250);
   });
@@ -12497,9 +12481,11 @@ function renderRecommendations(dropdown, input, tagInput, regionSelectId) {
   try { recent = JSON.parse(localStorage.getItem('valtracker_recent_searches')) || []; } catch(e) {}
 
   let html = '<div class="search-rec-container">';
+  let hasContent = false;
 
   // 1. Bookmarks section
   if (bookmarks && bookmarks.length > 0) {
+    hasContent = true;
     html += `
       <div class="search-rec-section">
         <div class="search-rec-header">★ Bookmarked Players</div>
@@ -12528,6 +12514,7 @@ function renderRecommendations(dropdown, input, tagInput, regionSelectId) {
 
   // 2. Recent Searches section
   if (recent && recent.length > 0) {
+    hasContent = true;
     html += `
       <div class="search-rec-section">
         <div class="search-rec-header">🕒 Recent Searches</div>
@@ -12554,39 +12541,26 @@ function renderRecommendations(dropdown, input, tagInput, regionSelectId) {
     html += '</div></div>';
   }
 
-  // 3. Popular VCT Profiles section
-  html += `
-    <div class="search-rec-section">
-      <div class="search-rec-header">🔥 Suggested Profiles</div>
-      <div class="search-rec-grid">
-  `;
-  POPULAR_RECOMMENDATIONS.forEach(p => {
-    const cardUrl = p.card_id ? `https://media.valorant-api.com/playercards/${p.card_id}/smallart.png` : '';
-    const avatarHtml = cardUrl ? `<img src="${cardUrl}">` : '👤';
-    html += `
-      <div class="search-rec-chip" data-name="${p.name}" data-tag="${p.tag}" data-region="${p.region}">
-        <div class="search-rec-chip-avatar">${avatarHtml}</div>
-        <div class="search-rec-chip-info">
-          <span class="search-rec-chip-name">${p.name}</span>
-          <span class="search-rec-chip-tag">#${p.tag}</span>
-        </div>
-        <span class="search-rec-chip-region">${p.region}</span>
+  html += '</div>';
+
+  if (!hasContent) {
+    dropdown.innerHTML = `
+      <div style="padding: 18px; text-align: center; font-size: 11px; color: var(--muted2); font-family: 'DM Mono', monospace;">
+        Search for players to build your history...
       </div>
     `;
-  });
-  html += '</div></div></div>';
+  } else {
+    dropdown.innerHTML = html;
+  }
 
-  dropdown.innerHTML = html;
   dropdown.classList.add('open');
-
   attachDropdownClickEvents(dropdown, input, tagInput, regionSelectId);
 }
 
 function renderSearchDropdown(dbPlayers, localMatches, dropdown, input, tagInput, regionSelectId, val, isLoading) {
   const hasDb = dbPlayers && dbPlayers.length > 0;
-  const hasLocal = localMatches && localMatches.length > 0;
 
-  if (!hasDb && !hasLocal) {
+  if (!hasDb) {
     if (isLoading) {
       dropdown.innerHTML = `
         <div style="padding: 18px; text-align: center; font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; display: flex; align-items: center; justify-content: center; gap: 8px;">
@@ -12598,32 +12572,13 @@ function renderSearchDropdown(dbPlayers, localMatches, dropdown, input, tagInput
       return;
     }
 
-    // No matches fallback: show warning and popular profiles list
-    let html = `
-      <div style="padding: 14px 14px 8px 14px; font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; border-bottom: 1px solid rgba(255, 255, 255, 0.03); display: flex; align-items: center; gap: 8px;">
-        <span style="color: var(--accent);">⚠️</span> No players found in database. Try one of these suggested profiles:
+    // No matches fallback
+    dropdown.innerHTML = `
+      <div style="padding: 18px; text-align: center; font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <span style="color: var(--accent);">⚠️</span> No players found. Check Riot ID &amp; Tag.
       </div>
-      <div class="search-rec-container" style="padding-top: 0;">
-        <div class="search-rec-grid">
     `;
-    POPULAR_RECOMMENDATIONS.forEach(p => {
-      const cardUrl = p.card_id ? `https://media.valorant-api.com/playercards/${p.card_id}/smallart.png` : '';
-      const avatarHtml = cardUrl ? `<img src="${cardUrl}">` : '👤';
-      html += `
-        <div class="search-rec-chip" data-name="${p.name}" data-tag="${p.tag}" data-region="${p.region}">
-          <div class="search-rec-chip-avatar">${avatarHtml}</div>
-          <div class="search-rec-chip-info">
-            <span class="search-rec-chip-name">${p.name}</span>
-            <span class="search-rec-chip-tag">#${p.tag}</span>
-          </div>
-          <span class="search-rec-chip-region">${p.region}</span>
-        </div>
-      `;
-    });
-    html += '</div></div>';
-    dropdown.innerHTML = html;
     dropdown.classList.add('open');
-    attachDropdownClickEvents(dropdown, input, tagInput, regionSelectId);
     return;
   }
 
@@ -12655,30 +12610,6 @@ function renderSearchDropdown(dbPlayers, localMatches, dropdown, input, tagInput
             ${rankImg ? `<img class="search-item-rank-img" src="${rankImg}">` : ''}
             <span class="search-item-region-badge">${p.region}</span>
           </div>
-        </div>
-      `;
-    });
-    html += '</div></div>';
-  }
-
-  // Render matching popular profiles
-  if (hasLocal) {
-    html += `
-      <div class="search-rec-section">
-        <div class="search-rec-header">🔥 Suggested Profiles</div>
-        <div class="search-rec-grid">
-    `;
-    localMatches.forEach(p => {
-      const cardUrl = p.card_id ? `https://media.valorant-api.com/playercards/${p.card_id}/smallart.png` : '';
-      const avatarHtml = cardUrl ? `<img src="${cardUrl}">` : '👤';
-      html += `
-        <div class="search-rec-chip" data-name="${p.name}" data-tag="${p.tag}" data-region="${p.region}">
-          <div class="search-rec-chip-avatar">${avatarHtml}</div>
-          <div class="search-rec-chip-info">
-            <span class="search-rec-chip-name">${p.name}</span>
-            <span class="search-rec-chip-tag">#${p.tag}</span>
-          </div>
-          <span class="search-rec-chip-region">${p.region}</span>
         </div>
       `;
     });
