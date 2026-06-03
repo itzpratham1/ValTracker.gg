@@ -12687,6 +12687,7 @@ function updateHeaderHeights() {
 window.addEventListener('resize', updateHeaderHeights);
 
 function initHeaderScrollBehavior() {
+  let scrollAccumulator = 0;
   window.addEventListener('scroll', () => {
     if (isProgrammaticScroll) return;
     
@@ -12695,19 +12696,32 @@ function initHeaderScrollBehavior() {
     
     // Only apply hiding past a reasonable offset from the top
     if (currentScrollY > 150) {
-      if (currentScrollY > lastScrollY) {
+      const diff = currentScrollY - lastScrollY;
+      
+      // If scroll direction changes, reset the accumulator
+      if ((diff > 0 && scrollAccumulator < 0) || (diff < 0 && scrollAccumulator > 0)) {
+        scrollAccumulator = 0;
+      }
+      scrollAccumulator += diff;
+      
+      const threshold = 15; // Requires 15px of continuous scroll in one direction to trigger transition
+      
+      if (scrollAccumulator > threshold) {
         // Scrolling down -> Hide header
         body.classList.add('scrolled-down');
         body.classList.remove('scrolled-up');
-      } else {
+        scrollAccumulator = 0;
+      } else if (scrollAccumulator < -threshold) {
         // Scrolling up -> Show header
         body.classList.add('scrolled-up');
         body.classList.remove('scrolled-down');
+        scrollAccumulator = 0;
       }
     } else {
       // Near top of page -> Show header
       body.classList.remove('scrolled-down');
       body.classList.remove('scrolled-up');
+      scrollAccumulator = 0;
     }
     
     lastScrollY = currentScrollY;
@@ -12917,22 +12931,22 @@ body::after {
     position: sticky !important;
     top: 0 !important;
     z-index: 1000 !important;
-    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease !important;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
     will-change: transform;
   }
   .tracker-nav {
     position: sticky !important;
     top: var(--topbar-height, 108px) !important;
     z-index: 999 !important;
-    transition: top 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
-    will-change: top;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    will-change: transform;
   }
   body.scrolled-down .topbar {
     transform: translateY(-100%) !important;
     box-shadow: none !important;
   }
   body.scrolled-down .tracker-nav {
-    top: 0 !important;
+    transform: translateY(calc(-1 * var(--topbar-height, 108px))) !important;
   }
 }
 @media (max-width: 800px) {
