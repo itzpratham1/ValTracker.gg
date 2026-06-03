@@ -28,7 +28,8 @@
 /* ── CORE RESETS & GLOBAL SCROLL ── */
 html {
   scroll-behavior: smooth;
-  background-color: #050508;
+  background-color: #030304; /* Matches var(--bg) exactly to prevent bright overscroll gaps */
+  overscroll-behavior: none;
 }
 * {
   margin: 0;
@@ -48,6 +49,7 @@ body {
   font-size: 14px;
   min-height: 100vh;
   overflow-x: clip;
+  overscroll-behavior: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -1996,6 +1998,7 @@ body::before {
   align-items: center; justify-content: flex-start;
   padding: calc(var(--topbar-height, 60px) + 32px) 16px 40px !important;
   overflow-y: auto;
+  overscroll-behavior-y: none; /* Lock overscroll on landing container */
   -webkit-overflow-scrolling: touch;
   animation: fadeIn 0.4s ease;
 }
