@@ -1825,8 +1825,7 @@ function renderTrendChart(matches) {
   }
 
   const isMobile = window.innerWidth <= 600;
-  const displayMatches = isMobile ? matches.slice(0, 10) : matches;
-  const data = displayMatches.slice().reverse(); // oldest → newest
+  const data = matches.slice().reverse(); // oldest → newest
   const labels = data.map((m, i) => {
     const ag = (m.agentName || '').substring(0, 3).toUpperCase();
     return `#${i + 1} ${ag}`;
@@ -1854,7 +1853,7 @@ function renderTrendChart(matches) {
           borderColor: '#e8ff47',
           backgroundColor: 'rgba(232,255,71,0.06)',
           borderWidth: 2,
-          pointRadius: 3,
+          pointRadius: isMobile ? 0 : 3,
           pointHoverRadius: 5,
           pointBackgroundColor: '#e8ff47',
           tension: 0.35,
@@ -1866,7 +1865,7 @@ function renderTrendChart(matches) {
           borderColor: '#3ecf8e',
           backgroundColor: 'rgba(62,207,142,0.06)',
           borderWidth: 2,
-          pointRadius: 3,
+          pointRadius: isMobile ? 0 : 3,
           pointHoverRadius: 5,
           pointBackgroundColor: '#3ecf8e',
           tension: 0.35,
@@ -1878,7 +1877,7 @@ function renderTrendChart(matches) {
           borderColor: '#ff5757',
           backgroundColor: 'rgba(255,87,87,0.06)',
           borderWidth: 2,
-          pointRadius: 3,
+          pointRadius: isMobile ? 0 : 3,
           pointHoverRadius: 5,
           pointBackgroundColor: '#ff5757',
           tension: 0.35,
@@ -1919,8 +1918,8 @@ function renderTrendChart(matches) {
       },
       scales: {
         x: {
-          grid: { color: 'rgba(255,255,255,0.04)' },
-          ticks: { color: '#555', font: { family: 'DM Mono', size: 8 }, maxRotation: isMobile ? 0 : 45, autoSkip: true, maxTicksLimit: isMobile ? 6 : 20 }
+          grid: { display: !isMobile, color: 'rgba(255,255,255,0.04)' },
+          ticks: { display: !isMobile, color: '#555', font: { family: 'DM Mono', size: 8 }, maxRotation: 45, autoSkip: true, maxTicksLimit: 20 }
         },
         y: {
           grid: { color: 'rgba(255,255,255,0.05)' },
@@ -2526,21 +2525,20 @@ function renderRRGraph(history,currentTotalRR,mmrHistory={}){
   document.getElementById('graph-note').style.display='block';
   
   const isMobile = window.innerWidth <= 600;
-  const displayHistory = isMobile ? history.slice(0, 15) : history;
   
-  const hasRealRR=displayHistory.some(m=>mmrHistory[m.matchId]!==undefined);
+  const hasRealRR=history.some(m=>mmrHistory[m.matchId]!==undefined);
   let totalRR=currentTotalRR||600;
   const points=[];
   if(hasRealRR){
-    displayHistory.forEach(m=>{points.unshift(totalRR);const c=mmrHistory[m.matchId];if(c!==undefined)totalRR-=c;else totalRR-=m.won?20:-18;totalRR=Math.max(0,totalRR);});
+    history.forEach(m=>{points.unshift(totalRR);const c=mmrHistory[m.matchId];if(c!==undefined)totalRR-=c;else totalRR-=m.won?20:-18;totalRR=Math.max(0,totalRR);});
     document.getElementById('graph-note').textContent='✓ Real RR data from stored match history';
     document.getElementById('graph-note').style.color='var(--win)';
   }else{
-    displayHistory.forEach(m=>{points.unshift(totalRR);totalRR-=m.won?(18+Math.floor(Math.random()*8)):-(18+Math.floor(Math.random()*6));totalRR=Math.max(0,totalRR);});
+    history.forEach(m=>{points.unshift(totalRR);totalRR-=m.won?(18+Math.floor(Math.random()*8)):-(18+Math.floor(Math.random()*6));totalRR=Math.max(0,totalRR);});
     document.getElementById('graph-note').textContent='* Estimated from win/loss — stored history unavailable';
     document.getElementById('graph-note').style.color='';
   }
-  const labels=displayHistory.map((_,i)=>`G${i+1}`);
+  const labels=history.map((_,i)=>`G${i+1}`);
   const data=points;
   const colors=data.map(v=>getRankColor(getRankFromRR(v).name));
   const rankLabels=data.map((v,i)=>{const r=getRankFromRR(v);const rc=mmrHistory[history[i]?.matchId];return{rank:r.name,rr:v-r.rr,change:rc};});
@@ -2550,7 +2548,7 @@ function renderRRGraph(history,currentTotalRR,mmrHistory={}){
   for(let i=0;i<RANKS.length-1;i++){const t=RANKS[i].name.split(' ')[0];rankZones.push({yMin:RANKS[i].rr,yMax:RANKS[i+1].rr,color:RANK_COLORS[t]||'#fff',label:RANKS[i].name});}
   const minRR=Math.max(0,Math.min(...data)-150);
   const maxRR=Math.max(...data)+150;
-  rrChart=new Chart(ctx,{type:'line',data:{labels,datasets:[{data,borderColor:'rgba(232,255,71,0.9)',backgroundColor:'rgba(232,255,71,0.04)',borderWidth:2,pointBackgroundColor:colors,pointBorderColor:colors,pointRadius:4,pointHoverRadius:6,tension:0.3,fill:true}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{backgroundColor:'#141416',borderColor:'rgba(255,255,255,0.1)',borderWidth:1,titleColor:'#f0f0f2',bodyColor:'#f0f0f2',titleFont:{family:'DM Mono',size:9},bodyFont:{family:'Barlow Condensed',size:16},callbacks:{title:c=>`Match ${c[0].label} · ${rankLabels[c[0].dataIndex]?.rank||''}`,label:c=>{const rl=rankLabels[c.dataIndex];const cs=rl?.change!=null?(rl.change>0?` (+${rl.change})`:(` (${rl.change})`)):'';return rl?` ${rl.rr} RR${cs}`:` ${c.parsed.y} RR`;}}}},scales:{x:{grid:{color:'rgba(255,255,255,0.03)'},ticks:{color:'#3a3a40',font:{family:'DM Mono',size:8},maxTicksLimit:isMobile?6:20,maxRotation:0}},y:{grid:{color:'rgba(255,255,255,0.03)'},ticks:{color:'#4a4a52',font:{family:'DM Mono',size:8},callback(v){const r=getRankFromRR(v);return r?r.name:'';}},min:minRR,max:maxRR}}},plugins:[{id:'rankBands',beforeDraw(chart){const{ctx,chartArea,scales}=chart;if(!chartArea)return;rankZones.forEach(zone=>{const yTop=scales.y.getPixelForValue(Math.min(zone.yMax,maxRR));const yBot=scales.y.getPixelForValue(Math.max(zone.yMin,minRR));if(yBot<chartArea.top||yTop>chartArea.bottom)return;ctx.save();ctx.fillStyle=zone.color+'12';ctx.fillRect(chartArea.left,Math.max(yTop,chartArea.top),chartArea.width,Math.min(yBot,chartArea.bottom)-Math.max(yTop,chartArea.top));ctx.fillStyle=zone.color+'66';ctx.font='8px DM Mono';ctx.fillText(zone.label,chartArea.left+6,Math.min(yBot,chartArea.bottom)-4);ctx.restore();});}}]});
+  rrChart=new Chart(ctx,{type:'line',data:{labels,datasets:[{data,borderColor:'rgba(232,255,71,0.9)',backgroundColor:'rgba(232,255,71,0.04)',borderWidth:2,pointBackgroundColor:colors,pointBorderColor:colors,pointRadius:isMobile?0:4,pointHoverRadius:6,tension:0.3,fill:true}]},options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{backgroundColor:'#141416',borderColor:'rgba(255,255,255,0.1)',borderWidth:1,titleColor:'#f0f0f2',bodyColor:'#f0f0f2',titleFont:{family:'DM Mono',size:9},bodyFont:{family:'Barlow Condensed',size:16},callbacks:{title:c=>`Match ${c[0].label} · ${rankLabels[c[0].dataIndex]?.rank||''}`,label:c=>{const rl=rankLabels[c.dataIndex];const cs=rl?.change!=null?(rl.change>0?` (+${rl.change})`:(` (${rl.change})`)):'';return rl?` ${rl.rr} RR${cs}`:` ${c.parsed.y} RR`;}}}},scales:{x:{grid:{display:!isMobile,color:'rgba(255,255,255,0.03)'},ticks:{display:!isMobile,color:'#3a3a40',font:{family:'DM Mono',size:8}}},y:{grid:{color:'rgba(255,255,255,0.03)'},ticks:{color:'#4a4a52',font:{family:'DM Mono',size:8},callback(v){const r=getRankFromRR(v);return r?r.name:'';}},min:minRR,max:maxRR}}},plugins:[{id:'rankBands',beforeDraw(chart){const{ctx,chartArea,scales}=chart;if(!chartArea)return;rankZones.forEach(zone=>{const yTop=scales.y.getPixelForValue(Math.min(zone.yMax,maxRR));const yBot=scales.y.getPixelForValue(Math.max(zone.yMin,minRR));if(yBot<chartArea.top||yTop>chartArea.bottom)return;ctx.save();ctx.fillStyle=zone.color+'12';ctx.fillRect(chartArea.left,Math.max(yTop,chartArea.top),chartArea.width,Math.min(yBot,chartArea.bottom)-Math.max(yTop,chartArea.top));ctx.fillStyle=zone.color+'66';ctx.font='8px DM Mono';ctx.fillText(zone.label,chartArea.left+6,Math.min(yBot,chartArea.bottom)-4);ctx.restore();});}}]});
 }
 
 function renderAgents(agentMap, allMatches=[]){
