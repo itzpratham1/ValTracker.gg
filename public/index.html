@@ -9907,48 +9907,7 @@ function getEspHTML(m, type) {
   const tierClass = isTier2 ? 'tier-t2' : 'tier-t1';
   const tierBadge = isTier2 ? '<span class="tier-badge t2">Tier 2</span>' : '<span class="tier-badge t1">VCT Tier 1</span>';
   
-  if (type === 'upcoming' || type === 'compact') {
-    const showScore = m.state !== 'unstarted';
-    const score1 = showScore ? s1 : '';
-    const score2 = showScore ? s2 : '';
-    let displayDate = m.date || 'TBD';
-    try {
-      const d = new Date(displayDate);
-      if (!isNaN(d.getTime())) {
-        displayDate = d.toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
-      }
-    } catch(e) {}
-    
-    const vlrUrl = m.vlr_path ? `https://www.vlr.gg${m.vlr_path}` : null;
-    const btnHtml = vlrUrl ? `<a href="${vlrUrl}" target="_blank" rel="noopener noreferrer" class="esp-compact-details-btn">🔗 Full Details</a>` : '';
-    
-    return `
-      <div class="esp-match-card compact-sidebar ${tierClass}">
-        <div class="esp-compact-team-row">
-          <div class="esp-compact-team-left">
-            ${getEsportsTeamLogoHtml(t1)}
-            <span class="esp-compact-team-name">${t1}</span>
-          </div>
-          <span class="esp-compact-score ${w1}">${score1}</span>
-        </div>
-        <div class="esp-compact-team-row">
-          <div class="esp-compact-team-left">
-            ${getEsportsTeamLogoHtml(t2)}
-            <span class="esp-compact-team-name">${t2}</span>
-          </div>
-          <span class="esp-compact-score ${w2}">${score2}</span>
-        </div>
-        <div class="esp-compact-divider"></div>
-        <div class="esp-compact-tourney-row">
-          ${tierBadge} <span class="esp-compact-tourney-text">${event}</span>
-        </div>
-        <div class="esp-compact-date-row">
-          <span class="esp-compact-date-text">📅 ${displayDate}</span>
-        </div>
-        ${btnHtml ? `<div class="esp-compact-action">${btnHtml}</div>` : ''}
-      </div>
-    `;
-  }
+
   
   let statusHtml = '';
   let mediaBtn = '';
@@ -13275,17 +13234,15 @@ body::after {
 
   .esports-subnav {
     display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    align-items: center !important;
-    justify-content: space-between !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
     position: sticky !important;
     top: 0 !important;
     background: #0a0a0c !important;
-    padding: 8px 14px !important;
+    padding: 10px 14px !important;
     z-index: 9999 !important;
     border-bottom: 1px solid var(--border) !important;
-    gap: 12px !important;
+    gap: 8px !important;
   }
   .esports-pills-scroll {
     display: flex !important;
@@ -13294,8 +13251,9 @@ body::after {
     gap: 8px !important;
     overflow-x: auto !important;
     white-space: nowrap !important;
-    flex-grow: 1 !important;
+    width: 100% !important;
     scrollbar-width: none !important;
+    -webkit-overflow-scrolling: touch !important;
   }
   .esports-pills-scroll::-webkit-scrollbar {
     display: none !important;
@@ -13304,12 +13262,17 @@ body::after {
     display: inline-block !important;
     flex-shrink: 0 !important;
     white-space: nowrap !important;
+    padding: 6px 12px !important;
+    font-size: 13px !important;
   }
   .tier-toggle-wrapper {
     display: flex !important;
     align-items: center !important;
+    justify-content: flex-end !important;
     gap: 8px !important;
     flex-shrink: 0 !important;
+    width: 100% !important;
+    margin-top: 4px !important;
   }
   /* Overview split grid → stack */
   #esp-sec-overview > div[style*="grid-template-columns: 1.8fr 1fr"] {
