@@ -6143,6 +6143,7 @@ function openStatModal(statKey) {
   const cfg = STAT_CONFIG[statKey];
   const matches = window._recentMatchStats || [];
   if (!matches.length) { showToast('Fetch stats first'); return; }
+  const isMobile = window.innerWidth <= 600;
 
   const values = matches.map(cfg.fn);
   const avg = values.reduce((s,v)=>s+v,0) / values.length;
@@ -6244,8 +6245,9 @@ function openStatModal(statKey) {
       },
       scales: {
         x: {
-          grid: { color: 'rgba(255,255,255,0.04)' },
+          grid: { display: !isMobile, color: 'rgba(255,255,255,0.04)' },
           ticks: {
+            display: !isMobile,
             color: '#555',
             font: { family: 'DM Mono', size: 8 },
             maxRotation: 45,
@@ -7489,11 +7491,13 @@ function showBookmarksModal() {
   }
   
   modal.style.display = 'flex';
+  lockBackgroundScroll();
 }
 
 function closeBookmarksModal() {
   const modal = document.getElementById('bookmarks-modal');
   if (modal) modal.style.display = 'none';
+  unlockBackgroundScroll();
 }
 
 function bookmarksModalJump(name, tag, region, mode) {
@@ -8210,6 +8214,7 @@ function showSessionSummary() {
       </div>
     `;
     modal.style.display = 'flex';
+    lockBackgroundScroll();
     return;
   }
   
@@ -8272,6 +8277,13 @@ function showSessionSummary() {
     </div>
   `;
   modal.style.display = 'flex';
+  lockBackgroundScroll();
+}
+
+function closeSessionModal() {
+  const modal = document.getElementById('session-modal');
+  if (modal) modal.style.display = 'none';
+  unlockBackgroundScroll();
 }
 
 async function exportSessionCard() {
@@ -8586,6 +8598,7 @@ async function fetchLeaderboard() {
   document.getElementById('lb-region-txt').innerText = '(' + region.toUpperCase() + ')';
   content.innerHTML = '<div class="detail-loading" style="text-align:center;">FETCHING TOP 500...</div>';
   modal.style.display = 'flex';
+  lockBackgroundScroll();
   
   try {
     const res = await fetch(`/api/v1/leaderboard/${region}`);
@@ -8625,6 +8638,12 @@ async function fetchLeaderboard() {
   }
 }
 
+function closeLeaderboardModal() {
+  const modal = document.getElementById('leaderboard-modal');
+  if (modal) modal.style.display = 'none';
+  unlockBackgroundScroll();
+}
+
 function toggleHeadToHead() {
   const modal = document.getElementById('h2h-modal');
   document.getElementById('h2h-content').innerHTML = '';
@@ -8637,6 +8656,7 @@ function toggleHeadToHead() {
   document.getElementById('h2h-p2-tag').value = '';
   
   modal.style.display = 'flex';
+  lockBackgroundScroll();
   
   // Dynamically populate Quick Matchup scroll area
   const chipsScroll = document.getElementById('h2h-quick-scroll');
@@ -8678,6 +8698,12 @@ function toggleHeadToHead() {
       chipsScroll.appendChild(chip);
     });
   }
+}
+
+function closeH2HModal() {
+  const modal = document.getElementById('h2h-modal');
+  if (modal) modal.style.display = 'none';
+  unlockBackgroundScroll();
 }
 
 function compilePlayerStats(matchData, pname, ptag) {
@@ -9593,18 +9619,26 @@ const VCT_STAGE_DATA = {
   }
 };
 
-function openVctModal() {
-  document.getElementById('vct-modal-overlay').classList.add('open');
+function lockBackgroundScroll() {
   const _sy = window.scrollY;
   document.documentElement.style.setProperty('--scroll-y', `-${_sy}px`);
   document.body.classList.add('modal-open');
 }
 
-function closeVctModal() {
-  document.getElementById('vct-modal-overlay').classList.remove('open');
+function unlockBackgroundScroll() {
   document.body.classList.remove('modal-open');
   const scrollY = document.documentElement.style.getPropertyValue('--scroll-y');
   window.scrollTo(0, parseInt(scrollY || '0') * -1);
+}
+
+function openVctModal() {
+  document.getElementById('vct-modal-overlay').classList.add('open');
+  lockBackgroundScroll();
+}
+
+function closeVctModal() {
+  document.getElementById('vct-modal-overlay').classList.remove('open');
+  unlockBackgroundScroll();
 }
 
 function openVctTournamentModal(stage) {
@@ -11053,16 +11087,12 @@ function openSkinModal(uuid) {
 
   // Open the Modal
   document.getElementById('skin-modal-overlay').classList.add('open');
-  const _sy = window.scrollY;
-  document.documentElement.style.setProperty('--scroll-y', `-${_sy}px`);
-  document.body.classList.add('modal-open');
+  lockBackgroundScroll();
 }
 
 function closeSkinModal() {
   document.getElementById('skin-modal-overlay').classList.remove('open');
-  document.body.classList.remove('modal-open');
-  const scrollY = document.documentElement.style.getPropertyValue('--scroll-y');
-  window.scrollTo(0, parseInt(scrollY || '0') * -1);
+  unlockBackgroundScroll();
   const videoPlayer = document.getElementById('skin-modal-video-player');
   if (videoPlayer) {
     videoPlayer.pause();
@@ -11090,17 +11120,13 @@ const draftMapRecommendations = {
 function openDraftSelector(slotIndex) {
   activeSlotIndex = slotIndex;
   document.getElementById('dc-agent-modal').classList.add('open');
-  const _sy = window.scrollY;
-  document.documentElement.style.setProperty('--scroll-y', `-${_sy}px`);
-  document.body.classList.add('modal-open');
+  lockBackgroundScroll();
   renderDraftAgentList();
 }
 
 function closeDraftSelector() {
   document.getElementById('dc-agent-modal').classList.remove('open');
-  document.body.classList.remove('modal-open');
-  const scrollY = document.documentElement.style.getPropertyValue('--scroll-y');
-  window.scrollTo(0, parseInt(scrollY || '0') * -1);
+  unlockBackgroundScroll();
   activeSlotIndex = null;
 }
 
@@ -12507,11 +12533,13 @@ function injectProRecommendations(data) {
 function openFeedbackModal() {
   document.getElementById('feedback-modal').style.display = 'flex';
   document.getElementById('feedback-text').focus();
+  lockBackgroundScroll();
 }
 function closeFeedbackModal() {
   document.getElementById('feedback-modal').style.display = 'none';
   document.getElementById('feedback-text').value = '';
   document.getElementById('feedback-contact').value = '';
+  unlockBackgroundScroll();
 }
 async function submitFeedbackForm() {
   const fbText = document.getElementById('feedback-text').value.trim();
@@ -13845,7 +13873,7 @@ input:checked + .slider:before { transform:translateX(14px); background-color:#f
   <div id="session-card-export" class="card" style="width:400px; max-width:90vw; border:1px solid var(--accentborder); background:var(--surface);">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;" data-html2canvas-ignore>
       <div style="font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:24px; color:var(--accent); text-transform:uppercase;">Session Summary</div>
-      <button onclick="document.getElementById('session-modal').style.display='none'" style="background:none; border:none; color:var(--muted); font-size:20px; cursor:pointer;">×</button>
+      <button class="stat-modal-close" onclick="closeSessionModal()">✕</button>
     </div>
     <div id="session-content" style="display:flex; flex-direction:column; gap:16px;">
       <!-- Populated by JS -->
@@ -13864,7 +13892,7 @@ input:checked + .slider:before { transform:translateX(14px); background-color:#f
   <div class="card" style="width:800px; max-width:95vw; height:80vh; display:flex; flex-direction:column; border:1px solid rgba(245,166,35,0.3); background:var(--surface);">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-shrink:0;">
       <div style="font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:24px; color:#f5a623; text-transform:uppercase;">🏆 Radiant Top 500 <span id="lb-region-txt" style="color:var(--muted); font-size:16px;"></span></div>
-      <button onclick="document.getElementById('leaderboard-modal').style.display='none'" style="background:none; border:none; color:var(--muted); font-size:20px; cursor:pointer;">×</button>
+      <button class="stat-modal-close" onclick="closeLeaderboardModal()">✕</button>
     </div>
     <div id="leaderboard-content" style="flex:1; overflow-y:auto;">
       <!-- Populated by JS -->
@@ -13879,7 +13907,7 @@ input:checked + .slider:before { transform:translateX(14px); background-color:#f
       <div style="font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:26px; color:#b366ff; text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; gap:8px;">
         <span>⚔️</span> HEAD-TO-HEAD BATTLEGROUND
       </div>
-      <button onclick="document.getElementById('h2h-modal').style.display='none'" style="background:none; border:none; color:var(--muted); font-size:28px; cursor:pointer; transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--muted)'">×</button>
+      <button class="stat-modal-close" onclick="closeH2HModal()">✕</button>
     </div>
     
     <div class="h2h-quick-section">
@@ -13934,7 +13962,7 @@ input:checked + .slider:before { transform:translateX(14px); background-color:#f
       <div style="font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:24px; color:#ffd700; text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; gap:8px;">
         <span style="color:#ffd700; text-shadow:0 0 10px rgba(255,215,0,0.4);">★</span> Bookmarked Players
       </div>
-      <button onclick="closeBookmarksModal()" style="background:none; border:none; color:var(--muted); font-size:24px; cursor:pointer; transition:color 0.2s;" onmouseover="this.style.color='#ff4655'" onmouseout="this.style.color='var(--muted)'">×</button>
+      <button class="stat-modal-close" onclick="closeBookmarksModal()">✕</button>
     </div>
     
     <div id="bookmarks-modal-list" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:10px; padding-right:4px;">
@@ -13960,7 +13988,7 @@ input:checked + .slider:before { transform:translateX(14px); background-color:#f
       <div style="font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:24px; color:var(--accent); text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; gap:8px;">
         <span>⚡</span> Feedback Transmission
       </div>
-      <button onclick="closeFeedbackModal()" style="background:none; border:none; color:var(--muted); font-size:24px; cursor:pointer; transition:color 0.2s;" onmouseover="this.style.color='#ff4655'" onmouseout="this.style.color='var(--muted)'">×</button>
+      <button class="stat-modal-close" onclick="closeFeedbackModal()">✕</button>
     </div>
     
     <div style="display:flex; flex-direction:column; gap:14px;">
