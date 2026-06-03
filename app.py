@@ -145,19 +145,62 @@ def upsert_player(puuid, name, tag, region, level=None, card_id=None, current_ti
         "name": name,
         "tag": tag,
         "region": region,
-        "level": level if level is not None else (existing.get("level") if existing else None),
-        "card_id": card_id if card_id is not None else (existing.get("card_id") if existing else None),
-        "current_tier": current_tier if current_tier is not None else (existing.get("current_tier") if existing else 0),
-        "current_tier_patched": current_tier_patched if current_tier_patched is not None else (existing.get("current_tier_patched") if existing else "Unranked"),
-        "peak_tier_patched": peak_tier_patched if peak_tier_patched is not None else (existing.get("peak_tier_patched") if existing else "Unranked"),
-        "rr": rr if rr is not None else (existing.get("rr") if existing else 0),
-        "peak_tier": peak_tier if peak_tier is not None else (existing.get("peak_tier") if existing else 0),
-        "peak_rr": peak_rr if peak_rr is not None else (existing.get("peak_rr") if existing else 0),
-        "elo": elo if elo is not None else (existing.get("elo") if existing else 0),
-        "stats_cache": stats_cache,
         "last_updated": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
     }
     
+    # Only include non-None parameters to prevent concurrent requests from overwriting
+    # existing data with None or defaults.
+    if level is not None:
+        payload["level"] = level
+    elif not existing:
+        payload["level"] = None
+        
+    if card_id is not None:
+        payload["card_id"] = card_id
+    elif not existing:
+        payload["card_id"] = None
+        
+    if current_tier is not None:
+        payload["current_tier"] = current_tier
+    elif not existing:
+        payload["current_tier"] = 0
+        
+    if current_tier_patched is not None:
+        payload["current_tier_patched"] = current_tier_patched
+    elif not existing:
+        payload["current_tier_patched"] = "Unranked"
+        
+    if peak_tier_patched is not None:
+        payload["peak_tier_patched"] = peak_tier_patched
+    elif not existing:
+        payload["peak_tier_patched"] = "Unranked"
+        
+    if rr is not None:
+        payload["rr"] = rr
+    elif not existing:
+        payload["rr"] = 0
+        
+    if peak_tier is not None:
+        payload["peak_tier"] = peak_tier
+    elif not existing:
+        payload["peak_tier"] = 0
+        
+    if peak_rr is not None:
+        payload["peak_rr"] = peak_rr
+    elif not existing:
+        payload["peak_rr"] = 0
+        
+    if elo is not None:
+        payload["elo"] = elo
+    elif not existing:
+        payload["elo"] = 0
+        
+    # Only write stats_cache if we actually updated or added to it, or if it's a new record
+    if cache_key and cache_val:
+        payload["stats_cache"] = stats_cache
+    elif not existing:
+        payload["stats_cache"] = stats_cache
+        
     headers = {"Prefer": "resolution=merge-duplicates"}
     supabase_request("POST", "players_cache", data=payload, headers=headers)
 
@@ -971,6 +1014,7 @@ def scrape_vlr_matches():
                 print("Failed to load matches backup:", e_back)
             return []
             
+        r.encoding = 'utf-8'
         soup = BeautifulSoup(r.text, 'html.parser')
         matches = []
         cards = soup.find_all('div', class_='wf-card')
@@ -1102,6 +1146,7 @@ def scrape_vlr_results():
                 print("Failed to load results backup:", e_back)
             return []
             
+        r.encoding = 'utf-8'
         soup = BeautifulSoup(r.text, 'html.parser')
         matches = []
         cards = soup.find_all('div', class_='wf-card')
@@ -1240,6 +1285,7 @@ def esports_news():
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
         r = requests.get('https://www.vlr.gg/news', headers=headers, timeout=6)
         if r.status_code == 200:
+            r.encoding = 'utf-8'
             soup = BeautifulSoup(r.text, 'html.parser')
             items = soup.find_all('a', class_='wf-module-item')
             if items:
@@ -1376,6 +1422,7 @@ def esports_standings(region):
         elif region == "mn": url_region = "china"
         
         r = requests.get(f'https://www.vlr.gg/rankings/{url_region}', headers=headers, timeout=10)
+        r.encoding = 'utf-8'
         soup = BeautifulSoup(r.text, 'html.parser')
         
         standings = []
@@ -1456,6 +1503,7 @@ def esports_event_teams(event_id):
         if r.status_code != 200:
             return jsonify({"error": "Failed to load VLR event page", "data": []}), 500
             
+        r.encoding = 'utf-8'
         soup = BeautifulSoup(r.text, 'html.parser')
         teams = []
         seen_ids = set()

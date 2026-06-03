@@ -9907,6 +9907,47 @@ function getEspHTML(m, type) {
   const tierClass = isTier2 ? 'tier-t2' : 'tier-t1';
   const tierBadge = isTier2 ? '<span class="tier-badge t2">Tier 2</span>' : '<span class="tier-badge t1">VCT Tier 1</span>';
   
+  if (type === 'upcoming' || type === 'compact') {
+    const showScore = m.state !== 'unstarted';
+    const score1 = showScore ? s1 : '';
+    const score2 = showScore ? s2 : '';
+    let displayDate = m.date || 'TBD';
+    try {
+      const d = new Date(displayDate);
+      if (!isNaN(d.getTime())) {
+        displayDate = d.toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+      }
+    } catch(e) {}
+    
+    const vlrUrl = m.vlr_path ? `https://www.vlr.gg${m.vlr_path}` : null;
+    const btnHtml = vlrUrl ? `<a href="${vlrUrl}" target="_blank" rel="noopener noreferrer" class="esp-compact-details-btn">🔗 Full Details</a>` : '';
+    
+    return `
+      <div class="esp-match-card compact-sidebar ${tierClass}">
+        <div class="esp-compact-team-row">
+          <div class="esp-compact-team-left">
+            ${getEsportsTeamLogoHtml(t1)}
+            <span class="esp-compact-team-name">${t1}</span>
+          </div>
+          <span class="esp-compact-score ${w1}">${score1}</span>
+        </div>
+        <div class="esp-compact-team-row">
+          <div class="esp-compact-team-left">
+            ${getEsportsTeamLogoHtml(t2)}
+            <span class="esp-compact-team-name">${t2}</span>
+          </div>
+          <span class="esp-compact-score ${w2}">${score2}</span>
+        </div>
+        <div class="esp-compact-divider"></div>
+        <div class="esp-compact-meta-row">
+          <span class="esp-compact-tourney">${tierBadge} ${event}</span>
+          <span class="esp-compact-date">${displayDate}</span>
+        </div>
+        ${btnHtml ? `<div class="esp-compact-action">${btnHtml}</div>` : ''}
+      </div>
+    `;
+  }
+  
   let statusHtml = '';
   let mediaBtn = '';
   const vlrUrl = m.vlr_path ? `https://www.vlr.gg${m.vlr_path}` : null;
@@ -10251,7 +10292,27 @@ function selectFranchiseTeam(region, teamId) {
   const matchContainer = document.getElementById('esp-active-team-matches-container');
   const teamMatches = allMatchesCache.filter(m => {
     const teams = m.match?.teams || [];
-    return teams.some(t => t.name?.toLowerCase().includes(team.name.toLowerCase()) || team.name.toLowerCase().includes(t.name?.toLowerCase()));
+    return teams.some(t => {
+      const rawVlr = t.name || '';
+      const rawFilter = team.name || '';
+      
+      // Clean names: remove accents (e.g. á -> a), remove non-alphanumeric chars (like \uFFFD replacement chars)
+      const cleanVlr = rawVlr.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\s]/g, "").trim();
+      const cleanFilter = rawFilter.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\s]/g, "").trim();
+      
+      if (cleanVlr === cleanFilter) return true;
+      
+      const isGcMatch = cleanVlr.includes('gc') || cleanVlr.includes('game changers') || cleanVlr.includes('female');
+      const isAcademyMatch = cleanVlr.includes('academy') || cleanVlr.includes('acad');
+      
+      const isFilterGc = cleanFilter.includes('gc') || cleanFilter.includes('game changers') || cleanFilter.includes('female');
+      const isFilterAcademy = cleanFilter.includes('academy') || cleanFilter.includes('acad');
+      
+      if (isGcMatch && !isFilterGc) return false;
+      if (isAcademyMatch && !isFilterAcademy) return false;
+      
+      return cleanVlr.includes(cleanFilter) || cleanFilter.includes(cleanVlr);
+    });
   });
   
   if (teamMatches.length === 0) {
@@ -10298,16 +10359,18 @@ function smoothScrollTo(elementId, event) {
   if (event) event.preventDefault();
   const el = document.getElementById(elementId);
   if (el) {
-    const offset = 110; // Sticky top header heights combined
+    const trackerNav = document.getElementById('tracker-nav');
+    const offset = trackerNav ? trackerNav.getBoundingClientRect().height : 50;
+    
     const bodyRect = document.body.getBoundingClientRect().top;
     const elementRect = el.getBoundingClientRect().top;
     const elementPosition = elementRect - bodyRect;
     const offsetPosition = elementPosition - offset;
     
-    // Temporarily disable scroll hide class changes during smooth scroll
+    // Set the header to scrolled-down state immediately to hide the topbar in parallel
     isProgrammaticScroll = true;
-    document.body.classList.remove('scrolled-down');
-    document.body.classList.add('scrolled-up');
+    document.body.classList.remove('scrolled-up');
+    document.body.classList.add('scrolled-down');
     
     window.scrollTo({
       top: offsetPosition,
@@ -10330,9 +10393,14 @@ function cacheSectionOffsets() {
   ];
   cachedSectionOffsets = sections.map(id => {
     const el = document.getElementById(id);
+    let offsetTop = 0;
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      offsetTop = rect.top + window.scrollY;
+    }
     return {
       id: id,
-      offsetTop: el ? el.offsetTop : 0
+      offsetTop: offsetTop
     };
   });
 }
@@ -10363,12 +10431,22 @@ function initUnifiedScrollManager() {
   let headerState = ''; // 'up', 'down', or ''
   let scrollAccumulator = 0;
   let rAFScheduled = false;
+  let lastScrollHeight = 0;
 
   window.addEventListener('scroll', () => {
     if (!rAFScheduled) {
       rAFScheduled = true;
       requestAnimationFrame(() => {
         const currentScrollY = window.scrollY;
+        
+        // Recalculate section offsets dynamically if layout height changes (e.g., loaded data, expanded cards)
+        const currentScrollHeight = document.documentElement.scrollHeight;
+        if (currentScrollHeight !== lastScrollHeight) {
+          lastScrollHeight = currentScrollHeight;
+          if (typeof cacheSectionOffsets === 'function') {
+            cacheSectionOffsets();
+          }
+        }
 
         // 1. Back to Top Button
         const shouldShowB2T = currentScrollY > 300;
@@ -10424,7 +10502,9 @@ function initUnifiedScrollManager() {
 
         // 3. Scrollspy active section tracking
         if (cachedSectionOffsets.length > 0) {
-          const scrollPosition = currentScrollY + 150; // offset for detection
+          const trackerNav = document.getElementById('tracker-nav');
+          const navHeight = trackerNav ? trackerNav.getBoundingClientRect().height : 50;
+          const scrollPosition = currentScrollY + navHeight + 20; // dynamically calculated offset for exact sync
           let currentSectionId = '';
           for (let i = 0; i < cachedSectionOffsets.length; i++) {
             const sec = cachedSectionOffsets[i];
