@@ -3182,8 +3182,18 @@ input:checked + .slider:before {
 
   .acc-card,.roles-card { grid-column:span 4; }
   .weapons-grid { grid-template-columns:1fr; }
-  .acc-figure { display: none; }
-  .acc-body-row { flex-direction:column; align-items:flex-start; }
+  .acc-body-row {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 16px !important;
+  }
+  .acc-bars {
+    width: 100% !important;
+    flex: none !important;
+  }
 
   .deep-insight-grid,.deep-insight-grid.cols2,.deep-insight-grid.cols4 { grid-template-columns: 1fr; }
   .deep-card.span2,.deep-card.span3 { grid-column: span 1; }
@@ -5668,4 +5678,47 @@ input:checked + .slider:before {
 .landing-quick-btn {
   transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s ease, border-color 0.2s ease, color 0.2s ease !important;
 }
+
+/* ── SIDE-BY-SIDE MATCH PANEL HEADER ON PC ── */
+.panel-match-meta {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 24px !important;
+  flex-wrap: wrap !important;
+  flex: 1 !important;
+}
+
+.panel-meta-left {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 4px !important;
+  flex: none !important;
+}
+
+.panel-stat-row {
+  margin-top: 0 !important;
+  width: auto !important;
+  flex: 1 !important;
+  min-width: 320px !important;
+}
+
+/* Stacking overrides for mobile */
+@media (max-width: 800px) {
+  .panel-match-meta {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 16px !important;
+  }
+  .panel-meta-left {
+    width: 100% !important;
+  }
+  .panel-stat-row {
+    width: 100% !important;
+    margin-top: 8px !important;
+  }
+}
+
 

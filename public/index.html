@@ -3085,20 +3085,19 @@ function populateFullDetailTabs(match, idx) {
 
   if(totalShots>0||headS>0){
     perfHtml+=`<div class="panel-section"><div class="panel-section-title">Accuracy Breakdown</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:center;">
-      <div style="display:flex;flex-direction:column;gap:8px;">
+    <div class="acc-body-row" style="margin-top: 0;">
+      <div class="acc-bars" style="gap: 8px;">
         ${[['Head',headS,hsPct,'var(--win)'],['Body',bodyS,bsPct,'var(--muted)'],['Legs',legS,lsPct,'var(--loss)']].map(([label,hits,pct,col])=>`
-        <div style="display:flex;align-items:center;gap:8px;">
-          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);width:34px;letter-spacing:1px;">${label}</div>
-          <div style="flex:1;height:5px;background:var(--surface3);border-radius:3px;overflow:hidden;">
-            <div style="width:${pct}%;height:100%;background:${col};border-radius:3px;transition:width 1s ease;"></div>
-          </div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;color:${col};min-width:36px;text-align:right;">${pct}%</div>
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2);min-width:52px;text-align:right;">${hits} Hits</div>
+        <div class="acc-row">
+          <span class="acc-lbl" style="width:34px;">${label.toUpperCase()}</span>
+          <div class="acc-track"><div class="acc-fill" style="width:${pct}%;background:${col};"></div></div>
+          <span class="acc-pct" style="color:${col}">${pct}%</span>
+          <span class="acc-hits">${hits.toLocaleString()} hits</span>
         </div>`).join('')}
       </div>
-      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;">
-        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:42px;line-height:1;color:${hsPct>=25?'var(--win)':hsPct>=15?'var(--accent)':'var(--loss)'};">${hsPct}%</div>
+      ${buildAccuracyBodySvg(hsPct, bsPct, lsPct)}
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:110px;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:38px;line-height:1;color:${hsPct>=25?'var(--win)':hsPct>=15?'var(--accent)':'var(--loss)'};">${hsPct}%</div>
         <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1.5px;">HS RATE</div>
         <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2);">${totalShots} total shots</div>
       </div>
@@ -3481,16 +3480,18 @@ function renderMatches(matches){
           <div class="panel-header-row">
             <div class="panel-grade-badge ${grade}">${grade}</div>
             <div class="panel-match-meta">
-              <div class="panel-match-title">
-                ${agentIcon?`<img src="${agentIcon}" style="width:28px;height:28px;object-fit:contain;" onerror="this.style.display='none'">`:``}
-                ${(m.agentName||'—').toUpperCase()} · ${(m.map||'—').toUpperCase()}
-              </div>
-              <div class="panel-match-sub">${m.won?'VICTORY':'DEFEAT'} · ${m.rounds} rounds</div>
-              ${mvpBadge}
-              <div style="margin: 8px 0 12px; display: flex; gap: 8px; align-items: center;">
-                <button class="share-flex-btn" onclick="openShareMatchModal(${idx}, event)" style="background: linear-gradient(135deg, rgba(250, 68, 84, 0.25) 0%, rgba(232, 255, 71, 0.2) 100%); color: #fff; border: 1px solid rgba(250, 68, 84, 0.5); font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.2px; padding: 7px 16px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 14px rgba(250, 68, 84, 0.15), 0 0 10px rgba(232, 255, 71, 0.05); vertical-align: middle;" onmouseover="this.style.background='linear-gradient(135deg, rgba(250, 68, 84, 0.38) 0%, rgba(232, 255, 71, 0.3) 100%)'; this.style.borderColor='rgba(250, 68, 84, 0.8)'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 20px rgba(250, 68, 84, 0.3), 0 0 12px rgba(232, 255, 71, 0.15)';" onmouseout="this.style.background='linear-gradient(135deg, rgba(250, 68, 84, 0.25) 0%, rgba(232, 255, 71, 0.2) 100%)'; this.style.borderColor='rgba(250, 68, 84, 0.5)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 14px rgba(250, 68, 84, 0.15), 0 0 10px rgba(232, 255, 71, 0.05)';">
-                  <span>✨ Share Flex Card</span>
-                </button>
+              <div class="panel-meta-left">
+                <div class="panel-match-title">
+                  ${agentIcon?`<img src="${agentIcon}" style="width:28px;height:28px;object-fit:contain;" onerror="this.style.display='none'">`:``}
+                  ${(m.agentName||'—').toUpperCase()} · ${(m.map||'—').toUpperCase()}
+                </div>
+                <div class="panel-match-sub">${m.won?'VICTORY':'DEFEAT'} · ${m.rounds} rounds</div>
+                ${mvpBadge}
+                <div style="margin: 8px 0 12px; display: flex; gap: 8px; align-items: center;">
+                  <button class="share-flex-btn" onclick="openShareMatchModal(${idx}, event)" style="background: linear-gradient(135deg, rgba(250, 68, 84, 0.25) 0%, rgba(232, 255, 71, 0.2) 100%); color: #fff; border: 1px solid rgba(250, 68, 84, 0.5); font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.2px; padding: 7px 16px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 14px rgba(250, 68, 84, 0.15), 0 0 10px rgba(232, 255, 71, 0.05); vertical-align: middle;" onmouseover="this.style.background='linear-gradient(135deg, rgba(250, 68, 84, 0.38) 0%, rgba(232, 255, 71, 0.3) 100%)'; this.style.borderColor='rgba(250, 68, 84, 0.8)'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 20px rgba(250, 68, 84, 0.3), 0 0 12px rgba(232, 255, 71, 0.15)';" onmouseout="this.style.background='linear-gradient(135deg, rgba(250, 68, 84, 0.25) 0%, rgba(232, 255, 71, 0.2) 100%)'; this.style.borderColor='rgba(250, 68, 84, 0.5)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 14px rgba(250, 68, 84, 0.15), 0 0 10px rgba(232, 255, 71, 0.05)';">
+                    <span>✨ Share Flex Card</span>
+                  </button>
+                </div>
               </div>
               <div class="panel-stat-row">
                 <div class="ps-item"><div class="psv">${m.kills}/${m.deaths}/${m.assists}</div><div class="psl">K / D / A</div></div>
@@ -7565,6 +7566,34 @@ function renderLandingProfile() {
 //  ACCURACY + ROLES + WEAPONS
 // ════════════════════════════════
 
+function buildAccuracyBodySvg(hsPct, bsPct, lsPct) {
+  const headColor = hsPct >= 25 ? 'var(--win)' : (hsPct >= 15 ? 'var(--accent)' : '#ff4655');
+  const headFill = hsPct >= 25 ? 'rgba(62,207,142,0.18)' : (hsPct >= 15 ? 'rgba(232,255,71,0.12)' : 'rgba(255,70,85,0.12)');
+  
+  const bodyColor = bsPct >= 50 ? 'rgba(255,70,85,0.8)' : 'rgba(255,255,255,0.25)';
+  const bodyFill = bsPct >= 50 ? 'rgba(255,70,85,0.15)' : 'rgba(255,255,255,0.03)';
+  
+  const legsColor = 'rgba(255,255,255,0.2)';
+  const legsFill = 'rgba(255,255,255,0.015)';
+
+  return `
+    <svg class="acc-figure" width="56" height="110" viewBox="0 0 56 110" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4)); flex-shrink:0;">
+      <!-- Head (Tactical Helmet Shape) -->
+      <path d="M28,3 C33,3 37,7 37,13 C37,17 35,21 32,22 L28,25 L24,22 C21,21 19,17 19,13 C19,7 23,3 28,3 Z" fill="${headFill}" stroke="${headColor}" stroke-width="1.5"/>
+      <text x="28" y="16" text-anchor="middle" font-family="'DM Mono', monospace" font-size="7" fill="white" font-weight="700">${hsPct}%</text>
+      
+      <!-- Body (Torso Armor Plate) -->
+      <path d="M16,28 H40 C43,28 45,30 44,33 L40,66 C39,69 36,71 33,71 H23 C20,71 17,69 16,66 L12,33 C11,30 13,28 16,28 Z" fill="${bodyFill}" stroke="${bodyColor}" stroke-width="1"/>
+      <text x="28" y="52" text-anchor="middle" font-family="'DM Mono', monospace" font-size="7" fill="rgba(255,255,255,0.85)" font-weight="700">${bsPct}%</text>
+      
+      <!-- Legs (Armored Leg Plates) -->
+      <path d="M14,75 H24 L22,106 H15 Z" fill="${legsFill}" stroke="${legsColor}" stroke-width="1"/>
+      <path d="M32,75 H42 L41,106 H34 Z" fill="${legsFill}" stroke="${legsColor}" stroke-width="1"/>
+      <text x="28" y="94" text-anchor="middle" font-family="'DM Mono', monospace" font-size="7" fill="rgba(255,255,255,0.5)" font-weight="700">${lsPct}%</text>
+    </svg>
+  `;
+}
+
 function renderAccuracyAndRoles(matches) {
   // ── Aggregate shot data ──
   let totHS=0, totBS=0, totLS=0, totShots=0;
@@ -7601,19 +7630,7 @@ function renderAccuracyAndRoles(matches) {
   const accWrap = document.getElementById('acc-body-row');
   if(accWrap && totShots>0){
     accWrap.innerHTML = `
-      <!-- Body SVG -->
-      <svg class="acc-figure" width="56" height="110" viewBox="0 0 56 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- Head -->
-        <circle cx="28" cy="13" r="10" fill="${hsPct>=25?'rgba(62,207,142,0.7)':hsPct>=15?'rgba(232,255,71,0.6)':'rgba(255,87,87,0.6)'}" stroke="${hsPct>=25?'var(--win)':hsPct>=15?'var(--accent)':'var(--loss)'}" stroke-width="1.5"/>
-        <text x="28" y="17" text-anchor="middle" font-family="DM Mono" font-size="7" fill="white" font-weight="600">${hsPct}%</text>
-        <!-- Body -->
-        <rect x="14" y="27" width="28" height="44" rx="4" fill="${bsPct>=60?'rgba(255,87,87,0.5)':'rgba(255,255,255,0.08)'}" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
-        <text x="28" y="53" text-anchor="middle" font-family="DM Mono" font-size="7" fill="rgba(255,255,255,0.7)" font-weight="600">${bsPct}%</text>
-        <!-- Legs -->
-        <rect x="14" y="74" width="12" height="32" rx="3" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
-        <rect x="30" y="74" width="12" height="32" rx="3" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
-        <text x="28" y="95" text-anchor="middle" font-family="DM Mono" font-size="7" fill="rgba(255,255,255,0.4)" font-weight="600">${lsPct}%</text>
-      </svg>
+      ${buildAccuracyBodySvg(hsPct, bsPct, lsPct)}
       <!-- Bars -->
       <div class="acc-bars">
         ${[['HEAD', totHS, hsPct, hsPct>=25?'var(--win)':hsPct>=15?'var(--accent)':'var(--loss)'],
