@@ -4204,6 +4204,15 @@ async function runMatchAnalysis(idx, e) {
     btn.disabled = false;
   }
 }
+window.switchMatchAiTab = function(btn, tabName) {
+  const body = btn.closest('.match-ai-body');
+  if (!body) return;
+  body.querySelectorAll('.match-ai-tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  body.querySelectorAll('.match-ai-tab-pane').forEach(p => p.classList.remove('active'));
+  const targetPane = body.querySelector(`.match-ai-tab-pane[data-tab="${tabName}"]`);
+  if (targetPane) targetPane.classList.add('active');
+};
 
 function buildMatchAnalysis(match, allMatches = null) {
   const allPlayers = getPlayerList(match);
@@ -4723,73 +4732,91 @@ function buildMatchAnalysis(match, allMatches = null) {
   };
 
   return `
-    <div class="match-ai-summary">${summary}</div>
-    <!-- Match Intel AI Clarification Banner -->
-    <div style="background: linear-gradient(135deg, rgba(232, 255, 71, 0.05) 0%, rgba(20, 20, 22, 0.5) 100%); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; margin: 12px 0 16px; display: flex; align-items: center; gap: 12px;">
-      <div style="font-size: 20px; filter: drop-shadow(0 0 4px var(--accent));">📊</div>
-      <div>
-        <div style="font-family:'Barlow Condensed', sans-serif; font-weight: 800; font-size: 13px; text-transform: uppercase; color: var(--accent); letter-spacing: 0.5px; margin-bottom: 2px;">Match Intel AI Diagnostics</div>
-        <div style="font-size: 11px; color: var(--muted); line-height: 1.4;">
-          Personalized match audit. Compares your performance to your <strong>historical baselines</strong>, checks for <strong>mid-session fatigue patterns</strong>, and spotlights critical <strong>clutches & impact plays</strong> from this match.
-        </div>
-      </div>
-    </div>
-    <div class="match-ai-grid">
-      <div class="match-ai-pill"><div class="match-ai-pill-label">K/D</div><div class="match-ai-pill-val ${kdClass}">${kd.toFixed(2)}</div><div class="match-ai-pill-sub">${kills}K / ${deaths}D</div></div>
-      <div class="match-ai-pill"><div class="match-ai-pill-label">ACS</div><div class="match-ai-pill-val ${acsClass}">${acs}</div><div class="match-ai-pill-sub">Team avg: ${teamAvgACS}</div></div>
-      <div class="match-ai-pill"><div class="match-ai-pill-label">HS Rate</div><div class="match-ai-pill-val ${hsClass}">${hsPct}%</div><div class="match-ai-pill-sub">${hs} headshots</div></div>
-      ${dmgDealt ? `<div class="match-ai-pill"><div class="match-ai-pill-label">Dmg Ratio</div><div class="match-ai-pill-val ${parseFloat(dmgRatio)>=1.2?'good':parseFloat(dmgRatio)>=0.8?'warn':'bad'}">${dmgRatio}</div><div class="match-ai-pill-sub">${dmgDealt} dealt</div></div>` : ''}
-      <div class="match-ai-pill"><div class="match-ai-pill-label">Clutches</div><div class="match-ai-pill-val ${clutchWins>0?'good':'warn'}">${clutchWins}/${clutchAttempts||0}</div><div class="match-ai-pill-sub">Converted</div></div>
-      <div class="match-ai-pill"><div class="match-ai-pill-label">Multi-kills</div><div class="match-ai-pill-val ${multiKillRounds>=2?'good':multiKillRounds>=1?'warn':'bad'}">${multiKillRounds}</div><div class="match-ai-pill-sub">3K+ rounds</div></div>
-    </div>
-    <div class="match-ai-sections">
-      ${renderBlock('What You Did Well', '💪', 'good', 'green', strengths)}
-      ${renderBlock('Needs Improvement', '⚠️', 'warn', 'red', improvements)}
-      ${renderBlock('Action Tips For Next Game', '⚡', 'tip', 'yellow', tips, true)}
-    </div>
-    <div class="match-ai-verdict">
-      <div class="match-ai-verdict-label">⚡ Match Verdict</div>
-      ${verdict}
+    <div class="match-ai-tabs">
+      <button class="match-ai-tab-btn active" onclick="switchMatchAiTab(this, 'overview')">📊 Overview</button>
+      <button class="match-ai-tab-btn" onclick="switchMatchAiTab(this, 'tactical')">🎯 Tactical Insights</button>
+      <button class="match-ai-tab-btn" onclick="switchMatchAiTab(this, 'timeline')">🎮 Timeline & Stats</button>
     </div>
     
-    <!-- TACTICAL SITE & RETAKE AUDITS -->
-    ${tacticalInsights.length ? `
-    <div class="match-ai-verdict" style="margin-top:16px; background: linear-gradient(135deg, rgba(232, 255, 71, 0.03) 0%, rgba(20, 20, 22, 0.6) 100%);">
-      <div class="match-ai-verdict-label" style="display:flex; align-items:center; gap:8px; color: var(--accent);">
-        <span>🎯</span> Positional & Site Diagnostics
+    <!-- TAB 1: OVERVIEW -->
+    <div class="match-ai-tab-pane active" data-tab="overview">
+      <div class="match-ai-summary" style="margin-top: 6px;">${summary}</div>
+      
+      <!-- Match Intel AI Clarification Banner -->
+      <div style="background: linear-gradient(135deg, rgba(232, 255, 71, 0.05) 0%, rgba(20, 20, 22, 0.5) 100%); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; margin: 12px 0 16px; display: flex; align-items: center; gap: 12px;">
+        <div style="font-size: 20px; filter: drop-shadow(0 0 4px var(--accent));">📊</div>
+        <div>
+          <div style="font-family:'Barlow Condensed', sans-serif; font-weight: 800; font-size: 13px; text-transform: uppercase; color: var(--accent); letter-spacing: 0.5px; margin-bottom: 2px;">Match Intel AI Diagnostics</div>
+          <div style="font-size: 11px; color: var(--muted); line-height: 1.4;">
+            Personalized match audit. Compares your performance to your <strong>historical baselines</strong>, checks for <strong>mid-session fatigue patterns</strong>, and spotlights critical <strong>clutches & impact plays</strong> from this match.
+          </div>
+        </div>
       </div>
-      <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
-        ${tacticalInsights.map(ins => `<div class="match-ai-diagnostic-card">${ins}</div>`).join('')}
+
+      <div class="match-ai-grid">
+        <div class="match-ai-pill"><div class="match-ai-pill-label">K/D</div><div class="match-ai-pill-val ${kdClass}">${kd.toFixed(2)}</div><div class="match-ai-pill-sub">${kills}K / ${deaths}D</div></div>
+        <div class="match-ai-pill"><div class="match-ai-pill-label">ACS</div><div class="match-ai-pill-val ${acsClass}">${acs}</div><div class="match-ai-pill-sub">Team avg: ${teamAvgACS}</div></div>
+        <div class="match-ai-pill"><div class="match-ai-pill-label">HS Rate</div><div class="match-ai-pill-val ${hsClass}">${hsPct}%</div><div class="match-ai-pill-sub">${hs} headshots</div></div>
+        ${dmgDealt ? `<div class="match-ai-pill"><div class="match-ai-pill-label">Dmg Ratio</div><div class="match-ai-pill-val ${parseFloat(dmgRatio)>=1.2?'good':parseFloat(dmgRatio)>=0.8?'warn':'bad'}">${dmgRatio}</div><div class="match-ai-pill-sub">${dmgDealt} dealt</div></div>` : ''}
+        <div class="match-ai-pill"><div class="match-ai-pill-label">Clutches</div><div class="match-ai-pill-val ${clutchWins>0?'good':'warn'}">${clutchWins}/${clutchAttempts||0}</div><div class="match-ai-pill-sub">Converted</div></div>
+        <div class="match-ai-pill"><div class="match-ai-pill-label">Multi-kills</div><div class="match-ai-pill-val ${multiKillRounds>=2?'good':multiKillRounds>=1?'warn':'bad'}">${multiKillRounds}</div><div class="match-ai-pill-sub">3K+ rounds</div></div>
+      </div>
+
+      <div class="match-ai-verdict">
+        <div class="match-ai-verdict-label">⚡ Match Verdict</div>
+        ${verdict}
       </div>
     </div>
-    ` : ''}
-    
-    <!-- TACTICAL ROUND TIMELINE & WEAPON PERFORMANCE -->
-    <div class="match-ai-verdict" style="margin-top:16px;">
-      <div class="match-ai-verdict-label" style="display:flex; align-items:center; gap:8px;">
-        <span>🎮</span> Tactical Round-by-Round Progress
+
+    <!-- TAB 2: TACTICAL INSIGHTS -->
+    <div class="match-ai-tab-pane" data-tab="tactical">
+      <div class="match-ai-sections">
+        ${renderBlock('What You Did Well', '💪', 'good', 'green', strengths)}
+        ${renderBlock('Needs Improvement', '⚠️', 'warn', 'red', improvements)}
+        ${renderBlock('Action Tips For Next Game', '⚡', 'tip', 'yellow', tips, true)}
       </div>
-      <div class="match-ai-timeline-wrap">
-        ${roundsHtml}
+      
+      ${tacticalInsights.length ? `
+      <div class="match-ai-verdict" style="margin-top:16px; background: linear-gradient(135deg, rgba(232, 255, 71, 0.03) 0%, rgba(20, 20, 22, 0.6) 100%); border-left: 4px solid var(--accent);">
+        <div class="match-ai-verdict-label" style="display:flex; align-items:center; gap:8px; color: var(--accent); margin-bottom: 8px;">
+          <span>🎯</span> Positional & Site Diagnostics
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          ${tacticalInsights.map(ins => `<div class="match-ai-diagnostic-card">${ins}</div>`).join('')}
+        </div>
       </div>
-      <div class="match-ai-stats-grid">
-        <div class="match-ai-stat-card">
-          <div style="font-family:'Barlow Condensed', sans-serif; font-size:12px; font-weight:700; color:var(--accent); text-transform:uppercase; margin-bottom:8px;">⚔️ Combat Consistency</div>
-          <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>First Half Kills:</span> <strong style="color:#fff;">${firstHalfKills}</strong></div>
-          <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Second Half Kills:</span> <strong style="color:#fff;">${secondHalfKills}</strong></div>
-          <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Multi-Kill Rounds (3K+):</span> <strong style="color:var(--win);">${multiKillRounds}</strong></div>
+      ` : ''}
+    </div>
+
+    <!-- TAB 3: TIMELINE & STATS -->
+    <div class="match-ai-tab-pane" data-tab="timeline">
+      <div class="match-ai-verdict" style="margin-top:0;">
+        <div class="match-ai-verdict-label" style="display:flex; align-items:center; gap:8px; margin-bottom: 6px;">
+          <span>🎮</span> Tactical Round-by-Round Progress
         </div>
-        <div class="match-ai-stat-card">
-          <div style="font-family:'Barlow Condensed', sans-serif; font-size:12px; font-weight:700; color:var(--accent); text-transform:uppercase; margin-bottom:8px;">🎯 Accuracy Breakdown</div>
-          <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Headshot Rate:</span> <strong style="color:var(--win);">${hsPct}%</strong></div>
-          <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Bodyshot Rate:</span> <strong style="color:#fff;">${totalShots ? Math.round((body_s/totalShots)*100) : 0}%</strong></div>
-          <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Legshot Rate:</span> <strong style="color:#fff;">${totalShots ? Math.round((legs/totalShots)*100) : 0}%</strong></div>
+        <div class="match-ai-timeline-wrap">
+          ${roundsHtml}
         </div>
-        <div class="match-ai-stat-card">
-          <div style="font-family:'Barlow Condensed', sans-serif; font-size:12px; font-weight:700; color:var(--accent); text-transform:uppercase; margin-bottom:8px;">⭐ Match Star Round</div>
-          <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Star Round:</span> <strong style="color:var(--win);">Round ${bestRoundNum}</strong></div>
-          <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Kills in Round:</span> <strong style="color:#fff;">${maxRoundKills} Kills</strong></div>
-          <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Round Outcome:</span> <strong style="color:${bestRoundWon ? 'var(--win)' : 'var(--loss)'};">${bestRoundWon ? 'Won' : 'Lost'}</strong></div>
+        
+        <div class="match-ai-stats-grid">
+          <div class="match-ai-stat-card">
+            <div style="font-family:'Barlow Condensed', sans-serif; font-size:12px; font-weight:700; color:var(--accent); text-transform:uppercase; margin-bottom:8px;">⚔️ Combat Consistency</div>
+            <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>First Half Kills:</span> <strong style="color:#fff;">${firstHalfKills}</strong></div>
+            <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Second Half Kills:</span> <strong style="color:#fff;">${secondHalfKills}</strong></div>
+            <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Multi-Kill Rounds (3K+):</span> <strong style="color:var(--win);">${multiKillRounds}</strong></div>
+          </div>
+          <div class="match-ai-stat-card">
+            <div style="font-family:'Barlow Condensed', sans-serif; font-size:12px; font-weight:700; color:var(--accent); text-transform:uppercase; margin-bottom:8px;">🎯 Accuracy Breakdown</div>
+            <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Headshot Rate:</span> <strong style="color:var(--win);">${hsPct}%</strong></div>
+            <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Bodyshot Rate:</span> <strong style="color:#fff;">${totalShots ? Math.round((body_s/totalShots)*100) : 0}%</strong></div>
+            <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Legshot Rate:</span> <strong style="color:#fff;">${totalShots ? Math.round((legs/totalShots)*100) : 0}%</strong></div>
+          </div>
+          <div class="match-ai-stat-card">
+            <div style="font-family:'Barlow Condensed', sans-serif; font-size:12px; font-weight:700; color:var(--accent); text-transform:uppercase; margin-bottom:8px;">⭐ Match Star Round</div>
+            <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Star Round:</span> <strong style="color:var(--win);">Round ${bestRoundNum}</strong></div>
+            <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Kills in Round:</span> <strong style="color:#fff;">${maxRoundKills} Kills</strong></div>
+            <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Round Outcome:</span> <strong style="color:${bestRoundWon ? 'var(--win)' : 'var(--loss)'};">${bestRoundWon ? 'Won' : 'Lost'}</strong></div>
+          </div>
         </div>
       </div>
     </div>`;

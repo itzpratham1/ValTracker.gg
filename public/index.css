@@ -1564,6 +1564,57 @@ body::before {
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
+/* AI Analysis Dashboard Tabs Styles */
+.match-ai-tabs {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 14px;
+  padding-bottom: 2px;
+}
+.match-ai-tab-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 6px 12px;
+  cursor: pointer;
+  position: relative;
+  transition: var(--transition);
+}
+.match-ai-tab-btn:hover {
+  color: #fff;
+}
+.match-ai-tab-btn.active {
+  color: var(--accent);
+}
+.match-ai-tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 100%;
+  height: 2.5px;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  border-radius: 2px;
+}
+.match-ai-tab-pane {
+  display: none;
+}
+.match-ai-tab-pane.active {
+  display: block;
+  animation: fadeInTab 0.25s ease-out both;
+}
+@keyframes fadeInTab {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* ── DEEP SELF ANALYSIS ── */
 .deep-wrap { grid-column: span 12; display: flex; flex-direction: column; gap: 12px; }
 .deep-trigger-card {
