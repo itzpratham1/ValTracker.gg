@@ -4759,7 +4759,7 @@ function buildMatchAnalysis(match, allMatches = null) {
         <span>🎯</span> Positional & Site Diagnostics
       </div>
       <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
-        ${tacticalInsights.map(ins => `<div style="font-size: 11px; line-height: 1.5; color: #fff; background: rgba(0,0,0,0.15); padding: 8px 12px; border-radius: 6px; border: 1.5px solid var(--border);">${ins}</div>`).join('')}
+        ${tacticalInsights.map(ins => `<div class="match-ai-diagnostic-card">${ins}</div>`).join('')}
       </div>
     </div>
     ` : ''}
@@ -4769,23 +4769,23 @@ function buildMatchAnalysis(match, allMatches = null) {
       <div class="match-ai-verdict-label" style="display:flex; align-items:center; gap:8px;">
         <span>🎮</span> Tactical Round-by-Round Progress
       </div>
-      <div style="display:flex; flex-wrap:wrap; gap:8px; margin:14px 0; background:rgba(0,0,0,0.2); padding:10px; border-radius:8px; border:1px solid var(--border);">
+      <div class="match-ai-timeline-wrap">
         ${roundsHtml}
       </div>
-      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:14px; margin-top:12px;">
-        <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:8px; padding:12px;">
+      <div class="match-ai-stats-grid">
+        <div class="match-ai-stat-card">
           <div style="font-family:'Barlow Condensed', sans-serif; font-size:12px; font-weight:700; color:var(--accent); text-transform:uppercase; margin-bottom:8px;">⚔️ Combat Consistency</div>
           <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>First Half Kills:</span> <strong style="color:#fff;">${firstHalfKills}</strong></div>
           <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Second Half Kills:</span> <strong style="color:#fff;">${secondHalfKills}</strong></div>
           <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Multi-Kill Rounds (3K+):</span> <strong style="color:var(--win);">${multiKillRounds}</strong></div>
         </div>
-        <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:8px; padding:12px;">
+        <div class="match-ai-stat-card">
           <div style="font-family:'Barlow Condensed', sans-serif; font-size:12px; font-weight:700; color:var(--accent); text-transform:uppercase; margin-bottom:8px;">🎯 Accuracy Breakdown</div>
           <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Headshot Rate:</span> <strong style="color:var(--win);">${hsPct}%</strong></div>
           <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Bodyshot Rate:</span> <strong style="color:#fff;">${totalShots ? Math.round((body_s/totalShots)*100) : 0}%</strong></div>
           <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Legshot Rate:</span> <strong style="color:#fff;">${totalShots ? Math.round((legs/totalShots)*100) : 0}%</strong></div>
         </div>
-        <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:8px; padding:12px;">
+        <div class="match-ai-stat-card">
           <div style="font-family:'Barlow Condensed', sans-serif; font-size:12px; font-weight:700; color:var(--accent); text-transform:uppercase; margin-bottom:8px;">⭐ Match Star Round</div>
           <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Star Round:</span> <strong style="color:var(--win);">Round ${bestRoundNum}</strong></div>
           <div style="font-size:11px; color:#fff; display:flex; justify-content:space-between; margin-bottom:6px;"><span>Kills in Round:</span> <strong style="color:#fff;">${maxRoundKills} Kills</strong></div>
