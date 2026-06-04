@@ -1964,7 +1964,7 @@ function openDB() {
 
 function normalizeMode(rawMode) {
   if (!rawMode) return "";
-  const m = rawMode.toLowerCase().replace(/ /g, "").replace(/-/g, "");
+  const m = rawMode.toLowerCase().replace(/ /g, "").replace(/-/g, "").replace(/_/g, "");
   if (m === "teamdm") return "teamdeathmatch";
   return m;
 }
@@ -2243,7 +2243,7 @@ async function fetchAll(){
     let matchData=matchRes.ok?await matchRes.json():null;
     const accountData=accountRes.ok?await accountRes.json():null;
     const mmrHistData=mmrHistRes?.ok?await mmrHistRes.json():null;
-    if (!matchData && accountData?.data && matchRes.status === 404) {
+    if ((!matchData || !matchData.data) && accountData?.data) {
       matchData = { status: 200, data: [] };
     }
     if(!matchData)throw new Error(`Invalid Riot ID or player not found. Check spelling, tag and region.`);
@@ -12998,6 +12998,143 @@ function attachDropdownClickEvents(dropdown, input, tagInput, regionSelectId) {
   });
 }
 
+// Intercept select.value assignments to auto-sync custom dropdown text
+(function() {
+  const originalValueDescriptor = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
+  if (originalValueDescriptor && originalValueDescriptor.set) {
+    Object.defineProperty(HTMLSelectElement.prototype, 'value', {
+      get: function() {
+        return originalValueDescriptor.get.call(this);
+      },
+      set: function(val) {
+        originalValueDescriptor.set.call(this, val);
+        this.dispatchEvent(new CustomEvent('valuechange', { bubbles: true }));
+      }
+    });
+  }
+})();
+
+function initCustomDropdowns() {
+  const selects = ['region-select', 'mode-select', 'act-select'];
+  
+  selects.forEach(id => {
+    const select = document.getElementById(id);
+    if (!select) return;
+    
+    const parent = select.parentElement; // the .filter-item wrapper
+    if (!parent) return;
+    
+    // Check if already initialized
+    if (parent.querySelector('.custom-select-trigger')) return;
+    
+    // Hide the native select visually but keep it in DOM for event listeners
+    select.style.position = 'absolute';
+    select.style.opacity = '0';
+    select.style.width = '0';
+    select.style.height = '0';
+    select.style.overflow = 'hidden';
+    select.style.pointerEvents = 'none';
+    
+    // Create custom trigger element
+    const trigger = document.createElement('span');
+    trigger.className = 'custom-select-trigger';
+    
+    // Set initial text
+    const updateTriggerText = () => {
+      const selectedOption = select.options[select.selectedIndex];
+      trigger.textContent = selectedOption ? selectedOption.textContent : '';
+    };
+    updateTriggerText();
+    
+    // Insert trigger before the select element
+    parent.insertBefore(trigger, select);
+    
+    // Create the custom floating menu
+    const menu = document.createElement('div');
+    menu.className = 'custom-options-menu';
+    
+    menu.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+    
+    // Function to rebuild options list
+    const rebuildOptions = () => {
+      menu.innerHTML = '';
+      Array.from(select.options).forEach(opt => {
+        const item = document.createElement('div');
+        item.className = 'custom-option-item';
+        item.textContent = opt.textContent;
+        item.dataset.value = opt.value;
+        
+        if (opt.value === select.value) {
+          item.classList.add('selected');
+        }
+        
+        item.addEventListener('click', (e) => {
+          e.stopPropagation();
+          select.value = opt.value;
+          // Dispatch native 'change' event to notify the application
+          select.dispatchEvent(new Event('change'));
+          closeMenu();
+        });
+        
+        menu.appendChild(item);
+      });
+    };
+    rebuildOptions();
+    parent.appendChild(menu);
+    
+    const openMenu = () => {
+      // Close other menus first
+      document.querySelectorAll('.custom-options-menu').forEach(m => {
+        if (m !== menu) {
+          m.classList.remove('open');
+          const otherChevron = m.parentElement.querySelector('.chevron-icon svg');
+          if (otherChevron) otherChevron.style.transform = 'rotate(0)';
+        }
+      });
+      
+      rebuildOptions(); // Refresh highlight state
+      menu.classList.add('open');
+      const chevron = parent.querySelector('.chevron-icon svg');
+      if (chevron) chevron.style.transform = 'rotate(180deg)';
+    };
+    
+    const closeMenu = () => {
+      menu.classList.remove('open');
+      const chevron = parent.querySelector('.chevron-icon svg');
+      if (chevron) chevron.style.transform = 'rotate(0)';
+    };
+    
+    const toggleMenu = (e) => {
+      e.stopPropagation();
+      const isOpen = menu.classList.contains('open');
+      if (isOpen) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    };
+    
+    // Bind click listener on parent `.filter-item` container
+    parent.style.cursor = 'pointer';
+    parent.addEventListener('click', toggleMenu);
+    
+    // Sync trigger when select value changes
+    select.addEventListener('change', updateTriggerText);
+    select.addEventListener('valuechange', updateTriggerText);
+  });
+  
+  // Close any menu when clicking outside
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.custom-options-menu').forEach(m => {
+      m.classList.remove('open');
+      const chevron = m.parentElement.querySelector('.chevron-icon svg');
+      if (chevron) chevron.style.transform = 'rotate(0)';
+    });
+  });
+}
+
 function updateHeaderHeights() {
   const topbar = document.querySelector('.topbar');
   if (topbar) {
@@ -13017,6 +13154,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initSearchAutocomplete('player-name-input', 'player-tag-input', 'topbar-search-dropdown', 'region-select');
   setTimeout(updateHeaderHeights, 100);
   setTimeout(updateHeaderHeights, 500);
+  initCustomDropdowns();
 });
 </script>
 <style>/* ── GLASSMORPHISM OVERRIDES & VALORANT CRIMSON THEME ── */

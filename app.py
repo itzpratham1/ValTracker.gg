@@ -40,7 +40,7 @@ SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
 def normalize_mode(raw_mode):
     if not raw_mode:
         return ""
-    m = raw_mode.lower().replace(" ", "").replace("-", "")
+    m = raw_mode.lower().replace(" ", "").replace("-", "").replace("_", "")
     if m == "teamdm":
         return "teamdeathmatch"
     return m
