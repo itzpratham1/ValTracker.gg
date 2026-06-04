@@ -4458,7 +4458,19 @@ function buildMatchAnalysis(match, allMatches = null) {
       if (wr >= 70) {
         tacticalInsights.push(`💪 You excelled at retakes on <strong>${site} site</strong>, converting ${wins}/${attempts} situations (${wr}% conversion rate).`);
       } else if (wr <= 33) {
-        tacticalInsights.push(`⚠️ Struggled with retakes on <strong>${site} site</strong> (only ${wins}/${attempts} converted). Avoid peeking the site early on retakes; wait for teammate utility before pushing.`);
+        let tip = `⚠️ Struggled with retakes on <strong>${site} site</strong> (only ${wins}/${attempts} converted). `;
+        if (role === 'duelist') {
+          tip += `As a Duelist (<strong>${agentName}</strong>), avoid peeking the site first without entry utility (like flashes or movement abilities). Wait for teammate scans before entering.`;
+        } else if (role === 'initiator') {
+          tip += `As an Initiator (<strong>${agentName}</strong>), ensure you save your scanning or flashing utility to clear angles for your team during the retake, rather than peeking dry.`;
+        } else if (role === 'controller') {
+          tip += `As a Controller (<strong>${agentName}</strong>), focus on smoking off key attacker sightlines (like main entrances) to isolate fights before pushing. Stay alive to keep smokes active.`;
+        } else if (role === 'sentinel') {
+          tip += `As a Sentinel (<strong>${agentName}</strong>), you are not an entry player. Wait to coordinate utility with your team, watch the flank, and prepare to protect the defuser.`;
+        } else {
+          tip += `Avoid peeking the site early on retakes; wait for teammate utility before pushing.`;
+        }
+        tacticalInsights.push(tip);
       }
     }
   });
@@ -4471,7 +4483,19 @@ function buildMatchAnalysis(match, allMatches = null) {
       if (wr >= 70) {
         tacticalInsights.push(`💪 Strong post-plant defense on <strong>${site} site</strong>, winning ${wins}/${attempts} rounds after spike plant.`);
       } else if (wr <= 33) {
-        tacticalInsights.push(`⚠️ Low post-plant conversion on <strong>${site} site</strong> (${wins}/${attempts} won). Try playing defensive post-plant crossfires or utility lineups instead of peeking defusers.`);
+        let tip = `⚠️ Low post-plant conversion on <strong>${site} site</strong> (${wins}/${attempts} won). `;
+        if (role === 'duelist') {
+          tip += `As a Duelist (<strong>${agentName}</strong>), avoid taking aggressive solo dry-peeks after the plant. Hold crossfires with teammates or play retake denial from safety.`;
+        } else if (role === 'initiator') {
+          tip += `As an Initiator (<strong>${agentName}</strong>), use your scans/flashes to delay the retaking defenders or gather info on defusal attempts. Save utility to deny tap-defuses.`;
+        } else if (role === 'controller') {
+          tip += `As a Controller (<strong>${agentName}</strong>), use smokes to block key entrance paths or cover the spike, forcing defusers to step out blind.`;
+        } else if (role === 'sentinel') {
+          tip += `As a Sentinel (<strong>${agentName}</strong>), set up utility (like trips, alarmbots, or mollies) directly on the spike or main entry lanes to delay defusers, rather than taking raw gunfights.`;
+        } else {
+          tip += `Try playing defensive post-plant crossfires or utility lineups instead of peeking defusers.`;
+        }
+        tacticalInsights.push(tip);
       }
     }
   });
@@ -4482,7 +4506,19 @@ function buildMatchAnalysis(match, allMatches = null) {
       const totalRoundsOnSite = (retakeAttempts[site] + postPlantAttempts[site]) || 1;
       const fdRate = Math.round((fdCount / totalRoundsOnSite) * 100);
       if (fdRate >= 20) {
-        tacticalInsights.push(`⚠️ You had a ${fdRate}% first-death rate on <strong>${site} site</strong> lanes. Try peeking with utility next time or let an initiator scan first.`);
+        let tip = `⚠️ You had a ${fdRate}% first-death rate on <strong>${site} site</strong> lanes. `;
+        if (role === 'duelist') {
+          tip += `As a Duelist (<strong>${agentName}</strong>), ensure you peek with movement/entry utility or let an initiator scan first before committing to early lane fights.`;
+        } else if (role === 'initiator') {
+          tip += `As an Initiator (<strong>${agentName}</strong>), you shouldn't be dry-peeking. Use your recon/flashing abilities to clear the lane before peeking.`;
+        } else if (role === 'controller') {
+          tip += `As a Controller (<strong>${agentName}</strong>), first-dying leaves your team without crucial smoke support. Avoid early aggressive peeks and play safe behind your team.`;
+        } else if (role === 'sentinel') {
+          tip += `As a Sentinel (<strong>${agentName}</strong>), first-dying compromises the entire site hold. Play passive anchor positions and let your utility/traps check the lane first.`;
+        } else {
+          tip += `Try peeking with utility next time or let an initiator scan first.`;
+        }
+        tacticalInsights.push(tip);
       }
     }
   });
@@ -4490,7 +4526,19 @@ function buildMatchAnalysis(match, allMatches = null) {
   if (defenseFirstDeaths >= 1 && totalDefenseRounds > 0) {
     const fdPct = Math.round((defenseFirstDeaths / totalDefenseRounds) * 100);
     if (fdPct >= 20) {
-      tacticalInsights.push(`⚠️ First-death rate of ${fdPct}% on Defense (${defenseFirstDeaths} rounds). Peeking early as a defender compromises site holds. Play passive anchors.`);
+      let tip = `⚠️ First-death rate of ${fdPct}% on Defense (${defenseFirstDeaths} rounds). `;
+      if (role === 'duelist') {
+        tip += `As a Duelist (<strong>${agentName}</strong>), if you peek early, ensure you have an escape mechanism (like dash/teleport) ready, or teammate trade support.`;
+      } else if (role === 'initiator') {
+        tip += `As an Initiator (<strong>${agentName}</strong>), do not seek raw aim duels at round start. Use your scouting utility to spot early pushes safely and fall back.`;
+      } else if (role === 'controller') {
+        tip += `As a Controller (<strong>${agentName}</strong>), your life is crucial for late-round smoke setups. Do not dry-peek early; anchor from safer sites/rotations.`;
+      } else if (role === 'sentinel') {
+        tip += `As a Sentinel (<strong>${agentName}</strong>), play as a passive anchor behind your utility. Do not contest early lanes manually; make them push through your setup.`;
+      } else {
+        tip += `Peeking early as a defender compromises site holds. Play passive anchors.`;
+      }
+      tacticalInsights.push(tip);
     }
   }
 
@@ -8324,7 +8372,7 @@ function renderTopWeapons(matches) {
             ${sparklineBlock}
           </div>
           
-          <div class="wpn-heatmap-card wpn-tooltip-trigger" style="width: 125px; flex-shrink: 0; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 10px 8px; display: flex; align-items: center; justify-content: center; position: relative;">
+          <div class="wpn-heatmap-card" style="width: 125px; flex-shrink: 0; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 10px 8px; display: flex; align-items: center; justify-content: center; position: relative;">
             <div style="display: flex; gap: 8px; align-items: center; width: 100%; justify-content: center;">
               <div style="position: relative;">
                  ${getHeatmapSvg(hsPct, 105)}
@@ -8343,17 +8391,6 @@ function renderTopWeapons(matches) {
                   <span style="font-size: 10px; font-weight: 900; color: #fff;">${Math.max(Math.round((100 - Math.min(Math.round(hsPct * 0.7) + 5, 55)) * 0.08), 3)}%</span>
                 </div>
               </div>
-            </div>
-            
-            <div class="wpn-tooltip-card" style="width: 150px; gap: 8px;">
-              <div style="font-family:'Barlow Condensed', sans-serif; font-size:10px; font-weight:800; text-transform:uppercase; color:var(--accent); letter-spacing:0.5px; border-bottom: 1px solid rgba(255,255,255,0.06); width: 100%; text-align: center; padding-bottom: 3px; margin-bottom: 2px;">Target Heatmap</div>
-              ${getHeatmapSvg(hsPct, 64)}
-              <div style="display:flex; justify-content:space-between; width:100%; font-family:'DM Mono',monospace; font-size:8px; color:#fff; padding-bottom: 4px; box-sizing:border-box;">
-                <span style="color:#ff4655">H:${Math.min(Math.round(hsPct * 0.7) + 5, 55)}%</span>
-                <span style="color:rgba(255,70,85,0.75)">B:${100 - Math.min(Math.round(hsPct * 0.7) + 5, 55) - Math.max(Math.round((100 - Math.min(Math.round(hsPct * 0.7) + 5, 55)) * 0.08), 3)}%</span>
-                <span style="color:rgba(255,70,85,0.45)">L:${Math.max(Math.round((100 - Math.min(Math.round(hsPct * 0.7) + 5, 55)) * 0.08), 3)}%</span>
-              </div>
-              ${topWpnSparklineTooltipBlock}
             </div>
           </div>
         </div>
