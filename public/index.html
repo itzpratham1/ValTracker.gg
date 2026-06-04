@@ -1821,6 +1821,7 @@ function renderTrendChart(matches) {
   if (!matches || matches.length < 2) {
     if (placeholder) placeholder.style.display = 'block';
     canvas.style.display = 'none';
+    if (_perfTrendChart) { _perfTrendChart.destroy(); _perfTrendChart = null; }
     return;
   }
 
@@ -2553,6 +2554,14 @@ function processMatches(matches){
 }
 
 function renderRRGraph(history,currentTotalRR,mmrHistory={}){
+  if (!history || history.length === 0) {
+    document.getElementById('rr-placeholder').style.display='block';
+    document.getElementById('rr-chart').style.display='none';
+    document.getElementById('graph-note').style.display='none';
+    if(rrChart){rrChart.destroy();rrChart=null;}
+    return;
+  }
+
   document.getElementById('rr-placeholder').style.display='none';
   document.getElementById('rr-chart').style.display='block';
   document.getElementById('graph-note').style.display='block';
@@ -2585,9 +2594,13 @@ function renderRRGraph(history,currentTotalRR,mmrHistory={}){
 }
 
 function renderAgents(agentMap, allMatches=[]){
-  const sorted=Object.entries(agentMap).sort((a,b)=>b[1].matches-a[1].matches).slice(0,6);
-  if(!sorted.length)return;
   const wrap=document.getElementById('agents-wrap');
+  if(!wrap)return;
+  const sorted=Object.entries(agentMap).sort((a,b)=>b[1].matches-a[1].matches).slice(0,6);
+  if(!sorted.length){
+    wrap.innerHTML='<div class="card span-12"><div class="placeholder-txt">No agent data available for this mode</div></div>';
+    return;
+  }
   wrap.style.display='contents';
   let html='';
   sorted.forEach(([name,s],i)=>{
@@ -2619,9 +2632,13 @@ function renderAgents(agentMap, allMatches=[]){
 }
 
 function renderMaps(mapData){
-  const maps=Object.entries(mapData).sort((a,b)=>b[1].matches-a[1].matches);
-  if(!maps.length)return;
   const wrap=document.getElementById('maps-wrap');
+  if(!wrap)return;
+  const maps=Object.entries(mapData).sort((a,b)=>b[1].matches-a[1].matches);
+  if(!maps.length){
+    wrap.innerHTML='<div class="card span-12"><div class="placeholder-txt">No map data available for this mode</div></div>';
+    return;
+  }
   wrap.style.display='contents';
   let html='';
   maps.forEach(([name,m],i)=>{
@@ -7659,6 +7676,18 @@ function buildAccuracyBodySvg(hsPct, bsPct, lsPct) {
 }
 
 function renderAccuracyAndRoles(matches) {
+  // Reset outputs by default
+  const accWrap = document.getElementById('acc-body-row');
+  if(accWrap) {
+    accWrap.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-family:\'DM Mono\',monospace;font-size:11px;padding:40px 0;">No accuracy data available</div>';
+  }
+  const rolesWrap = document.getElementById('roles-breakdown-wrap');
+  if(rolesWrap) {
+    rolesWrap.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-family:\'DM Mono\',monospace;font-size:11px;padding:40px 0;">No role data available</div>';
+  }
+
+  if (!matches || matches.length === 0) return;
+
   // ── Aggregate shot data ──
   let totHS=0, totBS=0, totLS=0, totShots=0;
   const roleStats={}; // role -> {m,w,k,d,a}
@@ -7754,7 +7783,7 @@ function renderAccuracyAndRoles(matches) {
 // ─── Weapon Trend Tracking (localStorage-based, zero backend dependency) ────
 function _saveWeaponSnapshot(weaponData) {
   if (!PLAYER_NAME || !PLAYER_TAG) return;
-  const key = `vt_wpn_hist_${PLAYER_NAME.toLowerCase()}_${PLAYER_TAG.toLowerCase()}`;
+  const key = `vt_wpn_hist_${PLAYER_NAME.toLowerCase()}_${PLAYER_TAG.toLowerCase()}_${(window._currentMode || 'competitive').toLowerCase()}`;
   let history = [];
   try { history = JSON.parse(localStorage.getItem(key)) || []; } catch(e) { history = []; }
   const snapshot = { ts: Date.now(), weapons: {} };
@@ -7774,7 +7803,7 @@ function _saveWeaponSnapshot(weaponData) {
 
 function _getWeaponTrend(wpn, currentHsPct) {
   if (!PLAYER_NAME || !PLAYER_TAG) return { trend: 'new', delta: 0, sparkPoints: [currentHsPct] };
-  const key = `vt_wpn_hist_${PLAYER_NAME.toLowerCase()}_${PLAYER_TAG.toLowerCase()}`;
+  const key = `vt_wpn_hist_${PLAYER_NAME.toLowerCase()}_${PLAYER_TAG.toLowerCase()}_${(window._currentMode || 'competitive').toLowerCase()}`;
   let history = [];
   try { history = JSON.parse(localStorage.getItem(key)) || []; } catch(e) {}
   const withData = history.filter(s => s.weapons && s.weapons[wpn] !== undefined);
@@ -7920,7 +7949,7 @@ function renderTopWeapons(matches) {
   let usingCachedData = false;
   if(!entries.length){
     if(PLAYER_NAME && PLAYER_TAG){
-      const key = `vt_wpn_hist_${PLAYER_NAME.toLowerCase()}_${PLAYER_TAG.toLowerCase()}`;
+      const key = `vt_wpn_hist_${PLAYER_NAME.toLowerCase()}_${PLAYER_TAG.toLowerCase()}_${(window._currentMode || 'competitive').toLowerCase()}`;
       let history = [];
       try { history = JSON.parse(localStorage.getItem(key)) || []; } catch(e) {}
       if(history.length > 0){
@@ -7941,7 +7970,11 @@ function renderTopWeapons(matches) {
   }
 
   if(!entries.length){
-    wrap.innerHTML='<div class="placeholder-txt" style="padding:16px 0">Compiling your top weapons from background match details...</div>';
+    if (!matches || matches.length === 0) {
+      wrap.innerHTML='<div class="placeholder-txt" style="padding:16px 0">No weapon data available for this mode</div>';
+    } else {
+      wrap.innerHTML='<div class="placeholder-txt" style="padding:16px 0">Compiling your top weapons from background match details...</div>';
+    }
     return;
   }
 

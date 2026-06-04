@@ -5859,5 +5859,11 @@ input:checked + .slider:before {
   }
 }
 
-
-
+/* ── NATIVE SELECT DARK MODE STYLING ── */
+select {
+  color-scheme: dark !important;
+}
+select option {
+  background-color: #121214 !important;
+  color: #ffffff !important;
+}
