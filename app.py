@@ -37,6 +37,14 @@ API_KEY = os.getenv("HENRIKDEV_API_KEY", "")
 SUPABASE_URL = os.getenv("SUPABASE_URL", "")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
 
+def normalize_mode(raw_mode):
+    if not raw_mode:
+        return ""
+    m = raw_mode.lower().replace(" ", "").replace("-", "")
+    if m == "teamdm":
+        return "teamdeathmatch"
+    return m
+
 # ── SUPABASE PostgREST HELPER FUNCTIONS ──
 
 def supabase_request(method, table, data=None, params=None, headers=None):
@@ -680,10 +688,11 @@ def proxy_api(subpath):
 
         params = request.args.to_dict()
         params.pop('_nocache', None)
-        mode = params.get("mode", "competitive").lower()
+        mode = normalize_mode(params.get("mode", "competitive").lower())
         
         # A. Fetch latest 20 matches from HenrikDev API
         live_matches_data = None
+        live_status_code = 200
         try:
             print(f"[MATCH INTERCEPT] Fetching live matches for {name}#{tag} from HenrikDev...")
             encoded_subpath = urllib.parse.quote(subpath, safe='/')
@@ -693,10 +702,18 @@ def proxy_api(subpath):
                 "Content-Type": "application/json"
             }
             response = requests.get(target_url, headers=headers, params=params, timeout=8)
+            live_status_code = response.status_code
             if response.status_code == 200:
                 live_matches_data = response.json()
+            else:
+                try:
+                    live_matches_data = response.json()
+                except:
+                    live_matches_data = {"status": response.status_code, "error": "Unknown API error"}
         except Exception as e:
             print(f"[MATCH INTERCEPT ERROR] Failed to fetch live matches: {e}")
+            live_status_code = 500
+            live_matches_data = {"status": 500, "error": str(e)}
             
         # B. Resolve player PUUID
         puuid = None
@@ -772,10 +789,14 @@ def proxy_api(subpath):
                     rounds_str = f"{my_team_info.get('rounds_won', 0) or my_team_info.get('roundsWon', 0)}-{opp_team_info.get('rounds_won', 0) or opp_team_info.get('roundsWon', 0)}"
                     stripped_raw_match = compress_match_json(m)
                     
+                    actual_m_mode = normalize_mode(m.get("metadata", {}).get("mode", ""))
+                    if not actual_m_mode:
+                        actual_m_mode = mode
+                    
                     match_payload = {
                         "puuid": puuid,
                         "match_id": match_id,
-                        "mode": mode,
+                        "mode": actual_m_mode,
                         "map_name": map_name,
                         "game_start": game_start,
                         "agent_name": agent_name,
@@ -811,8 +832,14 @@ def proxy_api(subpath):
             if m_id:
                 merged_map[m_id] = dm
                 
+        # Filter live matches to only include the requested mode
         if live_matches_data and isinstance(live_matches_data.get("data"), list):
-            for lm in live_matches_data["data"]:
+            filtered_live = [
+                lm for lm in live_matches_data["data"]
+                if lm and normalize_mode(lm.get("metadata", {}).get("mode", "")) == mode
+            ]
+            live_matches_data["data"] = filtered_live
+            for lm in filtered_live:
                 m_id = lm.get("metadata", {}).get("matchid") or lm.get("metadata", {}).get("match_id")
                 if m_id:
                     merged_map[m_id] = compress_match_json(lm)
@@ -833,13 +860,13 @@ def proxy_api(subpath):
                     "timestamp": time.time()
                 }
             return jsonify(res_data)
-        elif live_matches_data:
+        else:
             if not bypass_cache:
                 cache[cache_key] = {
                     "data": live_matches_data,
                     "timestamp": time.time()
                 }
-            return jsonify(live_matches_data)
+            return jsonify(live_matches_data), live_status_code
 
     # Fallback to standard memory caching if database is offline/unconfigured
     encoded_subpath = urllib.parse.quote(subpath, safe='/')

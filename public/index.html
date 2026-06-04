@@ -2220,9 +2220,12 @@ async function fetchAll(){
       fetch(`/api/v1/stored-mmr-history/${region}/${enc}/${PLAYER_TAG}?_nocache=${_nc}`),
     ]);
     const mmrData=mmrRes?.ok?await mmrRes.json():null;
-    const matchData=matchRes.ok?await matchRes.json():null;
+    let matchData=matchRes.ok?await matchRes.json():null;
     const accountData=accountRes.ok?await accountRes.json():null;
     const mmrHistData=mmrHistRes?.ok?await mmrHistRes.json():null;
+    if (!matchData && accountData?.data && matchRes.status === 404) {
+      matchData = { status: 200, data: [] };
+    }
     if(!matchData)throw new Error(`Invalid Riot ID or player not found. Check spelling, tag and region.`);
 
     if(accountData?.data){
@@ -2287,22 +2290,32 @@ async function fetchAll(){
       mmrHistData.data.forEach(e=>{window._mmrHistory[e.match_id]=e.last_mmr_change;});
     }
 
-    if(matchData?.data?.length){
+    if(matchData?.data){
       // Save fresh matches from API without wiping out previous detailed match caches
-      await saveMatches(matchData.data);
+      if (matchData.data.length > 0) {
+        await saveMatches(matchData.data);
+      }
       // Load full history from DB and process all of it
       const allMatches = await loadAllMatches();
       processMatches(allMatches);
       
       // Asynchronously prefetch match details in background to populate weapons and rounds automatically
-      setTimeout(() => {
-        prefetchMatchDetails(allMatches);
-      }, 500);
+      if (allMatches.length > 0) {
+        setTimeout(() => {
+          prefetchMatchDetails(allMatches);
+        }, 500);
+      }
 
       const newCount = matchData.data.length;
       const totalCount = allMatches.length;
-      setStatus(`${newCount} new · ${totalCount} total stored`,'ok');
-      showToast(`${totalCount} matches total ✓`);
+      if (totalCount > 0) {
+        setStatus(`${newCount} new · ${totalCount} total stored`,'ok');
+        showToast(`${totalCount} matches total ✓`);
+      } else {
+        setStatus('No matches played in this mode','ok');
+        showToast('No matches played');
+      }
+      
       addToRecentSearches(PLAYER_NAME, PLAYER_TAG, region, mode);
       renderActiveBookmarkButton();
       

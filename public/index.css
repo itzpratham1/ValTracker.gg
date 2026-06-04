@@ -1742,8 +1742,8 @@ body::before {
 .filter-item {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 8px;
+  position: relative;
+  padding: 0;
 }
 .filter-icon {
   font-size: 11px;
@@ -1751,6 +1751,12 @@ body::before {
   transition: opacity 0.2s ease;
   display: flex;
   align-items: center;
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 2;
 }
 .filter-icon-svg {
   display: inline-block;
@@ -1775,10 +1781,12 @@ body::before {
   border: none;
   outline: none;
   cursor: pointer;
-  padding: 6px 4px;
+  padding: 6px 22px 6px 26px;
   appearance: none;
   -webkit-appearance: none;
   transition: color 0.2s ease;
+  z-index: 1;
+  width: 100%;
 }
 .topbar-filter-capsule select:hover {
   color: var(--accent);
@@ -1788,7 +1796,11 @@ body::before {
   align-items: center;
   opacity: 0.5;
   pointer-events: none;
-  margin-left: 2px;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
 }
 
 /* ── PLAYER ACTIVE PILL ── */
@@ -5262,9 +5274,10 @@ input:checked + .slider:before {
     background: rgba(255, 255, 255, 0.02) !important;
     border: 1px solid var(--border) !important;
     border-radius: var(--radius-sm) !important;
-    padding: 8px 12px !important;
+    padding: 0 !important;
     display: flex !important;
     justify-content: space-between !important;
+    position: relative !important;
   }
   .topbar-sub-row .topbar-right .filter-divider {
     display: none !important;
@@ -5273,8 +5286,16 @@ input:checked + .slider:before {
     width: 100% !important;
     background: transparent !important;
     border: none !important;
-    padding: 0 !important;
+    padding: 12px 24px 12px 32px !important;
     font-size: 12px !important;
+    box-sizing: border-box !important;
+    z-index: 1;
+  }
+  .topbar-sub-row .topbar-right .filter-icon {
+    left: 12px !important;
+  }
+  .topbar-sub-row .topbar-right .chevron-icon {
+    right: 12px !important;
   }
   .topbar-sub-row .topbar-right .fetch-btn {
     width: 100% !important;
