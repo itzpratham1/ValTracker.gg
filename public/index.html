@@ -7720,7 +7720,6 @@ function renderAccuracyAndRoles(matches) {
   const bsPct = totShots?Math.round(totBS/totShots*100):0;
   const lsPct = totShots?Math.round(totLS/totShots*100):0;
 
-  const accWrap = document.getElementById('acc-body-row');
   if(accWrap && totShots>0){
     accWrap.innerHTML = `
       ${buildAccuracyBodySvg(hsPct, bsPct, lsPct)}
@@ -7749,7 +7748,6 @@ function renderAccuracyAndRoles(matches) {
     controller: { icon:'💨', color:'var(--win)', label:'Controller' },
     sentinel:   { icon:'🛡️', color:'#7ab8ff', label:'Sentinel' },
   };
-  const rolesWrap = document.getElementById('roles-breakdown-wrap');
   const roleEntries = Object.entries(roleStats).filter(([,v])=>v.m>0)
     .sort((a,b)=>b[1].m-a[1].m);
 
