@@ -2093,6 +2093,9 @@ window.addEventListener('DOMContentLoaded', async () => {
     renderLandingHistory();
     renderLandingProfile();
     
+    // Sync ranks in the background
+    setTimeout(syncBookmarkRanks, 1500);
+    
     if (savedProfile) {
       // Prefill landing lookup input fields
       if (document.getElementById('l-name')) document.getElementById('l-name').value = savedProfile.name;
@@ -7490,6 +7493,48 @@ function renderLandingHistory() {
   }
 }
 
+let _bookmarkRanksSynced = false;
+async function syncBookmarkRanks() {
+  if (_bookmarkRanksSynced) return;
+  _bookmarkRanksSynced = true;
+  
+  let bookmarks = [];
+  try { bookmarks = JSON.parse(localStorage.getItem('valtracker_bookmarks')) || []; } catch(e) { bookmarks = []; }
+  if (bookmarks.length === 0) return;
+  
+  console.log(`[Bookmark Sync] Refreshing ranks in background for ${bookmarks.length} players...`);
+  
+  let updatedAny = false;
+  for (const p of bookmarks) {
+    try {
+      const encName = encodeURIComponent(p.name);
+      const res = await fetch(`/api/v3/mmr/${p.region || 'ap'}/pc/${encName}/${p.tag}`);
+      if (res.ok) {
+        const mmrData = await res.json();
+        if (mmrData && mmrData.data) {
+          const currentRank = mmrData.data.current?.tier?.name || 'UNRANKED';
+          const currentImg = getRankImgUrl(currentRank);
+          
+          if (p.rankName !== currentRank || p.rankImg !== currentImg) {
+            p.rankName = currentRank;
+            p.rankImg = currentImg;
+            updatedAny = true;
+          }
+        }
+      }
+      await new Promise(r => setTimeout(r, 150)); // brief pause
+    } catch (e) {
+      console.warn(`[Bookmark Sync] Failed to sync ${p.name}#${p.tag}:`, e);
+    }
+  }
+  
+  if (updatedAny) {
+    localStorage.setItem('valtracker_bookmarks', JSON.stringify(bookmarks));
+    renderLandingHistory();
+    console.log(`[Bookmark Sync] Completed. Ranks updated.`);
+  }
+}
+
 function removeBookmarkDirect(name, tag) {
   let bookmarks = [];
   try { bookmarks = JSON.parse(localStorage.getItem('valtracker_bookmarks')) || []; } catch(e) { bookmarks = []; }
@@ -7910,33 +7955,64 @@ function renderTopWeapons(matches) {
   // Since v3 doesn't have weapon data, we show a note and use demo data format
   // Actually — we DO have kill_events in v2 stored if detail was loaded. 
   // For now aggregate from rawMatch if has round data
-  matches.forEach(match=>{
-    const me=findMe(match);
-    if(!me)return;
-    const rounds=match.rounds||[];
-    rounds.forEach(r=>{
-      let ps=r.player_stats||[];
-      if(typeof ps==='string'){try{ps=JSON.parse(ps);}catch(e){ps=[];}}
-      if(!Array.isArray(ps)) ps=Object.values(ps);
-      const myPs=ps.find(p=>(p.player_puuid||p.subject||p.puuid)===me.puuid);
-      if(!myPs)return;
-      const kills=Array.isArray(myPs.kill_events)?myPs.kill_events:[];
-      kills.forEach(k=>{
-        const raw=k.damage_weapon_name||k.finishing_damage?.damage_item||k.damage_weapon_id||'';
+  matches.forEach(match => {
+    const me = findMe(match);
+    if (!me) return;
+    
+    // Track stats for this specific match
+    const wpnMatchStats = {};
+    const rounds = match.rounds || [];
+    rounds.forEach(r => {
+      let ps = r.player_stats || [];
+      if (typeof ps === 'string') { try { ps = JSON.parse(ps); } catch(e) { ps = []; } }
+      if (!Array.isArray(ps)) ps = Object.values(ps);
+      const myPs = ps.find(p => (p.player_puuid || p.subject || p.puuid) === me.puuid);
+      if (!myPs) return;
+      
+      const kills = Array.isArray(myPs.kill_events) ? myPs.kill_events : [];
+      kills.forEach(k => {
+        const raw = k.damage_weapon_name || k.finishing_damage?.damage_item || k.damage_weapon_id || '';
         const cachedWpn = _assetCache.weapons[raw.toLowerCase()];
-        let wpn = cachedWpn ? cachedWpn.name : raw.replace(/^[^/]*\//,'').replace(/TX_Hud_/i,'').replace(/_/g,' ').trim();
-        if(/^[0-9a-f]{8}-/.test(wpn)) wpn = 'Ability'; // filter raw UUIDs
-        if(!wpn||wpn.length<2) return;
-        if(!weaponData[wpn]) weaponData[wpn]={kills:0,hs:0,shots:0};
-        weaponData[wpn].kills++;
+        let wpn = cachedWpn ? cachedWpn.name : raw.replace(/^[^/]*\//, '').replace(/TX_Hud_/i, '').replace(/_/g, ' ').trim();
+        if (/^[0-9a-f]{8}-/.test(wpn)) wpn = 'Ability'; // filter raw UUIDs
+        if (!wpn || wpn.length < 2) return;
+        
+        if (!wpnMatchStats[wpn]) {
+          wpnMatchStats[wpn] = { kills: 0, hs: 0 };
+        }
+        wpnMatchStats[wpn].kills++;
+        
         let isHS = typeof k.headshot === 'boolean' ? k.headshot : k.finishing_damage?.is_headshot;
         if (!isHS && myPs.damage_events) {
           const dE = myPs.damage_events.find(de => de.receiver_puuid === (k.victim_puuid || k.victim));
           if (dE && dE.headshots > 0) isHS = true;
         }
-        if (isHS) weaponData[wpn].hs++;
+        if (isHS) {
+          wpnMatchStats[wpn].hs++;
+        }
       });
     });
+    
+    // Now aggregate these match-specific stats into the global weaponData
+    const gameStart = match.metadata?.game_start || match.metadata?.gameStart || 0;
+    Object.entries(wpnMatchStats).forEach(([wpn, stats]) => {
+      if (!weaponData[wpn]) {
+        weaponData[wpn] = { kills: 0, hs: 0, matchHistory: [] };
+      }
+      weaponData[wpn].kills += stats.kills;
+      weaponData[wpn].hs += stats.hs;
+      weaponData[wpn].matchHistory.push({
+        gameStart: gameStart,
+        kills: stats.kills,
+        hs: stats.hs,
+        hsPct: Math.round((stats.hs / stats.kills) * 100)
+      });
+    });
+  });
+
+  // Sort matchHistory chronological (oldest to newest) for line charts
+  Object.values(weaponData).forEach(w => {
+    w.matchHistory.sort((a, b) => a.gameStart - b.gameStart);
   });
 
   const wrap = document.getElementById('weapons-grid-wrap');
@@ -7995,9 +8071,14 @@ function renderTopWeapons(matches) {
     const imgUrl = cachedWpn ? cachedWpn.iconUrl : (WEAPON_IMGS[wpn] || null);
     const type = WEAPON_TYPES[wpn] || 'Weapon';
     const hsPctCol = hsPct >= 30 ? 'var(--win)' : hsPct >= 20 ? 'var(--accent)' : 'var(--loss)';
+    
+    // session comparisons (for trend delta pill)
     const trendInfo = _getWeaponTrend(wpn, hsPct);
-    const sparkSVG = _buildSparklineSVG(trendInfo.sparkPoints, 120, 32);
-    const sessionCount = trendInfo.sparkPoints.length;
+    
+    // 10-match history sparkline (recent matches)
+    const topWpnMatchPoints = v.matchHistory ? v.matchHistory.slice(-10).map(h => h.hsPct) : [];
+    const topWpnSparkSVG = _buildSparklineSVG(topWpnMatchPoints, 120, 32);
+    const matchSessionCount = topWpnMatchPoints.length;
 
     let deltaPill = '';
     if (trendInfo.trend === 'up') {
@@ -8009,22 +8090,43 @@ function renderTopWeapons(matches) {
       deltaPill = `<span class="wpn-trend-pill wpn-trend-pill-flat">${dSign}%</span>`;
     }
 
-    const sparklineBlock = sparkSVG
+    const sparklineBlock = topWpnSparkSVG
       ? `<div class="wpn-sparkline-section">
            <div class="wpn-sparkline-header">
-             <span class="wpn-sparkline-label">HS% TREND</span>
-             <span class="wpn-sparkline-sessions">${sessionCount} session${sessionCount !== 1 ? 's' : ''} tracked</span>
+             <span class="wpn-sparkline-label">10-MATCH TREND</span>
+             <span class="wpn-sparkline-sessions">${matchSessionCount} match${matchSessionCount !== 1 ? 'es' : ''} tracked</span>
            </div>
-           <div class="wpn-sparkline-wrap">${sparkSVG}</div>
+           <div class="wpn-sparkline-wrap">${topWpnSparkSVG}</div>
            <div class="wpn-sparkline-axis">
-             <span>${Math.min(...trendInfo.sparkPoints)}%</span>
-             <span class="wpn-sparkline-axis-mid">across ${sessionCount} fetches</span>
-             <span>${Math.max(...trendInfo.sparkPoints)}%</span>
+             <span>${Math.min(...topWpnMatchPoints)}%</span>
+             <span class="wpn-sparkline-axis-mid">recent matches</span>
+             <span>${Math.max(...topWpnMatchPoints)}%</span>
            </div>
          </div>`
       : `<div class="wpn-sparkline-section wpn-first-session">
            <span class="wpn-sparkline-label">&#128202; TRACKING STARTED</span>
-           <span class="wpn-sparkline-sessions">Trend data builds across your next sessions</span>
+           <span class="wpn-sparkline-sessions">Trend data builds across your next matches</span>
+         </div>`;
+
+    // Tooltip detailed sparkline for Top Weapon
+    const topWpnTooltipSparkSVG = _buildSparklineSVG(topWpnMatchPoints, 120, 24);
+    const topWpnSparklineTooltipBlock = topWpnTooltipSparkSVG
+      ? `<div style="border-top: 1px solid rgba(255,255,255,0.06); width: 100%; padding-top: 5px; margin-top: 2px; display: flex; flex-direction: column; align-items: center; gap: 3px;">
+           <div style="display:flex; justify-content:space-between; width: 100%; font-family:'Barlow Condensed', sans-serif; font-size:9px; font-weight:800; text-transform:uppercase; color:var(--win); letter-spacing:0.5px;">
+             <span>10-Match Trend</span>
+             <span style="color:var(--muted2); font-weight:normal; font-size:7px;">${topWpnMatchPoints.length} games</span>
+           </div>
+           <div style="height: 24px; width: 120px; display: flex; align-items: center; justify-content: center; margin: 2px 0;">
+             ${topWpnTooltipSparkSVG}
+           </div>
+           <div style="display:flex; justify-content:space-between; width:100%; font-family:'DM Mono',monospace; font-size:7px; color:var(--muted2);">
+             <span>Min: ${Math.min(...topWpnMatchPoints)}%</span>
+             <span>Max: ${Math.max(...topWpnMatchPoints)}%</span>
+           </div>
+         </div>`
+      : `<div style="border-top: 1px solid rgba(255,255,255,0.06); width: 100%; padding-top: 5px; margin-top: 2px; display: flex; flex-direction: column; align-items: center; gap: 3px; font-family:'Barlow Condensed', sans-serif; font-size:8px; color:var(--muted2); text-align:center;">
+           <span>10-MATCH TREND</span>
+           <span style="font-size:7px;">Not enough matches played with this weapon</span>
          </div>`;
 
     showcaseHtml += `
@@ -8056,7 +8158,7 @@ function renderTopWeapons(matches) {
             ${sparklineBlock}
           </div>
           
-          <div class="wpn-heatmap-card" style="width: 125px; flex-shrink: 0; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 10px 8px; display: flex; align-items: center; justify-content: center; position: relative;">
+          <div class="wpn-heatmap-card wpn-tooltip-trigger" style="width: 125px; flex-shrink: 0; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 10px 8px; display: flex; align-items: center; justify-content: center; position: relative;">
             <div style="display: flex; gap: 8px; align-items: center; width: 100%; justify-content: center;">
               <div style="position: relative;">
                  ${getHeatmapSvg(hsPct, 105)}
@@ -8075,6 +8177,17 @@ function renderTopWeapons(matches) {
                   <span style="font-size: 10px; font-weight: 900; color: #fff;">${Math.max(Math.round((100 - Math.min(Math.round(hsPct * 0.7) + 5, 55)) * 0.08), 3)}%</span>
                 </div>
               </div>
+            </div>
+            
+            <div class="wpn-tooltip-card" style="width: 150px; gap: 8px;">
+              <div style="font-family:'Barlow Condensed', sans-serif; font-size:10px; font-weight:800; text-transform:uppercase; color:var(--accent); letter-spacing:0.5px; border-bottom: 1px solid rgba(255,255,255,0.06); width: 100%; text-align: center; padding-bottom: 3px; margin-bottom: 2px;">Target Heatmap</div>
+              ${getHeatmapSvg(hsPct, 64)}
+              <div style="display:flex; justify-content:space-between; width:100%; font-family:'DM Mono',monospace; font-size:8px; color:#fff; padding-bottom: 4px; box-sizing:border-box;">
+                <span style="color:#ff4655">H:${Math.min(Math.round(hsPct * 0.7) + 5, 55)}%</span>
+                <span style="color:rgba(255,70,85,0.75)">B:${100 - Math.min(Math.round(hsPct * 0.7) + 5, 55) - Math.max(Math.round((100 - Math.min(Math.round(hsPct * 0.7) + 5, 55)) * 0.08), 3)}%</span>
+                <span style="color:rgba(255,70,85,0.45)">L:${Math.max(Math.round((100 - Math.min(Math.round(hsPct * 0.7) + 5, 55)) * 0.08), 3)}%</span>
+              </div>
+              ${topWpnSparklineTooltipBlock}
             </div>
           </div>
         </div>
@@ -8103,6 +8216,28 @@ function renderTopWeapons(matches) {
     } else {
       trendArrow = `<span class="sec-wpn-trend sec-wpn-trend-new" title="First session — tracking started">NEW</span>`;
     }
+
+    // 10-match history sparkline for secondary weapon
+    const secMatchPoints = v.matchHistory ? v.matchHistory.slice(-10).map(h => h.hsPct) : [];
+    const secSparkSVG = _buildSparklineSVG(secMatchPoints, 120, 24);
+    const secSparklineTooltipBlock = secSparkSVG
+      ? `<div style="border-top: 1px solid rgba(255,255,255,0.06); width: 100%; padding-top: 5px; margin-top: 2px; display: flex; flex-direction: column; align-items: center; gap: 3px;">
+           <div style="display:flex; justify-content:space-between; width: 100%; font-family:'Barlow Condensed', sans-serif; font-size:9px; font-weight:800; text-transform:uppercase; color:var(--win); letter-spacing:0.5px;">
+             <span>10-Match Trend</span>
+             <span style="color:var(--muted2); font-weight:normal; font-size:7px;">${secMatchPoints.length} games</span>
+           </div>
+           <div style="height: 24px; width: 120px; display: flex; align-items: center; justify-content: center; margin: 2px 0;">
+             ${secSparkSVG}
+           </div>
+           <div style="display:flex; justify-content:space-between; width:100%; font-family:'DM Mono',monospace; font-size:7px; color:var(--muted2);">
+             <span>Min: ${Math.min(...secMatchPoints)}%</span>
+             <span>Max: ${Math.max(...secMatchPoints)}%</span>
+           </div>
+         </div>`
+      : `<div style="border-top: 1px solid rgba(255,255,255,0.06); width: 100%; padding-top: 5px; margin-top: 2px; display: flex; flex-direction: column; align-items: center; gap: 3px; font-family:'Barlow Condensed', sans-serif; font-size:8px; color:var(--muted2); text-align:center;">
+           <span>10-MATCH TREND</span>
+           <span style="font-size:7px;">Not enough matches played with this weapon</span>
+         </div>`;
 
     showcaseHtml += `
       <div class="secondary-weapon-row">
@@ -8141,14 +8276,15 @@ function renderTopWeapons(matches) {
             <span class="sec-war-pct" style="color:var(--muted2)">${100 - hsPct}%</span>
           </div>
           
-          <div class="wpn-tooltip-card">
-            <div style="font-family:'Barlow Condensed', sans-serif; font-size:10px; font-weight:800; text-transform:uppercase; color:var(--accent); margin-bottom:4px; letter-spacing:0.5px;">Target Heatmap</div>
+          <div class="wpn-tooltip-card" style="width: 150px; gap: 8px;">
+            <div style="font-family:'Barlow Condensed', sans-serif; font-size:10px; font-weight:800; text-transform:uppercase; color:var(--accent); letter-spacing:0.5px; border-bottom: 1px solid rgba(255,255,255,0.06); width: 100%; text-align: center; padding-bottom: 3px; margin-bottom: 2px;">Target Heatmap</div>
             ${getHeatmapSvg(hsPct, 64)}
-            <div style="display:flex; justify-content:space-between; width:100%; font-family:'DM Mono',monospace; font-size:8px; color:#fff; border-top:1px solid rgba(255,255,255,0.06); padding-top:4px; margin-top:3px; box-sizing:border-box;">
+            <div style="display:flex; justify-content:space-between; width:100%; font-family:'DM Mono',monospace; font-size:8px; color:#fff; padding-bottom: 4px; box-sizing:border-box;">
               <span style="color:#ff4655">H:${Math.min(Math.round(hsPct * 0.7) + 5, 55)}%</span>
               <span style="color:rgba(255,70,85,0.75)">B:${100 - Math.min(Math.round(hsPct * 0.7) + 5, 55) - Math.max(Math.round((100 - Math.min(Math.round(hsPct * 0.7) + 5, 55)) * 0.08), 3)}%</span>
               <span style="color:rgba(255,70,85,0.45)">L:${Math.max(Math.round((100 - Math.min(Math.round(hsPct * 0.7) + 5, 55)) * 0.08), 3)}%</span>
             </div>
+            ${secSparklineTooltipBlock}
           </div>
         </div>
         <div class="sec-wpn-trend-col">${trendArrow}</div>
