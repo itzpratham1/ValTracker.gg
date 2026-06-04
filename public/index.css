@@ -5435,10 +5435,10 @@ input:checked + .slider:before {
   }
 }
 
-/* Expand mobile 2-column stats row up to 600px screens */
+/* Expand mobile 3-column stats row up to 600px screens */
 @media (max-width: 600px) {
   .panel-stat-row {
-    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-columns: repeat(3, 1fr) !important;
     gap: 8px !important;
     padding: 10px !important;
   }
