@@ -4733,16 +4733,15 @@ function buildMatchAnalysis(match, allMatches = null) {
 
   return `
     <div class="match-ai-tabs">
-      <button class="match-ai-tab-btn active" onclick="switchMatchAiTab(this, 'overview')">📊 Overview</button>
-      <button class="match-ai-tab-btn" onclick="switchMatchAiTab(this, 'tactical')">🎯 Tactical Insights</button>
+      <button class="match-ai-tab-btn active" onclick="switchMatchAiTab(this, 'analysis')">📊 Match Analysis</button>
       <button class="match-ai-tab-btn" onclick="switchMatchAiTab(this, 'timeline')">🎮 Timeline & Stats</button>
     </div>
     
-    <!-- TAB 1: OVERVIEW -->
-    <div class="match-ai-tab-pane active" data-tab="overview">
+    <!-- TAB 1: MATCH ANALYSIS -->
+    <div class="match-ai-tab-pane active" data-tab="analysis">
       <div class="match-ai-summary" style="margin-top: 6px;">${summary}</div>
       
-      <!-- Match Intel AI Clarification Banner -->
+      <!-- Match Intel AI Diagnostics Banner -->
       <div style="background: linear-gradient(135deg, rgba(232, 255, 71, 0.05) 0%, rgba(20, 20, 22, 0.5) 100%); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; margin: 12px 0 16px; display: flex; align-items: center; gap: 12px;">
         <div style="font-size: 20px; filter: drop-shadow(0 0 4px var(--accent));">📊</div>
         <div>
@@ -4766,11 +4765,8 @@ function buildMatchAnalysis(match, allMatches = null) {
         <div class="match-ai-verdict-label">⚡ Match Verdict</div>
         ${verdict}
       </div>
-    </div>
 
-    <!-- TAB 2: TACTICAL INSIGHTS -->
-    <div class="match-ai-tab-pane" data-tab="tactical">
-      <div class="match-ai-sections">
+      <div class="match-ai-sections" style="margin-top: 16px;">
         ${renderBlock('What You Did Well', '💪', 'good', 'green', strengths)}
         ${renderBlock('Needs Improvement', '⚠️', 'warn', 'red', improvements)}
         ${renderBlock('Action Tips For Next Game', '⚡', 'tip', 'yellow', tips, true)}
@@ -4788,7 +4784,7 @@ function buildMatchAnalysis(match, allMatches = null) {
       ` : ''}
     </div>
 
-    <!-- TAB 3: TIMELINE & STATS -->
+    <!-- TAB 2: TIMELINE & STATS -->
     <div class="match-ai-tab-pane" data-tab="timeline">
       <div class="match-ai-verdict" style="margin-top:0;">
         <div class="match-ai-verdict-label" style="display:flex; align-items:center; gap:8px; margin-bottom: 6px;">
@@ -8380,7 +8376,7 @@ function renderTopWeapons(matches) {
             : `<div class="weapon-img-fallback">${wpn}</div>`}
         </div>
         
-        <div style="display: flex; gap: 16px; align-items: stretch; justify-content: space-between; flex: 1;">
+        <div class="top-weapon-info-wrap">
           <div style="flex: 1.2; display: flex; flex-direction: column; justify-content: space-between; min-width: 0;">
             <div class="top-weapon-details" style="padding: 0;">
               <div class="top-weapon-name" style="margin: 0; line-height: 1;">${wpn}</div>
@@ -8470,7 +8466,7 @@ function renderTopWeapons(matches) {
          </div>`;
 
     showcaseHtml += `
-      <div class="secondary-weapon-row">
+      <div class="secondary-weapon-row wpn-tooltip-trigger">
         <div class="sec-weapon-img-wrap">
           ${imgUrl
             ? `<img class="sec-weapon-img" src="${imgUrl}" alt="${wpn}" onerror="this.parentElement.innerHTML='<div class=weapon-img-fallback>${wpn}</div>'">`
@@ -8490,7 +8486,7 @@ function renderTopWeapons(matches) {
             <span class="sec-weapon-lbl">HS Kill %</span>
           </div>
         </div>
-        <div class="sec-weapon-acc-bars wpn-tooltip-trigger">
+        <div class="sec-weapon-acc-bars">
           <div class="sec-weapon-acc-row">
             <span class="sec-war-lbl">HS</span>
             <div class="sec-war-bar-wrap">
@@ -8505,18 +8501,19 @@ function renderTopWeapons(matches) {
             </div>
             <span class="sec-war-pct" style="color:var(--muted2)">${100 - hsPct}%</span>
           </div>
-          
-          <div class="wpn-tooltip-card" style="width: 150px; gap: 8px;">
-            <div style="font-family:'Barlow Condensed', sans-serif; font-size:10px; font-weight:800; text-transform:uppercase; color:var(--accent); letter-spacing:0.5px; border-bottom: 1px solid rgba(255,255,255,0.06); width: 100%; text-align: center; padding-bottom: 3px; margin-bottom: 2px;">Target Heatmap</div>
-            ${getHeatmapSvg(hsPct, 64)}
-            <div style="display:flex; justify-content:space-between; width:100%; font-family:'DM Mono',monospace; font-size:8px; color:#fff; padding-bottom: 4px; box-sizing:border-box;">
-              <span style="color:#ff4655">H:${Math.min(Math.round(hsPct * 0.7) + 5, 55)}%</span>
-              <span style="color:rgba(255,70,85,0.75)">B:${100 - Math.min(Math.round(hsPct * 0.7) + 5, 55) - Math.max(Math.round((100 - Math.min(Math.round(hsPct * 0.7) + 5, 55)) * 0.08), 3)}%</span>
-              <span style="color:rgba(255,70,85,0.45)">L:${Math.max(Math.round((100 - Math.min(Math.round(hsPct * 0.7) + 5, 55)) * 0.08), 3)}%</span>
-            </div>
-            ${secSparklineTooltipBlock}
-          </div>
         </div>
+        
+        <div class="wpn-tooltip-card" style="width: 150px; gap: 8px;">
+          <div style="font-family:'Barlow Condensed', sans-serif; font-size:10px; font-weight:800; text-transform:uppercase; color:var(--accent); letter-spacing:0.5px; border-bottom: 1px solid rgba(255,255,255,0.06); width: 100%; text-align: center; padding-bottom: 3px; margin-bottom: 2px;">Target Heatmap</div>
+          ${getHeatmapSvg(hsPct, 64)}
+          <div style="display:flex; justify-content:space-between; width:100%; font-family:'DM Mono',monospace; font-size:8px; color:#fff; padding-bottom: 4px; box-sizing:border-box;">
+            <span style="color:#ff4655">H:${Math.min(Math.round(hsPct * 0.7) + 5, 55)}%</span>
+            <span style="color:rgba(255,70,85,0.75)">B:${100 - Math.min(Math.round(hsPct * 0.7) + 5, 55) - Math.max(Math.round((100 - Math.min(Math.round(hsPct * 0.7) + 5, 55)) * 0.08), 3)}%</span>
+            <span style="color:rgba(255,70,85,0.45)">L:${Math.max(Math.round((100 - Math.min(Math.round(hsPct * 0.7) + 5, 55)) * 0.08), 3)}%</span>
+          </div>
+          ${secSparklineTooltipBlock}
+        </div>
+        
         <div class="sec-wpn-trend-col">${trendArrow}</div>
       </div>
     `;
@@ -14483,7 +14480,128 @@ input:checked + .slider:before { transform:translateX(14px); background-color:#f
 
 .dc-insight-card-icon {
   font-size: 14px;
-}</style>
+}
+
+/* AI Analytics Mobile Styles & Overrides */
+.match-ai-tabs {
+  display: flex !important;
+  gap: 6px !important;
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.05) !important;
+  margin-bottom: 14px !important;
+  padding-bottom: 2px !important;
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+}
+
+.match-ai-tab-btn {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  color: var(--muted) !important;
+  font-family: 'Barlow Condensed', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  padding: 6px 12px !important;
+  cursor: pointer !important;
+  position: relative !important;
+  transition: var(--transition) !important;
+  border-radius: 0 !important;
+}
+
+.match-ai-tab-btn:hover {
+  color: #fff !important;
+}
+
+.match-ai-tab-btn.active {
+  color: var(--accent) !important;
+}
+
+.match-ai-tab-btn.active::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: -3px !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 2.5px !important;
+  background: var(--accent) !important;
+  box-shadow: 0 0 8px var(--accent) !important;
+  border-radius: 2px !important;
+}
+
+.match-ai-timeline-wrap {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  background: rgba(0, 0, 0, 0.25) !important;
+  padding: 12px !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  margin: 14px 0 !important;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Secondary Weapon hover tooltip updates for entire row trigger */
+.secondary-weapon-row.wpn-tooltip-trigger {
+  position: relative !important;
+  cursor: pointer !important;
+}
+
+.secondary-weapon-row.wpn-tooltip-trigger:hover {
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Position tooltip above the entire row when triggered */
+.secondary-weapon-row.wpn-tooltip-trigger .wpn-tooltip-card {
+  bottom: 110% !important;
+  left: 50% !important;
+  transform: translateX(-50%) translateY(8px) !important;
+  width: 160px !important;
+}
+
+.secondary-weapon-row.wpn-tooltip-trigger:hover .wpn-tooltip-card {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transform: translateX(-50%) translateY(0) !important;
+}
+
+/* Heatmap stack layout styles */
+.top-weapon-info-wrap {
+  display: flex !important;
+  gap: 16px !important;
+  align-items: stretch !important;
+  justify-content: space-between !important;
+  flex: 1 !important;
+}
+
+@media (max-width: 600px) {
+  .top-weapon-info-wrap {
+    flex-direction: column !important;
+    gap: 12px !important;
+    align-items: center !important;
+  }
+  
+  .top-weapon-info-wrap > div {
+    width: 100% !important;
+  }
+  
+  .top-weapon-showcase .wpn-heatmap-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    justify-content: center !important;
+    margin-top: 4px !important;
+  }
+}
+</style>
 <div class="glass-orb-2"></div>
 <!-- SESSION SUMMARY MODAL -->
 <div id="session-modal" style="display:none; position:fixed; inset:0; background:rgba(10,10,12,0.85); backdrop-filter:blur(10px); z-index:9999; align-items:center; justify-content:center;">
