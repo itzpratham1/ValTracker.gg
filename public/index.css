@@ -2179,7 +2179,7 @@ body::before {
 .role-kda { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; color: var(--muted); min-width: 44px; text-align: right; }
 
 /* ── WEAPON PERFORMANCE CARD ── */
-.weapons-card { grid-column: span 12; }
+.weapons-card { grid-column: span 12; overflow: visible !important; }
 .weapons-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
 .weapon-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; display: flex; align-items: center; gap: 14px; transition: var(--transition); }
 .weapon-card:hover { border-color: rgba(255,255,255,0.12); }
