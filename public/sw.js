@@ -1,4 +1,4 @@
-const CACHE_NAME = 'valtracker-v1';
+const CACHE_NAME = 'valtracker-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -25,7 +25,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch — network-first for API, cache-first for static
+// Fetch — Network-first for same-origin assets to ensure immediate updates, with cache fallback
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -36,17 +36,21 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Cache-first for static assets
+  // Network-first for static HTML, CSS, images
   event.respondWith(
-    caches.match(request).then((cached) => {
-      if (cached) return cached;
-      return fetch(request).then((response) => {
-        if (response.ok) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+    fetch(request).then((response) => {
+      if (response.ok) {
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+      }
+      return response;
+    }).catch(() => {
+      return caches.match(request).then((cached) => {
+        if (cached) return cached;
+        if (request.mode === 'navigate') {
+          return caches.match('/index.html');
         }
-        return response;
-      }).catch(() => caches.match('/index.html'));
+      });
     })
   );
 });
