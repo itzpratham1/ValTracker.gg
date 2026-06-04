@@ -1756,7 +1756,7 @@ body::before {
   top: 50%;
   transform: translateY(-50%);
   pointer-events: none;
-  z-index: 2;
+  z-index: 1;
 }
 .filter-icon-svg {
   display: inline-block;
@@ -1785,7 +1785,7 @@ body::before {
   appearance: none;
   -webkit-appearance: none;
   transition: color 0.2s ease;
-  z-index: 1;
+  z-index: 2;
   width: 100%;
 }
 .topbar-filter-capsule select:hover {
@@ -1800,7 +1800,7 @@ body::before {
   right: 10px;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 2;
+  z-index: 1;
 }
 
 /* ── PLAYER ACTIVE PILL ── */

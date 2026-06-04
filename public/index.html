@@ -6,6 +6,7 @@
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#030304">
 <title>ValTracker — Valorant Stats Tracker</title>
+<meta name="description" content="ValTracker is a premium, real-time stats tracker for Valorant. Analyse your competitive match history, weapon accuracy, maps, and agent performance.">
 <link rel="icon" type="image/png" href="logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
@@ -25,10 +26,10 @@
     <div class="landing-corner br"></div>
   </div>
 
-  <div class="landing-logo" style="display:flex; align-items:center; justify-content:center;">
+  <h1 class="landing-logo" style="display:flex; align-items:center; justify-content:center; margin-top:0;">
     <img src="logo.png" class="logo-icon" style="height:48px; width:auto; display:inline-block; vertical-align:middle; margin-right:16px; flex-shrink:0; filter: drop-shadow(0 0 12px rgba(255, 70, 85, 0.7)); object-fit: contain;">
     <span>ValTracker</span>
-  </div>
+  </h1>
   <div class="landing-tagline">Valorant Performance Tracker</div>
 
   <div class="landing-columns-wrap">
@@ -1999,7 +2000,7 @@ async function saveMatches(matches) {
       const actualMode = normalizeMode(m.metadata?.mode || m.metadata?.queue || window._currentMode || 'competitive');
       
       // Key includes player+mode so different players/modes don't mix
-      const storeKey = `${PLAYER_NAME}#${PLAYER_TAG}|${actualMode}|${id}`;
+      const storeKey = `${PLAYER_NAME.toLowerCase()}#${PLAYER_TAG.toLowerCase()}|${actualMode}|${id}`;
       
       const existing = existingMap[storeKey];
       const newHasDetails = m.rounds && m.rounds.length > 0 && m.rounds[0].player_stats && m.rounds[0].player_stats.length > 0;
@@ -2025,7 +2026,7 @@ async function loadAllMatches() {
     const req = tx.objectStore(STORE_NAME).index('date').getAll();
     req.onsuccess = () => {
       const currentModeNormalized = normalizeMode(window._currentMode || 'competitive');
-      const prefix = `${PLAYER_NAME}#${PLAYER_TAG}|${currentModeNormalized}|`;
+      const prefix = `${PLAYER_NAME.toLowerCase()}#${PLAYER_TAG.toLowerCase()}|${currentModeNormalized}|`;
       
       const all = (req.result || []).filter(r => {
         // Must start with prefix
@@ -2057,7 +2058,7 @@ async function clearPlayerMatches() {
   const db = await openDB();
   return new Promise((resolve, reject) => {
     const currentModeNormalized = normalizeMode(window._currentMode || 'competitive');
-    const prefix = `${PLAYER_NAME}#${PLAYER_TAG}|${currentModeNormalized}|`;
+    const prefix = `${PLAYER_NAME.toLowerCase()}#${PLAYER_TAG.toLowerCase()}|${currentModeNormalized}|`;
     // Use a key range: everything from prefix to prefix + \uffff (last unicode char)
     // This efficiently deletes all records whose matchId starts with the prefix
     const range = IDBKeyRange.bound(prefix, prefix + '\uffff', false, false);
