@@ -16,7 +16,7 @@
 <link rel="icon" type="image/png" href="logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
-<link rel="stylesheet" href="index.css?v=13.09">
+<link rel="stylesheet" href="index.css?v=13.10">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 </head>
@@ -14924,6 +14924,42 @@ function _mbnEnsureTracker() {
       });
     });
   }
+})();
+
+// ── PLAYER LOADED DETECTION — show bottom nav after player is fetched ──────
+(function() {
+  // If tracker-view is already visible on load (e.g. URL params), mark immediately
+  var tv = document.getElementById('tracker-view');
+  if (tv && tv.style.display !== 'none' && tv.style.display !== '') {
+    document.body.classList.add('player-loaded');
+  }
+
+  // Watch tracker-view for display changes
+  var observer = new MutationObserver(function() {
+    var tv2 = document.getElementById('tracker-view');
+    if (tv2 && tv2.style.display !== 'none' && tv2.style.display !== '') {
+      if (!document.body.classList.contains('player-loaded')) {
+        document.body.classList.add('player-loaded');
+        // Default to stats tab active
+        document.querySelectorAll('.mbn-item').forEach(function(b) { b.classList.remove('active'); });
+        var statsBtn = document.getElementById('mbn-stats');
+        if (statsBtn) statsBtn.classList.add('active');
+        _mbnCurrentTab = 'stats';
+      }
+    }
+  });
+
+  // Also watch landing for when it hides (gets class 'hidden' added)
+  var landing = document.getElementById('landing');
+  if (landing) {
+    observer.observe(landing, { attributes: true, attributeFilter: ['class', 'style'] });
+  }
+  if (tv) {
+    observer.observe(tv, { attributes: true, attributeFilter: ['style'] });
+  }
+
+  // Also observe document body for any dynamic tracker-view additions
+  observer.observe(document.body, { childList: true, subtree: false });
 })();
 </script>
 
