@@ -1962,6 +1962,13 @@ function openDB() {
   });
 }
 
+function normalizeMode(rawMode) {
+  if (!rawMode) return "";
+  const m = rawMode.toLowerCase().replace(/ /g, "").replace(/-/g, "");
+  if (m === "teamdm") return "teamdeathmatch";
+  return m;
+}
+
 async function saveMatches(matches) {
   const db = await openDB();
   
@@ -1987,8 +1994,11 @@ async function saveMatches(matches) {
     matches.forEach(m => {
       const id = m.metadata?.matchid || m.metadata?.match_id;
       if (!id) return;
+      
+      const actualMode = normalizeMode(m.metadata?.mode || m.metadata?.queue || window._currentMode || 'competitive');
+      
       // Key includes player+mode so different players/modes don't mix
-      const storeKey = `${PLAYER_NAME}#${PLAYER_TAG}|${window._currentMode||'competitive'}|${id}`;
+      const storeKey = `${PLAYER_NAME}#${PLAYER_TAG}|${actualMode}|${id}`;
       
       const existing = existingMap[storeKey];
       const newHasDetails = m.rounds && m.rounds.length > 0 && m.rounds[0].player_stats && m.rounds[0].player_stats.length > 0;
@@ -2013,8 +2023,17 @@ async function loadAllMatches() {
     const tx = db.transaction(STORE_NAME, 'readonly');
     const req = tx.objectStore(STORE_NAME).index('date').getAll();
     req.onsuccess = () => {
-      const prefix = `${PLAYER_NAME}#${PLAYER_TAG}|${window._currentMode||'competitive'}|`;
-      const all = (req.result || []).filter(r => r.matchId.startsWith(prefix));
+      const currentModeNormalized = normalizeMode(window._currentMode || 'competitive');
+      const prefix = `${PLAYER_NAME}#${PLAYER_TAG}|${currentModeNormalized}|`;
+      
+      const all = (req.result || []).filter(r => {
+        // Must start with prefix
+        if (!r.matchId.startsWith(prefix)) return false;
+        // Strict double-check: verify that the actual match mode matches current mode
+        const mMode = r.data?.metadata?.mode || r.data?.metadata?.queue;
+        return normalizeMode(mMode) === currentModeNormalized;
+      });
+      
       const records = all.sort((a,b) => (b.date||0)-(a.date||0));
       resolve(records.map(r => r.data));
     };
@@ -2036,7 +2055,8 @@ async function clearAllMatches() {
 async function clearPlayerMatches() {
   const db = await openDB();
   return new Promise((resolve, reject) => {
-    const prefix = `${PLAYER_NAME}#${PLAYER_TAG}|${window._currentMode||'competitive'}|`;
+    const currentModeNormalized = normalizeMode(window._currentMode || 'competitive');
+    const prefix = `${PLAYER_NAME}#${PLAYER_TAG}|${currentModeNormalized}|`;
     // Use a key range: everything from prefix to prefix + \uffff (last unicode char)
     // This efficiently deletes all records whose matchId starts with the prefix
     const range = IDBKeyRange.bound(prefix, prefix + '\uffff', false, false);
