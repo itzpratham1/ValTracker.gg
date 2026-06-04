@@ -4,13 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="referrer" content="no-referrer">
-<meta name="theme-color" content="#030304">
+<meta name="theme-color" content="#ff4655">
+<link rel="manifest" href="manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ValTracker">
+<link rel="apple-touch-icon" href="logo.png">
 <title>ValTracker — Valorant Stats Tracker</title>
 <meta name="description" content="ValTracker is a premium, real-time stats tracker for Valorant. Analyse your competitive match history, weapon accuracy, maps, and agent performance.">
 <link rel="icon" type="image/png" href="logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
-<link rel="stylesheet" href="index.css?v=13.08">
+<link rel="stylesheet" href="index.css?v=13.09">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 </head>
@@ -14766,5 +14772,160 @@ input:checked + .slider:before { transform:translateX(14px); background-color:#f
     </div>
   </div>
 </div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- MOBILE BOTTOM NAVIGATION BAR (PWA / Mobile App UX)      -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<nav id="mobile-bottom-nav" class="mobile-bottom-nav" role="navigation" aria-label="Main mobile navigation">
+
+  <button class="mbn-item active" id="mbn-home" onclick="mobileSwitchTab('home')" aria-label="Home">
+    <div class="mbn-icon-wrap">
+      <svg class="mbn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/></svg>
+    </div>
+    <span class="mbn-label">Home</span>
+    <span class="mbn-active-dot"></span>
+  </button>
+
+  <button class="mbn-item" id="mbn-stats" onclick="mobileSwitchTab('stats')" aria-label="Stats">
+    <div class="mbn-icon-wrap">
+      <svg class="mbn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    </div>
+    <span class="mbn-label">Stats</span>
+    <span class="mbn-active-dot"></span>
+  </button>
+
+  <button class="mbn-item mbn-center" id="mbn-matches" onclick="mobileSwitchTab('matches')" aria-label="Matches">
+    <div class="mbn-icon-wrap mbn-center-wrap">
+      <svg class="mbn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+    </div>
+    <span class="mbn-label">Matches</span>
+    <span class="mbn-active-dot"></span>
+  </button>
+
+  <button class="mbn-item" id="mbn-ai" onclick="mobileSwitchTab('ai')" aria-label="ValBot AI">
+    <div class="mbn-icon-wrap">
+      <svg class="mbn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
+    </div>
+    <span class="mbn-label">ValBot</span>
+    <span class="mbn-active-dot"></span>
+  </button>
+
+  <button class="mbn-item" id="mbn-esports" onclick="mobileSwitchTab('esports')" aria-label="Esports">
+    <div class="mbn-icon-wrap">
+      <svg class="mbn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    </div>
+    <span class="mbn-label">Esports</span>
+    <span class="mbn-active-dot"></span>
+  </button>
+
+</nav>
+
+<script>
+// ── PWA SERVICE WORKER REGISTRATION ──────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js').catch(function() {});
+  });
+}
+
+// ── MOBILE BOTTOM NAV CONTROLLER ─────────────────────────────────────────
+var _mbnCurrentTab = 'home';
+
+function isMobileViewport() {
+  return window.innerWidth <= 768;
+}
+
+function mobileSwitchTab(tab) {
+  _mbnCurrentTab = tab;
+
+  // Update active states
+  document.querySelectorAll('.mbn-item').forEach(function(btn) {
+    btn.classList.remove('active');
+  });
+  var activeBtn = document.getElementById('mbn-' + tab);
+  if (activeBtn) {
+    activeBtn.classList.add('active');
+    // Trigger pop animation
+    activeBtn.classList.remove('mbn-pop');
+    void activeBtn.offsetWidth;
+    activeBtn.classList.add('mbn-pop');
+  }
+
+  switch (tab) {
+    case 'home':
+      var trackerView = document.getElementById('tracker-view');
+      var landing = document.getElementById('landing');
+      if (trackerView && trackerView.style.display !== 'none') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (landing) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      break;
+    case 'stats':
+      _mbnEnsureTracker();
+      setTimeout(function() { if(typeof smoothScrollTo === 'function') smoothScrollTo('sec-combat', null); }, 100);
+      break;
+    case 'matches':
+      _mbnEnsureTracker();
+      setTimeout(function() { if(typeof smoothScrollTo === 'function') smoothScrollTo('sec-matches', null); }, 100);
+      break;
+    case 'ai':
+      _mbnEnsureTracker();
+      setTimeout(function() { if(typeof smoothScrollTo === 'function') smoothScrollTo('sec-ai', null); }, 100);
+      break;
+    case 'esports':
+      if (typeof toggleMainView === 'function') toggleMainView('esports');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      break;
+  }
+}
+
+function _mbnEnsureTracker() {
+  var tv = document.getElementById('tracker-view');
+  if (tv && tv.style.display === 'none') {
+    // trigger tracker view
+    if (typeof toggleMainView === 'function') toggleMainView('tracker');
+  }
+}
+
+// Sync bottom nav when user scrolls (IntersectionObserver)
+(function() {
+  var sectionTabMap = {
+    'sec-combat':      'stats',
+    'sec-performance': 'stats',
+    'sec-trend':       'stats',
+    'sec-agents':      'stats',
+    'sec-maps':        'stats',
+    'sec-weapons':     'stats',
+    'sec-matches':     'matches',
+    'sec-ai':          'ai',
+    'sec-deep':        'ai',
+    'sec-lab':         'stats',
+  };
+
+  function syncNav(id) {
+    var tab = sectionTabMap[id];
+    if (!tab || tab === _mbnCurrentTab || !isMobileViewport()) return;
+    _mbnCurrentTab = tab;
+    document.querySelectorAll('.mbn-item').forEach(function(btn) { btn.classList.remove('active'); });
+    var el = document.getElementById('mbn-' + tab);
+    if (el) el.classList.add('active');
+  }
+
+  if ('IntersectionObserver' in window) {
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) { if (e.isIntersecting) syncNav(e.target.id); });
+    }, { threshold: 0.4 });
+
+    document.addEventListener('DOMContentLoaded', function() {
+      Object.keys(sectionTabMap).forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) obs.observe(el);
+      });
+    });
+  }
+})();
+</script>
+
 </body>
 </html>

@@ -1,0 +1,26 @@
+{
+  "name": "ValTracker — Valorant Stats",
+  "short_name": "ValTracker",
+  "description": "Premium real-time Valorant stats tracker — match history, weapon accuracy, AI analysis & more.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#030304",
+  "theme_color": "#ff4655",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["games", "sports"],
+  "screenshots": []
+}
