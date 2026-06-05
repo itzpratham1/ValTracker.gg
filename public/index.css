@@ -123,6 +123,8 @@ body::before {
   text-transform: uppercase;
   line-height: 1.4 !important;
   overflow: visible !important;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 .logo span {
   color: var(--accent);

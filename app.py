@@ -462,6 +462,10 @@ def overlay():
     resp.headers["Expires"] = "0"
     return resp
 
+@app.route("/favicon.ico")
+def favicon():
+    return send_from_directory(app.static_folder, "logo.png", mimetype="image/png")
+
 @app.errorhandler(404)
 def page_not_found(e):
     resp = make_response(send_from_directory(app.static_folder, "404.html"))
@@ -2033,7 +2037,9 @@ def get_share_page(share_id):
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ValTracker — Performance Flex Card</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M2,2 L10.5,22 L13.5,22 L22,2 L17.5,2 L12,13 L6.5,2 Z' fill='%23ff4655'/%3E%3Cpolygon points='12,2 15.5,6 12,10 8.5,6' fill='%23e8ff47'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/png" href="/logo.png">
+  <link rel="shortcut icon" href="/logo.png" type="image/x-icon">
+  <link rel="apple-touch-icon" href="/logo.png">
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Barlow+Condensed:wght@800;900&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
   
   <!-- Twitter Card (First for timeline rendering compatibility) -->
