@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="/logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
-<link rel="stylesheet" href="index.css?v=13.99">
+<link rel="stylesheet" href="index.css?v=14.02">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 </head>
@@ -90,14 +90,20 @@
 
       <!-- Loading State Container -->
       <div id="landing-loading-card" style="display: none;">
+        <div class="loader-scanlines"></div>
+        <div class="loader-hud-header">
+          <span class="hud-blink-dot"></span>
+          <span class="hud-status-text">SECURE LINK ESTABLISHED</span>
+        </div>
         <div class="loading-agent-spinner">
           <svg viewBox="0 0 100 100" class="spinner-svg">
-            <circle cx="50" cy="50" r="45" class="spinner-circle"></circle>
+            <circle cx="50" cy="50" r="46" class="spinner-circle-outer"></circle>
+            <circle cx="50" cy="50" r="38" class="spinner-circle-inner"></circle>
           </svg>
           <div class="spinner-center-icon">⚡</div>
         </div>
-        <div class="loading-title">ANALYSING AGENT INTEL</div>
-        <div class="loading-subtitle">ACCESSING VALTRACKER DB...</div>
+        <div class="loading-title">FETCHING PROFILE</div>
+        <div class="loading-subtitle" id="loading-subtitle-text">ACCESSING VALTRACKER DB...</div>
         
         <div class="loading-progress-bar">
           <div class="loading-progress-fill" id="loading-progress-fill"></div>
@@ -2244,6 +2250,14 @@ function startLoadingRotator() {
   
   form.style.display = 'none';
   card.style.display = 'flex';
+  
+  // Set dynamic subtitle for target player info
+  const subtitleEl = document.getElementById('loading-subtitle-text');
+  if (subtitleEl) {
+    const region = (document.getElementById('l-region')?.value || 'ap').toUpperCase();
+    const mode = (document.getElementById('l-mode')?.value || 'competitive').toUpperCase();
+    subtitleEl.innerHTML = `SYNCING <span style="color:var(--accent); font-weight:700;">${PLAYER_NAME}#${PLAYER_TAG}</span> [${region} · ${mode}]`;
+  }
   
   const progressFill = document.getElementById('loading-progress-fill');
   if (progressFill) progressFill.style.width = '5%';
