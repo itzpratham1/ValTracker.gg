@@ -6212,12 +6212,23 @@ select option {
 
 .loading-tip-text {
   font-family: 'Inter', sans-serif;
-  font-size: 12px;
+  font-size: 14.5px;
   line-height: 1.6;
   color: var(--text);
-  font-weight: 400;
+  font-weight: 500;
   transition: opacity 0.2s ease;
   z-index: 2;
+}
+
+.loading-estimate {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--muted2);
+  letter-spacing: 0.5px;
+  margin-top: 18px;
+  text-transform: uppercase;
+  z-index: 2;
+  opacity: 0.75;
 }
 
 /* Mobile Responsive Adjustments */
@@ -6251,8 +6262,12 @@ select option {
     min-height: 95px;
   }
   .loading-tip-text {
-    font-size: 11px;
+    font-size: 13px;
     line-height: 1.5;
+  }
+  .loading-estimate {
+    font-size: 8px;
+    margin-top: 14px;
   }
 }
 
