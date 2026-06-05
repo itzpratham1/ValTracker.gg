@@ -6001,3 +6001,158 @@ select option {
   background-color: #121214 !important;
   color: #ffffff !important;
 }
+
+/* ── PREMIUM VALORANT LOADING INTEL ROTATOR ── */
+#landing-loading-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 15px;
+  text-align: center;
+  min-height: 380px;
+  animation: loadingCardFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes loadingCardFadeIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.loading-agent-spinner {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  margin-bottom: 22px;
+}
+
+.spinner-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.spinner-circle {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  stroke-dasharray: 283;
+  stroke-dashoffset: 280;
+  transform-origin: 50% 50%;
+  animation: spinnerCircleShift 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes spinnerCircleShift {
+  0% {
+    stroke-dashoffset: 280;
+    transform: rotate(0deg);
+  }
+  50% {
+    stroke-dashoffset: 75;
+    transform: rotate(180deg);
+  }
+  100% {
+    stroke-dashoffset: 280;
+    transform: rotate(360deg);
+  }
+}
+
+.spinner-center-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 20px;
+  line-height: 1;
+  color: var(--accent);
+  text-shadow: 0 0 8px rgba(232, 255, 71, 0.4);
+  animation: spinnerIconPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes spinnerIconPulse {
+  0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.9); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+}
+
+.loading-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 19px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.loading-subtitle {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--accent);
+  letter-spacing: 2px;
+  margin-bottom: 24px;
+  text-transform: uppercase;
+  animation: pulseLoadingSub 2s ease-in-out infinite;
+}
+
+@keyframes pulseLoadingSub {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.loading-progress-bar {
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 1px;
+  margin-bottom: 28px;
+  overflow: hidden;
+  position: relative;
+}
+
+.loading-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  width: 5%;
+  border-radius: 1px;
+  box-shadow: 0 0 6px var(--accent);
+  transition: width 0.3s ease-out;
+}
+
+.loading-tip-container {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 20px;
+  width: 100%;
+  min-height: 110px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  transition: opacity 0.25s ease;
+}
+
+.loading-tip-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  font-weight: 600;
+  color: var(--muted);
+  border: 1px solid var(--border2);
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.loading-tip-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text);
+  font-weight: 400;
+  transition: opacity 0.2s ease;
+}
+

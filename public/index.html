@@ -35,55 +35,79 @@
   <div class="landing-tagline">Valorant Performance Tracker</div>
 
   <div class="landing-columns-wrap">
-    <div class="landing-card" style="margin: 0; flex: 1; min-width: 320px; max-width: 440px;">
-      <div class="landing-card-title">Look up a player</div>
-      <div class="landing-card-sub">Enter a Riot ID to view stats, match history &amp; analysis</div>
+    <div class="landing-card" style="margin: 0; flex: 1; min-width: 320px; max-width: 440px; position: relative;">
+      <!-- Lookup Form -->
+      <div id="landing-lookup-form">
+        <div class="landing-card-title">Look up a player</div>
+        <div class="landing-card-sub">Enter a Riot ID to view stats, match history &amp; analysis</div>
 
-      <div class="landing-field-label">Riot ID</div>
-      <div class="landing-input-row" style="position: relative;">
-        <input class="landing-input" id="l-name" type="text" placeholder="PlayerName" autocomplete="off" spellcheck="false">
-        <span class="landing-input-hash">#</span>
-        <input class="landing-input landing-input-tag" id="l-tag" type="text" placeholder="TAG" maxlength="8" autocomplete="off" spellcheck="false">
-        <div id="landing-search-dropdown" class="search-dropdown"></div>
-      </div>
-
-      <div class="landing-row2">
-        <div>
-          <div class="landing-field-label">Region</div>
-          <select class="landing-select" id="l-region">
-            <option value="ap">AP — Asia Pacific</option>
-            <option value="na">NA — North America</option>
-            <option value="eu">EU — Europe</option>
-            <option value="kr">KR — Korea</option>
-          </select>
+        <div class="landing-field-label">Riot ID</div>
+        <div class="landing-input-row" style="position: relative;">
+          <input class="landing-input" id="l-name" type="text" placeholder="PlayerName" autocomplete="off" spellcheck="false">
+          <span class="landing-input-hash">#</span>
+          <input class="landing-input landing-input-tag" id="l-tag" type="text" placeholder="TAG" maxlength="8" autocomplete="off" spellcheck="false">
+          <div id="landing-search-dropdown" class="search-dropdown"></div>
         </div>
-        <div>
-          <div class="landing-field-label">Mode</div>
-          <select class="landing-select" id="l-mode">
-            <option value="competitive">Competitive</option>
-            <option value="unrated">Unrated</option>
-            <option value="deathmatch">Deathmatch</option>
-            <option value="teamdeathmatch">Team DM</option>
-            <option value="swiftplay">Swiftplay</option>
-            <option value="spikerush">Spike Rush</option>
-          </select>
+
+        <div class="landing-row2">
+          <div>
+            <div class="landing-field-label">Region</div>
+            <select class="landing-select" id="l-region">
+              <option value="ap">AP — Asia Pacific</option>
+              <option value="na">NA — North America</option>
+              <option value="eu">EU — Europe</option>
+              <option value="kr">KR — Korea</option>
+            </select>
+          </div>
+          <div>
+            <div class="landing-field-label">Mode</div>
+            <select class="landing-select" id="l-mode">
+              <option value="competitive">Competitive</option>
+              <option value="unrated">Unrated</option>
+              <option value="deathmatch">Deathmatch</option>
+              <option value="teamdeathmatch">Team DM</option>
+              <option value="swiftplay">Swiftplay</option>
+              <option value="spikerush">Spike Rush</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="landing-btn" id="l-btn" onclick="landingFetch()">▶ View Stats</button>
+        <div class="landing-error" id="l-error"></div>
+
+        <div class="landing-divider">
+          <div class="landing-divider-line"></div>
+          <div class="landing-divider-txt">or jump to</div>
+          <div class="landing-divider-line"></div>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div class="landing-quick-label" style="margin-bottom:0">My Profile</div>
+          <button onclick="setMyProfile()" style="background:none;border:none;font-family:'DM Mono',monospace;font-size:9px;color:var(--accent);letter-spacing:1px;cursor:pointer;padding:0">SET AS MY PROFILE ›</button>
+        </div>
+        <div id="landing-profile-wrap"><!-- filled by JS --></div>
+      </div>
+
+      <!-- Loading State Container -->
+      <div id="landing-loading-card" style="display: none;">
+        <div class="loading-agent-spinner">
+          <svg viewBox="0 0 100 100" class="spinner-svg">
+            <circle cx="50" cy="50" r="45" class="spinner-circle"></circle>
+          </svg>
+          <div class="spinner-center-icon">⚡</div>
+        </div>
+        <div class="loading-title">ANALYSING AGENT INTEL</div>
+        <div class="loading-subtitle">ACCESSING VALTRACKER DB...</div>
+        
+        <div class="loading-progress-bar">
+          <div class="loading-progress-fill" id="loading-progress-fill"></div>
+        </div>
+
+        <div class="loading-tip-container">
+          <div class="loading-tip-tag" id="loading-tip-tag">VCT META INTEL</div>
+          <div class="loading-tip-text" id="loading-tip-text">Jett pick rate is 78% on Ascent in recent VCT matches.</div>
         </div>
       </div>
-
-      <button class="landing-btn" id="l-btn" onclick="landingFetch()">▶ View Stats</button>
-      <div class="landing-error" id="l-error"></div>
-
-      <div class="landing-divider">
-        <div class="landing-divider-line"></div>
-        <div class="landing-divider-txt">or jump to</div>
-        <div class="landing-divider-line"></div>
-      </div>
-
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <div class="landing-quick-label" style="margin-bottom:0">My Profile</div>
-        <button onclick="setMyProfile()" style="background:none;border:none;font-family:'DM Mono',monospace;font-size:9px;color:var(--accent);letter-spacing:1px;cursor:pointer;padding:0">SET AS MY PROFILE ›</button>
-      </div>
-      <div id="landing-profile-wrap"><!-- filled by JS --></div>
     </div>
 
     <!-- RECENT SEARCHES & BOOKMARKS CARD -->
@@ -2083,8 +2107,216 @@ async function getMatchCount() {
   });
 }
 
+// ── LOADING OVERLAY TIPS & LORE ROTATOR SYSTEM ──
+const GENERAL_TIPS = [
+  { tag: "CROSSHAIR PLACEMENT", text: "Always keep your crosshair at head height where enemies are likely to appear. Do not aim at the floor." },
+  { tag: "ECONOMY STRATEGY", text: "Communicate with your team to buy together. Buying a rifle when your team has pistols throws away round win percentages." },
+  { tag: "MAP ROTATIONS", text: "When rotating on defense, avoid running through exposed choke points. Take safe routes to preserve your life." },
+  { tag: "ABILITY UTILITY", text: "Don't hold onto your abilities until you die. Use flashes and smokes to secure space or slow down enemy rushes." },
+  { tag: "MINIMAP AWARENESS", text: "Glance at your minimap frequently to track spotted enemies, spike placement, and friendly smoke cover." },
+  { tag: "PEEKING ADVANTAGE", text: "The player farther from the corner has angle advantage. Peek wider from corners to spot enemies first." },
+  { tag: "RECOIL CONTROL", text: "After the first 3-4 shots, rifle recoil becomes random. Pull down slightly and use short bursts or taps at long ranges." },
+  { tag: "COMMUNICATION", text: "Call out enemy locations, damage dealt, and agent names instead of saying 'on my body' or 'he's there'." }
+];
+
+const AGENT_LORE = [
+  { tag: "AGENT INTEL: JETT", text: "Hailing from South Korea, Jett is an agile duelist who relies on wind power to slash through defenses and evade danger." },
+  { tag: "AGENT INTEL: OMEN", text: "A shadow hunter of mysterious origin, Omen rips across the battlefield, blinding enemies and teleporting behind lines." },
+  { tag: "AGENT INTEL: REYNA", text: "Forged in the heart of Mexico, Reyna dominates single combat, feeding on soul orbs left by enemies she slays." },
+  { tag: "AGENT INTEL: SOVA", text: "Born in the tundra of Russia, Sova tracks, finds, and eliminates enemies with ruthless efficiency using his custom bow." },
+  { tag: "AGENT INTEL: VIPER", text: "An American chemist, Viper deploys arrays of poisonous chemical devices to control the battlefield and choke enemy vision." },
+  { tag: "AGENT INTEL: CYPHER", text: "The Moroccan information broker, Cypher is a one-man surveillance network who keeps tabs on every enemy move." }
+];
+
+let _loadingTipsQueue = [...GENERAL_TIPS, ...AGENT_LORE];
+let _loadingRotatorInterval = null;
+let _loadingProgressInterval = null;
+let _currentTipIndex = 0;
+
+function generateVctTrivia(comps) {
+  if (!comps || !comps.length) return [];
+  const trivia = [];
+  try {
+    const agentCounts = {};
+    let totalComps = comps.length;
+    const mapAgentCounts = {};
+    const mapTotals = {};
+    const agentWinCounts = {};
+    const agentMatchCounts = {};
+    
+    comps.forEach(c => {
+      const agents = c.agents || [];
+      const map = c.map_name;
+      const won = c.has_won;
+      
+      if (map) {
+        mapTotals[map] = (mapTotals[map] || 0) + 1;
+        if (!mapAgentCounts[map]) mapAgentCounts[map] = {};
+      }
+      
+      agents.forEach(a => {
+        const normalized = a.charAt(0).toUpperCase() + a.slice(1);
+        agentCounts[normalized] = (agentCounts[normalized] || 0) + 1;
+        agentMatchCounts[normalized] = (agentMatchCounts[normalized] || 0) + 1;
+        if (won) {
+          agentWinCounts[normalized] = (agentWinCounts[normalized] || 0) + 1;
+        }
+        if (map) {
+          mapAgentCounts[map][normalized] = (mapAgentCounts[map][normalized] || 0) + 1;
+        }
+      });
+    });
+    
+    Object.keys(agentCounts).forEach(agent => {
+      const picks = agentCounts[agent];
+      const rate = Math.round((picks / totalComps) * 100);
+      if (rate > 5) {
+        trivia.push({
+          tag: "VCT AGENT PICK RATE",
+          text: `In recent professional tournaments, ${agent} was picked by ${rate}% of all teams.`
+        });
+      }
+      const matches = agentMatchCounts[agent];
+      if (matches >= 10) {
+        const winRate = Math.round((agentWinCounts[agent] / matches) * 100);
+        trivia.push({
+          tag: "VCT AGENT PERFORMANCE",
+          text: `${agent} currently holds a ${winRate}% win rate when selected in professional matches.`
+        });
+      }
+    });
+    
+    Object.keys(mapAgentCounts).forEach(map => {
+      const mapTotal = mapTotals[map];
+      if (mapTotal < 10) return;
+      const agentsOnMap = mapAgentCounts[map];
+      Object.keys(agentsOnMap).forEach(agent => {
+        const picks = agentsOnMap[agent];
+        const rate = Math.round((picks / mapTotal) * 100);
+        const capitalizedMap = map.charAt(0).toUpperCase() + map.slice(1);
+        if (rate > 25) {
+          trivia.push({
+            tag: `VCT META: ${capitalizedMap.toUpperCase()}`,
+            text: `${agent} is highly favored on ${capitalizedMap}, with a ${rate}% pick rate in pro matches.`
+          });
+        }
+      });
+    });
+    
+    const recentMatches = comps.filter(c => c.has_won && c.score && c.opposing_team).slice(0, 30);
+    if (recentMatches.length) {
+      for (let i = 0; i < 6; i++) {
+        const randMatch = recentMatches[Math.floor(Math.random() * recentMatches.length)];
+        const capitalizedMap = randMatch.map_name ? (randMatch.map_name.charAt(0).toUpperCase() + randMatch.map_name.slice(1)) : "";
+        const cleanEvent = randMatch.event_name ? randMatch.event_name.replace(/Group Stage–|Swiss Stage–|Playoffs–/g, "") : "VCT Tour";
+        trivia.push({
+          tag: "VCT RECENT MATCH",
+          text: `${randMatch.team_name} defeated ${randMatch.opposing_team} with a score of ${randMatch.score} on ${capitalizedMap} during the ${cleanEvent}.`
+        });
+      }
+    }
+  } catch (e) {
+    console.error("Failed to generate VCT trivia:", e);
+  }
+  return trivia;
+}
+
+async function loadVctComps() {
+  try {
+    const res = await fetch('/vct_pro_comps.json');
+    if (res.ok) {
+      const comps = await res.json();
+      const vctTrivia = generateVctTrivia(comps);
+      if (vctTrivia.length > 0) {
+        _loadingTipsQueue = [...GENERAL_TIPS, ...AGENT_LORE, ...vctTrivia];
+        console.log(`[Loading Rotator] Loaded VCT comps, generated ${vctTrivia.length} VCT stats trivia.`);
+      }
+    }
+  } catch (e) {
+    console.warn("Failed to load VCT comps for trivia:", e);
+  }
+}
+
+function startLoadingRotator() {
+  const form = document.getElementById('landing-lookup-form');
+  const card = document.getElementById('landing-loading-card');
+  if (!form || !card) return;
+  
+  form.style.display = 'none';
+  card.style.display = 'flex';
+  
+  const progressFill = document.getElementById('loading-progress-fill');
+  if (progressFill) progressFill.style.width = '5%';
+  
+  _currentTipIndex = Math.floor(Math.random() * _loadingTipsQueue.length);
+  updateLoadingTip();
+  
+  if (_loadingRotatorInterval) clearInterval(_loadingRotatorInterval);
+  _loadingRotatorInterval = setInterval(() => {
+    _currentTipIndex = (_currentTipIndex + 1) % _loadingTipsQueue.length;
+    const tipText = document.getElementById('loading-tip-text');
+    const tipTag = document.getElementById('loading-tip-tag');
+    if (tipText && tipTag) {
+      tipText.style.opacity = '0';
+      setTimeout(() => {
+        updateLoadingTip();
+        tipText.style.opacity = '1';
+      }, 200);
+    } else {
+      updateLoadingTip();
+    }
+  }, 4000);
+  
+  let progress = 5;
+  if (_loadingProgressInterval) clearInterval(_loadingProgressInterval);
+  _loadingProgressInterval = setInterval(() => {
+    if (progress < 40) {
+      progress += Math.floor(Math.random() * 8) + 4;
+    } else if (progress < 75) {
+      progress += Math.floor(Math.random() * 5) + 2;
+    } else if (progress < 90) {
+      progress += Math.floor(Math.random() * 2) + 1;
+    }
+    if (progressFill) progressFill.style.width = `${progress}%`;
+  }, 300);
+}
+
+function updateLoadingTip() {
+  const tagEl = document.getElementById('loading-tip-tag');
+  const textEl = document.getElementById('loading-tip-text');
+  if (!tagEl || !textEl) return;
+  const current = _loadingTipsQueue[_currentTipIndex];
+  tagEl.textContent = current.tag;
+  textEl.textContent = current.text;
+}
+
+function stopLoadingRotator() {
+  if (_loadingRotatorInterval) {
+    clearInterval(_loadingRotatorInterval);
+    _loadingRotatorInterval = null;
+  }
+  if (_loadingProgressInterval) {
+    clearInterval(_loadingProgressInterval);
+    _loadingProgressInterval = null;
+  }
+  
+  const progressFill = document.getElementById('loading-progress-fill');
+  if (progressFill) progressFill.style.width = '100%';
+  
+  setTimeout(() => {
+    const form = document.getElementById('landing-lookup-form');
+    const card = document.getElementById('landing-loading-card');
+    if (form && card) {
+      card.style.display = 'none';
+      form.style.display = 'block';
+    }
+  }, 200);
+}
+
 // Load stored matches on page open
 window.addEventListener('DOMContentLoaded', async () => {
+  // Trigger loading VCT comps for trivia rotator immediately in the background
+  loadVctComps();
   // Fetch live agent/map assets from valorant-api.com (no auth needed, free)
   initAssetCache();
   try {
@@ -7483,8 +7715,10 @@ async function landingFetch() {
   window._currentMode = mode;
 
   try {
+    startLoadingRotator();
     await fetchAll();
   } catch (err) {
+    stopLoadingRotator();
     console.error("Landing fetch failed:", err);
     
     // Nice Valorant-styled error box message
@@ -7510,12 +7744,14 @@ async function landingFetch() {
     const gf = document.getElementById('global-footer');
     if (gf) gf.style.display = 'none';
   } finally {
+    stopLoadingRotator();
     btn.disabled = false;
     btn.textContent = '▶ View Stats';
   }
 }
 
 function dismissLanding() {
+  stopLoadingRotator();
   statsLoaded = true;
   const el = document.getElementById('landing');
   if (el) {
