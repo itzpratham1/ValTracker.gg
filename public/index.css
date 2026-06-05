@@ -2264,12 +2264,19 @@ body::before {
 .landing-quick-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--win); flex-shrink: 0; }
 .landing-noise { position: fixed; inset: 0; pointer-events: none; z-index: 501; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E"); opacity: 0.02; }
 
-.landing-corners { position: absolute; inset: 0; pointer-events: none; }
+.landing-corners { position: fixed; inset: 0; pointer-events: none; z-index: 10; }
 .landing-corner { position: absolute; width: 40px; height: 40px; }
 .landing-corner.tl { top: 24px; left: 24px; border-top: 1px solid rgba(232,255,71,0.2); border-left: 1px solid rgba(232,255,71,0.2); }
 .landing-corner.tr { top: 24px; right: 24px; border-top: 1px solid rgba(232,255,71,0.2); border-right: 1px solid rgba(232,255,71,0.2); }
 .landing-corner.bl { bottom: 24px; left: 24px; border-bottom: 1px solid rgba(232,255,71,0.2); border-left: 1px solid rgba(232,255,71,0.2); }
 .landing-corner.br { bottom: 24px; right: 24px; border-bottom: 1px solid rgba(232,255,71,0.2); border-right: 1px solid rgba(232,255,71,0.2); }
+
+@media (max-width: 600px) {
+  .landing-corner.tl { top: 12px; left: 12px; }
+  .landing-corner.tr { top: 12px; right: 12px; }
+  .landing-corner.bl { bottom: 12px; left: 12px; }
+  .landing-corner.br { bottom: 12px; right: 12px; }
+}
 
 /* ── SHOT ACCURACY & FIGURES ── */
 .acc-figure {
@@ -6010,7 +6017,7 @@ select option {
   justify-content: center;
   padding: 30px 20px;
   text-align: center;
-  min-height: 380px;
+  height: 390px;
   position: relative;
   overflow: hidden;
   background: rgba(10, 10, 14, 0.45);
@@ -6186,7 +6193,7 @@ select option {
   border-radius: 8px;
   padding: 16px 20px;
   width: 100%;
-  min-height: 110px;
+  height: 142px; /* Stable height to prevent height transitions from shifting layout */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -6208,6 +6215,7 @@ select option {
   letter-spacing: 1.5px;
   margin-bottom: 10px;
   background: rgba(255, 255, 255, 0.02);
+  transition: opacity 0.25s ease;
 }
 
 .loading-tip-text {
@@ -6216,7 +6224,7 @@ select option {
   line-height: 1.6;
   color: var(--text);
   font-weight: 500;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.25s ease;
   z-index: 2;
 }
 
@@ -6234,7 +6242,7 @@ select option {
 /* Mobile Responsive Adjustments */
 @media (max-width: 480px) {
   #landing-loading-card {
-    min-height: 310px;
+    height: 320px;
     padding: 24px 12px;
   }
   .loading-agent-spinner {
@@ -6259,7 +6267,7 @@ select option {
   }
   .loading-tip-container {
     padding: 12px 14px;
-    min-height: 95px;
+    height: 115px;
   }
   .loading-tip-text {
     font-size: 13px;
