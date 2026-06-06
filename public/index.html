@@ -38,63 +38,27 @@ body {
   background: radial-gradient(circle at 50% 0%, #111019 0%, #050508 100%) !important;
 }
 
+/* Responsive, non-overflowing loading card height */
+#landing-loading-card {
+  height: auto !important;
+  min-height: 400px !important;
+  padding: 32px 24px !important;
+}
+
 /* Unique Valorant-themed loading progress bar styles */
-.loading-progress-container {
-  width: 100%;
-  max-width: 340px;
-  margin: 10px auto 24px auto;
-  position: relative;
-  z-index: 2;
-}
-.loading-progress-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  color: var(--muted);
-  letter-spacing: 1px;
-  margin-bottom: 6px;
-  padding: 0 4px;
-}
-.loading-progress-status {
-  color: var(--accent) !important;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.pulse-dot {
-  width: 6px;
-  height: 6px;
-  background-color: var(--accent);
-  border-radius: 50%;
-  display: inline-block;
-  animation: pulse-red 1.5s infinite ease-in-out;
-  box-shadow: 0 0 8px var(--accent);
-}
-@keyframes pulse-red {
-  0% { transform: scale(0.95); opacity: 0.5; }
-  50% { transform: scale(1.15); opacity: 1; box-shadow: 0 0 12px var(--accent); }
-  100% { transform: scale(0.95); opacity: 0.5; }
-}
-.loading-progress-percentage {
-  color: #fff !important;
-  font-weight: 700;
-}
 .loading-progress-bar {
   width: 100% !important;
-  height: 10px !important;
-  background: rgba(20, 20, 26, 0.75) !important;
-  border: 1.5px solid var(--accentborder) !important;
+  max-width: 300px !important;
+  height: 8px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 0px !important;
-  margin-bottom: 0px !important;
+  margin: 12px auto 28px auto !important;
   overflow: hidden !important;
   position: relative !important;
   z-index: 2 !important;
-  transform: skewX(-12deg) !important;
-  box-shadow: inset 0 0 6px rgba(0,0,0,0.8), 0 0 10px rgba(250, 68, 84, 0.05) !important;
+  transform: skewX(-15deg) !important;
+  box-shadow: inset 0 0 4px rgba(0,0,0,0.5) !important;
 }
 .loading-progress-fill {
   height: 100% !important;
@@ -105,21 +69,10 @@ body {
     transparent 6px,
     transparent 9px
   ) !important;
-  width: 5% !important;
+  width: 5%;
   border-radius: 0px !important;
-  box-shadow: 0 0 12px var(--accentdim) !important;
-  transition: width 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
-}
-.loading-progress-footer {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  font-family: 'DM Mono', monospace;
-  font-size: 8px;
-  color: var(--muted2);
-  margin-top: 5px;
-  letter-spacing: 0.5px;
-  padding: 0 4px;
+  box-shadow: 0 0 10px var(--accentdim) !important;
+  transition: width 0.3s ease-out !important;
 }
 </style>
 
@@ -211,19 +164,8 @@ body {
         <div class="loading-title">FETCHING PROFILE</div>
         <div class="loading-subtitle" id="loading-subtitle-text">ACCESSING VALTRACKER DB...</div>
         
-        <!-- Valorant-Themed Segmented Progress Bar -->
-        <div class="loading-progress-container">
-          <div class="loading-progress-header">
-            <span class="loading-progress-status"><span class="pulse-dot"></span> CONNECTION // HYDRATING</span>
-            <span id="loading-progress-pct" class="loading-progress-percentage">5%</span>
-          </div>
-          <div class="loading-progress-bar">
-            <div class="loading-progress-fill" id="loading-progress-fill"></div>
-          </div>
-          <div class="loading-progress-footer">
-            <span>VALSTATS_PROC // 0xCC7A</span>
-            <span>SYS_LOAD_SECURE</span>
-          </div>
+        <div class="loading-progress-bar">
+          <div class="loading-progress-fill" id="loading-progress-fill"></div>
         </div>
 
         <div class="loading-tip-container">
@@ -2232,27 +2174,43 @@ async function getMatchCount() {
 }
 
 // ── LOADING OVERLAY TIPS & LORE ROTATOR SYSTEM ──
-const GENERAL_TIPS = [
-  { tag: "CROSSHAIR PLACEMENT", text: "Always keep your crosshair at head height where enemies are likely to appear. Do not aim at the floor." },
-  { tag: "ECONOMY STRATEGY", text: "Communicate with your team to buy together. Buying a rifle when your team has pistols throws away round win percentages." },
-  { tag: "MAP ROTATIONS", text: "When rotating on defense, avoid running through exposed choke points. Take safe routes to preserve your life." },
-  { tag: "ABILITY UTILITY", text: "Don't hold onto your abilities until you die. Use flashes and smokes to secure space or slow down enemy rushes." },
-  { tag: "MINIMAP AWARENESS", text: "Glance at your minimap frequently to track spotted enemies, spike placement, and friendly smoke cover." },
-  { tag: "PEEKING ADVANTAGE", text: "The player farther from the corner has angle advantage. Peek wider from corners to spot enemies first." },
-  { tag: "RECOIL CONTROL", text: "After the first 3-4 shots, rifle recoil becomes random. Pull down slightly and use short bursts or taps at long ranges." },
-  { tag: "COMMUNICATION", text: "Call out enemy locations, damage dealt, and agent names instead of saying 'on my body' or 'he's there'." }
+const VALORANT_LORE = [
+  { tag: "VALORANT LORE", text: "The recent storyline introduced a trio of connected recruits to the VALORANT Protocol: Tejo, Waylay, and Veto." },
+  { tag: "VALORANT LORE", text: "Veto (Agent 29) is a Sentinel whose DNA was heavily mutated by Radianite, leaving him with a blue, hardened shell on his left side." },
+  { tag: "VALORANT LORE", text: "Before joining the Protocol, Veto, Tejo, and Waylay operated together as an independent mercenary unit." },
+  { tag: "VALORANT LORE", text: "Veto was formally brought into the Protocol by Tejo to serve as a bodyguard for Phoenix's sister, Mary Adeyemi." },
+  { tag: "VALORANT LORE", text: "Phoenix finally reconnected with his sister Mary during the 2025 arc, attempting to mend their long-strained relationship." },
+  { tag: "VALORANT LORE", text: "A major new threat named ATLAS launched a devastating attack on Paris, attempting to steal the entire city using a megaspike to transport it to Omega Earth." },
+  { tag: "VALORANT LORE", text: "Over on Omega Earth, Ω-Viper recently seized command of the Legion from Ω-Brimstone in a ruthless coup, claiming he was too soft to handle the 'Alpha threat.'" },
+  { tag: "VALORANT LORE", text: "Sage was severely injured during the recent string of attacks and had to recover in a chem-bath just to stay alive." },
+  { tag: "VALORANT LORE", text: "Miks (Agent 30), a new Controller from Croatia, sent a message to the team offering to step up and provide extra healing backup to relieve the exhausted Sage." },
+  { tag: "VALORANT LORE", text: "Breach recently volunteered to repair the devastated Sanctuary, expressing a softer side as he felt deeply for the kids who view the agents as heroes." },
+  { tag: "VALORANT LORE", text: "Lore establishes that Veto's mutations allow his 'Evolution' ultimate to make him completely immune to all forms of debuffs and non-gunfire damage." },
+  { tag: "VALORANT LORE", text: "The mysterious Scions of Hourglass organization remains in active, brutal conflict with the VALORANT Protocol to keep Radianite a secret from the public." },
+  { tag: "VALORANT LORE", text: "Waylay recently received a major mechanics update where her 'Saturate' ability shifted from an instant cast to an equip, forcing her to play with more risk." },
+  { tag: "VALORANT LORE", text: "The game's engine has officially transitioned to Unreal Engine 5 as of the 2025/2026 era." },
+  { tag: "VALORANT LORE", text: "Veto is uniquely connected to Gekko's radivores, likely because his own mutations stem from a similar Radianite creature source." }
 ];
 
-const AGENT_LORE = [
-  { tag: "AGENT INTEL: JETT", text: "Hailing from South Korea, Jett is an agile duelist who relies on wind power to slash through defenses and evade danger." },
-  { tag: "AGENT INTEL: OMEN", text: "A shadow hunter of mysterious origin, Omen rips across the battlefield, blinding enemies and teleporting behind lines." },
-  { tag: "AGENT INTEL: REYNA", text: "Forged in the heart of Mexico, Reyna dominates single combat, feeding on soul orbs left by enemies she slays." },
-  { tag: "AGENT INTEL: SOVA", text: "Born in the tundra of Russia, Sova tracks, finds, and eliminates enemies with ruthless efficiency using his custom bow." },
-  { tag: "AGENT INTEL: VIPER", text: "An American chemist, Viper deploys arrays of poisonous chemical devices to control the battlefield and choke enemy vision." },
-  { tag: "AGENT INTEL: CYPHER", text: "The Moroccan information broker, Cypher is a one-man surveillance network who keeps tabs on every enemy move." }
+const VCT_ESPORTS = [
+  { tag: "VCT ESPORTS", text: "Paper Rex secured an impressive 2nd place finish at the first global event of the year, Masters Santiago 2026, bringing home $200,000." },
+  { tag: "VCT ESPORTS", text: "d4v41 absolutely dominated Masters Santiago 2026, racking up the highest overall kill count of the entire tournament with 371 kills." },
+  { tag: "VCT ESPORTS", text: "Nongshim RedForce swept Paper Rex 3-0 in the Santiago Grand Finals, becoming the first-ever Ascension team to win an international Masters trophy." },
+  { tag: "VCT ESPORTS", text: "At Masters Santiago, marteen (Gentle Mates) locked in the highest Average Combat Score (ACS) of the tournament at 268." },
+  { tag: "VCT ESPORTS", text: "Paper Rex has already secured their spot directly in the Playoffs for Masters London 2026 as the Pacific Stage 1 Champions." },
+  { tag: "VCT ESPORTS", text: "Global Esports successfully punched their ticket to Masters London 2026 as the Pacific #3 seed and will battle through the Swiss Stage." },
+  { tag: "VCT ESPORTS", text: "During VCT Pacific Stage 1, Paper Rex took down Global Esports 2-0 in a massive group stage clash on April 24." },
+  { tag: "VCT ESPORTS", text: "The meta at Masters Santiago saw Yoru hit an incredibly high pick rate, tying with Viper at 48.03% overall across all maps." },
+  { tag: "VCT ESPORTS", text: "Paper Rex is confirmed as one of the elite teams competing at the Esports World Cup 2026 in Riyadh, battling for a share of a $2,000,000 prize pool." },
+  { tag: "VCT ESPORTS", text: "Riot Games permanently removed the Ascension tournament in 2026; Challenger teams now fight directly against partnered teams for Stage 2 spots and Champions qualification." },
+  { tag: "VCT ESPORTS", text: "Dambi (Nongshim RedForce) was crowned the overall MVP of Masters Santiago 2026 after an incredible tournament run." },
+  { tag: "VCT ESPORTS", text: "The 2026 season introduced a triple-elimination format for the Kickoff tournaments, completely shaking up early-season qualifications." },
+  { tag: "VCT ESPORTS", text: "Global Esports finished just behind FULL SENSE (Pacific #2) in the Stage 1 standings but still comfortably secured their global LAN appearance." },
+  { tag: "VCT ESPORTS", text: "For the first time, all Challenger teams that qualify for Stage 2 Playoffs are granted a $75,000 cash stipend from Riot to cover travel and visas." },
+  { tag: "VCT ESPORTS", text: "The Champions Shanghai qualification heavily relies on the new Championship Points system, rewarding consistent performance across Kickoff, Stage 1, and Stage 2." }
 ];
 
-let _loadingTipsQueue = [...GENERAL_TIPS, ...AGENT_LORE];
+let _loadingTipsQueue = [...VALORANT_LORE, ...VCT_ESPORTS];
 let _loadingRotatorInterval = null;
 let _loadingProgressInterval = null;
 let _currentTipIndex = 0;
@@ -2352,7 +2310,7 @@ async function loadVctComps() {
       const comps = await res.json();
       const vctTrivia = generateVctTrivia(comps);
       if (vctTrivia.length > 0) {
-        _loadingTipsQueue = [...GENERAL_TIPS, ...AGENT_LORE, ...vctTrivia];
+        _loadingTipsQueue = [...VALORANT_LORE, ...VCT_ESPORTS, ...vctTrivia];
         console.log(`[Loading Rotator] Loaded VCT comps, generated ${vctTrivia.length} VCT stats trivia.`);
       }
     }
@@ -2383,9 +2341,7 @@ function startLoadingRotator() {
   }
   
   const progressFill = document.getElementById('loading-progress-fill');
-  const progressPct = document.getElementById('loading-progress-pct');
   if (progressFill) progressFill.style.width = '5%';
-  if (progressPct) progressPct.textContent = '5%';
   
   _currentTipIndex = Math.floor(Math.random() * _loadingTipsQueue.length);
   updateLoadingTip();
@@ -2419,7 +2375,6 @@ function startLoadingRotator() {
       progress += Math.floor(Math.random() * 2) + 1;
     }
     if (progressFill) progressFill.style.width = `${progress}%`;
-    if (progressPct) progressPct.textContent = `${progress}%`;
   }, 300);
 }
 
@@ -2443,9 +2398,7 @@ function stopLoadingRotator() {
   }
   
   const progressFill = document.getElementById('loading-progress-fill');
-  const progressPct = document.getElementById('loading-progress-pct');
   if (progressFill) progressFill.style.width = '100%';
-  if (progressPct) progressPct.textContent = '100%';
   
   const delay = statsLoaded ? 450 : 200;
   setTimeout(() => {
