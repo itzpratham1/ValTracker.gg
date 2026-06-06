@@ -13,6 +13,116 @@
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
 <link rel="stylesheet" href="index.css?v=14.04">
+<style>
+/* ── GLASSMORPHISM OVERRIDES & VALORANT CRIMSON THEME ── */
+html {
+  background-color: #050508 !important;
+}
+
+:root {
+  --bg:       #060608;
+  --surface:  rgba(20, 20, 26, 0.5);
+  --surface2: rgba(26, 26, 34, 0.6);
+  --surface3: rgba(32, 32, 42, 0.7);
+  --border:   rgba(255, 255, 255, 0.05);
+  --border2:  rgba(255, 255, 255, 0.1);
+  --accent:   #fa4454;       /* Valorant Crimson Red */
+  --accentdim:rgba(250, 68, 84, 0.15);
+  --accentborder:rgba(250, 68, 84, 0.35);
+  --radius:   12px;
+  --radius-sm:8px;
+}
+
+/* Carbon-Obsidian radial gradient background */
+body {
+  background: radial-gradient(circle at 50% 0%, #111019 0%, #050508 100%) !important;
+}
+
+/* Unique Valorant-themed loading progress bar styles */
+.loading-progress-container {
+  width: 100%;
+  max-width: 340px;
+  margin: 10px auto 24px auto;
+  position: relative;
+  z-index: 2;
+}
+.loading-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+  padding: 0 4px;
+}
+.loading-progress-status {
+  color: var(--accent) !important;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.pulse-dot {
+  width: 6px;
+  height: 6px;
+  background-color: var(--accent);
+  border-radius: 50%;
+  display: inline-block;
+  animation: pulse-red 1.5s infinite ease-in-out;
+  box-shadow: 0 0 8px var(--accent);
+}
+@keyframes pulse-red {
+  0% { transform: scale(0.95); opacity: 0.5; }
+  50% { transform: scale(1.15); opacity: 1; box-shadow: 0 0 12px var(--accent); }
+  100% { transform: scale(0.95); opacity: 0.5; }
+}
+.loading-progress-percentage {
+  color: #fff !important;
+  font-weight: 700;
+}
+.loading-progress-bar {
+  width: 100% !important;
+  height: 10px !important;
+  background: rgba(20, 20, 26, 0.75) !important;
+  border: 1.5px solid var(--accentborder) !important;
+  border-radius: 0px !important;
+  margin-bottom: 0px !important;
+  overflow: hidden !important;
+  position: relative !important;
+  z-index: 2 !important;
+  transform: skewX(-12deg) !important;
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.8), 0 0 10px rgba(250, 68, 84, 0.05) !important;
+}
+.loading-progress-fill {
+  height: 100% !important;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--accent),
+    var(--accent) 6px,
+    transparent 6px,
+    transparent 9px
+  ) !important;
+  width: 5% !important;
+  border-radius: 0px !important;
+  box-shadow: 0 0 12px var(--accentdim) !important;
+  transition: width 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+.loading-progress-footer {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  color: var(--muted2);
+  margin-top: 5px;
+  letter-spacing: 0.5px;
+  padding: 0 4px;
+}
+</style>
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 </head>
@@ -101,8 +211,19 @@
         <div class="loading-title">FETCHING PROFILE</div>
         <div class="loading-subtitle" id="loading-subtitle-text">ACCESSING VALTRACKER DB...</div>
         
-        <div class="loading-progress-bar">
-          <div class="loading-progress-fill" id="loading-progress-fill"></div>
+        <!-- Valorant-Themed Segmented Progress Bar -->
+        <div class="loading-progress-container">
+          <div class="loading-progress-header">
+            <span class="loading-progress-status"><span class="pulse-dot"></span> CONNECTION // HYDRATING</span>
+            <span id="loading-progress-pct" class="loading-progress-percentage">5%</span>
+          </div>
+          <div class="loading-progress-bar">
+            <div class="loading-progress-fill" id="loading-progress-fill"></div>
+          </div>
+          <div class="loading-progress-footer">
+            <span>VALSTATS_PROC // 0xCC7A</span>
+            <span>SYS_LOAD_SECURE</span>
+          </div>
         </div>
 
         <div class="loading-tip-container">
@@ -2262,7 +2383,9 @@ function startLoadingRotator() {
   }
   
   const progressFill = document.getElementById('loading-progress-fill');
+  const progressPct = document.getElementById('loading-progress-pct');
   if (progressFill) progressFill.style.width = '5%';
+  if (progressPct) progressPct.textContent = '5%';
   
   _currentTipIndex = Math.floor(Math.random() * _loadingTipsQueue.length);
   updateLoadingTip();
@@ -2296,6 +2419,7 @@ function startLoadingRotator() {
       progress += Math.floor(Math.random() * 2) + 1;
     }
     if (progressFill) progressFill.style.width = `${progress}%`;
+    if (progressPct) progressPct.textContent = `${progress}%`;
   }, 300);
 }
 
@@ -2319,7 +2443,9 @@ function stopLoadingRotator() {
   }
   
   const progressFill = document.getElementById('loading-progress-fill');
+  const progressPct = document.getElementById('loading-progress-pct');
   if (progressFill) progressFill.style.width = '100%';
+  if (progressPct) progressPct.textContent = '100%';
   
   const delay = statsLoaded ? 450 : 200;
   setTimeout(() => {
@@ -13816,29 +13942,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCustomDropdowns();
 });
 </script>
-<style>/* ── GLASSMORPHISM OVERRIDES & VALORANT CRIMSON THEME ── */
-html {
-  background-color: #050508 !important;
-}
-
-:root {
-  --bg:       #060608;
-  --surface:  rgba(20, 20, 26, 0.5);
-  --surface2: rgba(26, 26, 34, 0.6);
-  --surface3: rgba(32, 32, 42, 0.7);
-  --border:   rgba(255, 255, 255, 0.05);
-  --border2:  rgba(255, 255, 255, 0.1);
-  --accent:   #fa4454;       /* Valorant Crimson Red */
-  --accentdim:rgba(250, 68, 84, 0.15);
-  --accentborder:rgba(250, 68, 84, 0.35);
-  --radius:   12px;
-  --radius-sm:8px;
-}
-
-/* Carbon-Obsidian radial gradient background */
-body {
-  background: radial-gradient(circle at 50% 0%, #111019 0%, #050508 100%) !important;
-}
+<style>/* ── GLASSMORPHISM OVERRIDES ── */
 
 /* Glow-borders on Match panel containers */
 .match-panel {
