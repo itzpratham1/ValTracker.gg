@@ -45,6 +45,12 @@ body {
   padding: 32px 24px !important;
 }
 
+.loading-estimate {
+  color: var(--muted) !important;
+  opacity: 0.95 !important;
+  font-weight: 500 !important;
+}
+
 /* Unique Valorant-themed loading progress bar styles */
 .loading-progress-bar {
   width: 100% !important;
@@ -2175,39 +2181,59 @@ async function getMatchCount() {
 
 // ── LOADING OVERLAY TIPS & LORE ROTATOR SYSTEM ──
 const VALORANT_LORE = [
-  { tag: "VALORANT LORE", text: "The recent storyline introduced a trio of connected recruits to the VALORANT Protocol: Tejo, Waylay, and Veto." },
-  { tag: "VALORANT LORE", text: "Veto (Agent 29) is a Sentinel whose DNA was heavily mutated by Radianite, leaving him with a blue, hardened shell on his left side." },
-  { tag: "VALORANT LORE", text: "Before joining the Protocol, Veto, Tejo, and Waylay operated together as an independent mercenary unit." },
-  { tag: "VALORANT LORE", text: "Veto was formally brought into the Protocol by Tejo to serve as a bodyguard for Phoenix's sister, Mary Adeyemi." },
-  { tag: "VALORANT LORE", text: "Phoenix finally reconnected with his sister Mary during the 2025 arc, attempting to mend their long-strained relationship." },
-  { tag: "VALORANT LORE", text: "A major new threat named ATLAS launched a devastating attack on Paris, attempting to steal the entire city using a megaspike to transport it to Omega Earth." },
-  { tag: "VALORANT LORE", text: "Over on Omega Earth, Ω-Viper recently seized command of the Legion from Ω-Brimstone in a ruthless coup, claiming he was too soft to handle the 'Alpha threat.'" },
-  { tag: "VALORANT LORE", text: "Sage was severely injured during the recent string of attacks and had to recover in a chem-bath just to stay alive." },
-  { tag: "VALORANT LORE", text: "Miks (Agent 30), a new Controller from Croatia, sent a message to the team offering to step up and provide extra healing backup to relieve the exhausted Sage." },
-  { tag: "VALORANT LORE", text: "Breach recently volunteered to repair the devastated Sanctuary, expressing a softer side as he felt deeply for the kids who view the agents as heroes." },
-  { tag: "VALORANT LORE", text: "Lore establishes that Veto's mutations allow his 'Evolution' ultimate to make him completely immune to all forms of debuffs and non-gunfire damage." },
-  { tag: "VALORANT LORE", text: "The mysterious Scions of Hourglass organization remains in active, brutal conflict with the VALORANT Protocol to keep Radianite a secret from the public." },
-  { tag: "VALORANT LORE", text: "Waylay recently received a major mechanics update where her 'Saturate' ability shifted from an instant cast to an equip, forcing her to play with more risk." },
-  { tag: "VALORANT LORE", text: "The game's engine has officially transitioned to Unreal Engine 5 as of the 2025/2026 era." },
-  { tag: "VALORANT LORE", text: "Veto is uniquely connected to Gekko's radivores, likely because his own mutations stem from a similar Radianite creature source." }
+  { tag: "VALORANT LORE", text: "Season 2026 officially began with Patch 12.00 on January 7, introducing massive game-changing updates." },
+  { tag: "VALORANT LORE", text: "The 2026 lore heavily focuses on an escalating ideological divide: Alpha vs Omega, and Viper vs Brimstone." },
+  { tag: "VALORANT LORE", text: "The Season 2026 cinematic 'WHY WE FIGHT BACK' highlighted the intense, ongoing conflict between the Alpha and Omega protocols." },
+  { tag: "VALORANT LORE", text: "A brand new sidearm weapon, the 'Bandit' pistol, was introduced to the game's arsenal in 2026." },
+  { tag: "VALORANT LORE", text: "The Bandit pistol provides players with a fresh tactical option for thrifty rounds and economy management." },
+  { tag: "VALORANT LORE", text: "Breeze made a grand return to the active competitive map pool in 2026 with a massive structural rework." },
+  { tag: "VALORANT LORE", text: "To ease players into the reworked Breeze, Riot reduced Ranked Rating (RR) losses on the map by 50% for two weeks." },
+  { tag: "VALORANT LORE", text: "A brand new limited-time game mode called 'All Random, One Site' (AR1S) debuted in early 2026." },
+  { tag: "VALORANT LORE", text: "The game's hidden Matchmaking Rating (MMR) system was completely overhauled to improve overall ranked match quality." },
+  { tag: "VALORANT LORE", text: "Veteran agents Breach, Brimstone, Harbor, Sage, and Vyse all received significant balance updates in Season 2026." },
+  { tag: "VALORANT LORE", text: "Tejo, one of the newer additions to the Protocol, also saw targeted gameplay tweaks at the start of the year." },
+  { tag: "VALORANT LORE", text: "The relatively new map 'Corrode' received specific updates to its wall penetration mechanics." },
+  { tag: "VALORANT LORE", text: "Haven also received adjustments to its wallbang spots alongside Corrode to balance defensive setups." },
+  { tag: "VALORANT LORE", text: "The Season 2026 cinematic quickly amassed over six million views, fueling community hopes for an animated series." },
+  { tag: "VALORANT LORE", text: "Replays were finally added to VALORANT for Custom games, fulfilling a heavily requested feature since the game's launch." },
+  { tag: "VALORANT LORE", text: "A new player behavior system and penalty ladder were introduced to aggressively combat disruptive players in ranked queues." },
+  { tag: "VALORANT LORE", text: "The lore reveals that the Dev team is leaning heavily into the friction between Viper's ruthlessness and Brimstone's leadership." },
+  { tag: "VALORANT LORE", text: "Season 2026 is viewed by the community as a major cultural reset, rejuvenating the game's competitive joy." },
+  { tag: "VALORANT LORE", text: "The Alpha vs Omega Earth conflict remains the absolute core of why the agents are currently deployed globally." },
+  { tag: "VALORANT LORE", text: "The addition of the Bandit marked the first time a new weapon was added to the game since the Outlaw sniper rifle." },
+  { tag: "VALORANT LORE", text: "The introduction of Custom game replays allows pro teams like Global Esports to analyze strategies with perfect detail." },
+  { tag: "VALORANT LORE", text: "'Complacency will destroy us' is a key lore quote from Viper, perfectly setting the tone for the brutal 2026 conflicts." },
+  { tag: "VALORANT LORE", text: "The AR1S mode (All Random, One Site) forces players to practice chaotic site retakes under unpredictable conditions." },
+  { tag: "VALORANT LORE", text: "The Season 2026 kickoff updates comprehensively affected everything from UI and gameplay to community standards and weapon balancing." },
+  { tag: "VALORANT LORE", text: "The VALORANT Protocol is currently bracing for unprecedented strikes from Omega forces as the year progresses." }
 ];
 
 const VCT_ESPORTS = [
-  { tag: "VCT ESPORTS", text: "Paper Rex secured an impressive 2nd place finish at the first global event of the year, Masters Santiago 2026, bringing home $200,000." },
-  { tag: "VCT ESPORTS", text: "d4v41 absolutely dominated Masters Santiago 2026, racking up the highest overall kill count of the entire tournament with 371 kills." },
-  { tag: "VCT ESPORTS", text: "Nongshim RedForce swept Paper Rex 3-0 in the Santiago Grand Finals, becoming the first-ever Ascension team to win an international Masters trophy." },
-  { tag: "VCT ESPORTS", text: "At Masters Santiago, marteen (Gentle Mates) locked in the highest Average Combat Score (ACS) of the tournament at 268." },
-  { tag: "VCT ESPORTS", text: "Paper Rex has already secured their spot directly in the Playoffs for Masters London 2026 as the Pacific Stage 1 Champions." },
-  { tag: "VCT ESPORTS", text: "Global Esports successfully punched their ticket to Masters London 2026 as the Pacific #3 seed and will battle through the Swiss Stage." },
-  { tag: "VCT ESPORTS", text: "During VCT Pacific Stage 1, Paper Rex took down Global Esports 2-0 in a massive group stage clash on April 24." },
-  { tag: "VCT ESPORTS", text: "The meta at Masters Santiago saw Yoru hit an incredibly high pick rate, tying with Viper at 48.03% overall across all maps." },
-  { tag: "VCT ESPORTS", text: "Paper Rex is confirmed as one of the elite teams competing at the Esports World Cup 2026 in Riyadh, battling for a share of a $2,000,000 prize pool." },
-  { tag: "VCT ESPORTS", text: "Riot Games permanently removed the Ascension tournament in 2026; Challenger teams now fight directly against partnered teams for Stage 2 spots and Champions qualification." },
-  { tag: "VCT ESPORTS", text: "Dambi (Nongshim RedForce) was crowned the overall MVP of Masters Santiago 2026 after an incredible tournament run." },
-  { tag: "VCT ESPORTS", text: "The 2026 season introduced a triple-elimination format for the Kickoff tournaments, completely shaking up early-season qualifications." },
-  { tag: "VCT ESPORTS", text: "Global Esports finished just behind FULL SENSE (Pacific #2) in the Stage 1 standings but still comfortably secured their global LAN appearance." },
-  { tag: "VCT ESPORTS", text: "For the first time, all Challenger teams that qualify for Stage 2 Playoffs are granted a $75,000 cash stipend from Riot to cover travel and visas." },
-  { tag: "VCT ESPORTS", text: "The Champions Shanghai qualification heavily relies on the new Championship Points system, rewarding consistent performance across Kickoff, Stage 1, and Stage 2." }
+  { tag: "VCT ESPORTS", text: "VCT 2026 kicked off its global circuit with Masters Santiago in Chile, featuring a $1,000,000 prize pool." },
+  { tag: "VCT ESPORTS", text: "Masters Santiago was the first Kickoff-phase Masters event to feature a massive 12-team format." },
+  { tag: "VCT ESPORTS", text: "Nongshim RedForce shocked the world by becoming the first Ascension team to ever win a Masters trophy." },
+  { tag: "VCT ESPORTS", text: "Nongshim RedForce swept Paper Rex 3-0 in the Grand Finals of Masters Santiago to take the crown." },
+  { tag: "VCT ESPORTS", text: "Lee 'Dambi' Hyuk-kyu from Nongshim RedForce was crowned the overall MVP of Masters Santiago." },
+  { tag: "VCT ESPORTS", text: "Khalish 'd4v41' Rusyaidee from Paper Rex recorded the highest overall kills at Masters Santiago with 371." },
+  { tag: "VCT ESPORTS", text: "Martin 'marteen' Pátek of Gentle Mates secured the highest Average Combat Score (ACS) at Santiago with 268." },
+  { tag: "VCT ESPORTS", text: "Masters London 2026 marks the second major international VCT event of the year, running from June 6-21 in the UK." },
+  { tag: "VCT ESPORTS", text: "Global Esports successfully secured their spot at Masters London as the Pacific #3 seed." },
+  { tag: "VCT ESPORTS", text: "Global Esports' run in VCT Pacific Stage 1 proved their tier-one status, taking down massive regional rivals to qualify." },
+  { tag: "VCT ESPORTS", text: "Paper Rex claimed the Pacific #1 seed for London after sweeping FULL SENSE 3-0 in the Stage 1 Grand Final." },
+  { tag: "VCT ESPORTS", text: "FULL SENSE represents the Pacific region as the #2 seed heading into the London Swiss Stage." },
+  { tag: "VCT ESPORTS", text: "During Pacific Stage 1, Global Esports fell to Paper Rex 0-3 in the Lower Finals but still confidently punched their London ticket." },
+  { tag: "VCT ESPORTS", text: "G2 Esports enters Masters London as the undisputed #1 seed representing the Americas region." },
+  { tag: "VCT ESPORTS", text: "LEVIATÁN and NRG round out the Americas representatives for London as the #2 and #3 seeds." },
+  { tag: "VCT ESPORTS", text: "Team Heretics claimed the #1 seed in EMEA, advancing directly to the Masters London Playoffs." },
+  { tag: "VCT ESPORTS", text: "Team Vitality and FUT Esports represent the highly competitive EMEA region as the #2 and #3 seeds." },
+  { tag: "VCT ESPORTS", text: "EDward Gaming continues their absolute regional dominance as the #1 seed from VCT China." },
+  { tag: "VCT ESPORTS", text: "Xi Lai Gaming and Dragon Ranger Gaming represent China's #2 and #3 seeds in the London Swiss Stage." },
+  { tag: "VCT ESPORTS", text: "The Esports World Cup (EWC) 2026 in Riyadh features a massive $2,000,000 prize pool for VALORANT." },
+  { tag: "VCT ESPORTS", text: "Elite teams like Paper Rex, Team Heretics, and EDward Gaming have already secured their spots at EWC 2026." },
+  { tag: "VCT ESPORTS", text: "JioBLAST and the Esports Foundation launched 'India Rising', a nationwide tournament feeding into the EWC ecosystem." },
+  { tag: "VCT ESPORTS", text: "Masters London features a ruthless Swiss Stage where teams like Global Esports must secure two wins to advance." },
+  { tag: "VCT ESPORTS", text: "The Pick'Ems system, powered by AWS, returned for Masters London, allowing fans to predict the entire 12-team bracket." },
+  { tag: "VCT ESPORTS", text: "Global Esports carries the hopes of the massive Indian VALORANT community onto the international stage in London." }
 ];
 
 let _loadingTipsQueue = [...VALORANT_LORE, ...VCT_ESPORTS];
@@ -2575,7 +2601,7 @@ async function fetchAll(){
     const _nc = Date.now();
     const[mmrRes,matchRes,accountRes,mmrHistRes]=await Promise.all([
       isRanked ? fetch(`/api/v3/mmr/${region}/pc/${enc}/${PLAYER_TAG}?_nocache=${_nc}`) : Promise.resolve(null),
-      fetch(`/api/v3/matches/${region}/${enc}/${PLAYER_TAG}?mode=${mode}&size=100&_nocache=${_nc}`),
+      fetch(`/api/v3/matches/${region}/${enc}/${PLAYER_TAG}?mode=${mode}&size=20&_nocache=${_nc}`),
       fetch(`/api/v1/account/${enc}/${PLAYER_TAG}?_nocache=${_nc}`),
       fetch(`/api/v1/stored-mmr-history/${region}/${enc}/${PLAYER_TAG}?_nocache=${_nc}`),
     ]);
