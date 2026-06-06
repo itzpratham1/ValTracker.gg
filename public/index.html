@@ -2681,37 +2681,42 @@ async function fetchAll(){
       if (matchData.data.length > 0) {
         await saveMatches(matchData.data);
       }
-      // Load full history from DB and process all of it
+      // Load full history from DB
       const allMatches = await loadAllMatches();
-      processMatches(allMatches);
       
-      // Asynchronously prefetch match details in background to populate weapons and rounds automatically
-      if (allMatches.length > 0) {
-        setTimeout(() => {
-          prefetchMatchDetails(allMatches);
-        }, 500);
-      }
-
-      const newCount = matchData.data.length;
-      const totalCount = allMatches.length;
-      if (totalCount > 0) {
-        setStatus(`${newCount} new · ${totalCount} total stored`,'ok');
-        showToast(`${totalCount} matches total ✓`);
-      } else {
-        setStatus('No matches played in this mode','ok');
-        showToast('No matches played');
-      }
-      
-      addToRecentSearches(PLAYER_NAME, PLAYER_TAG, region, mode);
-      renderActiveBookmarkButton();
-      
-      // Store successful lookup parameters
-      LAST_SUCCESSFUL_NAME = PLAYER_NAME;
-      LAST_SUCCESSFUL_TAG = PLAYER_TAG;
-      LAST_SUCCESSFUL_REGION = region;
-      LAST_SUCCESSFUL_MODE = mode;
-      
+      // Start landing screen dismissal (smooth fade out)
       dismissLanding();
+      
+      // Delay heavy rendering until the fade-out completes to avoid animation frame drops
+      setTimeout(() => {
+        processMatches(allMatches);
+        
+        // Asynchronously prefetch match details in background to populate weapons and rounds automatically
+        if (allMatches.length > 0) {
+          setTimeout(() => {
+            prefetchMatchDetails(allMatches);
+          }, 300);
+        }
+
+        const newCount = matchData.data.length;
+        const totalCount = allMatches.length;
+        if (totalCount > 0) {
+          setStatus(`${newCount} new · ${totalCount} total stored`,'ok');
+          showToast(`${totalCount} matches total ✓`);
+        } else {
+          setStatus('No matches played in this mode','ok');
+          showToast('No matches played');
+        }
+        
+        addToRecentSearches(PLAYER_NAME, PLAYER_TAG, region, mode);
+        renderActiveBookmarkButton();
+        
+        // Store successful lookup parameters
+        LAST_SUCCESSFUL_NAME = PLAYER_NAME;
+        LAST_SUCCESSFUL_TAG = PLAYER_TAG;
+        LAST_SUCCESSFUL_REGION = region;
+        LAST_SUCCESSFUL_MODE = mode;
+      }, 350);
     }else{
       setStatus(`No ${mode} matches found — try a different region`,'error');
       showToast('No data');
@@ -7890,13 +7895,34 @@ function dismissLanding() {
     }, 350);
   }
   const tv = document.getElementById('tracker-view');
-  if (tv) tv.style.display = 'block';
-  
   const subRow = document.getElementById('topbar-sub-row');
-  if (subRow) subRow.style.display = 'flex';
-  
   const gf = document.getElementById('global-footer');
-  if (gf) gf.style.display = 'flex';
+  
+  if (tv) {
+    tv.style.transition = 'opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    tv.style.display = 'block';
+    tv.style.opacity = '0';
+  }
+  if (subRow) {
+    subRow.style.transition = 'opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    subRow.style.display = 'flex';
+    subRow.style.opacity = '0';
+  }
+  if (gf) {
+    gf.style.transition = 'opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    gf.style.display = 'flex';
+    gf.style.opacity = '0';
+  }
+  
+  // Force a browser repaint reflow
+  if (tv) tv.offsetHeight;
+  
+  // Smoothly fade in
+  setTimeout(() => {
+    if (tv) tv.style.opacity = '1';
+    if (subRow) subRow.style.opacity = '1';
+    if (gf) gf.style.opacity = '1';
+  }, 30);
   
   // Hide search inputs and show premium player active pill
   toggleSearchMode(false);
