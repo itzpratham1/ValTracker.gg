@@ -13582,7 +13582,16 @@ function initSearchAutocomplete(inputId, tagInputId, dropdownId, regionSelectId)
   input.addEventListener('click', showRecsIfEmpty);
 
   input.addEventListener('input', () => {
-    const val = input.value.trim();
+    let val = input.value.trim();
+    if (tagInput && val.includes('#')) {
+      const parts = val.split('#');
+      const namePart = parts[0].trim();
+      const tagPart = parts[1].trim();
+      input.value = namePart;
+      tagInput.value = tagPart;
+      tagInput.focus();
+      val = namePart;
+    }
     clearTimeout(debounceTimeout);
 
     if (val.length < 2) {
@@ -13715,9 +13724,15 @@ function renderSearchDropdown(dbPlayers, localMatches, dropdown, input, tagInput
     }
 
     // No matches fallback
+    const escapedVal = val.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     dropdown.innerHTML = `
-      <div style="padding: 18px; text-align: center; font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; display: flex; align-items: center; justify-content: center; gap: 8px;">
-        <span style="color: var(--accent);">⚠️</span> No players found. Check Riot ID &amp; Tag.
+      <div style="padding: 18px; text-align: center; font-size: 11.5px; color: var(--muted); font-family: 'DM Mono', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; line-height: 1.4;">
+        <div style="display: flex; align-items: center; gap: 6px; font-weight: bold; color: var(--text);">
+          <span>🔍</span> "${escapedVal}" is not cached yet
+        </div>
+        <div style="font-size: 9px; color: var(--muted2); text-transform: uppercase; letter-spacing: 0.5px; text-align: center; max-width: 280px;">
+          Type your TAG and click <strong style="color: var(--accent);">View Stats</strong> to load directly from Riot Games' database!
+        </div>
       </div>
     `;
     dropdown.classList.add('open');
