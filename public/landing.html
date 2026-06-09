@@ -110,9 +110,15 @@ img { display: block; max-width: 100%; height: auto; }
 /* ════════════════════════════════════════
    SCROLLBAR
 ════════════════════════════════════════ */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #030304; }
 ::-webkit-scrollbar-thumb { background: rgba(255,70,85,0.4); border-radius: 4px; }
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,70,85,0.4) #030304;
+}
 
 /* ════════════════════════════════════════
    NAVBAR
@@ -919,6 +925,7 @@ h1.hero-headline span.accent-line {
   padding: 12px 0;
   overflow: hidden;
   position: relative;
+  background-color: #0a0a0d;
 }
 
 .ticker-track {
@@ -968,10 +975,12 @@ h1.hero-headline span.accent-line {
   margin: 0 auto;
 }
 
-hr.section-divider {
-  border: none;
-  border-top: 1px solid var(--border);
+.section-divider {
+  width: 100%;
+  height: 1px;
+  background: rgba(255,255,255,0.08);
   margin: 0;
+  padding: 0;
 }
 
 .section-label {
@@ -1886,7 +1895,7 @@ footer {
   </div>
 </section>
 
-<hr class="section-divider">
+<div class="section-divider" role="separator"></div>
 
 <!-- ════════════════════════════════
      TICKER BAR
@@ -1914,7 +1923,7 @@ footer {
   </div>
 </div>
 
-<hr class="section-divider">
+<div class="section-divider" role="separator"></div>
 
 <!-- ════════════════════════════════
      FEATURE SHOWCASE CAROUSEL
@@ -2053,7 +2062,7 @@ footer {
   </div>
 </section>
 
-<hr class="section-divider">
+<div class="section-divider" role="separator"></div>
 
 <!-- ════════════════════════════════
      FEATURES BENTO GRID
@@ -2151,7 +2160,7 @@ footer {
   </div>
 </section>
 
-<hr class="section-divider">
+<div class="section-divider" role="separator"></div>
 
 <!-- ════════════════════════════════
      OBS OVERLAY SHOWCASE
@@ -2237,7 +2246,7 @@ footer {
   </div>
 </section>
 
-<hr class="section-divider">
+<div class="section-divider" role="separator"></div>
 
 <!-- ════════════════════════════════
      SOCIAL PROOF BAR
@@ -2259,7 +2268,7 @@ footer {
   </div>
 </div>
 
-<hr class="section-divider">
+<div class="section-divider" role="separator"></div>
 
 <!-- ════════════════════════════════
      HOW IT WORKS
@@ -2300,7 +2309,7 @@ footer {
   </div>
 </section>
 
-<hr class="section-divider">
+<div class="section-divider" role="separator"></div>
 
 <!-- ════════════════════════════════
      FINAL CTA
