@@ -5,17 +5,40 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#030304">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<link rel="canonical" href="https://valtracker.live/">
 <title>ValTracker — Free Valorant Stats Tracker, AI Coaching & OBS Overlays</title>
 <meta name="description" content="ValTracker is the free Valorant stats tracker with AI coaching, live OBS overlays, and real-time match analysis. No account required. Track your K/D, ACS, win rate and rank progression instantly.">
 <meta property="og:title" content="ValTracker — Free Valorant Stats Tracker">
 <meta property="og:description" content="Real-time Valorant stats, AI coaching, and live OBS overlays. Free. Always.">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://valtracker.live/">
+<meta property="og:image" content="https://valtracker.live/og-image.png">
+<meta property="og:site_name" content="ValTracker">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ValTracker — Free Valorant Stats Tracker">
+<meta name="twitter:description" content="Real-time Valorant stats, AI coaching, and live OBS overlays. Free. Always.">
+<meta name="twitter:image" content="https://valtracker.live/og-image.png">
 <link rel="icon" type="image/png" href="/logo.png">
 <link rel="shortcut icon" href="/logo.png" type="image/x-icon">
 <link rel="apple-touch-icon" href="/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "ValTracker",
+  "url": "https://valtracker.live",
+  "description": "Free Valorant stats tracker with AI coaching, live OBS overlays, and real-time match analysis.",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Web",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "featureList": ["Stats Tracker", "AI Coaching", "OBS Overlays", "VCT Esports Hub", "Meta Comp Architect", "Performance Lab"],
+  "screenshot": "https://valtracker.live/stats_tracker_card.png"
+}
+</script>
 
 <style>
 /* ════════════════════════════════════════
@@ -46,6 +69,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 72px;
   background-color: var(--bg-primary);
 }
 
@@ -59,7 +83,24 @@ body {
 }
 
 a { text-decoration: none; color: inherit; }
-img { display: block; max-width: 100%; }
+img { display: block; max-width: 100%; height: auto; }
+
+/* Skip to content for accessibility */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 16px;
+  z-index: 9999;
+  padding: 12px 24px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  transition: top 0.2s;
+}
+.skip-link:focus {
+  top: 16px;
+}
 
 /* ════════════════════════════════════════
    SCROLLBAR
@@ -680,13 +721,190 @@ h1.hero-headline span.accent-line {
   font-family: var(--font-body);
 }
 
-@keyframes fadeUp {
-  to { opacity: 1; transform: translateY(0); }
+/* ════════════════════════════════════════
+   FEATURE CAROUSEL
+════════════════════════════════════════ */
+.carousel-section {
+  padding: 80px 48px;
+  overflow: hidden;
+}
+
+.carousel-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+
+.carousel-slide {
+  min-width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.carousel-text {
+  padding-right: 32px;
+}
+
+.carousel-tag {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 16px;
+  background: var(--accent-dim);
+  color: var(--accent);
+  border: 1px solid var(--accent-border);
+}
+
+.carousel-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 1.1;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+}
+
+.carousel-desc {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+
+.carousel-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.carousel-features li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.carousel-features li::before {
+  content: '→';
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.carousel-visual {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  position: relative;
+}
+
+.carousel-visual img {
+  width: 100%;
+  display: block;
+  transition: transform 0.6s ease;
+}
+
+.carousel-visual:hover img {
+  transform: scale(1.03);
+}
+
+/* Navigation dots */
+.carousel-nav {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 40px;
+}
+
+.carousel-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+  padding: 0;
+}
+
+.carousel-dot.active {
+  background: var(--accent);
+  transform: scale(1.3);
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.carousel-dot:hover:not(.active) {
+  background: rgba(255,255,255,0.3);
+}
+
+/* Arrow buttons */
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+  z-index: 5;
+  backdrop-filter: blur(8px);
+}
+
+.carousel-arrow:hover {
+  background: rgba(255,70,85,0.15);
+  border-color: var(--accent-border);
+  box-shadow: 0 0 20px var(--accent-dim);
+}
+
+.carousel-arrow.prev { left: -22px; }
+.carousel-arrow.next { right: -22px; }
+
+.carousel-arrow svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+}
+
+@media (max-width: 768px) {
+  .carousel-section { padding: 60px 24px; }
+  .carousel-slide { grid-template-columns: 1fr; gap: 24px; }
+  .carousel-text { padding-right: 0; }
+  .carousel-arrow { display: none; }
 }
 
 /* ════════════════════════════════════════
    TICKER BAR
 ════════════════════════════════════════ */
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
 .ticker-bar {
   width: 100%;
   background: #0a0a0d;
@@ -735,6 +953,8 @@ h1.hero-headline span.accent-line {
 .section {
   padding: 100px 48px;
   position: relative;
+  content-visibility: auto;
+  contain-intrinsic-size: 0 800px;
 }
 
 .section-inner {
@@ -796,6 +1016,7 @@ h2.section-title {
   grid-template-columns: repeat(12, 1fr);
   grid-template-rows: auto;
   gap: 14px;
+  perspective: 1200px;
 }
 
 .bento-card {
@@ -806,21 +1027,26 @@ h2.section-title {
   position: relative;
   overflow: hidden;
   cursor: default;
-  transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
+  transition: border-color 0.25s, box-shadow 0.25s, transform 0.15s ease-out;
   opacity: 0;
-  transform: translateY(24px);
+  transform: translateY(24px) rotateX(0deg) rotateY(0deg);
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 
 .bento-card.visible {
   opacity: 1;
-  transform: translateY(0);
-  transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s, opacity 0.5s ease, transform 0.5s ease;
+  transform: translateY(0) rotateX(0deg) rotateY(0deg);
+  transition: border-color 0.25s, box-shadow 0.25s, transform 0.5s ease, opacity 0.5s ease;
 }
 
 .bento-card:hover {
   border-color: var(--border-hover);
-  box-shadow: 0 0 40px rgba(0,0,0,0.3);
-  transform: translateY(-3px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+
+.bento-card.visible:hover {
+  /* transform handled by JS for 3D tilt */
 }
 
 .bento-card.red-glow:hover {
@@ -833,17 +1059,20 @@ h2.section-title {
 .bento-card.span-4  { grid-column: span 4; }
 .bento-card.span-3  { grid-column: span 3; }
 
-/* Card inner glow on hover */
+/* Card inner glow on hover — follows cursor */
 .bento-card::before {
   content: '';
   position: absolute;
   top: -60px; right: -60px;
   width: 200px; height: 200px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%);
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.3s;
+  left: var(--glow-x, 80%);
+  top: var(--glow-y, 10%);
+  transform: translate(-50%, -50%);
 }
 .bento-card:hover::before { opacity: 1; }
 
@@ -904,9 +1133,6 @@ h3.bento-title {
 }
 .bento-card:hover .card-img-frame img {
   filter: brightness(1.05);
-}
-.bento-card:hover {
-  transform: scale(1.02);
 }
 
 /* Bottom accent line on full-width cards */
@@ -1125,6 +1351,8 @@ h3.bento-title {
   background: var(--bg-secondary);
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
+  content-visibility: auto;
+  contain-intrinsic-size: 0 300px;
 }
 
 .stats-bar-inner {
@@ -1253,6 +1481,8 @@ h3.step-title {
 ════════════════════════════════════════ */
 .final-cta-section {
   padding: 100px 48px;
+  content-visibility: auto;
+  contain-intrinsic-size: 0 600px;
 }
 
 .final-cta-card {
@@ -1314,6 +1544,8 @@ footer {
   background: #0a0a0d;
   border-top: 1px solid var(--border);
   padding: 48px 48px 32px;
+  content-visibility: auto;
+  contain-intrinsic-size: 0 400px;
 }
 
 .footer-main {
@@ -1491,6 +1723,7 @@ footer {
 </style>
 </head>
 <body>
+<a href="#hero" class="skip-link">Skip to main content</a>
 
 <!-- ════════════════════════════════
      NAVBAR
@@ -1680,6 +1913,145 @@ footer {
 <hr class="section-divider">
 
 <!-- ════════════════════════════════
+     FEATURE SHOWCASE CAROUSEL
+═══════════════════════════════ -->
+<section class="carousel-section" id="showcase" aria-label="Feature showcase">
+  <div class="carousel-container">
+    <div class="carousel-track" id="carousel-track">
+
+      <!-- Slide 1: Stats Tracker -->
+      <div class="carousel-slide">
+        <div class="carousel-text">
+          <span class="carousel-tag">Core Feature</span>
+          <h2 class="carousel-title">Stats Tracker</h2>
+          <p class="carousel-desc">Every metric that matters for your rank — tracked in real-time across your last 20 matches.</p>
+          <ul class="carousel-features">
+            <li>K/D, ACS, Headshot %, Win Rate</li>
+            <li>RR progression and rank history</li>
+            <li>Agent and map performance breakdown</li>
+            <li>Round-by-round scoring trends</li>
+          </ul>
+        </div>
+        <div class="carousel-visual">
+          <img src="/stats_tracker_card.png" alt="Stats tracker dashboard" loading="lazy" decoding="async">
+        </div>
+      </div>
+
+      <!-- Slide 2: AI Coach -->
+      <div class="carousel-slide">
+        <div class="carousel-text">
+          <span class="carousel-tag">AI Powered</span>
+          <h2 class="carousel-title">ValBot AI Coach</h2>
+          <p class="carousel-desc">Get a personalised coaching verdict after every session. Know exactly what to fix.</p>
+          <ul class="carousel-features">
+            <li>Analyses your last 20 matches</li>
+            <li>Pinpoints your exact weak spots</li>
+            <li>Agent and map recommendations</li>
+            <li>Improvement roadmap per session</li>
+          </ul>
+        </div>
+        <div class="carousel-visual">
+          <img src="/Val_bot_analysis.png" alt="ValBot AI coach analysis" loading="lazy" decoding="async">
+        </div>
+      </div>
+
+      <!-- Slide 3: Deep Analysis -->
+      <div class="carousel-slide">
+        <div class="carousel-text">
+          <span class="carousel-tag">Deep Analysis</span>
+          <h2 class="carousel-title">Self-Analysis Diagnostics</h2>
+          <p class="carousel-desc">Attack vs Defence, agent-map fit, consistency trends — your full tactical blueprint.</p>
+          <ul class="carousel-features">
+            <li>Side-based win rate breakdown</li>
+            <li>Agent synergy and map synergy</li>
+            <li>Performance consistency charts</li>
+            <li>Meta comparison overlays</li>
+          </ul>
+        </div>
+        <div class="carousel-visual">
+          <img src="/deep_analysis.gif" alt="Deep analysis diagnostics" loading="lazy" decoding="async">
+        </div>
+      </div>
+
+      <!-- Slide 4: Performance Lab -->
+      <div class="carousel-slide">
+        <div class="carousel-text">
+          <span class="carousel-tag">Mental Game</span>
+          <h2 class="carousel-title">Performance Lab</h2>
+          <p class="carousel-desc">Tilt detection, fatigue scoring, best hours to play. Your mental game, quantified.</p>
+          <ul class="carousel-features">
+            <li>Tilt detection and streak analysis</li>
+            <li>Fatigue scoring over sessions</li>
+            <li>Best hours to queue</li>
+            <li>Performance decay tracking</li>
+          </ul>
+        </div>
+        <div class="carousel-visual">
+          <img src="/perf_lab.gif" alt="Performance lab charts" loading="lazy" decoding="async">
+        </div>
+      </div>
+
+      <!-- Slide 5: OBS Overlay -->
+      <div class="carousel-slide">
+        <div class="carousel-text">
+          <span class="carousel-tag">Streamers</span>
+          <h2 class="carousel-title">OBS Stream Overlay</h2>
+          <p class="carousel-desc">Show your live rank and stats on stream. One URL. Paste into OBS. Done.</p>
+          <ul class="carousel-features">
+            <li>3 layout presets — Competitive, HUD, Panel</li>
+            <li>Real-time rank and RR updates</li>
+            <li>Fully customisable colours</li>
+            <li>Zero setup required</li>
+          </ul>
+        </div>
+        <div class="carousel-visual">
+          <img src="/obs_overlay.png" alt="OBS stream overlay" loading="lazy" decoding="async">
+        </div>
+      </div>
+
+      <!-- Slide 6: VCT Esports -->
+      <div class="carousel-slide">
+        <div class="carousel-text">
+          <span class="carousel-tag">Live</span>
+          <h2 class="carousel-title">VCT Esports Hub</h2>
+          <p class="carousel-desc">Live scores, team rosters, tournament results. Never miss a match.</p>
+          <ul class="carousel-features">
+            <li>Live match scores and schedules</li>
+            <li>Team rosters and standings</li>
+            <li>Tournament brackets and results</li>
+            <li>VCT point tracking</li>
+          </ul>
+        </div>
+        <div class="carousel-visual">
+          <img src="/VCT_Esports.png" alt="VCT Esports hub" loading="lazy" decoding="async">
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Arrow navigation -->
+    <button class="carousel-arrow prev" id="carousel-prev" aria-label="Previous slide">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+    <button class="carousel-arrow next" id="carousel-next" aria-label="Next slide">
+      <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"></polyline></svg>
+    </button>
+
+    <!-- Dot navigation -->
+    <div class="carousel-nav" id="carousel-nav" role="tablist" aria-label="Feature slides">
+      <button class="carousel-dot active" role="tab" aria-selected="true" aria-label="Slide 1: Stats Tracker"></button>
+      <button class="carousel-dot" role="tab" aria-selected="false" aria-label="Slide 2: AI Coach"></button>
+      <button class="carousel-dot" role="tab" aria-selected="false" aria-label="Slide 3: Deep Analysis"></button>
+      <button class="carousel-dot" role="tab" aria-selected="false" aria-label="Slide 4: Performance Lab"></button>
+      <button class="carousel-dot" role="tab" aria-selected="false" aria-label="Slide 5: OBS Overlay"></button>
+      <button class="carousel-dot" role="tab" aria-selected="false" aria-label="Slide 6: VCT Esports"></button>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ════════════════════════════════
      FEATURES BENTO GRID
 ════════════════════════════════ -->
 <section class="section" id="features" aria-labelledby="features-title">
@@ -1701,7 +2073,7 @@ footer {
         <h3 class="bento-title" id="card-tracker-title">Stats Tracker</h3>
         <p class="bento-body">K/D, ACS, headshot %, win rate, RR progression — every metric that matters for your rank.</p>
         <div class="card-img-frame">
-          <img src="/stats_tracker_card.png" alt="ValTracker stats dashboard showing K/D, ACS, headshot %, win rate and RR progression" loading="lazy" style="height:200px;object-fit:cover;object-position:top;">
+          <img src="/stats_tracker_card.png" alt="ValTracker stats dashboard showing K/D, ACS, headshot %, win rate and RR progression" loading="lazy" decoding="async" fetchpriority="low" width="800" height="200" style="height:200px;object-fit:cover;object-position:top;">
         </div>
       </article>
 
@@ -1711,7 +2083,7 @@ footer {
         <h3 class="bento-title" id="card-ai-title">ValBot AI Coach</h3>
         <p class="bento-body">Analyses your last 20 matches. Tells you exactly what's holding back your rank.</p>
         <div class="card-img-frame">
-          <img src="/Val_bot_analysis.png" alt="ValBot AI coach verdict and performance analysis" loading="lazy" style="height:160px;object-fit:cover;object-position:top;">
+          <img src="/Val_bot_analysis.png" alt="ValBot AI coach verdict and performance analysis" loading="lazy" decoding="async" fetchpriority="low" width="600" height="160" style="height:160px;object-fit:cover;object-position:top;">
         </div>
       </article>
 
@@ -1720,7 +2092,7 @@ footer {
         <h3 class="bento-title" id="card-deep-title">Self-Analysis Diagnostics</h3>
         <p class="bento-body">Attack vs Defense win rates, agent-map fit, consistency trends. Your tactical blueprint.</p>
         <div class="card-img-frame">
-          <img src="/deep_analysis.gif" alt="Deep analysis diagnostics showing attack vs defense win rates and agent-map fit" loading="lazy" style="height:160px;object-fit:cover;object-position:top;">
+          <img src="/deep_analysis.gif" alt="Deep analysis diagnostics showing attack vs defense win rates and agent-map fit" loading="lazy" decoding="async" fetchpriority="low" width="600" height="160" style="height:160px;object-fit:cover;object-position:top;">
         </div>
       </article>
 
@@ -1729,7 +2101,7 @@ footer {
         <h3 class="bento-title" id="card-lab-title">Performance Diagnostics</h3>
         <p class="bento-body">Tilt detection, fatigue scoring, best hours to play. Your mental game, quantified.</p>
         <div class="card-img-frame">
-          <img src="/perf_lab.gif" alt="Performance lab showing tilt detection and fatigue scoring charts" loading="lazy" style="height:160px;object-fit:cover;object-position:top;">
+          <img src="/perf_lab.gif" alt="Performance lab showing tilt detection and fatigue scoring charts" loading="lazy" decoding="async" fetchpriority="low" width="600" height="160" style="height:160px;object-fit:cover;object-position:top;">
         </div>
       </article>
 
@@ -1739,7 +2111,7 @@ footer {
         <h3 class="bento-title" id="card-obs-title">OBS Stream Overlay</h3>
         <p class="bento-body">Show live rank and stats on stream. One URL into OBS Browser Source. Done.</p>
         <div class="card-img-frame">
-          <img src="/obs_overlay.png" alt="OBS stream overlay preview showing live rank and stats" loading="lazy" style="height:140px;object-fit:cover;object-position:top;">
+          <img src="/obs_overlay.png" alt="OBS stream overlay preview showing live rank and stats" loading="lazy" decoding="async" fetchpriority="low" width="600" height="140" style="height:140px;object-fit:cover;object-position:top;">
         </div>
       </article>
 
@@ -1748,7 +2120,7 @@ footer {
         <h3 class="bento-title" id="card-meta-title">Meta Comp Architect</h3>
         <p class="bento-body">Draft 5-agent comps. Evaluated against current VCT pro meta picks.</p>
         <div class="card-img-frame">
-          <img src="/meta_comp.png" alt="Meta comp architect showing 5-agent draft and VCT meta evaluation" loading="lazy" style="height:140px;object-fit:cover;object-position:top;">
+          <img src="/meta_comp.png" alt="Meta comp architect showing 5-agent draft and VCT meta evaluation" loading="lazy" decoding="async" fetchpriority="low" width="600" height="140" style="height:140px;object-fit:cover;object-position:top;">
         </div>
       </article>
 
@@ -1757,7 +2129,7 @@ footer {
         <h3 class="bento-title" id="card-store-title">Skins Store</h3>
         <p class="bento-body">Browse all Valorant skins, VP pricing, chromas and finisher previews.</p>
         <div class="card-img-frame">
-          <img src="/skin_store.png" alt="Valorant skins store with VP pricing and chroma previews" loading="lazy" style="height:140px;object-fit:cover;object-position:top;">
+          <img src="/skin_store.png" alt="Valorant skins store with VP pricing and chroma previews" loading="lazy" decoding="async" fetchpriority="low" width="600" height="140" style="height:140px;object-fit:cover;object-position:top;">
         </div>
       </article>
 
@@ -1767,7 +2139,7 @@ footer {
         <h3 class="bento-title" id="card-vct-title">VCT Esports Hub</h3>
         <p class="bento-body">Live scores, team rosters, tournament results. Masters London is live now.</p>
         <div class="card-img-frame">
-          <img src="/VCT_Esports.png" alt="VCT Esports hub showing Masters London match cards and live scores" loading="lazy" style="height:160px;object-fit:cover;object-position:center;">
+          <img src="/VCT_Esports.png" alt="VCT Esports hub showing Masters London match cards and live scores" loading="lazy" decoding="async" fetchpriority="low" width="800" height="160" style="height:160px;object-fit:cover;object-position:center;">
         </div>
       </article>
 
@@ -1990,12 +2362,19 @@ footer {
 
 <!-- ════════════════════════════════
      JAVASCRIPT
-════════════════════════════════ -->
+═══════════════════════════════ -->
 <script>
 /* ── Navbar scroll effect ── */
 const nav = document.getElementById('main-nav');
+let ticking = false;
 window.addEventListener('scroll', () => {
-  nav.classList.toggle('scrolled', window.scrollY > 20);
+  if (!ticking) {
+    requestAnimationFrame(() => {
+      nav.classList.toggle('scrolled', window.scrollY > 20);
+      ticking = false;
+    });
+    ticking = true;
+  }
 }, { passive: true });
 
 /* ── Hamburger menu ── */
@@ -2007,7 +2386,6 @@ hamburger.addEventListener('click', () => {
   hamburger.setAttribute('aria-expanded', isOpen);
 });
 
-/* Close mobile menu on link click */
 mobileMenu.querySelectorAll('a').forEach(link => {
   link.addEventListener('click', () => {
     hamburger.classList.remove('open');
@@ -2016,12 +2394,12 @@ mobileMenu.querySelectorAll('a').forEach(link => {
   });
 });
 
-/* ── Hero Canvas Particles ── */
+/* ── Hero Canvas Particles — interactive, connected, mouse-reactive ── */
 (function initParticles() {
   const canvas = document.getElementById('hero-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
-  let W, H, particles = [], animFrame;
+  let W, H, particles = [], animFrame, mouse = { x: -1000, y: -1000 };
 
   function resize() {
     W = canvas.width  = canvas.offsetWidth;
@@ -2032,42 +2410,115 @@ mobileMenu.querySelectorAll('a').forEach(link => {
     return {
       x: Math.random() * W,
       y: Math.random() * H,
-      r: Math.random() * 1.5 + 0.3,
-      vx: (Math.random() - 0.5) * 0.3,
-      vy: (Math.random() - 0.5) * 0.3,
-      alpha: Math.random() * 0.4 + 0.1
+      r: Math.random() * 1.8 + 0.4,
+      vx: (Math.random() - 0.5) * 0.5,
+      vy: (Math.random() - 0.5) * 0.5,
+      alpha: Math.random() * 0.5 + 0.15,
+      baseAlpha: Math.random() * 0.5 + 0.15
     };
   }
 
   function init() {
     resize();
-    particles = Array.from({ length: 80 }, createParticle);
+    const count = W < 768 ? 35 : 70;
+    particles = Array.from({ length: count }, createParticle);
   }
 
   function draw() {
     ctx.clearRect(0, 0, W, H);
-    particles.forEach(p => {
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255,70,85,${p.alpha})`;
-      ctx.fill();
+
+    /* Draw connecting lines between nearby particles */
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120) {
+          const lineAlpha = (1 - dist / 120) * 0.15;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(255,70,85,${lineAlpha})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+
+    /* Draw and update particles */
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+
+      /* Mouse repulsion — particles scatter when cursor is near */
+      const mdx = p.x - mouse.x;
+      const mdy = p.y - mouse.y;
+      const mDist = Math.sqrt(mdx * mdx + mdy * mdy);
+      if (mDist < 150) {
+        const force = (150 - mDist) / 150;
+        p.vx += (mdx / mDist) * force * 0.6;
+        p.vy += (mdy / mDist) * force * 0.6;
+        p.alpha = Math.min(p.baseAlpha + force * 0.5, 1);
+      } else {
+        p.alpha += (p.baseAlpha - p.alpha) * 0.05;
+      }
+
+      /* Damping */
+      p.vx *= 0.98;
+      p.vy *= 0.98;
+
+      /* Clamp speed */
+      const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+      if (speed > 2) { p.vx = (p.vx / speed) * 2; p.vy = (p.vy / speed) * 2; }
+
+      /* Base drift */
+      p.vx += (Math.random() - 0.5) * 0.02;
+      p.vy += (Math.random() - 0.5) * 0.02;
 
       p.x += p.vx;
       p.y += p.vy;
 
-      if (p.x < 0 || p.x > W) p.vx *= -1;
-      if (p.y < 0 || p.y > H) p.vy *= -1;
-    });
+      /* Wrap around edges softly */
+      if (p.x < -10) p.x = W + 10;
+      if (p.x > W + 10) p.x = -10;
+      if (p.y < -10) p.y = H + 10;
+      if (p.y > H + 10) p.y = -10;
+
+      /* Glow particle */
+      const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 3);
+      gradient.addColorStop(0, `rgba(255,70,85,${p.alpha})`);
+      gradient.addColorStop(1, 'rgba(255,70,85,0)');
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2);
+      ctx.fillStyle = gradient;
+      ctx.fill();
+
+      /* Core dot */
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,70,85,${p.alpha})`;
+      ctx.fill();
+    }
+
     animFrame = requestAnimationFrame(draw);
   }
 
-  const resizeObs = new ResizeObserver(init);
+  /* Track mouse position on canvas */
+  canvas.parentElement.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
+  });
+  canvas.parentElement.addEventListener('mouseleave', () => {
+    mouse.x = -1000;
+    mouse.y = -1000;
+  });
+
+  const resizeObs = new ResizeObserver(() => { init(); });
   resizeObs.observe(canvas.parentElement);
 
   init();
   draw();
 
-  /* Stop animation when not visible to save resources */
   const visObs = new IntersectionObserver(([e]) => {
     if (e.isIntersecting) { if (!animFrame) draw(); }
     else { cancelAnimationFrame(animFrame); animFrame = null; }
@@ -2075,61 +2526,176 @@ mobileMenu.querySelectorAll('a').forEach(link => {
   visObs.observe(canvas);
 })();
 
-/* ── Bento card stagger scroll reveal ── */
-(function initBentoReveal() {
-  const cards = document.querySelectorAll('.bento-card');
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach((entry, i) => {
-      if (entry.isIntersecting) {
-        // Stagger based on DOM order index
-        const idx = Array.from(cards).indexOf(entry.target);
-        setTimeout(() => {
-          entry.target.classList.add('visible');
-        }, idx * 80);
-        obs.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-  cards.forEach(c => obs.observe(c));
+/* ── Parallax scroll effects ── */
+(function initParallax() {
+  const heroGrid = document.querySelector('.hero-grid');
+  const heroGlow = document.querySelector('.hero-glow');
+  const heroGlow2 = document.querySelector('.hero-glow-2');
+  const heroContent = document.querySelector('.hero-content');
+  const heroMockup = document.querySelector('.hero-mockup-wrap');
+  const obsMockup = document.querySelector('.obs-mockup');
+  let ticking = false;
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        const scrollY = window.scrollY;
+        if (scrollY < window.innerHeight * 1.5) {
+          if (heroGrid) heroGrid.style.transform = `perspective(600px) rotateX(20deg) translateY(${scrollY * 0.15}px)`;
+          if (heroGlow) heroGlow.style.transform = `translate(-50%, calc(-50% + ${scrollY * 0.25}px))`;
+          if (heroGlow2) heroGlow2.style.transform = `translateY(${scrollY * -0.1}px)`;
+          if (heroContent) heroContent.style.transform = `translateY(${scrollY * 0.08}px)`;
+          if (heroMockup) heroMockup.style.transform = `translateY(${scrollY * -0.05}px)`;
+        }
+        if (obsMockup) {
+          const rect = obsMockup.getBoundingClientRect();
+          if (rect.top < window.innerHeight && rect.bottom > 0) {
+            const progress = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
+            obsMockup.style.transform = `translateY(${(progress - 0.5) * -30}px)`;
+          }
+        }
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
 })();
 
-/* ── Generic reveal on scroll ── */
-(function initReveal() {
-  const revealEls = document.querySelectorAll('.reveal, .step-item');
+/* ── 3D Tilt on bento cards ── */
+(function initTiltCards() {
+  const cards = document.querySelectorAll('.bento-card');
+  cards.forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      if (!card.classList.contains('visible')) return;
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rotateX = ((y - centerY) / centerY) * -8;
+      const rotateY = ((x - centerX) / centerX) * 8;
+      card.style.transform = `translateY(0) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02,1.02,1.02)`;
+
+      /* Move the inner glow to follow cursor */
+      const glowX = (x / rect.width) * 100;
+      const glowY = (y / rect.height) * 100;
+      card.style.setProperty('--glow-x', glowX + '%');
+      card.style.setProperty('--glow-y', glowY + '%');
+    });
+
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'translateY(0) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)';
+      card.style.transition = 'transform 0.5s ease, border-color 0.25s, box-shadow 0.25s';
+      setTimeout(() => { card.style.transition = ''; }, 500);
+    });
+  });
+})();
+
+/* ── Feature Carousel — auto-play + navigation ── */
+(function initCarousel() {
+  const track = document.getElementById('carousel-track');
+  const dots = document.querySelectorAll('.carousel-dot');
+  const prevBtn = document.getElementById('carousel-prev');
+  const nextBtn = document.getElementById('carousel-next');
+  if (!track || !dots.length) return;
+
+  let current = 0;
+  const total = dots.length;
+  let autoplayTimer;
+
+  function goTo(index) {
+    current = ((index % total) + total) % total;
+    track.style.transform = `translateX(-${current * 100}%)`;
+    dots.forEach((d, i) => {
+      d.classList.toggle('active', i === current);
+      d.setAttribute('aria-selected', i === current);
+    });
+  }
+
+  function next() { goTo(current + 1); }
+  function prev() { goTo(current - 1); }
+
+  function startAutoplay() {
+    stopAutoplay();
+    autoplayTimer = setInterval(next, 4500);
+  }
+
+  function stopAutoplay() {
+    if (autoplayTimer) clearInterval(autoplayTimer);
+  }
+
+  /* Click navigation */
+  nextBtn.addEventListener('click', () => { next(); startAutoplay(); });
+  prevBtn.addEventListener('click', () => { prev(); startAutoplay(); });
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', () => { goTo(i); startAutoplay(); });
+  });
+
+  /* Touch swipe support */
+  let touchStartX = 0;
+  track.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+    stopAutoplay();
+  }, { passive: true });
+
+  track.addEventListener('touchend', (e) => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) {
+      diff > 0 ? next() : prev();
+    }
+    startAutoplay();
+  }, { passive: true });
+
+  /* Pause on hover */
+  track.addEventListener('mouseenter', stopAutoplay);
+  track.addEventListener('mouseleave', startAutoplay);
+
+  /* Pause when not visible */
+  const visObs = new IntersectionObserver(([entry]) => {
+    entry.isIntersecting ? startAutoplay() : stopAutoplay();
+  }, { threshold: 0.2 });
+  visObs.observe(track);
+
+  /* Keyboard nav */
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') { prev(); startAutoplay(); }
+    if (e.key === 'ArrowRight') { next(); startAutoplay(); }
+  });
+
+  startAutoplay();
+})();
+
+/* ── Unified scroll reveal (single observer for all) ── */
+(function initScrollReveal() {
+  const allEls = document.querySelectorAll('.bento-card, .reveal, .step-item');
   const obs = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        obs.unobserve(entry.target);
+        const el = entry.target;
+        if (el.classList.contains('bento-card')) {
+          const cards = document.querySelectorAll('.bento-card');
+          const idx = Array.from(cards).indexOf(el);
+          setTimeout(() => el.classList.add('visible'), idx * 80);
+        } else if (el.classList.contains('step-item')) {
+          const steps = document.querySelectorAll('.step-item');
+          const idx = Array.from(steps).indexOf(el);
+          setTimeout(() => el.classList.add('visible'), idx * 150);
+        } else {
+          el.classList.add('visible');
+        }
+        obs.unobserve(el);
       }
     });
   }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
-  revealEls.forEach(el => obs.observe(el));
-})();
-
-/* ── Step items stagger ── */
-(function initStepReveal() {
-  const steps = document.querySelectorAll('.step-item');
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const idx = Array.from(steps).indexOf(entry.target);
-        setTimeout(() => {
-          entry.target.classList.add('visible');
-        }, idx * 150);
-        obs.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.15 });
-  steps.forEach(el => obs.observe(el));
+  allEls.forEach(el => obs.observe(el));
 })();
 
 /* ── Counter animation ── */
 (function initCounters() {
   const counters = [
-    { el: document.getElementById('counter-matches'),  target: 530, suffix: '+', format: null },
-    { el: document.getElementById('counter-features'), target: 6,   suffix: '',  format: null },
-    { el: document.getElementById('counter-free'),     target: 100, suffix: '%', format: null }
+    { el: document.getElementById('counter-matches'),  target: 530, suffix: '+' },
+    { el: document.getElementById('counter-features'), target: 6,   suffix: '' },
+    { el: document.getElementById('counter-free'),     target: 100, suffix: '%' }
   ];
 
   function easeOutQuart(t) { return 1 - Math.pow(1 - t, 4); }
@@ -2141,8 +2707,7 @@ mobileMenu.querySelectorAll('a').forEach(link => {
     function step(now) {
       const elapsed = now - start;
       const progress = Math.min(elapsed / duration, 1);
-      const val = Math.round(easeOutQuart(progress) * counter.target);
-      counter.el.textContent = val + counter.suffix;
+      counter.el.textContent = Math.round(easeOutQuart(progress) * counter.target) + counter.suffix;
       if (progress < 1) requestAnimationFrame(step);
     }
     requestAnimationFrame(step);
@@ -2159,8 +2724,7 @@ mobileMenu.querySelectorAll('a').forEach(link => {
 })();
 
 /* ── Reduce motion support ── */
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-if (prefersReducedMotion) {
+if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
   document.querySelectorAll('.bento-card, .reveal, .step-item').forEach(el => {
     el.style.transition = 'none';
     el.style.opacity = '1';
