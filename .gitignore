@@ -2,3 +2,7 @@
 __pycache__/
 *.pyc
 firebase-key.json
+# Large GIFs (>100MB — too big for GitHub, served from Render filesystem)
+public/deep_analysis.gif
+public/perf_lab.gif
+

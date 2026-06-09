@@ -338,8 +338,8 @@ h1.hero-headline {
 
 h1.hero-headline span.accent-line {
   display: block;
-  color: transparent;
-  -webkit-text-stroke: 2px rgba(255,255,255,0.15);
+  color: #FF4655;
+  opacity: 0.35;
 }
 
 .hero-sub {
@@ -828,9 +828,10 @@ h2.section-title {
   box-shadow: 0 0 40px var(--accent-dim), 0 0 0 1px rgba(255,70,85,0.12);
 }
 
-.bento-card.span-6 { grid-column: span 6; }
-.bento-card.span-4 { grid-column: span 4; }
-.bento-card.span-3 { grid-column: span 3; }
+.bento-card.span-12 { grid-column: span 12; }
+.bento-card.span-6  { grid-column: span 6; }
+.bento-card.span-4  { grid-column: span 4; }
+.bento-card.span-3  { grid-column: span 3; }
 
 /* Card inner glow on hover */
 .bento-card::before {
@@ -858,7 +859,7 @@ h2.section-title {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   background: rgba(255,255,255,0.06);
   color: var(--text-secondary);
   border: 1px solid var(--border);
@@ -870,29 +871,45 @@ h2.section-title {
   border-color: var(--accent-border);
 }
 
-.bento-icon {
-  font-size: 32px;
-  margin-bottom: 16px;
-  display: block;
-}
-
 h3.bento-title {
   font-family: var(--font-heading);
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1px;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   color: var(--text-primary);
 }
 
 .bento-body {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-secondary);
-  line-height: 1.65;
+  line-height: 1.6;
+  margin-bottom: 0;
 }
 
-/* Bottom accent line on large cards */
+/* Screenshot frame inside card */
+.card-img-frame {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+  margin-top: 14px;
+  width: 100%;
+  flex-shrink: 0;
+}
+.card-img-frame img {
+  width: 100%;
+  display: block;
+  transition: filter 0.2s ease;
+}
+.bento-card:hover .card-img-frame img {
+  filter: brightness(1.05);
+}
+.bento-card:hover {
+  transform: scale(1.02);
+}
+
+/* Bottom accent line on full-width cards */
 .bento-card.large-card::after {
   content: '';
   position: absolute;
@@ -1413,9 +1430,10 @@ footer {
    MOBILE RESPONSIVE
 ════════════════════════════════════════ */
 @media (max-width: 1024px) {
-  .bento-card.span-6 { grid-column: span 12; }
-  .bento-card.span-4 { grid-column: span 6; }
-  .bento-card.span-3 { grid-column: span 6; }
+  .bento-card.span-12 { grid-column: span 12; }
+  .bento-card.span-6  { grid-column: span 12; }
+  .bento-card.span-4  { grid-column: span 6; }
+  .bento-card.span-3  { grid-column: span 6; }
 
   .obs-section .section-inner {
     grid-template-columns: 1fr;
@@ -1437,8 +1455,9 @@ footer {
   .section { padding: 70px 24px; }
   .hero { padding: 100px 24px 60px; }
 
-  .bento-card.span-4 { grid-column: span 12; }
-  .bento-card.span-3 { grid-column: span 12; }
+  .bento-card.span-12 { grid-column: span 12; }
+  .bento-card.span-4  { grid-column: span 12; }
+  .bento-card.span-3  { grid-column: span 12; }
 
   .steps-wrap {
     grid-template-columns: 1fr;
@@ -1676,52 +1695,80 @@ footer {
 
     <div class="bento-grid" id="bento-grid" aria-label="Feature cards">
 
-      <!-- Card 1: LARGE -->
-      <article class="bento-card span-6 large-card" aria-labelledby="card-tracker-title">
+      <!-- ROW 1: Full-width Stats Tracker -->
+      <article class="bento-card span-12 large-card" aria-labelledby="card-tracker-title">
         <span class="card-tag">Core Feature</span>
-        <span class="bento-icon" aria-hidden="true">⚔️</span>
         <h3 class="bento-title" id="card-tracker-title">Stats Tracker</h3>
-        <p class="bento-body">K/D, ACS, headshot %, win rate, RR progression — every metric that matters for your rank. Pulled from your last 20 matches in seconds.</p>
+        <p class="bento-body">K/D, ACS, headshot %, win rate, RR progression — every metric that matters for your rank.</p>
+        <div class="card-img-frame">
+          <img src="/stats_tracker_card.png" alt="ValTracker stats dashboard showing K/D, ACS, headshot %, win rate and RR progression" loading="lazy" style="height:200px;object-fit:cover;object-position:top;">
+        </div>
       </article>
 
-      <!-- Card 2: LARGE, red glow -->
-      <article class="bento-card span-6 large-card red-glow" aria-labelledby="card-ai-title">
+      <!-- ROW 2: Three equal columns -->
+      <article class="bento-card span-4 red-glow" aria-labelledby="card-ai-title">
         <span class="card-tag red-tag">AI Powered</span>
-        <span class="bento-icon" aria-hidden="true">🤖</span>
         <h3 class="bento-title" id="card-ai-title">ValBot AI Coach</h3>
-        <p class="bento-body">Not just stats. ValBot analyses your last 20 matches and tells you exactly what's holding you back — K/D trends, rank readiness, and your #1 priority fix.</p>
+        <p class="bento-body">Analyses your last 20 matches. Tells you exactly what's holding back your rank.</p>
+        <div class="card-img-frame">
+          <img src="/Val_bot_analysis.png" alt="ValBot AI coach verdict and performance analysis" loading="lazy" style="height:160px;object-fit:cover;object-position:top;">
+        </div>
       </article>
 
-      <!-- Card 3: SMALL -->
-      <article class="bento-card span-3" aria-labelledby="card-obs-title">
+      <article class="bento-card span-4" aria-labelledby="card-deep-title">
+        <span class="card-tag">Deep Analysis</span>
+        <h3 class="bento-title" id="card-deep-title">Self-Analysis Diagnostics</h3>
+        <p class="bento-body">Attack vs Defense win rates, agent-map fit, consistency trends. Your tactical blueprint.</p>
+        <div class="card-img-frame">
+          <img src="/deep_analysis.gif" alt="Deep analysis diagnostics showing attack vs defense win rates and agent-map fit" loading="lazy" style="height:160px;object-fit:cover;object-position:top;">
+        </div>
+      </article>
+
+      <article class="bento-card span-4" aria-labelledby="card-lab-title">
+        <span class="card-tag">Performance Lab</span>
+        <h3 class="bento-title" id="card-lab-title">Performance Diagnostics</h3>
+        <p class="bento-body">Tilt detection, fatigue scoring, best hours to play. Your mental game, quantified.</p>
+        <div class="card-img-frame">
+          <img src="/perf_lab.gif" alt="Performance lab showing tilt detection and fatigue scoring charts" loading="lazy" style="height:160px;object-fit:cover;object-position:top;">
+        </div>
+      </article>
+
+      <!-- ROW 3: Three equal columns -->
+      <article class="bento-card span-4" aria-labelledby="card-obs-title">
         <span class="card-tag">Unique</span>
-        <span class="bento-icon" aria-hidden="true">📡</span>
         <h3 class="bento-title" id="card-obs-title">OBS Stream Overlay</h3>
-        <p class="bento-body">Show your live rank and stats on stream. Paste one URL into OBS. Done.</p>
+        <p class="bento-body">Show live rank and stats on stream. One URL into OBS Browser Source. Done.</p>
+        <div class="card-img-frame">
+          <img src="/obs_overlay.png" alt="OBS stream overlay preview showing live rank and stats" loading="lazy" style="height:140px;object-fit:cover;object-position:top;">
+        </div>
       </article>
 
-      <!-- Card 4: SMALL -->
-      <article class="bento-card span-3" aria-labelledby="card-meta-title">
+      <article class="bento-card span-4" aria-labelledby="card-meta-title">
         <span class="card-tag">Strategy</span>
-        <span class="bento-icon" aria-hidden="true">🧠</span>
         <h3 class="bento-title" id="card-meta-title">Meta Comp Architect</h3>
-        <p class="bento-body">Draft 5-agent comps for any map. Evaluated against current VCT pro meta picks.</p>
+        <p class="bento-body">Draft 5-agent comps. Evaluated against current VCT pro meta picks.</p>
+        <div class="card-img-frame">
+          <img src="/meta_comp.png" alt="Meta comp architect showing 5-agent draft and VCT meta evaluation" loading="lazy" style="height:140px;object-fit:cover;object-position:top;">
+        </div>
       </article>
 
-      <!-- Card 5: SMALL -->
-      <article class="bento-card span-3" aria-labelledby="card-store-title">
+      <article class="bento-card span-4" aria-labelledby="card-store-title">
         <span class="card-tag">Browse</span>
-        <span class="bento-icon" aria-hidden="true">🔫</span>
         <h3 class="bento-title" id="card-store-title">Skins Store</h3>
-        <p class="bento-body">Browse all Valorant skins, VP pricing, chromas and finisher previews in one place.</p>
+        <p class="bento-body">Browse all Valorant skins, VP pricing, chromas and finisher previews.</p>
+        <div class="card-img-frame">
+          <img src="/skin_store.png" alt="Valorant skins store with VP pricing and chroma previews" loading="lazy" style="height:140px;object-fit:cover;object-position:top;">
+        </div>
       </article>
 
-      <!-- Card 6: SMALL -->
-      <article class="bento-card span-3" aria-labelledby="card-vct-title">
+      <!-- ROW 4: Full-width VCT Esports -->
+      <article class="bento-card span-12 large-card" aria-labelledby="card-vct-title">
         <span class="card-tag">Live</span>
-        <span class="bento-icon" aria-hidden="true">🏆</span>
         <h3 class="bento-title" id="card-vct-title">VCT Esports Hub</h3>
         <p class="bento-body">Live scores, team rosters, tournament results. Masters London is live now.</p>
+        <div class="card-img-frame">
+          <img src="/VCT_Esports.png" alt="VCT Esports hub showing Masters London match cards and live scores" loading="lazy" style="height:160px;object-fit:cover;object-position:center;">
+        </div>
       </article>
 
     </div>
@@ -1822,12 +1869,12 @@ footer {
 <div class="stats-bar" id="stats-bar" role="region" aria-label="ValTracker statistics">
   <div class="stats-bar-inner">
     <div class="stat-counter">
-      <span class="counter-num" id="counter-players" aria-live="polite">0+</span>
-      <div class="counter-label">Players Tracked</div>
+      <span class="counter-num" id="counter-matches" aria-live="polite">0+</span>
+      <div class="counter-label">Matches Analysed</div>
     </div>
     <div class="stat-counter">
-      <span class="counter-num" id="counter-matches" aria-live="polite">0+</span>
-      <div class="counter-label">Matches Cached</div>
+      <span class="counter-num" id="counter-features" aria-live="polite">0</span>
+      <div class="counter-label">Powerful Features</div>
     </div>
     <div class="stat-counter">
       <span class="counter-num" id="counter-free" aria-live="polite">0%</span>
@@ -2080,24 +2127,22 @@ mobileMenu.querySelectorAll('a').forEach(link => {
 /* ── Counter animation ── */
 (function initCounters() {
   const counters = [
-    { el: document.getElementById('counter-players'), target: 10000, suffix: '+',     label: 'Players Tracked'  },
-    { el: document.getElementById('counter-matches'), target: 530,   suffix: '+',     label: 'Matches Cached'   },
-    { el: document.getElementById('counter-free'),    target: 100,   suffix: '%',     label: 'Free Forever'     }
+    { el: document.getElementById('counter-matches'),  target: 530, suffix: '+', format: null },
+    { el: document.getElementById('counter-features'), target: 6,   suffix: '',  format: null },
+    { el: document.getElementById('counter-free'),     target: 100, suffix: '%', format: null }
   ];
 
   function easeOutQuart(t) { return 1 - Math.pow(1 - t, 4); }
 
   function animateCounter(counter) {
+    if (!counter.el) return;
     const duration = 1800;
     const start = performance.now();
     function step(now) {
       const elapsed = now - start;
       const progress = Math.min(elapsed / duration, 1);
       const val = Math.round(easeOutQuart(progress) * counter.target);
-      const display = val >= 1000
-        ? (val / 1000).toFixed(val % 1000 === 0 ? 0 : 1) + 'k'
-        : val;
-      counter.el.textContent = display + counter.suffix;
+      counter.el.textContent = val + counter.suffix;
       if (progress < 1) requestAnimationFrame(step);
     }
     requestAnimationFrame(step);
