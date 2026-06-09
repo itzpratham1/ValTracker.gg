@@ -310,7 +310,7 @@ def optimize_response(response):
     path = request.path.lower()
     
     # 1. Apply premium Caching Headers
-    if 'overlay' in path or 'index.html' in path or path == '/' or path == '':
+    if 'overlay' in path or 'index.html' in path or path in ('/', '', '/app', '/login') or 'landing.html' in path:
         response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
         response.headers['Pragma'] = 'no-cache'
         response.headers['Expires'] = '0'
@@ -447,12 +447,28 @@ AGENT_UUID_MAP = {
 }
 
 @app.route("/")
+def landing():
+    """Marketing landing page — served at root for new visitors."""
+    resp = make_response(send_from_directory(app.static_folder, "landing.html"))
+    resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    resp.headers["Pragma"] = "no-cache"
+    resp.headers["Expires"] = "0"
+    return resp
+
+@app.route("/app")
 def index():
+    """Full stats tracker app — the main ValTracker dashboard."""
     resp = make_response(send_from_directory(app.static_folder, "index.html"))
     resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     resp.headers["Pragma"] = "no-cache"
     resp.headers["Expires"] = "0"
     return resp
+
+@app.route("/login")
+def login():
+    """Login page — currently redirects to the app (auth is optional)."""
+    from flask import redirect
+    return redirect("/app")
 
 @app.route("/overlay")
 def overlay():

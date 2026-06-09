@@ -1,0 +1,2130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#030304">
+<title>ValTracker — Free Valorant Stats Tracker, AI Coaching & OBS Overlays</title>
+<meta name="description" content="ValTracker is the free Valorant stats tracker with AI coaching, live OBS overlays, and real-time match analysis. No account required. Track your K/D, ACS, win rate and rank progression instantly.">
+<meta property="og:title" content="ValTracker — Free Valorant Stats Tracker">
+<meta property="og:description" content="Real-time Valorant stats, AI coaching, and live OBS overlays. Free. Always.">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/png" href="/logo.png">
+<link rel="shortcut icon" href="/logo.png" type="image/x-icon">
+<link rel="apple-touch-icon" href="/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ════════════════════════════════════════
+   DESIGN SYSTEM TOKENS
+════════════════════════════════════════ */
+:root {
+  --bg-primary:    #030304;
+  --bg-secondary:  #0d0d0f;
+  --bg-card:       rgba(255,255,255,0.04);
+  --accent:        #FF4655;
+  --accent-dim:    rgba(255,70,85,0.18);
+  --accent-glow:   rgba(255,70,85,0.3);
+  --accent-border: rgba(255,70,85,0.45);
+  --text-primary:  #FFFFFF;
+  --text-secondary:#8b8b9a;
+  --border:        rgba(255,255,255,0.08);
+  --border-hover:  rgba(255,255,255,0.14);
+  --radius:        12px;
+  --radius-sm:     8px;
+  --font-heading:  'Rajdhani', sans-serif;
+  --font-body:     'Inter', sans-serif;
+}
+
+/* ════════════════════════════════════════
+   RESET & BASE
+════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--bg-primary);
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { text-decoration: none; color: inherit; }
+img { display: block; max-width: 100%; }
+
+/* ════════════════════════════════════════
+   SCROLLBAR
+════════════════════════════════════════ */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: rgba(255,70,85,0.4); border-radius: 4px; }
+
+/* ════════════════════════════════════════
+   NAVBAR
+════════════════════════════════════════ */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 48px;
+  height: 64px;
+  transition: background 0.3s, border-bottom 0.3s, backdrop-filter 0.3s;
+}
+
+.nav.scrolled {
+  background: rgba(3,3,4,0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.nav-logo-icon {
+  width: 28px;
+  height: 28px;
+  color: var(--accent);
+  filter: drop-shadow(0 0 8px var(--accent-glow));
+}
+
+.nav-logo-img {
+  height: 28px;
+  width: auto;
+  filter: drop-shadow(0 0 8px rgba(255,70,85,0.6));
+  object-fit: contain;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 20px;
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+.btn-ghost:hover {
+  color: var(--text-primary);
+  border-color: var(--border-hover);
+}
+
+.btn-red {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 22px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--accent);
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+  white-space: nowrap;
+  box-shadow: 0 0 20px var(--accent-dim);
+}
+.btn-red:hover {
+  background: #e03040;
+  box-shadow: 0 0 32px var(--accent-glow);
+  transform: translateY(-1px);
+}
+
+/* Hamburger */
+.nav-hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  padding: 4px;
+}
+.nav-hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--text-primary);
+  border-radius: 2px;
+  transition: transform 0.3s, opacity 0.3s;
+}
+.nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-hamburger.open span:nth-child(2) { opacity: 0; }
+.nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+.nav-mobile-menu {
+  display: none;
+  position: fixed;
+  top: 64px;
+  left: 0;
+  right: 0;
+  background: rgba(3,3,4,0.97);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 24px 32px;
+  flex-direction: column;
+  gap: 16px;
+  z-index: 999;
+}
+.nav-mobile-menu.open { display: flex; }
+.nav-mobile-menu a, .nav-mobile-menu button {
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+
+/* ════════════════════════════════════════
+   HERO SECTION
+════════════════════════════════════════ */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 32px 80px;
+  overflow: hidden;
+}
+
+/* Animated grid background */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.hero-grid {
+  position: absolute;
+  inset: -10%;
+  background-image:
+    linear-gradient(rgba(255,70,85,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,70,85,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: gridDrift 20s linear infinite;
+}
+
+@keyframes gridDrift {
+  from { transform: perspective(600px) rotateX(20deg) translateY(0); }
+  to   { transform: perspective(600px) rotateX(20deg) translateY(60px); }
+}
+
+.hero-glow {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 700px;
+  height: 400px;
+  background: radial-gradient(ellipse at center, rgba(255,70,85,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-glow-2 {
+  position: absolute;
+  bottom: -100px;
+  left: 20%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(ellipse at center, rgba(255,70,85,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Particle canvas */
+#hero-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border: 1px solid var(--accent-border);
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 28px;
+  background: var(--accent-dim);
+  opacity: 0;
+  transform: translateY(16px);
+  animation: fadeUp 0.5s ease 0.1s forwards;
+}
+
+.hero-eyebrow::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent-glow);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.6; transform: scale(0.8); }
+}
+
+h1.hero-headline {
+  font-family: var(--font-heading);
+  font-size: clamp(3rem, 8vw, 6.5rem);
+  font-weight: 700;
+  line-height: 1.0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+  margin-bottom: 28px;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 0.6s ease 0.25s forwards;
+}
+
+h1.hero-headline span.accent-line {
+  display: block;
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(255,255,255,0.15);
+}
+
+.hero-sub {
+  font-family: var(--font-body);
+  font-size: clamp(15px, 2vw, 18px);
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-width: 560px;
+  margin: 0 auto 40px;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 0.6s ease 0.4s forwards;
+}
+
+.hero-cta-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 0.6s ease 0.55s forwards;
+}
+
+.btn-hero {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 40px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--accent);
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+  box-shadow: 0 0 40px var(--accent-dim), 0 4px 16px rgba(0,0,0,0.4);
+  position: relative;
+  overflow: hidden;
+}
+.btn-hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  transition: left 0.4s ease;
+}
+.btn-hero:hover::before { left: 150%; }
+.btn-hero:hover {
+  background: #e03040;
+  box-shadow: 0 0 60px var(--accent-glow), 0 6px 24px rgba(0,0,0,0.5);
+  transform: translateY(-2px);
+}
+
+.hero-note {
+  font-size: 12px;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+}
+
+/* Animated dashboard mockup below CTA */
+.hero-mockup-wrap {
+  position: relative;
+  margin-top: 80px;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeUp 0.8s ease 0.75s forwards;
+  z-index: 2;
+  max-width: 900px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-browser-frame {
+  background: #111114;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(255,70,85,0.08),
+    0 40px 80px rgba(0,0,0,0.7),
+    0 0 120px rgba(255,70,85,0.08);
+  animation: floatUpDown 4s ease-in-out infinite;
+}
+
+@keyframes floatUpDown {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+
+.browser-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #0a0a0d;
+  border-bottom: 1px solid var(--border);
+}
+
+.browser-dots {
+  display: flex;
+  gap: 6px;
+}
+.browser-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.browser-dot.red   { background: #ff5f57; }
+.browser-dot.amber { background: #febc2e; }
+.browser-dot.green { background: #28c840; }
+
+.browser-url-bar {
+  flex: 1;
+  height: 26px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  gap: 6px;
+}
+
+.url-lock {
+  width: 10px;
+  height: 10px;
+  opacity: 0.5;
+}
+
+.browser-body {
+  padding: 20px;
+  background: var(--bg-secondary);
+}
+
+/* Mini dashboard inside browser */
+.dash-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.dash-player-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dash-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(255,70,85,0.3), rgba(255,70,85,0.1));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  border: 1px solid var(--accent-border);
+  box-shadow: 0 0 12px var(--accent-dim);
+  flex-shrink: 0;
+}
+
+.dash-name {
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.dash-tag {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.dash-rank-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(255,70,85,0.1);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-sm);
+}
+
+.dash-rank-icon {
+  font-size: 20px;
+}
+
+.dash-rank-text {
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 1px;
+}
+
+.dash-rr {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+/* Stat cards grid */
+.dash-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.dash-stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  text-align: center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.dash-stat-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.dash-stat-val {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.dash-stat-val.highlight { color: var(--accent); }
+.dash-stat-val.green     { color: #3ecf8e; }
+
+/* Mini match history */
+.dash-matches {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dash-match-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid transparent;
+}
+
+.dash-match-row.win  { border-left-color: #3ecf8e; }
+.dash-match-row.loss { border-left-color: var(--accent); }
+
+.match-result-pill {
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  min-width: 36px;
+  text-align: center;
+}
+
+.match-result-pill.win  { background: rgba(62,207,142,0.15); color: #3ecf8e; }
+.match-result-pill.loss { background: var(--accent-dim); color: var(--accent); }
+
+.match-agent { font-size: 16px; }
+
+.match-map {
+  font-size: 11px;
+  color: var(--text-secondary);
+  flex: 1;
+  font-weight: 500;
+}
+
+.match-kda {
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.match-rr {
+  font-size: 11px;
+  font-weight: 600;
+  min-width: 40px;
+  text-align: right;
+}
+
+.match-rr.pos { color: #3ecf8e; }
+.match-rr.neg { color: var(--accent); }
+
+/* AI Analysis hint row */
+.dash-ai-hint {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, rgba(255,70,85,0.08), rgba(255,70,85,0.03));
+  border: 1px solid rgba(255,70,85,0.2);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ai-hint-icon { font-size: 18px; }
+.ai-hint-text { font-size: 12px; color: var(--text-secondary); flex: 1; }
+.ai-hint-text strong { color: var(--accent); }
+.ai-hint-btn {
+  font-size: 11px;
+  padding: 5px 12px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-family: var(--font-body);
+}
+
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ════════════════════════════════════════
+   TICKER BAR
+════════════════════════════════════════ */
+.ticker-bar {
+  width: 100%;
+  background: #0a0a0d;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker 35s linear infinite;
+}
+
+.ticker-track:hover { animation-play-state: paused; }
+
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.ticker-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 48px;
+  white-space: nowrap;
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.ticker-dot {
+  color: var(--accent);
+  font-size: 8px;
+}
+
+/* ════════════════════════════════════════
+   SECTION CHROME
+════════════════════════════════════════ */
+.section {
+  padding: 100px 48px;
+  position: relative;
+}
+
+.section-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+hr.section-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0;
+}
+
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 56px;
+}
+
+.section-label-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.section-eyebrow {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--accent);
+}
+
+h2.section-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 1.1;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+}
+
+.section-subtitle {
+  font-size: 16px;
+  color: var(--text-secondary);
+  max-width: 500px;
+  line-height: 1.7;
+}
+
+/* ════════════════════════════════════════
+   BENTO FEATURE GRID
+════════════════════════════════════════ */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: auto;
+  gap: 14px;
+}
+
+.bento-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+.bento-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s, opacity 0.5s ease, transform 0.5s ease;
+}
+
+.bento-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 0 40px rgba(0,0,0,0.3);
+  transform: translateY(-3px);
+}
+
+.bento-card.red-glow:hover {
+  border-color: var(--accent-border);
+  box-shadow: 0 0 40px var(--accent-dim), 0 0 0 1px rgba(255,70,85,0.12);
+}
+
+.bento-card.span-6 { grid-column: span 6; }
+.bento-card.span-4 { grid-column: span 4; }
+.bento-card.span-3 { grid-column: span 3; }
+
+/* Card inner glow on hover */
+.bento-card::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.bento-card:hover::before { opacity: 1; }
+
+.bento-card.red-glow::before {
+  background: radial-gradient(circle, var(--accent-dim) 0%, transparent 70%);
+}
+
+.card-tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 20px;
+  background: rgba(255,255,255,0.06);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.card-tag.red-tag {
+  background: var(--accent-dim);
+  color: var(--accent);
+  border-color: var(--accent-border);
+}
+
+.bento-icon {
+  font-size: 32px;
+  margin-bottom: 16px;
+  display: block;
+}
+
+h3.bento-title {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+}
+
+.bento-body {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
+/* Bottom accent line on large cards */
+.bento-card.large-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.bento-card.large-card:hover::after { opacity: 1; }
+
+/* ════════════════════════════════════════
+   OBS OVERLAY SHOWCASE
+════════════════════════════════════════ */
+.obs-section .section-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+
+.obs-left h2 { margin-bottom: 12px; }
+.obs-left .section-subtitle { margin-bottom: 32px; }
+
+.obs-bullets {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 36px;
+}
+
+.obs-bullets li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.obs-bullet-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+  margin-top: 6px;
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* OBS Mockup */
+.obs-mockup {
+  position: relative;
+}
+
+.obs-frame {
+  background: #0a0a0d;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,70,85,0.06);
+}
+
+.obs-frame-header {
+  background: #060609;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.obs-red-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent-glow);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.obs-scene-body {
+  padding: 20px;
+  background: linear-gradient(180deg, #0d0d10 0%, #07070a 100%);
+  min-height: 260px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Game-like overlay inside OBS scene */
+.obs-scene-bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,70,85,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,70,85,0.02) 1px, transparent 1px);
+  background-size: 30px 30px;
+  pointer-events: none;
+}
+
+.overlay-widget {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  width: fit-content;
+}
+
+.overlay-rank-badge {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.overlay-rr-bar-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.overlay-rr-label {
+  font-size: 9px;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.overlay-rr-bar {
+  width: 80px;
+  height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.overlay-rr-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  animation: rrFill 3s ease-in-out infinite alternate;
+}
+
+@keyframes rrFill {
+  from { width: 45%; }
+  to   { width: 73%; }
+}
+
+.overlay-stats-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.overlay-stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+}
+
+.overlay-stat-key {
+  font-size: 9px;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.overlay-stat-val {
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.overlay-stat-val.green { color: #3ecf8e; }
+
+.obs-powered-badge {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  font-size: 9px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.6;
+  font-weight: 600;
+}
+
+/* ════════════════════════════════════════
+   SOCIAL PROOF / COUNTER BAR
+════════════════════════════════════════ */
+.stats-bar {
+  padding: 64px 48px;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.stats-bar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 48px;
+}
+
+.stat-counter {
+  text-align: center;
+  position: relative;
+}
+
+.stat-counter::after {
+  content: '';
+  position: absolute;
+  right: 0; top: 20%;
+  height: 60%;
+  width: 1px;
+  background: var(--border);
+}
+.stat-counter:last-child::after { display: none; }
+
+.counter-num {
+  font-family: var(--font-heading);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.counter-num .accent { color: var(--accent); }
+
+.counter-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 600;
+}
+
+/* ════════════════════════════════════════
+   HOW IT WORKS
+════════════════════════════════════════ */
+.steps-wrap {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  position: relative;
+}
+
+.steps-wrap::before {
+  content: '';
+  position: absolute;
+  top: 32px;
+  left: calc(100% / 6);
+  right: calc(100% / 6);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border) 20%, var(--border) 80%, transparent);
+  z-index: 0;
+}
+
+.step-item {
+  position: relative;
+  text-align: center;
+  padding: 0 32px;
+  z-index: 1;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.step-item.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.step-num-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 28px;
+  position: relative;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.step-item:hover .step-num-wrap {
+  border-color: var(--accent-border);
+  box-shadow: 0 0 20px var(--accent-dim);
+}
+
+.step-num {
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+h3.step-title {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+}
+
+.step-body {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
+/* ════════════════════════════════════════
+   FINAL CTA SECTION
+════════════════════════════════════════ */
+.final-cta-section {
+  padding: 100px 48px;
+}
+
+.final-cta-card {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 72px 48px;
+  position: relative;
+  overflow: hidden;
+}
+
+.final-cta-card::before {
+  content: '';
+  position: absolute;
+  top: -100px; left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(ellipse at center, rgba(255,70,85,0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.final-cta-card h2 {
+  font-family: var(--font-heading);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 16px;
+}
+
+.final-cta-card p {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-bottom: 40px;
+  line-height: 1.7;
+}
+
+.final-cta-note {
+  margin-top: 20px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  letter-spacing: 0.3px;
+  opacity: 0.7;
+}
+
+.final-cta-note span {
+  padding: 0 8px;
+  opacity: 0.4;
+}
+
+/* ════════════════════════════════════════
+   FOOTER
+════════════════════════════════════════ */
+footer {
+  background: #0a0a0d;
+  border-top: 1px solid var(--border);
+  padding: 48px 48px 32px;
+}
+
+.footer-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 32px;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.footer-logo-img {
+  height: 24px;
+  width: auto;
+  filter: drop-shadow(0 0 6px rgba(255,70,85,0.5));
+  object-fit: contain;
+}
+
+.footer-by {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  letter-spacing: 0.5px;
+}
+
+.footer-nav {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.footer-nav a {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  transition: color 0.2s;
+}
+
+.footer-nav a:hover { color: var(--text-primary); }
+
+.footer-socials {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: flex-end;
+}
+
+.footer-social-link {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: color 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.footer-social-link:hover {
+  color: var(--text-primary);
+  border-color: var(--border-hover);
+  box-shadow: 0 0 16px rgba(255,255,255,0.05);
+}
+
+.footer-bottom {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.footer-disclaimer {
+  font-size: 9px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.8;
+  opacity: 0.5;
+  text-align: center;
+}
+
+/* ════════════════════════════════════════
+   SCROLL REVEAL UTILITY
+════════════════════════════════════════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ════════════════════════════════════════
+   MOBILE RESPONSIVE
+════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .bento-card.span-6 { grid-column: span 12; }
+  .bento-card.span-4 { grid-column: span 6; }
+  .bento-card.span-3 { grid-column: span 6; }
+
+  .obs-section .section-inner {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .footer-main {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .footer-socials { justify-content: center; }
+}
+
+@media (max-width: 768px) {
+  .nav { padding: 0 24px; }
+  .nav-actions { display: none; }
+  .nav-hamburger { display: flex; }
+
+  .section { padding: 70px 24px; }
+  .hero { padding: 100px 24px 60px; }
+
+  .bento-card.span-4 { grid-column: span 12; }
+  .bento-card.span-3 { grid-column: span 12; }
+
+  .steps-wrap {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  .steps-wrap::before { display: none; }
+
+  .stats-bar { padding: 48px 24px; }
+  .stats-bar-inner {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .stat-counter::after { display: none; }
+
+  .final-cta-section { padding: 70px 24px; }
+  .final-cta-card { padding: 48px 28px; }
+
+  footer { padding: 40px 24px 28px; }
+  .footer-nav { gap: 20px; }
+
+  .dash-stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-browser-frame { border-radius: 8px; }
+  .dash-stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .overlay-stats-row { flex-wrap: wrap; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════
+     NAVBAR
+════════════════════════════════ -->
+<nav class="nav" id="main-nav" role="navigation" aria-label="Main navigation">
+  <a href="/" class="nav-logo" aria-label="ValTracker Home">
+    <img src="/logo.png" class="nav-logo-img" alt="ValTracker Logo" onerror="this.style.display='none'">
+    <span>ValTracker</span>
+  </a>
+
+  <div class="nav-actions">
+    <a href="/login" class="btn-ghost" id="nav-signin-btn">Sign In</a>
+    <a href="/app" class="btn-red" id="nav-track-btn">Track Now →</a>
+  </div>
+
+  <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="nav-mobile-menu" id="mobile-menu" role="menu">
+  <a href="/login" class="btn-ghost">Sign In</a>
+  <a href="/app" class="btn-red">Track Now →</a>
+</div>
+
+<!-- ════════════════════════════════
+     HERO SECTION
+════════════════════════════════ -->
+<section class="hero" id="hero" aria-labelledby="hero-headline">
+  <div class="hero-bg">
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-glow-2"></div>
+    <canvas id="hero-canvas" aria-hidden="true"></canvas>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow" aria-label="Free Valorant stats tracker">
+      Free forever · No account needed
+    </div>
+
+    <h1 class="hero-headline" id="hero-headline">
+      Stop Guessing.<br>
+      <span class="accent-line">Start Climbing.</span>
+    </h1>
+
+    <p class="hero-sub">
+      Real-time Valorant stats, AI coaching, and live OBS overlays.<br>
+      Free. Always.
+    </p>
+
+    <div class="hero-cta-wrap">
+      <a href="/app" class="btn-hero" id="hero-cta-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="5 12 12 5 19 12"></polyline><polyline points="5 19 12 12 19 19"></polyline></svg>
+        Track Your Stats
+      </a>
+      <p class="hero-note">No account needed. Just your Riot ID.</p>
+    </div>
+  </div>
+
+  <!-- Animated Stats Dashboard Mockup -->
+  <div class="hero-mockup-wrap">
+    <div class="hero-browser-frame">
+      <div class="browser-titlebar">
+        <div class="browser-dots">
+          <div class="browser-dot red"></div>
+          <div class="browser-dot amber"></div>
+          <div class="browser-dot green"></div>
+        </div>
+        <div class="browser-url-bar">
+          <svg class="url-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          valtracker.live/app
+        </div>
+      </div>
+
+      <div class="browser-body">
+        <!-- Player Header -->
+        <div class="dash-header">
+          <div class="dash-player-info">
+            <div class="dash-avatar" aria-hidden="true">⚡</div>
+            <div>
+              <div class="dash-name">AgentX</div>
+              <div class="dash-tag">#NA1 · Asia Pacific · Competitive</div>
+            </div>
+          </div>
+          <div class="dash-rank-badge">
+            <span class="dash-rank-icon" aria-hidden="true">💎</span>
+            <div>
+              <div class="dash-rank-text">Diamond 2</div>
+              <div class="dash-rr">76 RR</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stat Cards -->
+        <div class="dash-stats-grid" role="list" aria-label="Player statistics">
+          <div class="dash-stat-card" role="listitem">
+            <div class="dash-stat-label">K/D</div>
+            <div class="dash-stat-val highlight">1.47</div>
+          </div>
+          <div class="dash-stat-card" role="listitem">
+            <div class="dash-stat-label">ACS</div>
+            <div class="dash-stat-val">238</div>
+          </div>
+          <div class="dash-stat-card" role="listitem">
+            <div class="dash-stat-label">HS%</div>
+            <div class="dash-stat-val">28%</div>
+          </div>
+          <div class="dash-stat-card" role="listitem">
+            <div class="dash-stat-label">Win Rate</div>
+            <div class="dash-stat-val green">61%</div>
+          </div>
+          <div class="dash-stat-card" role="listitem">
+            <div class="dash-stat-label">Avg Kills</div>
+            <div class="dash-stat-val">18.3</div>
+          </div>
+          <div class="dash-stat-card" role="listitem">
+            <div class="dash-stat-label">Matches</div>
+            <div class="dash-stat-val">20</div>
+          </div>
+        </div>
+
+        <!-- Recent Matches -->
+        <div class="dash-matches" role="list" aria-label="Recent matches">
+          <div class="dash-match-row win" role="listitem">
+            <span class="match-result-pill win">WIN</span>
+            <span class="match-agent" aria-hidden="true">🐉</span>
+            <span class="match-map">Ascent</span>
+            <span class="match-kda">24 / 11 / 7</span>
+            <span class="match-rr pos">+22 RR</span>
+          </div>
+          <div class="dash-match-row loss" role="listitem">
+            <span class="match-result-pill loss">LOSS</span>
+            <span class="match-agent" aria-hidden="true">⚡</span>
+            <span class="match-map">Haven</span>
+            <span class="match-kda">16 / 18 / 4</span>
+            <span class="match-rr neg">–18 RR</span>
+          </div>
+          <div class="dash-match-row win" role="listitem">
+            <span class="match-result-pill win">WIN</span>
+            <span class="match-agent" aria-hidden="true">🔫</span>
+            <span class="match-map">Bind</span>
+            <span class="match-kda">21 / 13 / 9</span>
+            <span class="match-rr pos">+20 RR</span>
+          </div>
+        </div>
+
+        <!-- AI Hint -->
+        <div class="dash-ai-hint" role="complementary" aria-label="ValBot AI analysis hint">
+          <span class="ai-hint-icon" aria-hidden="true">🤖</span>
+          <span class="ai-hint-text"><strong>ValBot AI:</strong> Your deaths spike on rounds 15–20. Switch from Jett to Raze on Haven for better fragging power.</span>
+          <button class="ai-hint-btn" aria-label="Run full AI analysis">Analyse →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ════════════════════════════════
+     TICKER BAR
+════════════════════════════════ -->
+<div class="ticker-bar" role="marquee" aria-label="ValTracker features">
+  <div class="ticker-track">
+    <!-- First copy -->
+    <div class="ticker-item"><span class="ticker-dot" aria-hidden="true">✦</span>530+ Matches Cached</div>
+    <div class="ticker-item"><span class="ticker-dot" aria-hidden="true">✦</span>Free Forever</div>
+    <div class="ticker-item"><span class="ticker-dot" aria-hidden="true">✦</span>AI-Powered Coaching</div>
+    <div class="ticker-item"><span class="ticker-dot" aria-hidden="true">✦</span>OBS Ready</div>
+    <div class="ticker-item"><span class="ticker-dot" aria-hidden="true">✦</span>VCT Live Coverage</div>
+    <div class="ticker-item"><span class="ticker-dot" aria-hidden="true">✦</span>No Login Required</div>
+    <div class="ticker-item"><span class="ticker-dot" aria-hidden="true">✦</span>Real-Time Stats</div>
+    <div class="ticker-item"><span class="ticker-dot" aria-hidden="true">✦</span>Meta Comp Architect</div>
+    <!-- Duplicate for seamless loop -->
+    <div class="ticker-item"><span class="ticker-dot" aria-hidden="true">✦</span>530+ Matches Cached</div>
+    <div class="ticker-item"><span class="ticker-dot" aria-hidden="true">✦</span>Free Forever</div>
+    <div class="ticker-item"><span class="ticker-dot" aria-hidden="true">✦</span>AI-Powered Coaching</div>
+    <div class="ticker-item"><span class="ticker-dot" aria-hidden="true">✦</span>OBS Ready</div>
+    <div class="ticker-item"><span class="ticker-dot" aria-hidden="true">✦</span>VCT Live Coverage</div>
+    <div class="ticker-item"><span class="ticker-dot" aria-hidden="true">✦</span>No Login Required</div>
+    <div class="ticker-item"><span class="ticker-dot" aria-hidden="true">✦</span>Real-Time Stats</div>
+    <div class="ticker-item"><span class="ticker-dot" aria-hidden="true">✦</span>Meta Comp Architect</div>
+  </div>
+</div>
+
+<hr class="section-divider">
+
+<!-- ════════════════════════════════
+     FEATURES BENTO GRID
+════════════════════════════════ -->
+<section class="section" id="features" aria-labelledby="features-title">
+  <div class="section-inner">
+    <div class="section-label reveal">
+      <span class="section-eyebrow">Features</span>
+      <div class="section-label-line"></div>
+    </div>
+
+    <div style="max-width: 640px; margin-bottom: 56px;">
+      <h2 class="section-title reveal" id="features-title">Everything You Need<br>To Rank Up</h2>
+    </div>
+
+    <div class="bento-grid" id="bento-grid" aria-label="Feature cards">
+
+      <!-- Card 1: LARGE -->
+      <article class="bento-card span-6 large-card" aria-labelledby="card-tracker-title">
+        <span class="card-tag">Core Feature</span>
+        <span class="bento-icon" aria-hidden="true">⚔️</span>
+        <h3 class="bento-title" id="card-tracker-title">Stats Tracker</h3>
+        <p class="bento-body">K/D, ACS, headshot %, win rate, RR progression — every metric that matters for your rank. Pulled from your last 20 matches in seconds.</p>
+      </article>
+
+      <!-- Card 2: LARGE, red glow -->
+      <article class="bento-card span-6 large-card red-glow" aria-labelledby="card-ai-title">
+        <span class="card-tag red-tag">AI Powered</span>
+        <span class="bento-icon" aria-hidden="true">🤖</span>
+        <h3 class="bento-title" id="card-ai-title">ValBot AI Coach</h3>
+        <p class="bento-body">Not just stats. ValBot analyses your last 20 matches and tells you exactly what's holding you back — K/D trends, rank readiness, and your #1 priority fix.</p>
+      </article>
+
+      <!-- Card 3: SMALL -->
+      <article class="bento-card span-3" aria-labelledby="card-obs-title">
+        <span class="card-tag">Unique</span>
+        <span class="bento-icon" aria-hidden="true">📡</span>
+        <h3 class="bento-title" id="card-obs-title">OBS Stream Overlay</h3>
+        <p class="bento-body">Show your live rank and stats on stream. Paste one URL into OBS. Done.</p>
+      </article>
+
+      <!-- Card 4: SMALL -->
+      <article class="bento-card span-3" aria-labelledby="card-meta-title">
+        <span class="card-tag">Strategy</span>
+        <span class="bento-icon" aria-hidden="true">🧠</span>
+        <h3 class="bento-title" id="card-meta-title">Meta Comp Architect</h3>
+        <p class="bento-body">Draft 5-agent comps for any map. Evaluated against current VCT pro meta picks.</p>
+      </article>
+
+      <!-- Card 5: SMALL -->
+      <article class="bento-card span-3" aria-labelledby="card-store-title">
+        <span class="card-tag">Browse</span>
+        <span class="bento-icon" aria-hidden="true">🔫</span>
+        <h3 class="bento-title" id="card-store-title">Skins Store</h3>
+        <p class="bento-body">Browse all Valorant skins, VP pricing, chromas and finisher previews in one place.</p>
+      </article>
+
+      <!-- Card 6: SMALL -->
+      <article class="bento-card span-3" aria-labelledby="card-vct-title">
+        <span class="card-tag">Live</span>
+        <span class="bento-icon" aria-hidden="true">🏆</span>
+        <h3 class="bento-title" id="card-vct-title">VCT Esports Hub</h3>
+        <p class="bento-body">Live scores, team rosters, tournament results. Masters London is live now.</p>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ════════════════════════════════
+     OBS OVERLAY SHOWCASE
+════════════════════════════════ -->
+<section class="section obs-section" id="obs-overlay" aria-labelledby="obs-title">
+  <div class="section-inner">
+    <div class="obs-left">
+      <div class="section-label reveal">
+        <span class="section-eyebrow">Stream Smarter</span>
+        <div class="section-label-line"></div>
+      </div>
+      <h2 class="section-title reveal" id="obs-title">The Only Free Tracker<br>With OBS Overlays</h2>
+      <p class="section-subtitle reveal" style="margin-bottom:32px;">One URL. Paste into OBS Browser Source. Your rank and stats show live on stream — no setup required.</p>
+
+      <ul class="obs-bullets reveal" aria-label="OBS overlay features">
+        <li><span class="obs-bullet-dot" aria-hidden="true"></span>Real-time rank display on stream</li>
+        <li><span class="obs-bullet-dot" aria-hidden="true"></span>3 layout presets — Competitive, HUD, Panel</li>
+        <li><span class="obs-bullet-dot" aria-hidden="true"></span>Fully customizable colours</li>
+        <li><span class="obs-bullet-dot" aria-hidden="true"></span>One URL. Paste into OBS Browser Source.</li>
+      </ul>
+
+      <div class="reveal">
+        <a href="/app" class="btn-red" id="obs-cta-btn" style="display:inline-flex;">→ Build Your Overlay</a>
+      </div>
+    </div>
+
+    <div class="obs-mockup reveal">
+      <div class="obs-frame" role="img" aria-label="OBS overlay preview showing live stats">
+        <div class="obs-frame-header">
+          <div class="obs-red-dot" aria-hidden="true"></div>
+          OBS Browser Source — valtracker.live/overlay
+        </div>
+        <div class="obs-scene-body">
+          <div class="obs-scene-bg-grid" aria-hidden="true"></div>
+
+          <!-- Live rank widget -->
+          <div class="overlay-widget" role="status" aria-label="Current rank: Diamond 2, 76 RR">
+            <span style="font-size:22px;" aria-hidden="true">💎</span>
+            <div>
+              <div class="overlay-rank-badge">Diamond 2</div>
+              <div class="overlay-rr-bar-wrap">
+                <div class="overlay-rr-label">76 / 100 RR</div>
+                <div class="overlay-rr-bar" aria-hidden="true">
+                  <div class="overlay-rr-fill"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live stats row -->
+          <div class="overlay-stats-row" role="list" aria-label="Live match statistics">
+            <div class="overlay-stat-pill" role="listitem">
+              <span class="overlay-stat-key">K/D</span>
+              <span class="overlay-stat-val">1.47</span>
+            </div>
+            <div class="overlay-stat-pill" role="listitem">
+              <span class="overlay-stat-key">ACS</span>
+              <span class="overlay-stat-val">238</span>
+            </div>
+            <div class="overlay-stat-pill" role="listitem">
+              <span class="overlay-stat-key">HS%</span>
+              <span class="overlay-stat-val green">28%</span>
+            </div>
+            <div class="overlay-stat-pill" role="listitem">
+              <span class="overlay-stat-key">WR</span>
+              <span class="overlay-stat-val green">61%</span>
+            </div>
+          </div>
+
+          <!-- Win streak -->
+          <div class="overlay-widget" role="status" aria-label="Current win streak">
+            <span style="font-size:18px;" aria-hidden="true">🔥</span>
+            <div>
+              <div style="font-size:9px; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:1px;">Win Streak</div>
+              <div style="font-family:'Rajdhani',sans-serif; font-size:16px; font-weight:700; color:#3ecf8e;">3 in a row</div>
+            </div>
+          </div>
+
+          <div class="obs-powered-badge" aria-hidden="true">Powered by ValTracker</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ════════════════════════════════
+     SOCIAL PROOF BAR
+════════════════════════════════ -->
+<div class="stats-bar" id="stats-bar" role="region" aria-label="ValTracker statistics">
+  <div class="stats-bar-inner">
+    <div class="stat-counter">
+      <span class="counter-num" id="counter-players" aria-live="polite">0+</span>
+      <div class="counter-label">Players Tracked</div>
+    </div>
+    <div class="stat-counter">
+      <span class="counter-num" id="counter-matches" aria-live="polite">0+</span>
+      <div class="counter-label">Matches Cached</div>
+    </div>
+    <div class="stat-counter">
+      <span class="counter-num" id="counter-free" aria-live="polite">0%</span>
+      <div class="counter-label">Free Forever</div>
+    </div>
+  </div>
+</div>
+
+<hr class="section-divider">
+
+<!-- ════════════════════════════════
+     HOW IT WORKS
+════════════════════════════════ -->
+<section class="section" id="how-it-works" aria-labelledby="how-title">
+  <div class="section-inner">
+    <div class="section-label reveal">
+      <span class="section-eyebrow">How It Works</span>
+      <div class="section-label-line"></div>
+    </div>
+    <div style="text-align:center; margin-bottom:72px;">
+      <h2 class="section-title reveal" id="how-title" style="display:inline-block;">Three Steps To Your Stats</h2>
+    </div>
+
+    <div class="steps-wrap" role="list" aria-label="Three steps to get started">
+      <div class="step-item" role="listitem">
+        <div class="step-num-wrap" aria-hidden="true">
+          <span class="step-num">01</span>
+        </div>
+        <h3 class="step-title">Enter Your Riot ID</h3>
+        <p class="step-body">Type your in-game name and tag. No account. No login. Just paste your Riot ID and go.</p>
+      </div>
+      <div class="step-item" role="listitem">
+        <div class="step-num-wrap" aria-hidden="true">
+          <span class="step-num">02</span>
+        </div>
+        <h3 class="step-title">Fetch Your Stats</h3>
+        <p class="step-body">ValTracker pulls your last 20 matches in 5–10 seconds and compiles every metric that matters.</p>
+      </div>
+      <div class="step-item" role="listitem">
+        <div class="step-num-wrap" aria-hidden="true">
+          <span class="step-num">03</span>
+        </div>
+        <h3 class="step-title">Climb Faster</h3>
+        <p class="step-body">Use ValBot AI, Deep Analysis, and Performance Lab to identify and fix your exact weak spots.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ════════════════════════════════
+     FINAL CTA
+════════════════════════════════ -->
+<section class="final-cta-section" id="final-cta" aria-labelledby="final-cta-title">
+  <div class="final-cta-card reveal">
+    <h2 id="final-cta-title">Ready To See<br>Your Real Stats?</h2>
+    <p>Join thousands of Valorant players already using ValTracker to rank up faster with real data.</p>
+    <a href="/app" class="btn-hero" id="final-cta-btn" style="display:inline-flex;">→ Track Now — It's Free</a>
+    <p class="final-cta-note">
+      No sign-up required
+      <span aria-hidden="true">·</span>
+      Free forever
+      <span aria-hidden="true">·</span>
+      Built by a Valorant player
+    </p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════
+     FOOTER
+════════════════════════════════ -->
+<footer role="contentinfo">
+  <div class="footer-main">
+    <div>
+      <div class="footer-logo">
+        <img src="/logo.png" class="footer-logo-img" alt="ValTracker Logo" onerror="this.style.display='none'">
+        <span>ValTracker</span>
+      </div>
+      <div class="footer-by">Built by Pratham</div>
+    </div>
+
+    <nav class="footer-nav" aria-label="Footer navigation">
+      <a href="/app">Tracker</a>
+      <a href="/app">VCT</a>
+      <a href="/app">Skins</a>
+      <a href="/app">Meta Comp</a>
+      <a href="/app">OBS Overlay</a>
+    </nav>
+
+    <div class="footer-socials">
+      <!-- GitHub -->
+      <a href="https://github.com/itzpratham1" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="GitHub — itzpratham1" title="GitHub">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+          <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.646.64.699 1.026 1.592 1.026 2.683 0 3.842-2.337 4.687-4.565 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.579.688.481C19.137 20.162 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+        </svg>
+      </a>
+      <!-- Twitter / X -->
+      <a href="https://x.com/itzpratham01" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Twitter/X — itzpratham01" title="Twitter / X">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p class="footer-disclaimer">
+      VALTRACKER IS NOT ENDORSED BY RIOT GAMES AND DOES NOT REFLECT THE VIEWS OR OPINIONS OF RIOT GAMES OR ANYONE OFFICIALLY INVOLVED IN PRODUCING OR MANAGING VALORANT. VALORANT AND RIOT GAMES ARE TRADEMARKS OR REGISTERED TRADEMARKS OF RIOT GAMES, INC. VALORANT © RIOT GAMES, INC.
+    </p>
+  </div>
+</footer>
+
+<!-- ════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════ -->
+<script>
+/* ── Navbar scroll effect ── */
+const nav = document.getElementById('main-nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 20);
+}, { passive: true });
+
+/* ── Hamburger menu ── */
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobile-menu');
+hamburger.addEventListener('click', () => {
+  const isOpen = hamburger.classList.toggle('open');
+  mobileMenu.classList.toggle('open', isOpen);
+  hamburger.setAttribute('aria-expanded', isOpen);
+});
+
+/* Close mobile menu on link click */
+mobileMenu.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => {
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+  });
+});
+
+/* ── Hero Canvas Particles ── */
+(function initParticles() {
+  const canvas = document.getElementById('hero-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [], animFrame;
+
+  function resize() {
+    W = canvas.width  = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+
+  function createParticle() {
+    return {
+      x: Math.random() * W,
+      y: Math.random() * H,
+      r: Math.random() * 1.5 + 0.3,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      alpha: Math.random() * 0.4 + 0.1
+    };
+  }
+
+  function init() {
+    resize();
+    particles = Array.from({ length: 80 }, createParticle);
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,70,85,${p.alpha})`;
+      ctx.fill();
+
+      p.x += p.vx;
+      p.y += p.vy;
+
+      if (p.x < 0 || p.x > W) p.vx *= -1;
+      if (p.y < 0 || p.y > H) p.vy *= -1;
+    });
+    animFrame = requestAnimationFrame(draw);
+  }
+
+  const resizeObs = new ResizeObserver(init);
+  resizeObs.observe(canvas.parentElement);
+
+  init();
+  draw();
+
+  /* Stop animation when not visible to save resources */
+  const visObs = new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) { if (!animFrame) draw(); }
+    else { cancelAnimationFrame(animFrame); animFrame = null; }
+  }, { threshold: 0 });
+  visObs.observe(canvas);
+})();
+
+/* ── Bento card stagger scroll reveal ── */
+(function initBentoReveal() {
+  const cards = document.querySelectorAll('.bento-card');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        // Stagger based on DOM order index
+        const idx = Array.from(cards).indexOf(entry.target);
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, idx * 80);
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  cards.forEach(c => obs.observe(c));
+})();
+
+/* ── Generic reveal on scroll ── */
+(function initReveal() {
+  const revealEls = document.querySelectorAll('.reveal, .step-item');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+  revealEls.forEach(el => obs.observe(el));
+})();
+
+/* ── Step items stagger ── */
+(function initStepReveal() {
+  const steps = document.querySelectorAll('.step-item');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const idx = Array.from(steps).indexOf(entry.target);
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, idx * 150);
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  steps.forEach(el => obs.observe(el));
+})();
+
+/* ── Counter animation ── */
+(function initCounters() {
+  const counters = [
+    { el: document.getElementById('counter-players'), target: 10000, suffix: '+',     label: 'Players Tracked'  },
+    { el: document.getElementById('counter-matches'), target: 530,   suffix: '+',     label: 'Matches Cached'   },
+    { el: document.getElementById('counter-free'),    target: 100,   suffix: '%',     label: 'Free Forever'     }
+  ];
+
+  function easeOutQuart(t) { return 1 - Math.pow(1 - t, 4); }
+
+  function animateCounter(counter) {
+    const duration = 1800;
+    const start = performance.now();
+    function step(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const val = Math.round(easeOutQuart(progress) * counter.target);
+      const display = val >= 1000
+        ? (val / 1000).toFixed(val % 1000 === 0 ? 0 : 1) + 'k'
+        : val;
+      counter.el.textContent = display + counter.suffix;
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  const statsBar = document.getElementById('stats-bar');
+  const obs = new IntersectionObserver(([entry]) => {
+    if (entry.isIntersecting) {
+      counters.forEach(c => animateCounter(c));
+      obs.unobserve(statsBar);
+    }
+  }, { threshold: 0.4 });
+  obs.observe(statsBar);
+})();
+
+/* ── Reduce motion support ── */
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (prefersReducedMotion) {
+  document.querySelectorAll('.bento-card, .reveal, .step-item').forEach(el => {
+    el.style.transition = 'none';
+    el.style.opacity = '1';
+    el.style.transform = 'none';
+    el.classList.add('visible');
+  });
+  const canvas = document.getElementById('hero-canvas');
+  if (canvas) canvas.style.display = 'none';
+}
+</script>
+</body>
+</html>
