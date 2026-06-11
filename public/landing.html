@@ -206,12 +206,14 @@ img { display: block; max-width: 100%; height: auto; }
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 9px 22px;
+  padding: 10px 24px;
   border: none;
   border-radius: var(--radius-sm);
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 600;
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
   color: #fff;
   background: var(--accent);
   cursor: pointer;
@@ -1743,8 +1745,16 @@ footer {
 
 @media (max-width: 768px) {
   .nav { padding: 0 24px; }
-  .nav-actions { display: none; }
-  .nav-hamburger { display: flex; }
+  .nav-actions { display: flex; }
+  .nav-hamburger { display: none; }
+  .nav-mobile-menu { display: none !important; }
+  .btn-red {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+  .nav-logo span {
+    font-size: 18px;
+  }
 
   .section { padding: 70px 24px; }
   .hero { padding: 100px 24px 60px; }
@@ -2008,21 +2018,73 @@ footer {
   max-width: 90%;
   max-height: 85%;
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.lightbox-content img {
-  width: auto;
-  height: auto;
-  max-width: 100%;
-  max-height: 100%;
+  display: block;
+  overflow: auto;
   border-radius: 8px;
   border: 1px solid var(--border);
   box-shadow: 0 24px 80px rgba(0,0,0,0.8);
-  cursor: default;
-  transition: transform 0.3s ease;
+  background: #030304;
+}
+
+.lightbox-content img {
+  width: 100%;
+  height: auto;
+  display: block;
+  cursor: zoom-in;
+  transition: width 0.25s ease, max-width 0.25s ease;
+}
+
+.lightbox-content img.zoomed-in {
+  width: 160%;
+  max-width: none;
+  cursor: zoom-out;
+}
+
+/* Hover Zoom click overlay indicators */
+.card-img-frame {
+  position: relative;
+  cursor: pointer;
+}
+.card-img-frame::after {
+  content: '🔍 Click to Zoom';
+  position: absolute;
+  inset: 0;
+  background: rgba(3, 3, 4, 0.4);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 5;
+  pointer-events: none;
+}
+.bento-card:hover .card-img-frame::after {
+  opacity: 1;
+}
+
+/* Eyebrow badge layout */
+.njt-section .section-label {
+  justify-content: center;
+  margin-bottom: 24px;
+}
+.njt-section .section-eyebrow {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: #ff3e54;
+  text-shadow: 0 0 15px rgba(255, 62, 84, 0.45);
+  background: rgba(255, 62, 84, 0.08);
+  border: 1px solid rgba(255, 62, 84, 0.25);
+  padding: 8px 20px;
+  border-radius: 999px;
+  display: inline-block;
 }
 
 @media (max-width: 1024px) {
@@ -2716,9 +2778,14 @@ mobileMenu.querySelectorAll('a').forEach(link => {
   }, { passive: true });
 })();
 
-/* ── 3D Tilt on bento cards (classy, smooth & subtle) ── */
+/* ── 3D Tilt on bento cards (classy, smooth & subtle — disabled on mobile/touchscreen) ── */
 (function initTiltCards() {
   const cards = document.querySelectorAll('.bento-card');
+  // Disable tilt card completely on screen widths <= 1024 or device touch screens
+  if (window.innerWidth <= 1024 || !window.matchMedia('(hover: hover)').matches) {
+    return;
+  }
+  
   cards.forEach(card => {
     card.addEventListener('mousemove', (e) => {
       if (!card.classList.contains('visible')) return;
@@ -2727,8 +2794,8 @@ mobileMenu.querySelectorAll('a').forEach(link => {
       const y = e.clientY - rect.top;
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
-      const rotateX = ((y - centerY) / centerY) * -3.5; // Classy subtle rotation range (-3.5 to 3.5 deg)
-      const rotateY = ((x - centerX) / centerX) * 3.5;  // Classy subtle rotation range (-3.5 to 3.5 deg)
+      const rotateX = ((y - centerY) / centerY) * -3.5;
+      const rotateY = ((x - centerX) / centerX) * 3.5;
       
       card.style.setProperty('--rx', rotateX + 'deg');
       card.style.setProperty('--ry', rotateY + 'deg');
@@ -2777,79 +2844,7 @@ mobileMenu.querySelectorAll('a').forEach(link => {
   });
 })();
 
-/* ── Feature Carousel — auto-play + navigation ── */
-(function initCarousel() {
-  const track = document.getElementById('carousel-track');
-  const dots = document.querySelectorAll('.carousel-dot');
-  const prevBtn = document.getElementById('carousel-prev');
-  const nextBtn = document.getElementById('carousel-next');
-  if (!track || !dots.length) return;
 
-  let current = 0;
-  const total = dots.length;
-  let autoplayTimer;
-
-  function goTo(index) {
-    current = ((index % total) + total) % total;
-    track.style.transform = `translateX(-${current * 100}%)`;
-    dots.forEach((d, i) => {
-      d.classList.toggle('active', i === current);
-      d.setAttribute('aria-selected', i === current);
-    });
-  }
-
-  function next() { goTo(current + 1); }
-  function prev() { goTo(current - 1); }
-
-  function startAutoplay() {
-    stopAutoplay();
-    autoplayTimer = setInterval(next, 4500);
-  }
-
-  function stopAutoplay() {
-    if (autoplayTimer) clearInterval(autoplayTimer);
-  }
-
-  /* Click navigation */
-  nextBtn.addEventListener('click', () => { next(); startAutoplay(); });
-  prevBtn.addEventListener('click', () => { prev(); startAutoplay(); });
-  dots.forEach((dot, i) => {
-    dot.addEventListener('click', () => { goTo(i); startAutoplay(); });
-  });
-
-  /* Touch swipe support */
-  let touchStartX = 0;
-  track.addEventListener('touchstart', (e) => {
-    touchStartX = e.touches[0].clientX;
-    stopAutoplay();
-  }, { passive: true });
-
-  track.addEventListener('touchend', (e) => {
-    const diff = touchStartX - e.changedTouches[0].clientX;
-    if (Math.abs(diff) > 50) {
-      diff > 0 ? next() : prev();
-    }
-    startAutoplay();
-  }, { passive: true });
-
-  /* Pause on hover */
-  track.addEventListener('mouseenter', stopAutoplay);
-  track.addEventListener('mouseleave', startAutoplay);
-
-  /* Pause when not visible */
-  const visObs = new IntersectionObserver(([entry]) => {
-    entry.isIntersecting ? startAutoplay() : stopAutoplay();
-  }, { threshold: 0.2 });
-  visObs.observe(track);
-
-  /* Keyboard nav */
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft') { prev(); startAutoplay(); }
-    if (e.key === 'ArrowRight') { next(); startAutoplay(); }
-  });
-
-  startAutoplay();
-})();
 
 /* ── Unified scroll reveal (single observer for all) ── */
 (function initScrollReveal() {
@@ -2909,12 +2904,12 @@ mobileMenu.querySelectorAll('a').forEach(link => {
   obs.observe(statsBar);
 })();
 
-/* ── Lightbox Image Zoom ── */
+/* ── Lightbox Image Zoom (with Panning & 2-Stage Expand) ── */
 (function initLightbox() {
   const lightbox = document.getElementById('image-lightbox');
   const lightboxImg = document.getElementById('lightbox-img');
   const closeBtn = lightbox.querySelector('.lightbox-close');
-  const images = document.querySelectorAll('.card-img-frame img, .carousel-visual img, #hero-stats-img, #hero-ai-img');
+  const images = document.querySelectorAll('.card-img-frame img, #hero-stats-img, #hero-ai-img');
 
   if (!lightbox || !lightboxImg) return;
 
@@ -2924,11 +2919,18 @@ mobileMenu.querySelectorAll('a').forEach(link => {
       e.stopPropagation();
       lightboxImg.src = img.src;
       lightboxImg.alt = img.alt;
+      lightboxImg.classList.remove('zoomed-in'); // Reset zoom state
       lightbox.style.display = 'flex';
       lightbox.offsetHeight; // force reflow
       lightbox.style.opacity = '1';
       lightbox.setAttribute('aria-hidden', 'false');
     });
+  });
+
+  // Toggle zoomed-in class to expand screenshot further and scroll/pan around details
+  lightboxImg.addEventListener('click', (e) => {
+    e.stopPropagation(); // Stop click from closing the modal
+    lightboxImg.classList.toggle('zoomed-in');
   });
 
   function closeLightbox() {
@@ -2937,6 +2939,7 @@ mobileMenu.querySelectorAll('a').forEach(link => {
     setTimeout(() => {
       lightbox.style.display = 'none';
       lightboxImg.src = '';
+      lightboxImg.classList.remove('zoomed-in');
     }, 300);
   }
 
