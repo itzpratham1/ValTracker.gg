@@ -231,6 +231,12 @@ img { display: block; max-width: 100%; height: auto; }
   transform: translateY(0) scale(0.98);
 }
 
+#nav-track-btn {
+  padding: 8px 18px;
+  font-size: 14px;
+}
+
+
 
 
 /* ════════════════════════════════════════
@@ -252,10 +258,12 @@ img { display: block; max-width: 100%; height: auto; }
 /* Animated grid background */
 .hero-bg {
   position: absolute;
-  inset: 0;
+  inset: -3%;
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
+  transform: translate(var(--mouse-x, 0px), var(--mouse-y, 0px));
+  transition: transform 0.6s cubic-bezier(0.15, 0.85, 0.15, 1);
 }
 
 .hero-grid {
@@ -293,6 +301,61 @@ img { display: block; max-width: 100%; height: auto; }
   background: radial-gradient(ellipse at center, rgba(255,70,85,0.06) 0%, transparent 70%);
   pointer-events: none;
 }
+
+/* Floating background glow orbs */
+.glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none;
+  opacity: 0.15;
+  will-change: transform;
+}
+
+.orb-1 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, #ff4655 0%, transparent 80%);
+  top: -10%;
+  left: 15%;
+  animation: floatOrb1 25s ease-in-out infinite alternate;
+}
+
+.orb-2 {
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, #8a2be2 0%, transparent 80%);
+  bottom: 10%;
+  right: 15%;
+  opacity: 0.12;
+  animation: floatOrb2 20s ease-in-out infinite alternate;
+}
+
+.orb-3 {
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, #ff4655 0%, transparent 80%);
+  top: 40%;
+  left: 55%;
+  opacity: 0.08;
+  animation: floatOrb3 30s ease-in-out infinite alternate;
+}
+
+@keyframes floatOrb1 {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(60px, 40px) scale(1.15); }
+}
+
+@keyframes floatOrb2 {
+  0% { transform: translate(0, 0) scale(1.1); }
+  100% { transform: translate(-50px, -60px) scale(0.9); }
+}
+
+@keyframes floatOrb3 {
+  0% { transform: translate(0, 0) scale(0.95); }
+  100% { transform: translate(40px, -40px) scale(1.1); }
+}
+
 
 /* Particle canvas */
 #hero-canvas {
@@ -354,15 +417,35 @@ h1.hero-headline {
   letter-spacing: 0.04em;
   color: var(--text-primary);
   margin-bottom: 28px;
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeUp 0.6s ease 0.25s forwards;
+}
+
+.reveal-line-wrap {
+  display: block;
+  overflow: hidden;
+}
+
+.reveal-line {
+  display: block;
+  transform: translateY(110%);
+  animation: slideUpReveal 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.reveal-line.line-1 {
+  animation-delay: 0.2s;
+}
+
+.reveal-line.line-2 {
+  animation-delay: 0.4s;
 }
 
 h1.hero-headline span.accent-line {
   display: block;
   color: #FF4655;
-  opacity: 0.35;
+  opacity: 0.9;
+}
+
+@keyframes slideUpReveal {
+  to { transform: translateY(0); }
 }
 
 .hero-sub {
@@ -406,6 +489,7 @@ h1.hero-headline span.accent-line {
   box-shadow: 0 0 36px rgba(255, 70, 85, 0.45), 0 4px 16px rgba(0,0,0,0.45);
   position: relative;
   overflow: hidden;
+  animation: buttonPulse 3s infinite ease-in-out;
 }
 .btn-hero::before {
   content: '';
@@ -422,9 +506,15 @@ h1.hero-headline span.accent-line {
   box-shadow: 0 0 54px rgba(255, 70, 85, 0.75), 0 6px 24px rgba(0,0,0,0.5);
   transform: translateY(-2px) scale(1.02);
   border-color: rgba(255, 70, 85, 0.8);
+  animation: none; /* Stop pulsing on hover to preserve hover glow */
 }
 .btn-hero:active {
   transform: translateY(0) scale(0.98);
+}
+
+@keyframes buttonPulse {
+  0%, 100% { box-shadow: 0 0 24px rgba(255, 70, 85, 0.3), 0 4px 12px rgba(0,0,0,0.45); }
+  50% { box-shadow: 0 0 44px rgba(255, 70, 85, 0.6), 0 4px 12px rgba(0,0,0,0.45); }
 }
 
 .hero-note {
@@ -1817,16 +1907,16 @@ footer {
   border-radius: var(--radius);
   padding: 28px;
   position: relative;
-  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
 .njt-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-5px);
   border-color: var(--border-hover);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+  box-shadow: 0 16px 36px rgba(0,0,0,0.5);
 }
 
 .njt-card.exclusive {
@@ -1920,6 +2010,18 @@ footer {
 
 .njt-table tr:last-child td {
   border-bottom: none;
+}
+
+.njt-table tr {
+  transition: background-color 0.2s ease;
+}
+
+.njt-table tr:hover {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.njt-table tr:hover td.highlight-col {
+  background-color: rgba(255, 62, 84, 0.07);
 }
 
 .njt-check {
@@ -2204,6 +2306,9 @@ footer {
     <div class="hero-grid"></div>
     <div class="hero-glow"></div>
     <div class="hero-glow-2"></div>
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="glow-orb orb-3"></div>
     <canvas id="hero-canvas" aria-hidden="true"></canvas>
   </div>
 
@@ -2213,8 +2318,12 @@ footer {
     </div>
 
     <h1 class="hero-headline" id="hero-headline">
-      Stop Guessing.<br>
-      <span class="accent-line">Start Climbing.</span>
+      <span class="reveal-line-wrap">
+        <span class="reveal-line line-1">Stop Guessing.</span>
+      </span>
+      <span class="reveal-line-wrap">
+        <span class="reveal-line line-2 accent-line">Start Climbing.</span>
+      </span>
     </h1>
 
     <p class="hero-sub">
@@ -2818,6 +2927,7 @@ window.addEventListener('scroll', () => {
   const heroContent = document.querySelector('.hero-content');
   const heroMockup = document.querySelector('.hero-mockup-wrap');
   const obsMockup = document.querySelector('.obs-mockup');
+  const heroBg = document.querySelector('.hero-bg');
   let ticking = false;
 
   window.addEventListener('scroll', () => {
@@ -2843,6 +2953,16 @@ window.addEventListener('scroll', () => {
       ticking = true;
     }
   }, { passive: true });
+
+  /* Mouse move parallax for background glow */
+  if (heroBg && window.innerWidth > 1024 && window.matchMedia('(hover: hover)').matches) {
+    window.addEventListener('mousemove', (e) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 35;
+      const y = (e.clientY / window.innerHeight - 0.5) * 35;
+      heroBg.style.setProperty('--mouse-x', `${x}px`);
+      heroBg.style.setProperty('--mouse-y', `${y}px`);
+    });
+  }
 })();
 
 /* ── 3D Tilt on bento cards (classy, smooth & subtle — disabled on mobile/touchscreen) ── */

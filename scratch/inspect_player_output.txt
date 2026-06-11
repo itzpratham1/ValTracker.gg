@@ -1,0 +1,5 @@
+Total matches: 12
+First Match ID: 1448f63d-8cfe-4824-b60d-d29dadb16300
+First Match Mode: Spike Rush
+Number of players: 1
+Player: Name='ItzPrathamエース', Tag='GEWin', Character='Iso'
