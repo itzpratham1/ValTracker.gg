@@ -137,6 +137,7 @@ img { display: block; max-width: 100%; height: auto; }
   justify-content: space-between;
   padding: 0 48px;
   height: 64px;
+  border-bottom: 1px solid transparent; /* Prevent white bar scroll flash */
   transition: background 0.3s, border-bottom 0.3s, backdrop-filter 0.3s;
 }
 
@@ -539,6 +540,42 @@ h1.hero-headline span.accent-line {
 .browser-body {
   padding: 20px;
   background: var(--bg-secondary);
+}
+
+.browser-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 16px;
+  background: #08080a;
+  border-bottom: 1px solid var(--border);
+}
+
+.browser-tab {
+  background: transparent;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  padding: 10px 20px;
+  color: var(--text-secondary);
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: -1px;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.browser-tab:hover {
+  color: var(--text-primary);
+}
+
+.browser-tab.active {
+  background: var(--bg-secondary);
+  border-color: var(--border);
+  color: var(--text-primary);
 }
 
 /* Mini dashboard inside browser */
@@ -1041,7 +1078,7 @@ h2.section-title {
   position: relative;
   overflow: hidden;
   cursor: default;
-  transition: border-color 0.25s, box-shadow 0.25s, transform 0.15s ease-out;
+  transition: border-color 0.25s, box-shadow 0.25s, transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
   opacity: 0;
   transform: translateY(24px) rotateX(0deg) rotateY(0deg);
   transform-style: preserve-3d;
@@ -1050,17 +1087,13 @@ h2.section-title {
 
 .bento-card.visible {
   opacity: 1;
-  transform: translateY(0) rotateX(0deg) rotateY(0deg);
-  transition: border-color 0.25s, box-shadow 0.25s, transform 0.5s ease, opacity 0.5s ease;
+  transform: translateY(0) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale3d(var(--scale, 1), var(--scale, 1), var(--scale, 1));
+  transition: border-color 0.25s, box-shadow 0.25s, transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.5s ease;
 }
 
 .bento-card:hover {
   border-color: var(--border-hover);
   box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-}
-
-.bento-card.visible:hover {
-  /* transform handled by JS for 3D tilt */
 }
 
 .bento-card.red-glow:hover {
@@ -1138,15 +1171,30 @@ h3.bento-title {
   border: 1px solid rgba(255,255,255,0.08);
   margin-top: 14px;
   width: 100%;
+  aspect-ratio: 16 / 9; /* Consistent modern ratio */
+  background: rgba(0,0,0,0.2);
+  display: flex;
+  align-items: flex-start;
   flex-shrink: 0;
+}
+.bento-card.large-card .card-img-frame {
+  aspect-ratio: 21 / 9; /* Wider ratio for full-width cards */
 }
 .card-img-frame img {
   width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
   display: block;
   transition: filter 0.2s ease;
 }
 .bento-card:hover .card-img-frame img {
   filter: brightness(1.05);
+}
+@media (max-width: 1024px) {
+  .bento-card.large-card .card-img-frame {
+    aspect-ratio: 16 / 9; /* Standard ratio on tablet/mobile */
+  }
 }
 
 /* Bottom accent line on full-width cards */
@@ -1807,88 +1855,19 @@ footer {
         </div>
         <div class="browser-url-bar">
           <svg class="url-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-          valtracker.live/app
+          <span id="browser-url-text">valtracker.live/app/stats</span>
         </div>
       </div>
 
-      <div class="browser-body">
-        <!-- Player Header -->
-        <div class="dash-header">
-          <div class="dash-player-info">
-            <div class="dash-avatar" aria-hidden="true">⚡</div>
-            <div>
-              <div class="dash-name">AgentX</div>
-              <div class="dash-tag">#NA1 · Asia Pacific · Competitive</div>
-            </div>
-          </div>
-          <div class="dash-rank-badge">
-            <span class="dash-rank-icon" aria-hidden="true">💎</span>
-            <div>
-              <div class="dash-rank-text">Diamond 2</div>
-              <div class="dash-rr">76 RR</div>
-            </div>
-          </div>
-        </div>
+      <!-- Tabs to toggle real screenshots -->
+      <div class="browser-tabs" role="tablist" aria-label="Mockup views">
+        <button class="browser-tab active" role="tab" aria-selected="true" data-target="hero-stats-tab">Stats Dashboard</button>
+        <button class="browser-tab" role="tab" aria-selected="false" data-target="hero-ai-tab">ValBot AI Coach</button>
+      </div>
 
-        <!-- Stat Cards -->
-        <div class="dash-stats-grid" role="list" aria-label="Player statistics">
-          <div class="dash-stat-card" role="listitem">
-            <div class="dash-stat-label">K/D</div>
-            <div class="dash-stat-val highlight">1.47</div>
-          </div>
-          <div class="dash-stat-card" role="listitem">
-            <div class="dash-stat-label">ACS</div>
-            <div class="dash-stat-val">238</div>
-          </div>
-          <div class="dash-stat-card" role="listitem">
-            <div class="dash-stat-label">HS%</div>
-            <div class="dash-stat-val">28%</div>
-          </div>
-          <div class="dash-stat-card" role="listitem">
-            <div class="dash-stat-label">Win Rate</div>
-            <div class="dash-stat-val green">61%</div>
-          </div>
-          <div class="dash-stat-card" role="listitem">
-            <div class="dash-stat-label">Avg Kills</div>
-            <div class="dash-stat-val">18.3</div>
-          </div>
-          <div class="dash-stat-card" role="listitem">
-            <div class="dash-stat-label">Matches</div>
-            <div class="dash-stat-val">20</div>
-          </div>
-        </div>
-
-        <!-- Recent Matches -->
-        <div class="dash-matches" role="list" aria-label="Recent matches">
-          <div class="dash-match-row win" role="listitem">
-            <span class="match-result-pill win">WIN</span>
-            <span class="match-agent" aria-hidden="true">🐉</span>
-            <span class="match-map">Ascent</span>
-            <span class="match-kda">24 / 11 / 7</span>
-            <span class="match-rr pos">+22 RR</span>
-          </div>
-          <div class="dash-match-row loss" role="listitem">
-            <span class="match-result-pill loss">LOSS</span>
-            <span class="match-agent" aria-hidden="true">⚡</span>
-            <span class="match-map">Haven</span>
-            <span class="match-kda">16 / 18 / 4</span>
-            <span class="match-rr neg">–18 RR</span>
-          </div>
-          <div class="dash-match-row win" role="listitem">
-            <span class="match-result-pill win">WIN</span>
-            <span class="match-agent" aria-hidden="true">🔫</span>
-            <span class="match-map">Bind</span>
-            <span class="match-kda">21 / 13 / 9</span>
-            <span class="match-rr pos">+20 RR</span>
-          </div>
-        </div>
-
-        <!-- AI Hint -->
-        <div class="dash-ai-hint" role="complementary" aria-label="ValBot AI analysis hint">
-          <span class="ai-hint-icon" aria-hidden="true">🤖</span>
-          <span class="ai-hint-text"><strong>ValBot AI:</strong> Your deaths spike on rounds 15–20. Switch from Jett to Raze on Haven for better fragging power.</span>
-          <button class="ai-hint-btn" aria-label="Run full AI analysis">Analyse →</button>
-        </div>
+      <div class="browser-body" style="padding: 0; background: #0c0c0f; position: relative;">
+        <img id="hero-stats-img" src="/stats_tracker_card.png" alt="Real ValTracker stats dashboard showing live player statistics and match list" loading="eager" style="width: 100%; height: auto; display: block;">
+        <img id="hero-ai-img" src="/Val_bot_analysis.png" alt="Real ValBot AI coach dashboard showing post-match recommendations" loading="lazy" style="width: 100%; height: auto; display: none;">
       </div>
     </div>
   </div>
@@ -2085,7 +2064,7 @@ footer {
         <h3 class="bento-title" id="card-tracker-title">Stats Tracker</h3>
         <p class="bento-body">K/D, ACS, headshot %, win rate, RR progression — every metric that matters for your rank.</p>
         <div class="card-img-frame">
-          <img src="/stats_tracker_card.png" alt="ValTracker stats dashboard showing K/D, ACS, headshot %, win rate and RR progression" loading="lazy" decoding="async" fetchpriority="low" width="800" height="200" style="height:200px;object-fit:cover;object-position:top;">
+          <img src="/stats_tracker_card.png" alt="ValTracker stats dashboard showing K/D, ACS, headshot %, win rate and RR progression" loading="lazy" decoding="async" fetchpriority="low" width="800" height="200">
         </div>
       </article>
 
@@ -2095,7 +2074,7 @@ footer {
         <h3 class="bento-title" id="card-ai-title">ValBot AI Coach</h3>
         <p class="bento-body">Analyses your last 20 matches. Tells you exactly what's holding back your rank.</p>
         <div class="card-img-frame">
-          <img src="/Val_bot_analysis.png" alt="ValBot AI coach verdict and performance analysis" loading="lazy" decoding="async" fetchpriority="low" width="600" height="160" style="height:160px;object-fit:cover;object-position:top;">
+          <img src="/Val_bot_analysis.png" alt="ValBot AI coach verdict and performance analysis" loading="lazy" decoding="async" fetchpriority="low" width="600" height="160">
         </div>
       </article>
 
@@ -2104,7 +2083,7 @@ footer {
         <h3 class="bento-title" id="card-deep-title">Self-Analysis Diagnostics</h3>
         <p class="bento-body">Attack vs Defense win rates, agent-map fit, consistency trends. Your tactical blueprint.</p>
         <div class="card-img-frame">
-          <img src="/deep_analysis.gif" alt="Deep analysis diagnostics showing attack vs defense win rates and agent-map fit" loading="lazy" decoding="async" fetchpriority="low" width="600" height="160" style="height:160px;object-fit:cover;object-position:top;">
+          <img src="/deep_analysis.gif" alt="Deep analysis diagnostics showing attack vs defense win rates and agent-map fit" loading="lazy" decoding="async" fetchpriority="low" width="600" height="160">
         </div>
       </article>
 
@@ -2113,7 +2092,7 @@ footer {
         <h3 class="bento-title" id="card-lab-title">Performance Diagnostics</h3>
         <p class="bento-body">Tilt detection, fatigue scoring, best hours to play. Your mental game, quantified.</p>
         <div class="card-img-frame">
-          <img src="/perf_lab.gif" alt="Performance lab showing tilt detection and fatigue scoring charts" loading="lazy" decoding="async" fetchpriority="low" width="600" height="160" style="height:160px;object-fit:cover;object-position:top;">
+          <img src="/perf_lab.gif" alt="Performance lab showing tilt detection and fatigue scoring charts" loading="lazy" decoding="async" fetchpriority="low" width="600" height="160">
         </div>
       </article>
 
@@ -2123,7 +2102,7 @@ footer {
         <h3 class="bento-title" id="card-obs-title">OBS Stream Overlay</h3>
         <p class="bento-body">Show live rank and stats on stream. One URL into OBS Browser Source. Done.</p>
         <div class="card-img-frame">
-          <img src="/obs_overlay.png" alt="OBS stream overlay preview showing live rank and stats" loading="lazy" decoding="async" fetchpriority="low" width="600" height="140" style="height:140px;object-fit:cover;object-position:top;">
+          <img src="/obs_overlay.png" alt="OBS stream overlay preview showing live rank and stats" loading="lazy" decoding="async" fetchpriority="low" width="600" height="140">
         </div>
       </article>
 
@@ -2132,7 +2111,7 @@ footer {
         <h3 class="bento-title" id="card-meta-title">Meta Comp Architect</h3>
         <p class="bento-body">Draft 5-agent comps. Evaluated against current VCT pro meta picks.</p>
         <div class="card-img-frame">
-          <img src="/meta_comp.png" alt="Meta comp architect showing 5-agent draft and VCT meta evaluation" loading="lazy" decoding="async" fetchpriority="low" width="600" height="140" style="height:140px;object-fit:cover;object-position:top;">
+          <img src="/meta_comp.png" alt="Meta comp architect showing 5-agent draft and VCT meta evaluation" loading="lazy" decoding="async" fetchpriority="low" width="600" height="140">
         </div>
       </article>
 
@@ -2141,7 +2120,7 @@ footer {
         <h3 class="bento-title" id="card-store-title">Skins Store</h3>
         <p class="bento-body">Browse all Valorant skins, VP pricing, chromas and finisher previews.</p>
         <div class="card-img-frame">
-          <img src="/skin_store.png" alt="Valorant skins store with VP pricing and chroma previews" loading="lazy" decoding="async" fetchpriority="low" width="600" height="140" style="height:140px;object-fit:cover;object-position:top;">
+          <img src="/skin_store.png" alt="Valorant skins store with VP pricing and chroma previews" loading="lazy" decoding="async" fetchpriority="low" width="600" height="140">
         </div>
       </article>
 
@@ -2151,7 +2130,7 @@ footer {
         <h3 class="bento-title" id="card-vct-title">VCT Esports Hub</h3>
         <p class="bento-body">Live scores, team rosters, tournament results. Masters London is live now.</p>
         <div class="card-img-frame">
-          <img src="/VCT_Esports.png" alt="VCT Esports hub showing Masters London match cards and live scores" loading="lazy" decoding="async" fetchpriority="low" width="800" height="160" style="height:160px;object-fit:cover;object-position:center;">
+          <img src="/VCT_Esports.png" alt="VCT Esports hub showing Masters London match cards and live scores" loading="lazy" decoding="async" fetchpriority="low" width="800" height="160">
         </div>
       </article>
 
@@ -2192,53 +2171,8 @@ footer {
           <div class="obs-red-dot" aria-hidden="true"></div>
           OBS Browser Source — valtracker.live/overlay
         </div>
-        <div class="obs-scene-body">
-          <div class="obs-scene-bg-grid" aria-hidden="true"></div>
-
-          <!-- Live rank widget -->
-          <div class="overlay-widget" role="status" aria-label="Current rank: Diamond 2, 76 RR">
-            <span style="font-size:22px;" aria-hidden="true">💎</span>
-            <div>
-              <div class="overlay-rank-badge">Diamond 2</div>
-              <div class="overlay-rr-bar-wrap">
-                <div class="overlay-rr-label">76 / 100 RR</div>
-                <div class="overlay-rr-bar" aria-hidden="true">
-                  <div class="overlay-rr-fill"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Live stats row -->
-          <div class="overlay-stats-row" role="list" aria-label="Live match statistics">
-            <div class="overlay-stat-pill" role="listitem">
-              <span class="overlay-stat-key">K/D</span>
-              <span class="overlay-stat-val">1.47</span>
-            </div>
-            <div class="overlay-stat-pill" role="listitem">
-              <span class="overlay-stat-key">ACS</span>
-              <span class="overlay-stat-val">238</span>
-            </div>
-            <div class="overlay-stat-pill" role="listitem">
-              <span class="overlay-stat-key">HS%</span>
-              <span class="overlay-stat-val green">28%</span>
-            </div>
-            <div class="overlay-stat-pill" role="listitem">
-              <span class="overlay-stat-key">WR</span>
-              <span class="overlay-stat-val green">61%</span>
-            </div>
-          </div>
-
-          <!-- Win streak -->
-          <div class="overlay-widget" role="status" aria-label="Current win streak">
-            <span style="font-size:18px;" aria-hidden="true">🔥</span>
-            <div>
-              <div style="font-size:9px; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:1px;">Win Streak</div>
-              <div style="font-family:'Rajdhani',sans-serif; font-size:16px; font-weight:700; color:#3ecf8e;">3 in a row</div>
-            </div>
-          </div>
-
-          <div class="obs-powered-badge" aria-hidden="true">Powered by ValTracker</div>
+        <div class="obs-scene-body" style="padding: 0; min-height: auto; background: #030304;">
+          <img src="/obs_overlay.png" alt="Real ValTracker OBS stream overlay showing live stats and rank" loading="lazy" decoding="async" style="width: 100%; height: auto; display: block;">
         </div>
       </div>
     </div>
@@ -2573,7 +2507,7 @@ mobileMenu.querySelectorAll('a').forEach(link => {
   }, { passive: true });
 })();
 
-/* ── 3D Tilt on bento cards ── */
+/* ── 3D Tilt on bento cards (classy, smooth & subtle) ── */
 (function initTiltCards() {
   const cards = document.querySelectorAll('.bento-card');
   cards.forEach(card => {
@@ -2584,9 +2518,12 @@ mobileMenu.querySelectorAll('a').forEach(link => {
       const y = e.clientY - rect.top;
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
-      const rotateX = ((y - centerY) / centerY) * -8;
-      const rotateY = ((x - centerX) / centerX) * 8;
-      card.style.transform = `translateY(0) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02,1.02,1.02)`;
+      const rotateX = ((y - centerY) / centerY) * -3.5; // Classy subtle rotation range (-3.5 to 3.5 deg)
+      const rotateY = ((x - centerX) / centerX) * 3.5;  // Classy subtle rotation range (-3.5 to 3.5 deg)
+      
+      card.style.setProperty('--rx', rotateX + 'deg');
+      card.style.setProperty('--ry', rotateY + 'deg');
+      card.style.setProperty('--scale', '1.015');
 
       /* Move the inner glow to follow cursor */
       const glowX = (x / rect.width) * 100;
@@ -2596,9 +2533,37 @@ mobileMenu.querySelectorAll('a').forEach(link => {
     });
 
     card.addEventListener('mouseleave', () => {
-      card.style.transform = 'translateY(0) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)';
-      card.style.transition = 'transform 0.5s ease, border-color 0.25s, box-shadow 0.25s';
-      setTimeout(() => { card.style.transition = ''; }, 500);
+      card.style.setProperty('--rx', '0deg');
+      card.style.setProperty('--ry', '0deg');
+      card.style.setProperty('--scale', '1');
+    });
+  });
+})();
+
+/* ── Hero Browser Tab Switching ── */
+(function initBrowserTabs() {
+  const tabs = document.querySelectorAll('.browser-tab');
+  const statsImg = document.getElementById('hero-stats-img');
+  const aiImg = document.getElementById('hero-ai-img');
+  const urlText = document.getElementById('browser-url-text');
+  
+  if (!tabs.length || !statsImg || !aiImg || !urlText) return;
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      const target = tab.getAttribute('data-target');
+      if (target === 'hero-stats-tab') {
+        statsImg.style.display = 'block';
+        aiImg.style.display = 'none';
+        urlText.textContent = 'valtracker.live/app/stats';
+      } else {
+        statsImg.style.display = 'none';
+        aiImg.style.display = 'block';
+        urlText.textContent = 'valtracker.live/app/coach';
+      }
     });
   });
 })();
