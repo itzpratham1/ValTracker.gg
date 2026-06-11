@@ -205,69 +205,33 @@ img { display: block; max-width: 100%; height: auto; }
 .btn-red {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 24px;
-  border: none;
-  border-radius: var(--radius-sm);
+  gap: 8px;
+  padding: 12px 28px;
+  border: 1px solid rgba(255, 70, 85, 0.4);
+  border-radius: 6px;
   font-family: var(--font-heading);
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 1px;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
-  color: #fff;
-  background: var(--accent);
+  color: #ffffff;
+  background: linear-gradient(135deg, #FF4655 0%, #d82b39 100%);
   cursor: pointer;
-  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   white-space: nowrap;
-  box-shadow: 0 0 20px var(--accent-dim);
+  box-shadow: 0 0 24px rgba(255, 70, 85, 0.35);
 }
 .btn-red:hover {
-  background: #e03040;
-  box-shadow: 0 0 32px var(--accent-glow);
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #ff5e6b 0%, #FF4655 100%);
+  box-shadow: 0 0 36px rgba(255, 70, 85, 0.6);
+  transform: translateY(-2px) scale(1.02);
+  border-color: rgba(255, 70, 85, 0.8);
+}
+.btn-red:active {
+  transform: translateY(0) scale(0.98);
 }
 
-/* Hamburger */
-.nav-hamburger {
-  display: none;
-  flex-direction: column;
-  gap: 5px;
-  cursor: pointer;
-  padding: 4px;
-}
-.nav-hamburger span {
-  display: block;
-  width: 22px;
-  height: 2px;
-  background: var(--text-primary);
-  border-radius: 2px;
-  transition: transform 0.3s, opacity 0.3s;
-}
-.nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-.nav-hamburger.open span:nth-child(2) { opacity: 0; }
-.nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-.nav-mobile-menu {
-  display: none;
-  position: fixed;
-  top: 64px;
-  left: 0;
-  right: 0;
-  background: rgba(3,3,4,0.97);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
-  padding: 24px 32px;
-  flex-direction: column;
-  gap: 16px;
-  z-index: 999;
-}
-.nav-mobile-menu.open { display: flex; }
-.nav-mobile-menu a, .nav-mobile-menu button {
-  display: block;
-  width: 100%;
-  text-align: center;
-}
 
 /* ════════════════════════════════════════
    HERO SECTION
@@ -428,18 +392,18 @@ h1.hero-headline span.accent-line {
   align-items: center;
   gap: 10px;
   padding: 16px 40px;
-  border: none;
-  border-radius: var(--radius-sm);
-  font-family: var(--font-body);
-  font-size: 15px;
-  font-weight: 700;
+  border: 1px solid rgba(255, 70, 85, 0.5);
+  border-radius: 6px;
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 800;
   color: #fff;
-  background: var(--accent);
+  background: linear-gradient(135deg, #FF4655 0%, #d82b39 100%);
   cursor: pointer;
-  letter-spacing: 0.5px;
+  letter-spacing: 2px;
   text-transform: uppercase;
-  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
-  box-shadow: 0 0 40px var(--accent-dim), 0 4px 16px rgba(0,0,0,0.4);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 0 36px rgba(255, 70, 85, 0.45), 0 4px 16px rgba(0,0,0,0.45);
   position: relative;
   overflow: hidden;
 }
@@ -454,9 +418,13 @@ h1.hero-headline span.accent-line {
 }
 .btn-hero:hover::before { left: 150%; }
 .btn-hero:hover {
-  background: #e03040;
-  box-shadow: 0 0 60px var(--accent-glow), 0 6px 24px rgba(0,0,0,0.5);
-  transform: translateY(-2px);
+  background: linear-gradient(135deg, #ff5e6b 0%, #FF4655 100%);
+  box-shadow: 0 0 54px rgba(255, 70, 85, 0.75), 0 6px 24px rgba(0,0,0,0.5);
+  transform: translateY(-2px) scale(1.02);
+  border-color: rgba(255, 70, 85, 0.8);
+}
+.btn-hero:active {
+  transform: translateY(0) scale(0.98);
 }
 
 .hero-note {
@@ -1726,6 +1694,9 @@ footer {
    MOBILE RESPONSIVE
 ════════════════════════════════════════ */
 @media (max-width: 1024px) {
+  .bento-card, .bento-card.visible {
+    transform: translateY(0) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1) !important;
+  }
   .bento-card.span-12 { grid-column: span 12; }
   .bento-card.span-6  { grid-column: span 12; }
   .bento-card.span-4  { grid-column: span 6; }
@@ -1743,11 +1714,15 @@ footer {
   .footer-socials { justify-content: center; }
 }
 
+@media (hover: none) {
+  .bento-card, .bento-card.visible {
+    transform: translateY(0) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1) !important;
+  }
+}
+
 @media (max-width: 768px) {
   .nav { padding: 0 24px; }
   .nav-actions { display: flex; }
-  .nav-hamburger { display: none; }
-  .nav-mobile-menu { display: none !important; }
   .btn-red {
     padding: 8px 16px;
     font-size: 13px;
@@ -1981,14 +1956,14 @@ footer {
   position: fixed;
   inset: 0;
   z-index: 2000;
-  background: rgba(3,3,4,0.95);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(3,3,4,0.98);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   opacity: 0;
   transition: opacity 0.3s ease;
-  cursor: zoom-out;
 }
 
 .lightbox-close {
@@ -2007,6 +1982,7 @@ footer {
   justify-content: center;
   cursor: pointer;
   transition: background 0.2s, transform 0.2s;
+  z-index: 2002;
 }
 
 .lightbox-close:hover {
@@ -2014,30 +1990,101 @@ footer {
   transform: scale(1.05);
 }
 
-.lightbox-content {
-  max-width: 90%;
-  max-height: 85%;
+.lightbox-viewer {
+  width: 90vw;
+  height: 75vh;
   position: relative;
-  display: block;
-  overflow: auto;
-  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid var(--border);
-  box-shadow: 0 24px 80px rgba(0,0,0,0.8);
-  background: #030304;
+  border-radius: var(--radius);
+  background: #020203;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.9);
+  cursor: grab;
 }
 
-.lightbox-content img {
-  width: 100%;
+.lightbox-viewer:active {
+  cursor: grabbing;
+}
+
+.lightbox-viewer img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
   height: auto;
-  display: block;
-  cursor: zoom-in;
-  transition: width 0.25s ease, max-width 0.25s ease;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: auto;
+  transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform-origin: center center;
 }
 
-.lightbox-content img.zoomed-in {
-  width: 160%;
-  max-width: none;
-  cursor: zoom-out;
+.lightbox-controls {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 16px;
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+  z-index: 2001;
+}
+
+.lightbox-controls button {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.lightbox-controls button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.05);
+}
+
+.lightbox-controls button:active {
+  transform: scale(0.95);
+}
+
+#zoom-reset-btn {
+  width: auto;
+  padding: 0 16px;
+  border-radius: 999px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#zoom-level {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  min-width: 48px;
+  text-align: center;
+}
+
+.lightbox-instructions {
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  opacity: 0.7;
 }
 
 /* Hover Zoom click overlay indicators */
@@ -2075,16 +2122,44 @@ footer {
   margin-bottom: 24px;
 }
 .njt-section .section-eyebrow {
-  font-size: 13px;
-  font-weight: 700;
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 800;
   letter-spacing: 4px;
-  color: #ff3e54;
-  text-shadow: 0 0 15px rgba(255, 62, 84, 0.45);
-  background: rgba(255, 62, 84, 0.08);
-  border: 1px solid rgba(255, 62, 84, 0.25);
-  padding: 8px 20px;
+  text-transform: uppercase;
+  color: #ff4655;
+  text-shadow: 0 0 25px rgba(255, 70, 85, 0.6), 0 0 10px rgba(255, 70, 85, 0.4);
+  background: linear-gradient(90deg, rgba(255, 70, 85, 0.15) 0%, rgba(255, 70, 85, 0.04) 100%);
+  border: 1px solid rgba(255, 70, 85, 0.45);
+  padding: 10px 24px;
   border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 0 30px rgba(255, 70, 85, 0.15), inset 0 0 12px rgba(255, 70, 85, 0.1);
+}
+
+.njt-section .section-eyebrow .live-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #ff4655;
+  border-radius: 50%;
   display: inline-block;
+  box-shadow: 0 0 12px rgba(255, 70, 85, 0.8);
+  animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+    box-shadow: 0 0 12px rgba(255, 70, 85, 0.8);
+  }
+  50% {
+    transform: scale(1.25);
+    opacity: 0.5;
+    box-shadow: 0 0 4px rgba(255, 70, 85, 0.3);
+  }
 }
 
 @media (max-width: 1024px) {
@@ -2119,15 +2194,7 @@ footer {
   <div class="nav-actions">
     <a href="/app" class="btn-red" id="nav-track-btn">Track Now →</a>
   </div>
-
-  <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
-    <span></span><span></span><span></span>
-  </button>
 </nav>
-
-<div class="nav-mobile-menu" id="mobile-menu" role="menu">
-  <a href="/app" class="btn-red">Track Now →</a>
-</div>
 
 <!-- ════════════════════════════════
      HERO SECTION
@@ -2327,7 +2394,7 @@ footer {
   <div class="section-inner">
     <div class="njt-header">
       <div class="section-label reveal" style="justify-content: center; margin-bottom: 24px;">
-        <span class="section-eyebrow">Not Your Ordinary Tracker</span>
+        <span class="section-eyebrow"><span class="live-dot"></span>Not Your Ordinary Tracker</span>
       </div>
       <h2 class="section-title reveal" id="njt-title" style="margin-bottom: 16px;">Every other tracker shows you numbers.<br><span style="color: #ff3e54;">We show you why.</span></h2>
       <p class="section-subtitle reveal" style="margin-left: auto; margin-right: auto; max-width: 680px;">tracker.gg tells you your K/D. Others show your rank. ValTracker tells you exactly what's holding your rank back — and what to fix, every session.</p>
@@ -2577,6 +2644,21 @@ footer {
   </div>
 </footer>
 
+<!-- Lightbox Modal -->
+<div id="image-lightbox" class="lightbox" role="dialog" aria-label="Interactive Image Zoom" aria-hidden="true">
+  <button class="lightbox-close" aria-label="Close zoom">&times;</button>
+  <div class="lightbox-viewer" id="lightbox-viewer">
+    <img id="lightbox-img" src="" alt="Zoomed screenshot">
+  </div>
+  <div class="lightbox-controls">
+    <button id="zoom-out-btn" aria-label="Zoom Out" title="Zoom Out">−</button>
+    <span id="zoom-level">100%</span>
+    <button id="zoom-in-btn" aria-label="Zoom In" title="Zoom In">+</button>
+    <button id="zoom-reset-btn" aria-label="Reset Zoom" title="Reset Zoom">Reset</button>
+  </div>
+  <div class="lightbox-instructions">Drag to pan | Scroll or use controls to zoom</div>
+</div>
+
 <!-- ════════════════════════════════
      JAVASCRIPT
 ═══════════════════════════════ -->
@@ -2594,22 +2676,7 @@ window.addEventListener('scroll', () => {
   }
 }, { passive: true });
 
-/* ── Hamburger menu ── */
-const hamburger = document.getElementById('hamburger');
-const mobileMenu = document.getElementById('mobile-menu');
-hamburger.addEventListener('click', () => {
-  const isOpen = hamburger.classList.toggle('open');
-  mobileMenu.classList.toggle('open', isOpen);
-  hamburger.setAttribute('aria-expanded', isOpen);
-});
 
-mobileMenu.querySelectorAll('a').forEach(link => {
-  link.addEventListener('click', () => {
-    hamburger.classList.remove('open');
-    mobileMenu.classList.remove('open');
-    hamburger.setAttribute('aria-expanded', 'false');
-  });
-});
 
 /* ── Hero Canvas Particles — interactive, connected, mouse-reactive ── */
 (function initParticles() {
@@ -2788,6 +2855,10 @@ mobileMenu.querySelectorAll('a').forEach(link => {
   
   cards.forEach(card => {
     card.addEventListener('mousemove', (e) => {
+      // Dynamic mobile/touchscreen safety check
+      if (window.innerWidth <= 1024 || !window.matchMedia('(hover: hover)').matches) {
+        return;
+      }
       if (!card.classList.contains('visible')) return;
       const rect = card.getBoundingClientRect();
       const x = e.clientX - rect.left;
@@ -2904,22 +2975,64 @@ mobileMenu.querySelectorAll('a').forEach(link => {
   obs.observe(statsBar);
 })();
 
-/* ── Lightbox Image Zoom (with Panning & 2-Stage Expand) ── */
+/* ── Lightbox Image Zoom (Interactive Zoom & Pan System) ── */
 (function initLightbox() {
   const lightbox = document.getElementById('image-lightbox');
   const lightboxImg = document.getElementById('lightbox-img');
+  const viewer = document.getElementById('lightbox-viewer');
   const closeBtn = lightbox.querySelector('.lightbox-close');
   const images = document.querySelectorAll('.card-img-frame img, #hero-stats-img, #hero-ai-img');
+  
+  const zoomInBtn = document.getElementById('zoom-in-btn');
+  const zoomOutBtn = document.getElementById('zoom-out-btn');
+  const zoomResetBtn = document.getElementById('zoom-reset-btn');
+  const zoomLevelSpan = document.getElementById('zoom-level');
 
-  if (!lightbox || !lightboxImg) return;
+  if (!lightbox || !lightboxImg || !viewer) return;
 
+  let scale = 1;
+  let translateX = 0;
+  let translateY = 0;
+  let isDragging = false;
+  let startX = 0;
+  let startY = 0;
+
+  const updateTransform = () => {
+    lightboxImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+    if (zoomLevelSpan) {
+      zoomLevelSpan.textContent = Math.round(scale * 100) + '%';
+    }
+  };
+
+  const zoomIn = () => {
+    scale = Math.min(scale + 0.25, 4.0);
+    updateTransform();
+  };
+
+  const zoomOut = () => {
+    scale = Math.max(scale - 0.25, 0.5);
+    if (scale <= 1) {
+      translateX = 0;
+      translateY = 0;
+    }
+    updateTransform();
+  };
+
+  const resetZoom = () => {
+    scale = 1;
+    translateX = 0;
+    translateY = 0;
+    updateTransform();
+  };
+
+  // Open Lightbox
   images.forEach(img => {
     img.style.cursor = 'zoom-in';
     img.addEventListener('click', (e) => {
       e.stopPropagation();
       lightboxImg.src = img.src;
       lightboxImg.alt = img.alt;
-      lightboxImg.classList.remove('zoomed-in'); // Reset zoom state
+      resetZoom();
       lightbox.style.display = 'flex';
       lightbox.offsetHeight; // force reflow
       lightbox.style.opacity = '1';
@@ -2927,11 +3040,77 @@ mobileMenu.querySelectorAll('a').forEach(link => {
     });
   });
 
-  // Toggle zoomed-in class to expand screenshot further and scroll/pan around details
+  // Toggle Zoom on click (Zoom to 2.5x or Reset)
   lightboxImg.addEventListener('click', (e) => {
-    e.stopPropagation(); // Stop click from closing the modal
-    lightboxImg.classList.toggle('zoomed-in');
+    e.stopPropagation();
+    if (scale > 1) {
+      resetZoom();
+    } else {
+      scale = 2.5;
+      translateX = 0;
+      translateY = 0;
+      updateTransform();
+    }
   });
+
+  // Zoom Button Listeners
+  if (zoomInBtn) zoomInBtn.addEventListener('click', (e) => { e.stopPropagation(); zoomIn(); });
+  if (zoomOutBtn) zoomOutBtn.addEventListener('click', (e) => { e.stopPropagation(); zoomOut(); });
+  if (zoomResetBtn) zoomResetBtn.addEventListener('click', (e) => { e.stopPropagation(); resetZoom(); });
+
+  // Panning Event Listeners (Mouse)
+  viewer.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    isDragging = true;
+    startX = e.clientX - translateX;
+    startY = e.clientY - translateY;
+    viewer.style.cursor = 'grabbing';
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    translateX = e.clientX - startX;
+    translateY = e.clientY - startY;
+    updateTransform();
+  });
+
+  window.addEventListener('mouseup', () => {
+    isDragging = false;
+    if (viewer) viewer.style.cursor = 'grab';
+  });
+
+  // Panning Event Listeners (Touch)
+  viewer.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+      isDragging = true;
+      startX = e.touches[0].clientX - translateX;
+      startY = e.touches[0].clientY - translateY;
+    }
+  }, { passive: true });
+
+  viewer.addEventListener('touchmove', (e) => {
+    if (!isDragging || e.touches.length !== 1) return;
+    translateX = e.touches[0].clientX - startX;
+    translateY = e.touches[0].clientY - startY;
+    updateTransform();
+  }, { passive: true });
+
+  viewer.addEventListener('touchend', () => {
+    isDragging = false;
+  });
+
+  // Mouse Wheel Zoom
+  viewer.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const zoomIntensity = 0.08;
+    const delta = e.deltaY < 0 ? 1 : -1;
+    scale = Math.max(0.5, Math.min(4.0, scale + delta * zoomIntensity));
+    if (scale <= 1) {
+      translateX = 0;
+      translateY = 0;
+    }
+    updateTransform();
+  }, { passive: false });
 
   function closeLightbox() {
     lightbox.style.opacity = '0';
@@ -2939,12 +3118,18 @@ mobileMenu.querySelectorAll('a').forEach(link => {
     setTimeout(() => {
       lightbox.style.display = 'none';
       lightboxImg.src = '';
-      lightboxImg.classList.remove('zoomed-in');
+      resetZoom();
     }, 300);
   }
 
-  lightbox.addEventListener('click', closeLightbox);
+  // Close when clicking outside viewer
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox || e.target.classList.contains('lightbox')) {
+      closeLightbox();
+    }
+  });
   closeBtn.addEventListener('click', (e) => { e.stopPropagation(); closeLightbox(); });
+
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && lightbox.style.display === 'flex') {
       closeLightbox();
@@ -2964,14 +3149,6 @@ if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
   if (canvas) canvas.style.display = 'none';
 }
 </script>
-
-<!-- Lightbox Modal -->
-<div id="image-lightbox" class="lightbox" role="dialog" aria-label="Image Zoom" aria-hidden="true">
-  <button class="lightbox-close" aria-label="Close zoom">&times;</button>
-  <div class="lightbox-content">
-    <img id="lightbox-img" src="" alt="Zoomed screenshot">
-  </div>
-</div>
 
 </body>
 </html>
