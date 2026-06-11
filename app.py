@@ -319,7 +319,7 @@ def optimize_response(response):
     elif path.endswith('.css') or path.endswith('.js'):
         # Client-side static assets are immutable and cache-busted, cache for 1 year
         response.headers['Cache-Control'] = 'public, max-age=31536000, immutable'
-    elif path.endswith('.html') or path.endswith('.svg') or path.endswith('.png') or path.endswith('.jpg'):
+    elif path.endswith('.html') or path.endswith('.svg') or path.endswith('.png') or path.endswith('.jpg') or path.endswith('.webp') or path.endswith('.gif'):
         response.headers['Cache-Control'] = 'public, max-age=86400' # 24 hours
         
     # 2. Apply on-the-fly Gzip compression to compressible text resources
