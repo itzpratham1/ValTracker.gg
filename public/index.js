@@ -11839,46 +11839,7 @@ function injectProRecommendations(data) {
 }
 
 
-// ── FEEDBACK SYSTEM ──
-function openFeedbackModal() {
-  document.getElementById('feedback-modal').style.display = 'flex';
-  document.getElementById('feedback-text').focus();
-  lockBackgroundScroll();
-}
-function closeFeedbackModal() {
-  document.getElementById('feedback-modal').style.display = 'none';
-  document.getElementById('feedback-text').value = '';
-  document.getElementById('feedback-contact').value = '';
-  unlockBackgroundScroll();
-}
-async function submitFeedbackForm() {
-  const fbText = document.getElementById('feedback-text').value.trim();
-  const fbContact = document.getElementById('feedback-contact').value.trim();
-  if (!fbText) {
-    showToast('Feedback message cannot be empty');
-    return;
-  }
-  
-  showToast('Transmitting feedback...');
-  try {
-    const res = await fetch('/api/feedback', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ feedback: fbText, contact: fbContact })
-    });
-    const data = await res.json();
-    if (res.ok) {
-      showToast('Transmission complete! Thank you, agent.');
-      closeFeedbackModal();
-    } else {
-      showToast(data.message || 'Transmission failed.');
-    }
-  } catch (e) {
-    showToast('Network error — please check connection');
-  }
-}
+
 
 // ==========================================
 // STREAM OVERLAY CUSTOMIZER SYSTEM
@@ -12400,3 +12361,51 @@ document.addEventListener('DOMContentLoaded', () => {
   setTimeout(updateHeaderHeights, 500);
   initCustomDropdowns();
 });
+
+// ── FEEDBACK SYSTEM ──
+function openFeedbackModal() {
+  const modal = document.getElementById('feedback-modal');
+  modal.style.display = 'flex';
+  modal.offsetHeight; // force reflow
+  modal.classList.add('open');
+  document.getElementById('feedback-text').focus();
+  lockBackgroundScroll();
+}
+function closeFeedbackModal() {
+  const modal = document.getElementById('feedback-modal');
+  modal.classList.remove('open');
+  setTimeout(() => {
+    modal.style.display = 'none';
+    document.getElementById('feedback-text').value = '';
+    document.getElementById('feedback-contact').value = '';
+  }, 300);
+  unlockBackgroundScroll();
+}
+async function submitFeedbackForm() {
+  const fbText = document.getElementById('feedback-text').value.trim();
+  const fbContact = document.getElementById('feedback-contact').value.trim();
+  if (!fbText) {
+    showToast('Feedback message cannot be empty');
+    return;
+  }
+  
+  showToast('Transmitting feedback...');
+  try {
+    const res = await fetch('/api/feedback', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ feedback: fbText, contact: fbContact })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showToast('Transmission complete! Thank you, agent.');
+      closeFeedbackModal();
+    } else {
+      showToast(data.message || 'Transmission failed.');
+    }
+  } catch (e) {
+    showToast('Network error — please check connection');
+  }
+}
