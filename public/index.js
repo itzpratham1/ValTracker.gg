@@ -1544,7 +1544,7 @@ function renderMaps(mapData){
     html+=`<div class="map-card-bento" style="animation-delay:${i*60}ms">
       ${mapImg
         ? `<div class="map-splash-wrap">
-             <img class="map-splash" data-map="${name}" src="${mapImg}" alt="${name}" onerror="retryMapImg(this, this.dataset.map)">
+             <img class="map-splash" data-map="${name}" src="${mapImg}" alt="${name}" loading="lazy" onerror="retryMapImg(this, this.dataset.map)">
              <div class="map-splash-overlay"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:20px;letter-spacing:1px;text-transform:uppercase;color:#fff;">${name}</span></div>
            </div>`
         : `<div class="map-splash-placeholder">${name}</div>`}
@@ -2430,10 +2430,10 @@ function updateMatchesListUI() {
             ${(() => {
               const mi = getMapImg(m.map || '');
               const mn = m.map || '';
-              return mi ? `<div class="mr-map-thumb"><img data-map="${mn}" src="${mi}" alt="${mn}" onerror="retryMapImg(this, this.dataset.map)"><div class="mr-map-thumb-label">${mn.toUpperCase()}</div></div>` : `<div class="mr-map-thumb" style="background:var(--surface2);"><div class="mr-map-thumb-label">${mn.toUpperCase()}</div></div>`;
+              return mi ? `<div class="mr-map-thumb"><img data-map="${mn}" src="${mi}" alt="${mn}" loading="lazy" onerror="retryMapImg(this, this.dataset.map)"><div class="mr-map-thumb-label">${mn.toUpperCase()}</div></div>` : `<div class="mr-map-thumb" style="background:var(--surface2);"><div class="mr-map-thumb-label">${mn.toUpperCase()}</div></div>`;
             })()}
             <div style="padding:12px 12px;">
-              ${agentIcon ? `<img class="mr-agent-icon" src="${agentIcon}" onerror="this.style.display='none'">` : ``}
+              ${agentIcon ? `<img class="mr-agent-icon" src="${agentIcon}" loading="lazy" onerror="this.style.display='none'">` : ``}
             </div>
             <div style="padding:12px 0;">
               <div class="mr-agent-name">${(m.agentName || '—').toUpperCase()}</div>
@@ -2447,7 +2447,7 @@ function updateMatchesListUI() {
               const info = getLobbyRankInfo(allPlayers, m.myTeamId);
               if (!info || !info.overall) return '<span class="mr-lobby-txt">—</span>';
               const img = getRankImgUrl(info.overall.name) || '';
-              return (img ? `<img class="mr-lobby-img" src="${img}" onerror="this.style.display='none'">` : '') + '<span class="mr-lobby-txt" style="color:' + getRankColor(info.overall.name) + '">' + info.overall.name.replace(' ', '<br>') + '</span>';
+              return (img ? `<img class="mr-lobby-img" src="${img}" loading="lazy" onerror="this.style.display='none'">` : '') + '<span class="mr-lobby-txt" style="color:' + getRankColor(info.overall.name) + '">' + info.overall.name.replace(' ', '<br>') + '</span>';
             })()}
           </div>
           <div class="mr-kda">
@@ -10289,7 +10289,16 @@ function initUnifiedScrollManager() {
   // Initialize the observer for section Scrollspy tracking
   initScrollspyObserver();
 
+  let scrollTimeout;
   window.addEventListener('scroll', () => {
+    if (!body.classList.contains('is-scrolling')) {
+      body.classList.add('is-scrolling');
+    }
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+      body.classList.remove('is-scrolling');
+    }, 150);
+
     if (!rAFScheduled) {
       rAFScheduled = true;
       requestAnimationFrame(() => {

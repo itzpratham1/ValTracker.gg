@@ -1790,26 +1790,22 @@ body::after {
   }
 }
 
-/* Optimize static components by removing backdrop-filter for smooth scroll performance */
+/* Optimize static components by removing backdrop-filter and unnecessary will-change for smooth scroll performance */
 .card, .agent-bento, .impact-bento, .match-row, .match-panel, .hero-rank-block, .ai-card, .deep-trigger-card, .deep-card, .live-banner {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   background: rgba(11, 11, 15, 0.93) !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.2s ease, box-shadow 0.25s ease;
-  will-change: transform, opacity;
-  backface-visibility: hidden;
-  transform: translateZ(0);
+  transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.2s ease, border-color 0.15s ease, background-color 0.15s ease;
+  will-change: auto;
 }
 
 /* Map cards and banner card need performance hints but must keep their own backgrounds/images */
 .map-card-bento, .player-banner-card {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  will-change: transform, opacity;
-  backface-visibility: hidden;
-  transform: translateZ(0);
-  transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.2s ease, box-shadow 0.25s ease;
+  transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.2s ease, border-color 0.15s ease;
+  will-change: auto;
 }
 
 /* Keep backdrop-filter ONLY on overlay items, tuned down to 12px for low GPU composition cost */
@@ -1817,16 +1813,39 @@ body::after {
   backdrop-filter: blur(12px) !important;
   -webkit-backdrop-filter: blur(12px) !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
-  transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.2s ease, box-shadow 0.25s ease;
-  will-change: transform, opacity;
-  backface-visibility: hidden;
-  transform: translateZ(0);
+  transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.2s ease, border-color 0.15s ease;
+  will-change: auto;
 }
 
 /* Also tune sticky headers' backdrop-blur to 12px for better composition frame-rates during transitions */
 .topbar, .tracker-nav {
   backdrop-filter: blur(12px) !important;
   -webkit-backdrop-filter: blur(12px) !important;
+}
+
+/* Disable pointer events globally on scroll to prevent hover state triggering */
+body.is-scrolling * {
+  pointer-events: none !important;
+}
+
+/* Reset transforms, transitions, and shadows ONLY on hoverable cards and rows when scrolling starts */
+body.is-scrolling .card,
+body.is-scrolling .agent-bento,
+body.is-scrolling .map-card-bento,
+body.is-scrolling .impact-bento,
+body.is-scrolling .match-row,
+body.is-scrolling .deep-card {
+  transition: none !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Remove backdrop-filter from sticky headers only during active scroll to avoid massive GPU recomposition costs */
+body.is-scrolling .topbar,
+body.is-scrolling .tracker-nav {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: rgba(11, 11, 15, 0.98) !important;
 }
 
 .card:hover, .agent-bento:hover, .map-card-bento:hover, .impact-bento:hover, .match-row:hover, .deep-card:hover {
