@@ -6315,3 +6315,89 @@ select option {
 .load-more-btn:hover .load-more-count {
   color: #000;
 }
+
+/* ── TOURNAMENT BRACKET & SWISS STAGE CUSTOM STYLES ── */
+.bracket-scroll-container {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  padding: 10px 0 20px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) rgba(255, 255, 255, 0.05);
+}
+.bracket-scroll-container::-webkit-scrollbar {
+  height: 6px;
+}
+.bracket-scroll-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 3px;
+}
+.bracket-scroll-container::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 3px;
+}
+
+.bracket-round-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 6px;
+  margin-bottom: 4px;
+}
+
+.bracket-match {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.bracket-match:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3) !important;
+}
+
+.bracket-match.live {
+  border-color: rgba(34, 197, 94, 0.3) !important;
+  background: linear-gradient(180deg, rgba(34, 197, 94, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%) !important;
+}
+.bracket-match.live:hover {
+  border-color: rgba(34, 197, 94, 0.6) !important;
+}
+
+.bracket-match.final {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.match-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+.match-badge.live {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+.match-badge.upcoming {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--muted);
+}
+.match-badge.final {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--muted);
+}
+
+.swiss-round-header {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 4px;
+}

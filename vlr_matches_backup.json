@@ -1,34 +1,8 @@
 [
   {
-    "id": "670466",
-    "date": "Jun 12, 2026 7:30 PM",
-    "state": "unstarted",
-    "vlr_path": "/670466/paper-rex-vs-leviat-n-valorant-masters-london-2026-ubqf",
-    "league": {
-      "name": "Valorant Masters London 2026",
-      "region": "Playoffs\u2013Upper Quarterfinals"
-    },
-    "match": {
-      "id": "670466",
-      "teams": [
-        {
-          "name": "Paper Rex",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "LEVIAT\u00c1N",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
     "id": "670467",
-    "date": "Jun 12, 2026 10:30 PM",
-    "state": "unstarted",
+    "date": "Jun 12, 2026 9:30 PM",
+    "state": "in_progress",
     "vlr_path": "/670467/team-heretics-vs-team-vitality-valorant-masters-london-2026-ubqf",
     "league": {
       "name": "Valorant Masters London 2026",
@@ -133,7 +107,7 @@
     "id": "670473",
     "date": "June 14, 2026 10:30 PM",
     "state": "unstarted",
-    "vlr_path": "/670473/tbd-valorant-masters-london-2026-lr1",
+    "vlr_path": "/670473/leviat-n-vs-tbd-valorant-masters-london-2026-lr1",
     "league": {
       "name": "Valorant Masters London 2026",
       "region": "Playoffs\u2013Lower Round 1"
@@ -142,7 +116,7 @@
       "id": "670473",
       "teams": [
         {
-          "name": "TBD",
+          "name": "LEVIAT\u00c1N",
           "game_wins": 0,
           "has_won": false
         },
@@ -185,7 +159,7 @@
     "id": "670469",
     "date": "June 15, 2026 10:30 PM",
     "state": "unstarted",
-    "vlr_path": "/670469/tbd-valorant-masters-london-2026-ubsf",
+    "vlr_path": "/670469/paper-rex-vs-tbd-valorant-masters-london-2026-ubsf",
     "league": {
       "name": "Valorant Masters London 2026",
       "region": "Playoffs\u2013Upper Semifinals"
@@ -194,7 +168,7 @@
       "id": "670469",
       "teams": [
         {
-          "name": "TBD",
+          "name": "Paper Rex",
           "game_wins": 0,
           "has_won": false
         },
@@ -1292,6 +1266,32 @@
         },
         {
           "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "676920",
+    "date": "June 23, 2026 12:30 AM",
+    "state": "unstarted",
+    "vlr_path": "/676920/oxen-vs-leviat-n-academy-challengers-2026-latam-south-ace-stage-2-w5",
+    "league": {
+      "name": "Challengers 2026: LATAM South ACE Stage 2",
+      "region": "Group Stage\u2013Week 5"
+    },
+    "match": {
+      "id": "676920",
+      "teams": [
+        {
+          "name": "OXEN",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "LEVIAT\u00c1N Academy",
           "game_wins": 0,
           "has_won": false
         }

@@ -1,5 +1,31 @@
 [
   {
+    "id": "670466",
+    "date": "Jun 12, 2026 7:30 PM",
+    "state": "completed",
+    "vlr_path": "/670466/paper-rex-vs-leviat-n-valorant-masters-london-2026-ubqf",
+    "league": {
+      "name": "Valorant Masters London 2026",
+      "region": "Playoffs\u2013Upper Quarterfinals"
+    },
+    "match": {
+      "id": "670466",
+      "teams": [
+        {
+          "name": "Paper Rex",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "LEVIAT\u00c1N",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
     "id": "669119",
     "date": "Jun 12, 2026 6:30 AM",
     "state": "completed",
@@ -1268,32 +1294,6 @@
           "name": "BESTIA",
           "game_wins": 1,
           "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "681315",
-    "date": "June 2, 2026 4:30 PM",
-    "state": "completed",
-    "vlr_path": "/681315/x-ind-vs-asterisk-challengers-2026-south-asia-split-2-w3",
-    "league": {
-      "name": "Challengers 2026: South Asia Split 2",
-      "region": "Group Stage\u2013Week 3"
-    },
-    "match": {
-      "id": "681315",
-      "teams": [
-        {
-          "name": "X\u00d8 IND",
-          "game_wins": 1,
-          "has_won": false
-        },
-        {
-          "name": "Asterisk",
-          "game_wins": 2,
-          "has_won": true
         }
       ]
     },
