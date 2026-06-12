@@ -11,7 +11,9 @@
 <link rel="shortcut icon" href="/logo.png" type="image/x-icon">
 <link rel="apple-touch-icon" href="/logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"
+  integrity="sha512-ZwR1/gSZM3ai6vCdI+LVF1zSq/5HznD3oD+sCoJrzXJ+yKNtkEOKnIa/Cf5RnvFKmST1vGRKlMnfGSA0xVsQ=="
+  crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
 <link rel="stylesheet" href="index.css?v=14.05">
 <style>
 /* ── GLASSMORPHISM OVERRIDES & VALORANT CRIMSON THEME ── */
@@ -83,7 +85,9 @@ body {
 </style>
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
+  integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGE2oTFJukAAsParfs3A8HYL5i17C6/JA=="
+  crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
 </head>
 <body>
 
@@ -441,7 +445,13 @@ body {
     
     <!-- Tools Dropdown -->
     <div class="nav-dropdown" id="nav-tools-dropdown">
-      <button class="nav-btn dropdown-trigger" onclick="toggleToolsDropdown(event)" title="More Tools">
+      <button class="nav-btn dropdown-trigger"
+              onclick="toggleToolsDropdown(event)"
+              title="More Tools"
+              aria-haspopup="true"
+              aria-expanded="false"
+              aria-controls="tools-dropdown-menu"
+              id="tools-dropdown-trigger">
         <span>⚡ Utilities</span>
         <span class="dropdown-arrow">▼</span>
       </button>
@@ -2795,26 +2805,6 @@ body:has(#landing.hidden) #feedback-trigger-btn {
 </div>
 
 
-<!-- ── SERVICE WORKER CLEANUP ── -->
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(function(registrations) {
-    for (var registration of registrations) {
-      registration.unregister().then(function(success) {
-        if (success) console.log('Successfully unregistered service worker.');
-      });
-    }
-  });
-}
-if ('caches' in window) {
-  caches.keys().then(function(keys) {
-    keys.forEach(function(key) {
-      caches.delete(key).then(function() {
-        console.log('Cleared cache:', key);
-      });
-    });
-  });
-}
-</script>
+<!-- Service worker cleanup removed: no SW is registered in this build. -->
 </body>
 </html>

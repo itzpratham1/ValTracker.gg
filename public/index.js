@@ -1,3 +1,33 @@
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/`/g, '&#x60;');
+}
+
+function sanitizeHtml(htmlStr) {
+  if (typeof htmlStr !== 'string') return htmlStr;
+  let clean = htmlStr.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+                     .replace(/<iframe[^>]*>[\s\S]*?<\/iframe>/gi, '');
+  clean = clean.replace(/on\w+\s*=\s*(['"])(?:\\\1|.)*?\1/gi, '')
+               .replace(/on\w+\s*=\s*[^\s>]+/gi, '')
+               .replace(/javascript\s*:\s*[^\s"']+/gi, '');
+  return clean;
+}
+
+function safeSetInnerHtml(id, htmlStr) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.innerHTML = htmlStr;
+    return el;
+  }
+  return null;
+}
+
 function escapeJsString(str) {
   if (!str) return '';
   return str.replace(/\\/g, "\\\\")
@@ -811,7 +841,7 @@ function startLoadingRotator() {
   if (subtitleEl) {
     const region = (document.getElementById('l-region')?.value || 'ap').toUpperCase();
     const mode = (document.getElementById('l-mode')?.value || 'competitive').toUpperCase();
-    subtitleEl.innerHTML = `SYNCING <span style="color:var(--accent); font-weight:700;">${PLAYER_NAME}#${PLAYER_TAG}</span> [${region} · ${mode}]`;
+    subtitleEl.innerHTML = `SYNCING <span style="color:var(--accent); font-weight:700;">${escapeHtml(PLAYER_NAME)}#${escapeHtml(PLAYER_TAG)}</span> [${escapeHtml(region)} · ${escapeHtml(mode)}]`;
   }
   
   const progressFill = document.getElementById('loading-progress-fill');
@@ -1114,9 +1144,9 @@ async function fetchAll(){
       document.getElementById('rank-display').textContent=rankName.toUpperCase();
       document.getElementById('rank-rr-txt').textContent=`${rr} RR · Peak: ${d.peak?.tier?.name||'—'}`;
       const peakImg=getRankImgUrl(d.peak?.tier?.name||'');
-      document.getElementById('rank-icon').innerHTML=rankImgUrl?`<img src="${rankImgUrl}" style="width:64px;height:64px;object-fit:contain;" onerror="this.style.display='none'">`:
-        `<div style="width:64px;height:64px;background:var(--surface2);border-radius:8px;"></div>`;
-      document.getElementById('peak-icon').innerHTML=peakImg?`<img src="${peakImg}" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-right:4px;" onerror="this.style.display='none'">`:'' ;
+      safeSetInnerHtml('rank-icon', rankImgUrl?`<img src="${rankImgUrl}" style="width:64px;height:64px;object-fit:contain;" onerror="this.style.display='none'">`:
+        `<div style="width:64px;height:64px;background:var(--surface2);border-radius:8px;"></div>`);
+      safeSetInnerHtml('peak-icon', peakImg?`<img src="${peakImg}" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-right:4px;" onerror="this.style.display='none'">`:'' );
     }
 
     window._mmrHistory={};
@@ -1433,11 +1463,11 @@ function renderAgents(agentMap, allMatches=[]){
     const img=getAgentIconUrl(name);
     html+=`<div class="agent-bento" style="animation-delay:${i*60}ms">
       <div class="agent-wr-chip ${wrCls}">${wr}%</div>
-      ${img?`<img class="agent-portrait" data-agent="${name}" src="${img}" alt="${name}" onerror="const fb=this.nextElementSibling;const u=getAgentIconUrl(this.dataset.agent);if(u&&u!==this.src){this.src=u}else{this.style.display='none';if(fb)fb.style.display='flex';}">
-             <div class="agent-portrait-fallback" style="display:none">${name[0]}</div>`
-           :`<div class="agent-portrait-fallback">${name[0]}</div>`}
+      ${img?`<img class="agent-portrait" data-agent="${escapeHtml(name)}" src="${img}" alt="${escapeHtml(name)}" onerror="const fb=this.nextElementSibling;const u=getAgentIconUrl(this.dataset.agent);if(u&&u!==this.src){this.src=u}else{this.style.display='none';if(fb)fb.style.display='flex';}">
+             <div class="agent-portrait-fallback" style="display:none">${escapeHtml(name[0]||'?')}</div>`
+           :`<div class="agent-portrait-fallback">${escapeHtml(name[0]||'?')}</div>`}
       <div class="agent-info">
-        <div class="agent-name">${name}</div>
+        <div class="agent-name">${escapeHtml(name)}</div>
         <div class="agent-role-chip ${role}">${role}</div>
         <div class="agent-stats-row">
           <div class="asr-item"><div class="asv">${s.matches}</div><div class="asl">Games</div></div>
@@ -1637,11 +1667,11 @@ function buildScoreboard(match,myTeamId,isRanked=true){
     return`<tr class="${isMe?'me':''}${isMatchMVP?' match-mvp-row':isTeamMVP?' team-mvp-row':''}">
       <td><div style="display:flex;align-items:center;gap:7px;">
         ${agentIcon?`<img src="${agentIcon}" style="width:26px;height:26px;object-fit:contain;border-radius:3px;background:var(--surface2);" onerror="this.style.display='none'">`:``}
-        <div><div class="sb-name">${p.name||'—'}${mvpBadge}</div><div class="sb-agent">${(p.character||'—').toUpperCase()}</div></div>
+        <div><div class="sb-name">${escapeHtml(p.name||'—')}${mvpBadge}</div><div class="sb-agent">${escapeHtml((p.character||'—').toUpperCase())}</div></div>
       </div></td>
       <td><div class="sb-rank">
         ${rankImg?`<img class="sb-rank-img" src="${rankImg}" onerror="this.style.display='none'">`:``}
-        <span class="sb-rank-txt" style="color:${rankColor}">${rankName||'—'}</span>
+        <span class="sb-rank-txt" style="color:${rankColor}">${escapeHtml(rankName||'—')}</span>
       </div></td>
       <td><b>${k}</b></td><td>${d}</td><td>${a}</td>
       <td><div>${kd}</div><div class="sb-kd-bar"><div class="sb-kd-fill" style="width:${kdPct}%"></div></div></td>
@@ -1852,9 +1882,9 @@ function populateFullDetailTabs(match, idx) {
   );
   if(!me) {
     const err = '<div class="no-detail">Your player not found in match data</div>';
-    document.getElementById(`tabcontent-${idx}-performance`).innerHTML = err;
-    document.getElementById(`tabcontent-${idx}-duels`).innerHTML = err;
-    document.getElementById(`tabcontent-${idx}-timeline`).innerHTML = err;
+    safeSetInnerHtml(`tabcontent-${idx}-performance`, escapeHtml(err));
+    safeSetInnerHtml(`tabcontent-${idx}-duels`, escapeHtml(err));
+    safeSetInnerHtml(`tabcontent-${idx}-timeline`, escapeHtml(err));
     return;
   }
 
@@ -2051,7 +2081,7 @@ function populateFullDetailTabs(match, idx) {
     perfHtml+='</div>';
   }
   perfHtml+='</div>';
-  document.getElementById(`tabcontent-${idx}-performance`).innerHTML = perfHtml;
+  safeSetInnerHtml(`tabcontent-${idx}-performance`, perfHtml);
 
   let duelsHtml = '';
   const duelK = me.stats?.kills || 0;
@@ -2674,7 +2704,7 @@ function renderAIStats(stats) {
   const sideHtml   = stats.attWR!=null ? `<div class="ai-stat-pill"><div class="ai-stat-pill-label">Atk/Def WR</div><div class="ai-stat-pill-val" style="font-size:13px;">${stats.attWR}% / ${stats.defWR}%</div><div class="ai-stat-pill-sub">Attack · Defense</div></div>` : '';
   const carryHtml  = `<div class="ai-stat-pill"><div class="ai-stat-pill-label">Carry Rate</div><div class="ai-stat-pill-val ${stats.carryPct>=40?'good':stats.carryPct>=20?'warn':'bad'}">${stats.carryPct}%</div><div class="ai-stat-pill-sub">Top-fragged team</div></div>`;
 
-  document.getElementById('ai-stats-grid').innerHTML=`
+  safeSetInnerHtml('ai-stats-grid', `
     <div class="ai-stat-pill"><div class="ai-stat-pill-label">K/D Ratio</div><div class="ai-stat-pill-val ${kdClass}">${stats.kd}</div><div class="ai-stat-pill-sub">${stats.avgKills}K / ${stats.avgDeaths}D avg</div></div>
     <div class="ai-stat-pill"><div class="ai-stat-pill-label">Win Rate</div><div class="ai-stat-pill-val ${wrClass}">${stats.wr}%</div><div class="ai-stat-pill-sub">Last 5: ${stats.recentWR5}%</div></div>
     <div class="ai-stat-pill"><div class="ai-stat-pill-label">Avg ACS</div><div class="ai-stat-pill-val ${acsClass}">${stats.avgACS}</div><div class="ai-stat-pill-sub">Combat score avg</div></div>
@@ -2685,7 +2715,7 @@ function renderAIStats(stats) {
     ${carryHtml}
     ${sideHtml}
     <div class="ai-stat-pill"><div class="ai-stat-pill-label">Avg Lobby</div><div class="ai-stat-pill-val" style="font-size:13px;">${stats.avgLobbyRank||'—'}</div><div class="ai-stat-pill-sub">Lobby rank avg</div></div>
-  `;
+  `);
 
   // Rank Readiness Ring
   const rs = stats.readinessScore;
@@ -2956,7 +2986,7 @@ function analyseStats(stats) {
 }
 
 function renderAnalysis(result, stats) {
-  document.getElementById('ai-summary').innerHTML = result.summary;
+  safeSetInnerHtml('ai-summary', sanitizeHtml(result.summary));
 
   const sg = document.getElementById('ai-sections-grid');
   sg.innerHTML = '';
@@ -3001,7 +3031,7 @@ function renderAnalysis(result, stats) {
     sg.appendChild(div);
   });
 
-  document.getElementById('ai-verdict-txt').innerHTML = result.verdict;
+  safeSetInnerHtml('ai-verdict-txt', sanitizeHtml(result.verdict));
   document.getElementById('ai-verdict').style.display = 'block';
   document.getElementById('ai-results').classList.add('active');
 }
@@ -3064,7 +3094,7 @@ async function runMatchAnalysis(idx, e) {
 
   if (_matchAnalysisCache[idx]) {
     // Already done — just re-show
-    document.getElementById(`mai-body-${idx}`).innerHTML = _matchAnalysisCache[idx];
+    safeSetInnerHtml(`mai-body-${idx}`, _matchAnalysisCache[idx]);
     document.getElementById(`mai-body-${idx}`).classList.add('active');
     return;
   }
@@ -3110,7 +3140,7 @@ async function runMatchAnalysis(idx, e) {
     body.classList.add('active');
     btn.innerHTML = '🔄 Re-analyse';
   } catch(e) {
-    body.innerHTML = `<div class="no-detail" style="color:var(--loss)">Analysis error: ${e.message}</div>`;
+    body.innerHTML = `<div class="no-detail" style="color:var(--loss)">Analysis error: ${escapeHtml(e.message)}</div>`;
     body.classList.add('active');
   } finally {
     clearInterval(iv);
@@ -3642,7 +3672,7 @@ function buildMatchAnalysis(match, allMatches = null) {
 
   // Summary line
   const perfLevel = kd >= 1.3 && acs >= teamAvgACS ? 'a <strong>strong individual performance</strong>' : kd >= 1.0 && acs >= teamAvgACS - 15 ? 'a <strong>solid performance</strong>' : 'a <strong>below-par performance</strong>';
-  const summary = `${won ? '✅ Victory' : '❌ Defeat'} · ${agentName} on ${mapName} — ${perfLevel} with ${kills}/${deaths}/${assists} and ${acs} ACS${lobbyInfo?.overall ? ` in a <strong>${lobbyInfo.overall.name}</strong> avg lobby` : ''}.`;
+  const summary = `${won ? '✅ Victory' : '❌ Defeat'} · ${escapeHtml(agentName)} on ${escapeHtml(mapName)} — ${perfLevel} with ${kills}/${deaths}/${assists} and ${acs} ACS${lobbyInfo?.overall ? ` in a <strong>${escapeHtml(lobbyInfo.overall.name)}</strong> avg lobby` : ''}.`;
 
   // Build sections HTML
   const renderBlock = (title, emoji, cls, dotCls, items, full=false) => {
@@ -4887,7 +4917,7 @@ async function runDeepAnalysis() {
     results.classList.add('active');
     showToast('Deep analysis complete ✓');
   } catch(e) {
-    results.innerHTML = `<div class="no-detail" style="color:var(--loss);padding:16px">Analysis error: ${e.message}</div>`;
+    results.innerHTML = `<div class="no-detail" style="color:var(--loss);padding:16px">Analysis error: ${escapeHtml(e.message)}</div>`;
     results.classList.add('active');
     console.error(e);
   } finally {
@@ -7335,8 +7365,9 @@ function renderTopWeapons(matches) {
         
         <div class="top-weapon-img-wrap" style="text-align: center; margin-bottom: 8px;">
           ${imgUrl
-            ? `<img class="top-weapon-img" src="${imgUrl}" alt="${wpn}" onerror="this.parentElement.innerHTML='<div class=weapon-img-fallback>${wpn}</div>'">`
-            : `<div class="weapon-img-fallback">${wpn}</div>`}
+            ? `<img class="top-weapon-img" src="${imgUrl}" alt="${escapeHtml(wpn)}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">`
+            : ''}
+          <div class="weapon-img-fallback" style="${imgUrl ? 'display:none;' : ''}">${escapeHtml(wpn)}</div>
         </div>
         
         <div class="top-weapon-info-wrap">
@@ -7432,8 +7463,9 @@ function renderTopWeapons(matches) {
       <div class="secondary-weapon-row wpn-tooltip-trigger">
         <div class="sec-weapon-img-wrap">
           ${imgUrl
-            ? `<img class="sec-weapon-img" src="${imgUrl}" alt="${wpn}" onerror="this.parentElement.innerHTML='<div class=weapon-img-fallback>${wpn}</div>'">`
-            : `<div class="weapon-img-fallback">${wpn}</div>`}
+            ? `<img class="sec-weapon-img" src="${imgUrl}" alt="${escapeHtml(wpn)}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">`
+            : ''}
+          <div class="weapon-img-fallback" style="${imgUrl ? 'display:none;' : ''}">${escapeHtml(wpn)}</div>
         </div>
         <div class="sec-weapon-meta">
           <div class="sec-weapon-name">${wpn}</div>
@@ -8086,7 +8118,7 @@ function closeLeaderboardModal() {
 
 function toggleHeadToHead() {
   const modal = document.getElementById('h2h-modal');
-  document.getElementById('h2h-content').innerHTML = '';
+  safeSetInnerHtml('h2h-content', '');
   
   // Auto-fill Player 1 with active player
   document.getElementById('h2h-p1-name').value = PLAYER_NAME;
@@ -9758,7 +9790,7 @@ function selectFranchiseTeam(region, teamId) {
   document.getElementById('esp-active-team-name').textContent = team.name;
   
   const logoHtml = getEsportsTeamLogoHtml(team.name).replace(/width:20px;height:20px/g, 'width:40px;height:40px').replace(/margin-right:8px/g, 'margin-right:0').replace(/font-size:9px/g, 'font-size:16px');
-  document.getElementById('esp-active-team-logo').innerHTML = logoHtml;
+  safeSetInnerHtml('esp-active-team-logo', logoHtml);
   
   document.getElementById('esp-active-team-desc').textContent = team.description;
   
@@ -9835,15 +9867,19 @@ function selectFranchiseTeam(region, teamId) {
 function toggleToolsDropdown(event) {
   if (event) event.stopPropagation();
   const dropdown = document.getElementById('nav-tools-dropdown');
+  const trigger  = document.getElementById('tools-dropdown-trigger');
   if (dropdown) {
-    dropdown.classList.toggle('active');
+    const isOpen = dropdown.classList.toggle('active');
+    if (trigger) trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
   }
 }
 
 function closeToolsDropdown() {
   const dropdown = document.getElementById('nav-tools-dropdown');
+  const trigger  = document.getElementById('tools-dropdown-trigger');
   if (dropdown && dropdown.classList.contains('active')) {
     dropdown.classList.remove('active');
+    if (trigger) trigger.setAttribute('aria-expanded', 'false');
   }
 }
 
@@ -10391,7 +10427,7 @@ function filterSkins() {
   });
   
   currentSkinCatalogIndex = 0;
-  document.getElementById('skin-catalog-grid').innerHTML = '';
+  safeSetInnerHtml('skin-catalog-grid', '');
   renderSkinsCatalogSlice();
 }
 
@@ -10702,8 +10738,12 @@ function selectDraftAgent(agKey) {
   const slotName = document.getElementById(`dc-slot-name-${activeSlotIndex}`);
   const iconUrl = getAgentIconUrl(agKey.charAt(0).toUpperCase() + agKey.slice(1));
   
-  slotAvatar.innerHTML = iconUrl ? `<img class="dc-slot-avatar-img" src="${iconUrl}">` : '👤';
-  slotName.innerText = agKey.toUpperCase();
+  if (slotAvatar) {
+    slotAvatar.innerHTML = iconUrl ? `<img class="dc-slot-avatar-img" src="${iconUrl}">` : '👤';
+  }
+  if (slotName) {
+    slotName.innerText = agKey.toUpperCase();
+  }
   
   closeDraftSelector();
   evaluateDraft();
@@ -10776,11 +10816,19 @@ function loadDraftComp(id) {
     const slotName = document.getElementById(`dc-slot-name-${i}`);
     if (agKey) {
       const iconUrl = getAgentIconUrl(agKey.charAt(0).toUpperCase() + agKey.slice(1));
-      slotAvatar.innerHTML = iconUrl ? `<img class="dc-slot-avatar-img" src="${iconUrl}">` : '👤';
-      slotName.innerText = agKey.toUpperCase();
+      if (slotAvatar) {
+        slotAvatar.innerHTML = iconUrl ? `<img class="dc-slot-avatar-img" src="${iconUrl}">` : '👤';
+      }
+      if (slotName) {
+        slotName.innerText = agKey.toUpperCase();
+      }
     } else {
-      slotAvatar.innerHTML = '➕';
-      slotName.innerText = `Slot ${i+1}`;
+      if (slotAvatar) {
+        slotAvatar.innerHTML = '➕';
+      }
+      if (slotName) {
+        slotName.innerText = `Slot ${i+1}`;
+      }
     }
   }
   
@@ -11060,8 +11108,11 @@ async function exportCurrentDraftCompPNG() {
 function resetDraftComp() {
   draftSlots = [null, null, null, null, null];
   for (let i = 0; i < 5; i++) {
-    document.getElementById(`dc-slot-avatar-${i}`).innerHTML = '➕';
-    document.getElementById(`dc-slot-name-${i}`).innerText = `Slot ${i+1}`;
+    safeSetInnerHtml(`dc-slot-avatar-${i}`, '➕');
+    const slotName = document.getElementById(`dc-slot-name-${i}`);
+    if (slotName) {
+      slotName.innerText = `Slot ${i+1}`;
+    }
   }
   evaluateDraft();
 }
@@ -11183,8 +11234,12 @@ function buildAroundMe() {
       const slotName = document.getElementById(`dc-slot-name-${i}`);
       const iconUrl = getAgentIconUrl(agKey.charAt(0).toUpperCase() + agKey.slice(1));
       
-      slotAvatar.innerHTML = iconUrl ? `<img class="dc-slot-avatar-img" src="${iconUrl}">` : '👤';
-      slotName.innerText = agKey.toUpperCase();
+      if (slotAvatar) {
+        slotAvatar.innerHTML = iconUrl ? `<img class="dc-slot-avatar-img" src="${iconUrl}">` : '👤';
+      }
+      if (slotName) {
+        slotName.innerText = agKey.toUpperCase();
+      }
     }
   }
   
@@ -12175,11 +12230,11 @@ function renderRecommendations(dropdown, input, tagInput, regionSelectId) {
     bookmarks.slice(0, 4).forEach(p => {
       const rankImg = getRankImgUrl(p.rankName);
       html += `
-        <div class="search-item" data-name="${p.name}" data-tag="${p.tag}" data-region="${p.region}">
+        <div class="search-item" data-name="${escapeHtml(p.name)}" data-tag="${escapeHtml(p.tag)}" data-region="${escapeHtml(p.region)}">
           <div class="search-item-left">
             <div class="search-item-card">👤</div>
             <div class="search-item-details">
-              <span class="search-item-name">${p.name}<span class="search-item-tag">#${p.tag}</span></span>
+              <span class="search-item-name">${escapeHtml(p.name)}<span class="search-item-tag">#${escapeHtml(p.tag)}</span></span>
               <span class="search-item-meta">${(p.rankName || 'Unranked').toUpperCase()}</span>
             </div>
           </div>
@@ -12204,11 +12259,11 @@ function renderRecommendations(dropdown, input, tagInput, regionSelectId) {
     recent.slice(0, 4).forEach(p => {
       const rankImg = getRankImgUrl(p.rankName);
       html += `
-        <div class="search-item" data-name="${p.name}" data-tag="${p.tag}" data-region="${p.region}">
+        <div class="search-item" data-name="${escapeHtml(p.name)}" data-tag="${escapeHtml(p.tag)}" data-region="${escapeHtml(p.region)}">
           <div class="search-item-left">
             <div class="search-item-card">👤</div>
             <div class="search-item-details">
-              <span class="search-item-name">${p.name}<span class="search-item-tag">#${p.tag}</span></span>
+              <span class="search-item-name">${escapeHtml(p.name)}<span class="search-item-tag">#${escapeHtml(p.tag)}</span></span>
               <span class="search-item-meta">${(p.rankName || 'Unranked').toUpperCase()}</span>
             </div>
           </div>
@@ -12285,11 +12340,11 @@ function renderSearchDropdown(dbPlayers, localMatches, dropdown, input, tagInput
       const cleanRank = (p.current_tier_patched || 'Unranked').toUpperCase();
 
       html += `
-        <div class="search-item" data-name="${p.name}" data-tag="${p.tag}" data-region="${p.region}">
+        <div class="search-item" data-name="${escapeHtml(p.name)}" data-tag="${escapeHtml(p.tag)}" data-region="${escapeHtml(p.region)}">
           <div class="search-item-left">
             <div class="search-item-card">${avatarHtml}</div>
             <div class="search-item-details">
-              <span class="search-item-name">${p.name}<span class="search-item-tag">#${p.tag}</span></span>
+              <span class="search-item-name">${escapeHtml(p.name)}<span class="search-item-tag">#${escapeHtml(p.tag)}</span></span>
               <span class="search-item-meta">${cleanRank}</span>
             </div>
           </div>

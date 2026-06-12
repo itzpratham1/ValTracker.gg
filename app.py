@@ -7,14 +7,20 @@ import urllib.parse
 import concurrent.futures
 import gzip
 import io
-from datetime import datetime
+import re
+import uuid
+import json
+import html
+import contextlib
+import calendar
+import datetime
+from datetime import datetime, timedelta
 from functools import wraps
 from flask import Flask, request, jsonify, send_from_directory, make_response, send_file
 from flask_cors import CORS
 from dotenv import load_dotenv
-
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
+from werkzeug.middleware.proxy_fix import ProxyFix
+from bs4 import BeautifulSoup
 import builtins
 
 def safe_print(*args, **kwargs):
@@ -27,15 +33,46 @@ def safe_print(*args, **kwargs):
                 for arg in args
             ]
             builtins.print(*safe_args, **kwargs)
-        except:
+        except Exception:
             pass
 
 print = safe_print
+
+@contextlib.contextmanager
+def file_lock(lock_path):
+    lock_dir = lock_path + ".lock"
+    retries = 15
+    while retries > 0:
+        try:
+            os.mkdir(lock_dir)
+            break
+        except FileExistsError:
+            time.sleep(0.05)
+            retries -= 1
+    else:
+        pass
+    try:
+        yield
+    finally:
+        try:
+            os.rmdir(lock_dir)
+        except OSError:
+            pass
+
+def sanitize_postgrest_value(val):
+    if not val:
+        return ""
+    return re.sub(r'[\\,.:()\"\'%]', '', str(val)).strip()
 
 load_dotenv()
 API_KEY = os.getenv("HENRIKDEV_API_KEY", "")
 SUPABASE_URL = os.getenv("SUPABASE_URL", "")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
+
+ADMIN_SECRET = os.getenv("ADMIN_SECRET")
+if not ADMIN_SECRET:
+    ADMIN_SECRET = str(uuid.uuid4())
+    print(f"[SECURITY WARNING] ADMIN_SECRET not set in environment! Generated random secret for session: {ADMIN_SECRET}")
 
 def normalize_mode(raw_mode):
     if not raw_mode:
@@ -101,9 +138,11 @@ def get_cached_player(name, tag):
     if not SUPABASE_URL or not SUPABASE_KEY:
         return None
         
+    safe_name = sanitize_postgrest_value(name)
+    safe_tag = sanitize_postgrest_value(tag)
     params = {
-        "name": f"ilike.{name}",
-        "tag": f"ilike.{tag}"
+        "name": f"ilike.{safe_name}",
+        "tag": f"ilike.{safe_tag}"
     }
     r = supabase_request("GET", "players_cache", params=params)
     if r and r.status_code == 200:
@@ -124,7 +163,6 @@ def is_player_fresh(cached_player, ttl_seconds=900): # 15 minutes
             clean_str = clean_str.split("+")[0]
         
         dt = datetime.strptime(clean_str, "%Y-%m-%dT%H:%M:%S")
-        import calendar
         timestamp = calendar.timegm(dt.utctimetuple())
         return (time.time() - timestamp) < ttl_seconds
     except Exception as e:
@@ -137,7 +175,8 @@ def upsert_player(puuid, name, tag, region, level=None, card_id=None, current_ti
         
     # Check if player already exists to preserve other elements of stats_cache
     existing = None
-    params = {"puuid": f"eq.{puuid}"}
+    safe_puuid = re.sub(r'[^a-zA-Z0-9\-]', '', puuid)
+    params = {"puuid": f"eq.{safe_puuid}"}
     r = supabase_request("GET", "players_cache", params=params)
     if r and r.status_code == 200:
         players = r.json()
@@ -149,10 +188,10 @@ def upsert_player(puuid, name, tag, region, level=None, card_id=None, current_ti
         stats_cache[cache_key] = cache_val
         
     payload = {
-        "puuid": puuid,
-        "name": name,
-        "tag": tag,
-        "region": region,
+        "puuid": safe_puuid,
+        "name": sanitize_postgrest_value(name),
+        "tag": sanitize_postgrest_value(tag),
+        "region": sanitize_postgrest_value(region),
         "last_updated": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
     }
     
@@ -291,6 +330,7 @@ def compress_match_json(match_data):
 
 
 app = Flask(__name__, static_folder="public", static_url_path="")
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 
 # Allow dynamic CORS origins from environment variable or standard defaults
 allowed_origins = os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
@@ -368,13 +408,45 @@ def optimize_response(response):
 # Simple custom zero-dependency in-memory rate limiter
 rate_limit_records = {}
 
+# In-memory cache to prevent rate-limits and load data instantly
+cache = {}
+CACHE_TTL = 60  # 1 minute caching
+
+# In-memory player rank cache to respect HenrikDev API limits
+player_rank_cache = {}
+
+def prune_cache():
+    now = time.time()
+    for k in list(cache.keys()):
+        entry = cache.get(k)
+        if entry and now - entry.get("timestamp", 0) > CACHE_TTL:
+            cache.pop(k, None)
+
+def prune_player_rank_cache():
+    now = time.time()
+    for k in list(player_rank_cache.keys()):
+        entry = player_rank_cache.get(k)
+        if entry and now - entry.get("timestamp", 0) > 3600:
+            player_rank_cache.pop(k, None)
+
+def prune_rate_limit_records():
+    now = time.time()
+    for k in list(rate_limit_records.keys()):
+        history = rate_limit_records.get(k)
+        if not history or now - history[-1] > 60:
+            rate_limit_records.pop(k, None)
+
+@app.before_request
+def before_request_cleanup():
+    prune_cache()
+    prune_player_rank_cache()
+    prune_rate_limit_records()
+
 def rate_limit(requests_per_minute=30):
     def decorator(f):
         @wraps(f)
         def wrapped(*args, **kwargs):
-            ip = request.headers.get("X-Forwarded-For", request.remote_addr or "127.0.0.1")
-            if "," in ip:
-                ip = ip.split(",")[0].strip()
+            ip = request.remote_addr or "127.0.0.1"
             
             # Bypass rate limiter for localhost and local network subnets to preserve dev stability
             if ip in ["127.0.0.1", "localhost", "::1"] or ip.startswith("192.168.") or ip.startswith("10.") or ip.startswith("172."):
@@ -409,16 +481,6 @@ ALLOWED_PROXY_PREFIXES = [
     "v2/match/",
     "v1/leaderboard/"
 ]
-
-# In-memory cache to prevent rate-limits and load data instantly
-# Format: URL -> { "data": response_json, "timestamp": time_fetched }
-cache = {}
-CACHE_TTL = 60  # 1 minute caching — keeps data fresh between fetches
-
-# In-memory player rank cache to respect HenrikDev API limits
-# PUUID -> { "tier": tier_num, "tier_name": tier_name }
-player_rank_cache = {}
-
 AGENT_UUID_MAP = {
     "f29c42c6-418b-9f3c-a836-ab9f050c2962": "Jett",
     "85ca954a-41f2-bfd4-9d36-ab897212e1e2": "Reyna",
@@ -435,15 +497,14 @@ AGENT_UUID_MAP = {
     "ecc3b1de-40d3-1934-7d40-4f9c34d6ee31": "Clove",
     "707e2893-4724-034b-5c54-32a35c755a80": "Clove",
     "22697a3d-45bf-8dd7-4f4a-9a98e3295985": "Sova",
-    "601dbbe7-43ce-be57-2a40-4bbc24365324": "Sage",
+    "601dbbe7-43ce-be57-2a40-4bbc24365324": "KAY/O",
     "6f2a04ca-43e0-be94-ab12-ab7923485ab9": "Breach",
     "4102db2a-4685-3d5a-2802-f0a656d56d78": "Omen",
     "add95a50-415b-ac0f-2e55-8798e983416e": "Jett",
     "b527735d-415b-ac0f-2e55-8798e983416e": "Fade",
     "e33e1630-4dba-e366-be0c-ab9473b8ca7f": "Sova",
     "ade7735d-415b-ac0f-2e55-8798e983416e": "Sova",
-    "4dbdf2ba-433b-e1f2-ab97-ab9927b38b93": "Vyse",
-    "601dbbe7-43ce-be57-2a40-4bbc24365324": "Sage"
+    "4dbdf2ba-433b-e1f2-ab97-ab9927b38b93": "Vyse"
 }
 
 @app.route("/")
@@ -499,40 +560,39 @@ def submit_feedback():
         if not feedback_text:
             return jsonify({"status": "error", "message": "Feedback content is empty"}), 400
             
-        import json
         feedback_record = {
             "timestamp": datetime.now().isoformat(),
             "feedback": feedback_text,
             "contact": contact,
-            "ip": request.headers.get("X-Forwarded-For", request.remote_addr or "127.0.0.1").split(",")[0].strip()
+            "ip": request.remote_addr or "127.0.0.1"
         }
         
         filepath = os.path.join(os.path.dirname(__file__), "feedback.json")
-        records = []
-        if os.path.exists(filepath):
-            try:
-                with open(filepath, "r", encoding="utf-8") as f:
-                    records = json.load(f)
-            except:
-                records = []
-                
-        records.append(feedback_record)
-        with open(filepath, "w", encoding="utf-8") as f:
-            json.dump(records, f, indent=2, ensure_ascii=False)
+        with file_lock(filepath):
+            records = []
+            if os.path.exists(filepath):
+                try:
+                    with open(filepath, "r", encoding="utf-8") as f:
+                        records = json.load(f)
+                except Exception:
+                    records = []
+                    
+            records.append(feedback_record)
+            with open(filepath, "w", encoding="utf-8") as f:
+                json.dump(records, f, indent=2, ensure_ascii=False)
             
         print(f"[FEEDBACK SUBMITTED] Successfully stored feedback from contact: {contact}")
         return jsonify({"status": "ok", "message": "Feedback submitted successfully! Thank you agent."})
     except Exception as e:
         print(f"[FEEDBACK ERROR] Failed to save feedback: {e}")
-        return jsonify({"status": "error", "message": str(e)}), 500
+        return jsonify({"status": "error", "message": "An error occurred while saving feedback"}), 500
 
 @app.route("/api/admin/feedback", methods=["GET"])
 def get_feedback():
     # Simple security token verification (configurable via environment variable)
     token = request.args.get("secret")
-    expected_token = os.getenv("ADMIN_SECRET", "valtracker_admin_secret_2026")
     
-    if not token or token != expected_token:
+    if not token or token != ADMIN_SECRET:
         print(f"[SECURITY] Unauthorized access attempt to get_feedback API prefix")
         return jsonify({"status": 403, "message": "Forbidden: Invalid or missing secret token"}), 403
         
@@ -541,17 +601,24 @@ def get_feedback():
         return jsonify([])
         
     try:
-        import json
-        with open(filepath, "r", encoding="utf-8") as f:
-            records = json.load(f)
+        with file_lock(filepath):
+            with open(filepath, "r", encoding="utf-8") as f:
+                records = json.load(f)
         return jsonify(records)
     except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
+        print(f"[ADMIN FEEDBACK ERROR] {e}")
+        return jsonify({"status": "error", "message": "An error occurred while retrieving feedback"}), 500
 
 @app.route("/api/clear-cache", methods=["POST"])
 def clear_server_cache():
+    data = request.get_json() or {}
+    token = request.args.get("secret") or data.get("secret")
+    if not token or token != ADMIN_SECRET:
+        return jsonify({"status": 403, "message": "Forbidden: Invalid secret token"}), 403
     cache.clear()
     return jsonify({"status": "ok", "message": "Server cache cleared"})
+
+ALLOWED_IMAGE_DOMAINS = {"owcdn.net", "vlr.gg", "valorant-api.com", "rstatic.net"}
 
 @app.route("/api/image")
 @rate_limit(requests_per_minute=300)
@@ -560,18 +627,30 @@ def proxy_image():
     if not url:
         return "No url provided", 400
     try:
-        import io
-        r = requests.get(url, headers={'User-Agent': 'Mozilla/5.0', 'Referer': 'https://www.vlr.gg/'})
+        parsed_url = urllib.parse.urlparse(url)
+        domain = parsed_url.netloc.lower()
+        if not domain:
+            return "Invalid URL", 400
+        valid_domain = False
+        for allowed in ALLOWED_IMAGE_DOMAINS:
+            if domain == allowed or domain.endswith("." + allowed):
+                valid_domain = True
+                break
+        if not valid_domain:
+            return "Forbidden image domain", 403
+            
+        r = requests.get(url, headers={'User-Agent': 'Mozilla/5.0', 'Referer': 'https://www.vlr.gg/'}, timeout=8)
+        if r.status_code != 200:
+            return "Failed to load image from upstream", r.status_code
         return send_file(
             io.BytesIO(r.content),
             mimetype=r.headers.get('Content-Type', 'image/png')
         )
     except Exception as e:
-        return str(e), 500
+        print(f"[PROXY IMAGE ERROR] {e}")
+        return "Failed to load image", 500
 
 # --- PREMIUM SOCIAL FLEX CARD SHARING API ---
-import uuid
-import json
 
 @app.route("/api/share-card", methods=["POST"])
 def share_card_api():
@@ -591,16 +670,18 @@ def share_card_api():
         # Decode base64
         header, encoded = image_data_url.split(",", 1)
         ext = "jpg" if "image/jpeg" in header or "image/jpg" in header else "png"
-        import base64
         binary_data = base64.b64decode(encoded)
         
+        if len(binary_data) > 3 * 1024 * 1024:
+            return jsonify({"status": "error", "message": "Image size exceeds 3MB limit"}), 400
+            
         # Ensure shared directory exists
         shared_dir = os.path.join(app.static_folder, "shared")
         if not os.path.exists(shared_dir):
             os.makedirs(shared_dir, exist_ok=True)
             
-        # Generate unique ID
-        share_id = str(uuid.uuid4())[:8]
+        # Generate unique ID (16 hex characters)
+        share_id = uuid.uuid4().hex[:16]
         filename = f"{share_id}.{ext}"
         filepath = os.path.join(shared_dir, filename)
         
@@ -611,25 +692,26 @@ def share_card_api():
         # Save metadata to local metadata database
         meta_filepath = os.path.join(os.path.dirname(__file__), "shared_meta.json")
         meta_records = {}
-        if os.path.exists(meta_filepath):
-            try:
-                with open(meta_filepath, "r", encoding="utf-8") as f:
-                    meta_records = json.load(f)
-            except:
-                meta_records = {}
-                
-        meta_records[share_id] = {
-            "playerName": player_name,
-            "playerTag": player_tag,
-            "agentName": agent_name,
-            "mapName": map_name,
-            "won": won,
-            "score": score,
-            "timestamp": time.time()
-        }
-        
-        with open(meta_filepath, "w", encoding="utf-8") as f:
-            json.dump(meta_records, f, indent=2, ensure_ascii=False)
+        with file_lock(meta_filepath):
+            if os.path.exists(meta_filepath):
+                try:
+                    with open(meta_filepath, "r", encoding="utf-8") as f:
+                        meta_records = json.load(f)
+                except Exception:
+                    meta_records = {}
+                    
+            meta_records[share_id] = {
+                "playerName": player_name,
+                "playerTag": player_tag,
+                "agentName": agent_name,
+                "mapName": map_name,
+                "won": won,
+                "score": score,
+                "timestamp": time.time()
+            }
+            
+            with open(meta_filepath, "w", encoding="utf-8") as f:
+                json.dump(meta_records, f, indent=2, ensure_ascii=False)
             
         # Determine host url dynamically
         host_url = request.host_url
@@ -641,7 +723,7 @@ def share_card_api():
         })
     except Exception as e:
         print(f"[SHARE API ERROR] {e}")
-        return jsonify({"status": "error", "message": str(e)}), 500
+        return jsonify({"status": "error", "message": "An error occurred while generating the share card"}), 500
 
 @app.route("/api/<path:subpath>", methods=["GET", "POST"])
 @rate_limit(requests_per_minute=120)
@@ -728,7 +810,7 @@ def proxy_api(subpath):
             else:
                 try:
                     live_matches_data = response.json()
-                except:
+                except Exception:
                     live_matches_data = {"status": response.status_code, "error": "Unknown API error"}
         except Exception as e:
             print(f"[MATCH INTERCEPT ERROR] Failed to fetch live matches: {e}")
@@ -871,7 +953,6 @@ def proxy_api(subpath):
                             map_name = meta.get("map", {}).get("name", "Unknown")
                             
                             started_at_str = meta.get("started_at")
-                            import datetime
                             clean_date = started_at_str.replace("Z", "+00:00")
                             game_start = int(datetime.datetime.fromisoformat(clean_date).timestamp())
                             
@@ -1041,14 +1122,14 @@ def proxy_api(subpath):
     try:
         print(f"[{request.method}] Fetching from {target_url}")
         if request.method == "GET":
-            response = requests.get(target_url, headers=headers, params=params)
+            response = requests.get(target_url, headers=headers, params=params, timeout=10)
         else:
-            response = requests.post(target_url, headers=headers, json=request.json)
+            response = requests.post(target_url, headers=headers, json=request.json, timeout=10)
         
         if response.status_code != 200:
             try:
                 err_data = response.json()
-            except:
+            except Exception:
                 err_data = {"status": response.status_code, "error": "Unknown API error"}
             return jsonify(err_data), response.status_code
             
@@ -1109,12 +1190,11 @@ def proxy_api(subpath):
 # --- ESPORTS ROUTES ---
 
 def parse_vlr_time(date_str, time_str, eta_str=""):
-    import datetime
     if eta_str:
         try:
             eta_lower = eta_str.lower()
             if 'live' in eta_lower:
-                return datetime.datetime.now(datetime.timezone.utc).isoformat()
+                return datetime.now(datetime.timezone.utc).isoformat()
             
             hours = 0
             minutes = 0
@@ -1130,29 +1210,29 @@ def parse_vlr_time(date_str, time_str, eta_str=""):
                     minutes = int(p.replace('m', ''))
                     
             if days or hours or minutes:
-                delta = datetime.timedelta(days=days, hours=hours, minutes=minutes)
+                delta = timedelta(days=days, hours=hours, minutes=minutes)
                 if 'completed' in eta_lower:
-                    utc_time = datetime.datetime.now(datetime.timezone.utc) - delta
+                    utc_time = datetime.now(datetime.timezone.utc) - delta
                 else:
-                    utc_time = datetime.datetime.now(datetime.timezone.utc) + delta
+                    utc_time = datetime.now(datetime.timezone.utc) + delta
                 return utc_time.isoformat()
-        except:
+        except Exception:
             pass
 
     if time_str == "TBD" or not time_str:
         return f"{date_str} {time_str}"
     try:
-        now = datetime.datetime.now()
+        now = datetime.now()
         time_clean = time_str.replace(" ET", "").strip()
         
         if "Today" in date_str:
             dt_date = now.date()
             date_clean = dt_date.strftime("%b %d, %Y")
         elif "Tomorrow" in date_str:
-            dt_date = now.date() + datetime.timedelta(days=1)
+            dt_date = now.date() + timedelta(days=1)
             date_clean = dt_date.strftime("%b %d, %Y")
         elif "Yesterday" in date_str:
-            dt_date = now.date() - datetime.timedelta(days=1)
+            dt_date = now.date() - timedelta(days=1)
             date_clean = dt_date.strftime("%b %d, %Y")
         else:
             clean_date = date_str.split(',')[1].strip() if ',' in date_str else date_str.strip()
@@ -1162,10 +1242,8 @@ def parse_vlr_time(date_str, time_str, eta_str=""):
     except Exception as e:
         return f"{date_str} {time_str}"
 
+
 def scrape_vlr_matches():
-    import re
-    import json
-    from bs4 import BeautifulSoup
     cache_key = "vlr_scraped_matches"
     if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < 600:
         return cache[cache_key]["data"]
@@ -1295,9 +1373,6 @@ def scrape_vlr_matches():
         return []
 
 def scrape_vlr_results():
-    import re
-    import json
-    from bs4 import BeautifulSoup
     cache_key = "vlr_scraped_results"
     if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < 600:
         return cache[cache_key]["data"]
@@ -1454,7 +1529,6 @@ def esports_news():
     # 1. Try local BeautifulSoup scraper FIRST (extremely fast and reliable locally)
     try:
         print("[INFO] Attempting local BeautifulSoup scraping for VLR news...")
-        from bs4 import BeautifulSoup
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
         r = requests.get('https://www.vlr.gg/news', headers=headers, timeout=6)
         if r.status_code == 200:
@@ -1488,11 +1562,10 @@ def esports_news():
                         })
                 if news_items:
                     try:
-                        import json
                         with open("vlr_news_backup.json", "w", encoding="utf-8") as f:
                             json.dump(news_items, f, indent=2)
                     except Exception as ef:
-                        print("Failed to save news backup:", ef)
+                        print("Failed to save news news backup:", ef)
                     cache[cache_key] = {"data": news_items, "timestamp": time.time()}
                     print(f"[SUCCESS] Esports News successfully scraped {len(news_items)} items from VLR.gg directly.")
                     return jsonify({"data": news_items})
@@ -1520,7 +1593,6 @@ def esports_news():
                     })
                 if news_items:
                     try:
-                        import json
                         with open("vlr_news_backup.json", "w", encoding="utf-8") as f:
                             json.dump(news_items, f, indent=2)
                     except Exception as ef:
@@ -1538,7 +1610,6 @@ def esports_news():
         
     # 3.5. Persistent Backup File Fallback
     try:
-        import json
         with open("vlr_news_backup.json", "r", encoding="utf-8") as f:
             print("[VLR NEWS PERSISTENT FALLBACK] Serving VLR news backup file.")
             backup_news = json.load(f)
@@ -1548,6 +1619,7 @@ def esports_news():
         print("Failed to load news backup file:", e_back)
         
     # 4. Offline Mock News Fallback
+    current_year = datetime.now().year
     mock_news = [
         {
             "title": "VCT Masters London: Qualifiers and Contenders locked in",
@@ -1564,8 +1636,8 @@ def esports_news():
             "url_path": ""
         },
         {
-            "title": "VCT pacific franchise teams list updated for 2026 season",
-            "description": "Full Sense joins as partner team for 2026, alongside Nongshim RedForce and Varrel as ascended contenders.",
+            "title": f"VCT pacific franchise teams list updated for {current_year} season",
+            "description": f"Full Sense joins as partner team for {current_year}, alongside Nongshim RedForce and Varrel as ascended contenders.",
             "date": "3 days ago",
             "author": "ValTracker News",
             "url_path": ""
@@ -1578,13 +1650,11 @@ def esports_news():
 @app.route("/api/esports/standings/<region>")
 @rate_limit(requests_per_minute=30)
 def esports_standings(region):
-    import re
     cache_key = f"vlr_standings_{region}"
     if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < 3600:
         return jsonify({"data": cache[cache_key]["data"]})
         
     try:
-        from bs4 import BeautifulSoup
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
         url_region = region
         if region == "all": url_region = "north-america"
@@ -1669,8 +1739,6 @@ def esports_event_teams(event_id):
         return jsonify({"data": cache[cache_key]["data"]})
         
     try:
-        from bs4 import BeautifulSoup
-        import re
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
         r = requests.get(f'https://www.vlr.gg/event/{event_id}', headers=headers, timeout=10)
         if r.status_code != 200:
@@ -1741,7 +1809,6 @@ def esports_event_teams(event_id):
 @app.route("/api/store/featured")
 @rate_limit(requests_per_minute=30)
 def store_featured():
-    import json
     backup_file = "store_featured_backup.json"
     cache_duration = 86400  # 24 hours in seconds
 
@@ -1819,7 +1886,6 @@ def store_featured():
 @app.route("/api/v3/meta-comps")
 @rate_limit(requests_per_minute=60)
 def api_meta_comps():
-    import json
     map_param = request.args.get("map", "").strip().lower()
     patch_param = request.args.get("patch", "").strip()
     
@@ -2011,13 +2077,14 @@ def search_players():
 def get_share_page(share_id):
     meta_filepath = os.path.join(os.path.dirname(__file__), "shared_meta.json")
     meta = {}
-    if os.path.exists(meta_filepath):
-        try:
-            with open(meta_filepath, "r", encoding="utf-8") as f:
-                records = json.load(f)
-                meta = records.get(share_id, {})
-        except:
-            meta = {}
+    with file_lock(meta_filepath):
+        if os.path.exists(meta_filepath):
+            try:
+                with open(meta_filepath, "r", encoding="utf-8") as f:
+                    records = json.load(f)
+                    meta = records.get(share_id, {})
+            except Exception:
+                meta = {}
             
     p_name = f"{meta.get('playerName', 'ValTracker Player')}#{meta.get('playerTag', 'GG')}"
     agent = meta.get('agentName', 'VALORANT Agent')
@@ -2028,7 +2095,7 @@ def get_share_page(share_id):
     
     # Custom, premium Spotify-style meta headers
     og_title = f"{p_name} secured a huge {outcome} {score_lbl} as {agent.upper()} on {v_map.upper()}!"
-    og_desc = f"💥 Combat ACS & Stats diagnosed automatically. See the full Performance Infographic Card live on ValTracker!"
+    og_desc = "💥 Combat ACS & Stats diagnosed automatically. See the full Performance Infographic Card live on ValTracker!"
     host_url = request.host_url
     if "localhost" not in host_url and "127.0.0.1" not in host_url:
         host_url = host_url.replace("http://", "https://")
@@ -2044,7 +2111,15 @@ def get_share_page(share_id):
     image_url = f"{host_url}shared/{share_id}.{ext}"
     share_url = f"{host_url}share/{share_id}"
     
-    html = f"""<!DOCTYPE html>
+    # Escape values for HTML interpolation to prevent XSS
+    share_url_esc = html.escape(share_url)
+    og_title_esc = html.escape(og_title)
+    og_desc_esc = html.escape(og_desc)
+    image_url_esc = html.escape(image_url)
+    playerName_esc = html.escape(meta.get('playerName', ''))
+    playerTag_esc = html.escape(meta.get('playerTag', ''))
+    
+    html_content = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -2059,19 +2134,19 @@ def get_share_page(share_id):
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@itzpratham01">
   <meta name="twitter:creator" content="@itzpratham01">
-  <meta name="twitter:url" content="{share_url}">
-  <meta name="twitter:title" content="{og_title}">
-  <meta name="twitter:description" content="{og_desc}">
-  <meta name="twitter:image" content="{image_url}">
+  <meta name="twitter:url" content="{share_url_esc}">
+  <meta name="twitter:title" content="{og_title_esc}">
+  <meta name="twitter:description" content="{og_desc_esc}">
+  <meta name="twitter:image" content="{image_url_esc}">
   <meta name="twitter:image:alt" content="VALORANT Match Infographic Card">
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="{share_url}">
-  <meta property="og:title" content="{og_title}">
-  <meta property="og:description" content="{og_desc}">
-  <meta property="og:image" content="{image_url}">
-  <meta property="og:image:secure_url" content="{image_url}">
+  <meta property="og:url" content="{share_url_esc}">
+  <meta property="og:title" content="{og_title_esc}">
+  <meta property="og:description" content="{og_desc_esc}">
+  <meta property="og:image" content="{image_url_esc}">
+  <meta property="og:image:secure_url" content="{image_url_esc}">
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="900">
   <meta property="og:image:height" content="535">
@@ -2190,15 +2265,15 @@ def get_share_page(share_id):
     
     <div class="badge">Match Flex Card</div>
     
-    <img src="{image_url}" class="card-preview" alt="Valorant Performance Flex Card">
+    <img src="{image_url_esc}" class="card-preview" alt="Valorant Performance Flex Card">
     
-    <a href="/?player={meta.get('playerName', '')}%23{meta.get('playerTag', '')}" class="btn">
+    <a href="/?player={playerName_esc}%23{playerTag_esc}" class="btn">
       🎮 View Full Performance Telemetry
     </a>
   </div>
 </body>
 </html>"""
-    return html
+    return html_content
 
 if __name__ == "__main__":
     if not API_KEY:
