@@ -1379,10 +1379,9 @@ function processMatches(matches){
   document.getElementById('wr-bar').style.width=wr+'%';
   document.getElementById('wr-detail').textContent=`${total} matches tracked`;
 
-  // Animate stat cards
+  // Animate initial core stat cards
   setTimeout(()=>animateIn('.card'),50);
 
-  renderRRGraph(rrHistory,window._currentRankRR,window._mmrHistory||{});
   _lastAgentMap = agentMap; _lastMapData = mapData; _lastAllMatches = matches;
   window._recentMatchStats = recentMatches.slice().reverse(); // oldest→newest for graph
   
@@ -1392,15 +1391,37 @@ function processMatches(matches){
       updateActivePillAgent(me.character || me.agent?.name || '');
     }
   }
-  
-  renderAgents(agentMap, matches);
-  renderMaps(mapData);
-  renderAccuracyAndRoles(matches);
-  renderTopWeapons(matches);
-  renderClutch(wins,losses,tK,n,agentMap);
-  renderMatches(recentMatches);
-  renderStreak(matches);
-  renderTrendChart(recentMatches);
+
+  // Stagger the rendering of remaining components to keep frames smooth (60 FPS)
+  requestAnimationFrame(() => {
+    // 1. Render charts & graphs first (they have canvas animations)
+    renderRRGraph(rrHistory,window._currentRankRR,window._mmrHistory||{});
+    renderTrendChart(recentMatches);
+    renderStreak(matches);
+    
+    // 2. Render roster and maps next
+    setTimeout(() => {
+      renderAgents(agentMap, matches);
+      renderMaps(mapData);
+    }, 40);
+
+    // 3. Render weapon stats and role analytics
+    setTimeout(() => {
+      renderAccuracyAndRoles(matches);
+      renderTopWeapons(matches);
+      renderClutch(wins,losses,tK,n,agentMap);
+    }, 80);
+
+    // 4. Render matches history (heaviest DOM manipulation block)
+    setTimeout(() => {
+      renderMatches(recentMatches);
+      
+      // Re-initialize Scrollspy observer now that the full DOM height is established
+      if (typeof initScrollspyObserver === 'function') {
+        initScrollspyObserver();
+      }
+    }, 120);
+  });
   // tracker-nav is inside tracker-view; visibility controlled by parent
 }
 
@@ -9929,35 +9950,16 @@ function smoothScrollTo(elementId, event) {
   }
 }
 
-// HUD Scrollspy active indicator tracking
-let cachedSectionOffsets = [];
-function cacheSectionOffsets() {
+// HUD Scrollspy active indicator tracking using IntersectionObserver (asynchronous & hardware composited)
+let scrollspyObserver = null;
+function initScrollspyObserver() {
+  if (scrollspyObserver) scrollspyObserver.disconnect();
+
   const sections = [
     'sec-combat', 'sec-performance', 'sec-trend', 'sec-agents',
     'sec-maps', 'sec-weapons', 'sec-matches', 'sec-ai', 'sec-deep', 'sec-lab'
   ];
-  cachedSectionOffsets = sections.map(id => {
-    const el = document.getElementById(id);
-    let offsetTop = 0;
-    if (el) {
-      const rect = el.getBoundingClientRect();
-      offsetTop = rect.top + window.scrollY;
-    }
-    return {
-      id: id,
-      offsetTop: offsetTop
-    };
-  });
-}
 
-let unifiedScrollInitialized = false;
-function initUnifiedScrollManager() {
-  if (unifiedScrollInitialized) return;
-  unifiedScrollInitialized = true;
-
-  const body = document.body;
-  const backToTopBtn = document.getElementById('back-to-top');
-  
   const navItems = {
     'sec-combat': document.querySelector('#tracker-nav a[onclick*="sec-combat"]'),
     'sec-performance': document.querySelector('#tracker-nav a[onclick*="sec-performance"]'),
@@ -9971,27 +9973,76 @@ function initUnifiedScrollManager() {
     'sec-lab': document.querySelector('#tracker-nav a[onclick*="sec-lab"]')
   };
 
-  let lastActiveId = '';
+  const options = {
+    root: null,
+    // Trigger when element crosses the header offset line (approx top 12% to 15% of viewport)
+    rootMargin: '-100px 0px -75% 0px',
+    threshold: 0
+  };
+
+  // Track currently intersecting sections
+  const intersectingSections = new Set();
+
+  scrollspyObserver = new IntersectionObserver((entries) => {
+    if (isProgrammaticScroll) return;
+
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        intersectingSections.add(entry.target.id);
+      } else {
+        intersectingSections.delete(entry.target.id);
+      }
+    });
+
+    // Find the topmost intersecting section to mark as active
+    if (intersectingSections.size > 0) {
+      // Find the first section in sections order that is intersecting
+      const activeId = sections.find(id => intersectingSections.has(id));
+      if (activeId) {
+        Object.keys(navItems).forEach(key => {
+          const item = navItems[key];
+          if (item) {
+            if (key === activeId) {
+              item.classList.add('active');
+            } else {
+              item.classList.remove('active');
+            }
+          }
+        });
+      }
+    }
+  }, options);
+
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) scrollspyObserver.observe(el);
+  });
+}
+
+// Stub function to prevent errors if called elsewhere
+function cacheSectionOffsets() {}
+
+let unifiedScrollInitialized = false;
+function initUnifiedScrollManager() {
+  if (unifiedScrollInitialized) return;
+  unifiedScrollInitialized = true;
+
+  const body = document.body;
+  const backToTopBtn = document.getElementById('back-to-top');
+
   let backToTopVisible = false;
   let headerState = ''; // 'up', 'down', or ''
   let scrollAccumulator = 0;
   let rAFScheduled = false;
-  let lastScrollHeight = 0;
+
+  // Initialize the observer for section Scrollspy tracking
+  initScrollspyObserver();
 
   window.addEventListener('scroll', () => {
     if (!rAFScheduled) {
       rAFScheduled = true;
       requestAnimationFrame(() => {
         const currentScrollY = window.scrollY;
-        
-        // Recalculate section offsets dynamically if layout height changes (e.g., loaded data, expanded cards)
-        const currentScrollHeight = document.documentElement.scrollHeight;
-        if (currentScrollHeight !== lastScrollHeight) {
-          lastScrollHeight = currentScrollHeight;
-          if (typeof cacheSectionOffsets === 'function') {
-            cacheSectionOffsets();
-          }
-        }
 
         // 1. Back to Top Button
         const shouldShowB2T = currentScrollY > 300;
@@ -10042,33 +10093,6 @@ function initUnifiedScrollManager() {
               body.classList.remove('scrolled-up');
             }
             scrollAccumulator = 0;
-          }
-        }
-
-        // 3. Scrollspy active section tracking
-        if (cachedSectionOffsets.length > 0) {
-          const trackerNav = document.getElementById('tracker-nav');
-          const navHeight = trackerNav ? trackerNav.getBoundingClientRect().height : 50;
-          const scrollPosition = currentScrollY + navHeight + 20; // dynamically calculated offset for exact sync
-          let currentSectionId = '';
-          for (let i = 0; i < cachedSectionOffsets.length; i++) {
-            const sec = cachedSectionOffsets[i];
-            if (sec.offsetTop && sec.offsetTop <= scrollPosition) {
-              currentSectionId = sec.id;
-            }
-          }
-          if (currentSectionId && currentSectionId !== lastActiveId) {
-            lastActiveId = currentSectionId;
-            Object.keys(navItems).forEach(key => {
-              const item = navItems[key];
-              if (item) {
-                if (key === currentSectionId) {
-                  item.classList.add('active');
-                } else {
-                  item.classList.remove('active');
-                }
-              }
-            });
           }
         }
 

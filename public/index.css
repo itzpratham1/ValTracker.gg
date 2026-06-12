@@ -666,14 +666,13 @@ body::before {
 
 /* ── BENTO CARDS ── */
 .card {
-  background: var(--surface);
+  background: rgba(18, 18, 24, 0.92);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 20px;
   position: relative;
   overflow: hidden;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  will-change: transform, opacity;
   transition: border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
               transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
               box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -686,12 +685,12 @@ body::before {
   opacity: 1;
 }
 @keyframes cardIn {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translate3d(0, 16px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 .card:hover {
   border-color: rgba(255, 255, 255, 0.14);
-  transform: translateY(-3px) scale(1.003);
+  transform: translate3d(0, -3px, 0) scale(1.003);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
 }
 .card-label {
@@ -798,22 +797,21 @@ body::before {
 /* ── AGENT GRID CARDS ── */
 .agents-grid { display: contents; }
 .agent-bento {
-  background: var(--surface);
+  background: rgba(18, 18, 24, 0.92);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
   position: relative;
   cursor: default;
+  will-change: transform, opacity;
   transition: var(--transition);
   grid-column: span 2;
   opacity: 0;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
 }
 .agent-bento.visible { animation: cardIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .agent-bento:hover {
   border-color: rgba(255, 255, 255, 0.12);
-  transform: translateY(-4px);
+  transform: translate3d(0, -4px, 0);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 .agent-portrait {
@@ -909,9 +907,10 @@ body::before {
   opacity: 0; transition: var(--transition);
   overflow: hidden;
   position: relative;
+  will-change: transform, opacity;
 }
 .map-card-bento.visible { animation: cardIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.map-card-bento:hover { border-color: rgba(255,255,255,0.12); transform: translateY(-4px); }
+.map-card-bento:hover { border-color: rgba(255,255,255,0.12); transform: translate3d(0, -4px, 0); }
 .map-card-bento:hover .map-splash { transform: scale(1.05); }
 .map-splash-wrap {
   position: relative; height: 90px; overflow: hidden;
@@ -962,7 +961,7 @@ body::before {
 
 /* ── MATCH ROWS ── */
 .matches-wrap { display: contents; }
-.match-item { grid-column: span 12; opacity: 0; }
+.match-item { grid-column: span 12; opacity: 0; will-change: transform, opacity; }
 .match-item.visible { animation: cardIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
 .match-row {
