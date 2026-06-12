@@ -8092,13 +8092,15 @@ async function fetchLeaderboard() {
       
     data.data.slice(0, 500).forEach(p => {
       let isAnon = p.IsAnonymized || !p.gameName;
-      let nameStr = isAnon ? '<span style="color:var(--muted)">Secret Agent</span>' : `${p.gameName} <span style="color:var(--muted)">#${p.tagLine}</span>`;
+      let nameStr = isAnon
+        ? '<span style="color:var(--muted)">Secret Agent</span>'
+        : `${escapeHtml(p.gameName)} <span style="color:var(--muted)">#${escapeHtml(p.tagLine)}</span>`;
       html += `
         <tr>
-          <td style="color:#f5a623; font-weight:800;">#${p.leaderboardRank}</td>
+          <td style="color:#f5a623; font-weight:800;">#${Number(p.leaderboardRank)}</td>
           <td style="font-family:'Barlow Condensed',sans-serif; font-size:16px;">${nameStr}</td>
-          <td style="font-family:'DM Mono',monospace; color:var(--accent);">${p.rankedRating} RR</td>
-          <td style="font-family:'DM Mono',monospace; color:var(--win);">${p.numberOfWins} W</td>
+          <td style="font-family:'DM Mono',monospace; color:var(--accent);">${Number(p.rankedRating)} RR</td>
+          <td style="font-family:'DM Mono',monospace; color:var(--win);">${Number(p.numberOfWins)} W</td>
         </tr>
       `;
     });
@@ -8106,7 +8108,7 @@ async function fetchLeaderboard() {
     html += '</tbody></table>';
     content.innerHTML = html;
   } catch(e) {
-    content.innerHTML = `<div style="text-align:center; color:var(--loss); padding:40px; font-family:'Barlow Condensed', sans-serif; font-size:20px;">Unable to load leaderboard: ${e.message}</div>`;
+    content.innerHTML = `<div style="text-align:center; color:var(--loss); padding:40px; font-family:'Barlow Condensed', sans-serif; font-size:20px;">Unable to load leaderboard: ${escapeHtml(e.message)}</div>`;
   }
 }
 
@@ -9362,9 +9364,11 @@ async function switchVctModalTab(stage, region) {
       
       const teamLogoUrl = t.logo ? (t.logo.startsWith('/api/image') ? t.logo : `/api/image?url=${encodeURIComponent(t.logo)}`) : '';
       const teamLogo = teamLogoUrl ? `<img src="${teamLogoUrl}" style="width:28px;height:28px;object-fit:contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />` : '';
-      const fallbackBadge = `<div class="team-logo-fallback" style="${t.logo ? 'display:none;' : 'display:flex;'} width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); align-items:center; justify-content:center; font-family:Barlow Condensed,sans-serif; font-size:11px; font-weight:700; color:var(--accent);">${t.name.substring(0, 2).toUpperCase()}</div>`;
+      const safeTeamName = escapeHtml(t.name || '');
+      const fallbackBadge = `<div class="team-logo-fallback" style="${t.logo ? 'display:none;' : 'display:flex;'} width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); align-items:center; justify-content:center; font-family:Barlow Condensed,sans-serif; font-size:11px; font-weight:700; color:var(--accent);">${escapeHtml((t.name || '').substring(0, 2).toUpperCase())}</div>`;
       
       const tagLabel = teamReg ? teamReg.toUpperCase() : (t.slug ? t.slug.substring(0,6).toUpperCase() : 'VCT');
+      const safeTagLabel = escapeHtml(tagLabel);
       
       return `
         <div class="player-card" ${clickAttr} ${borderHoverStyle} style="${cursorStyle} min-height:85px; padding:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); transition:var(--transition); border-radius:4px; gap:8px;">
@@ -9373,8 +9377,8 @@ async function switchVctModalTab(stage, region) {
             ${fallbackBadge}
           </div>
           <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
-            <div style="font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:11px; color:#fff; text-transform:uppercase; text-align:center; line-height:1.1; max-width:90px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${t.name}">${t.name}</div>
-            <div style="font-size:8px; color:var(--muted); text-transform:uppercase; font-family:'DM Mono',monospace;">${tagLabel}</div>
+            <div style="font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:11px; color:#fff; text-transform:uppercase; text-align:center; line-height:1.1; max-width:90px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${safeTeamName}">${safeTeamName}</div>
+            <div style="font-size:8px; color:var(--muted); text-transform:uppercase; font-family:'DM Mono',monospace;">${safeTagLabel}</div>
           </div>
         </div>
       `;

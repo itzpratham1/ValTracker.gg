@@ -72,7 +72,7 @@ SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
 ADMIN_SECRET = os.getenv("ADMIN_SECRET")
 if not ADMIN_SECRET:
     ADMIN_SECRET = str(uuid.uuid4())
-    print(f"[SECURITY WARNING] ADMIN_SECRET not set in environment! Generated random secret for session: {ADMIN_SECRET}")
+    print("[SECURITY WARNING] ADMIN_SECRET not set in environment! A random secret has been generated for this session. Set ADMIN_SECRET in .env for a stable value.")
 
 def normalize_mode(raw_mode):
     if not raw_mode:
@@ -448,8 +448,21 @@ def rate_limit(requests_per_minute=30):
         def wrapped(*args, **kwargs):
             ip = request.remote_addr or "127.0.0.1"
             
-            # Bypass rate limiter for localhost and local network subnets to preserve dev stability
-            if ip in ["127.0.0.1", "localhost", "::1"] or ip.startswith("192.168.") or ip.startswith("10.") or ip.startswith("172."):
+            # Bypass rate limiter for localhost and RFC-1918 private subnets only
+            def _is_private(addr):
+                if addr in ("127.0.0.1", "localhost", "::1"):
+                    return True
+                if addr.startswith("192.168.") or addr.startswith("10."):
+                    return True
+                # 172.16.0.0/12 → 172.16.x.x – 172.31.x.x only
+                if addr.startswith("172."):
+                    try:
+                        second_octet = int(addr.split(".")[1])
+                        return 16 <= second_octet <= 31
+                    except (IndexError, ValueError):
+                        pass
+                return False
+            if _is_private(ip):
                 return f(*args, **kwargs)
             
             now = time.time()
@@ -2031,15 +2044,16 @@ def search_players():
     
     if "#" in query:
         parts = query.split("#")
-        name_part = parts[0].strip()
-        tag_part = parts[1].strip()
+        name_part = sanitize_postgrest_value(parts[0].strip())
+        tag_part  = sanitize_postgrest_value(parts[1].strip())
         params = {
             "name": f"ilike.*{name_part}*",
-            "tag": f"ilike.{tag_part}%"
+            "tag":  f"ilike.{tag_part}%"
         }
     else:
+        safe_query = sanitize_postgrest_value(query)
         params = {
-            "name": f"ilike.*{query}*"
+            "name": f"ilike.*{safe_query}*"
         }
     
     params["limit"] = 10
