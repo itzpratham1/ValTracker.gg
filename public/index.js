@@ -1748,6 +1748,15 @@ async function togglePanel(idx,matchId){
   if(!isOpen){
     row.classList.add('open');
     panel.classList.add('open');
+    
+    if (!panel.dataset.panelRendered) {
+      const m = window._allRenderedMatches.find(x => x.matchId === matchId);
+      if (m) {
+        panel.innerHTML = buildMatchPanelHTML(m, idx);
+        panel.dataset.panelRendered = '1';
+      }
+    }
+    
     if(matchId&&!panel.dataset.detailLoaded){
       panel.dataset.detailLoaded='1';
       const perfEl = document.getElementById(`tabcontent-${idx}-performance`);
@@ -2184,45 +2193,47 @@ function isToday(ts) {
   return d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
 }
 
+window._matchesLimit = 15;
+
 function setFilter(filter, btn) {
   window._activeFilter = filter;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
-  applyFilters();
+  applyFilters(true);
 }
 
-function applyFilters() {
+function applyFilters(resetLimit = true) {
+  if (resetLimit) {
+    window._matchesLimit = 15;
+  }
+  updateMatchesListUI();
+}
+
+function getFilteredMatches() {
+  const matches = window._allRenderedMatches || [];
   const search = (document.getElementById('filter-search')?.value || '').toLowerCase().trim();
-  window._activeSearch = search;
   const filter = window._activeFilter || 'all';
-  const items = document.querySelectorAll('.match-item[data-won]');
-  let visible = 0;
-  items.forEach(el => {
-    const won = el.dataset.won === 'true';
-    const agent = (el.dataset.agent || '').toLowerCase();
-    const map = (el.dataset.map || '').toLowerCase();
-    const today = el.dataset.today === 'true';
+  
+  return matches.filter(m => {
+    const won = m.won;
+    const agent = (m.agentName || '').toLowerCase();
+    const map = (m.map || '').toLowerCase();
+    const today = isToday(m.gameStart);
+    
     let show = true;
     if (filter === 'win' && !won) show = false;
     if (filter === 'loss' && won) show = false;
     if (filter === 'today' && !today) show = false;
     if (search && !agent.includes(search) && !map.includes(search)) show = false;
-    el.style.display = show ? '' : 'none';
-    if (show) visible++;
+    return show;
   });
-  // Hide day headers that have no visible matches
-  document.querySelectorAll('.day-group-header').forEach(header => {
-    let next = header.nextElementSibling;
-    let hasVisible = false;
-    while (next && !next.classList.contains('day-group-header')) {
-      if (next.classList.contains('match-item') && next.style.display !== 'none') hasVisible = true;
-      next = next.nextElementSibling;
-    }
-    header.style.display = hasVisible ? '' : 'none';
-  });
-  const fc = document.getElementById('filter-count');
-  if (fc) fc.textContent = visible + ' match' + (visible !== 1 ? 'es' : '');
 }
+
+function loadMoreMatches() {
+  window._matchesLimit += 15;
+  applyFilters(false);
+}
+
 
 function getDayKey(ts) {
   if (!ts) return 'unknown';
@@ -2240,16 +2251,33 @@ function getDayLabel(ts) {
   return d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
 }
 
-function renderMatches(matches){
-  if(!matches.length){document.getElementById('matches-list').innerHTML='<div class="card span-12"><div class="placeholder-txt">No matches found</div></div>';return;}
-  const wrap=document.getElementById('matches-list');
-  wrap.style.display='contents';
+function renderMatches(matches) {
+  window._allRenderedMatches = matches;
+  window._matchesLimit = 15;
+  applyFilters(true);
+  renderSessionBanner(matches);
+}
+
+function updateMatchesListUI() {
+  const filtered = getFilteredMatches();
+  const sliced = filtered.slice(0, window._matchesLimit);
+  const wrap = document.getElementById('matches-list');
+  if (!wrap) return;
+
+  if (!sliced.length) {
+    wrap.innerHTML = '<div class="card span-12"><div class="placeholder-txt">No matches found</div></div>';
+    const fc = document.getElementById('filter-count');
+    if (fc) fc.textContent = '0 matches';
+    return;
+  }
+
+  wrap.style.display = 'contents';
   const mmrH = window._mmrHistory || {};
 
-  // Group matches by day
+  // Group sliced matches by day
   const groups = [];
   const groupMap = {};
-  matches.forEach((m, idx) => {
+  sliced.forEach((m, idx) => {
     const key = getDayKey(m.gameStart);
     if (!groupMap[key]) {
       groupMap[key] = { label: getDayLabel(m.gameStart), matches: [], rrTotal: 0, hasRR: false, wins: 0, losses: 0 };
@@ -2262,10 +2290,9 @@ function renderMatches(matches){
     if (m.won) g.wins++; else g.losses++;
   });
 
-  let html='';
+  let html = '';
   let globalIdx = 0;
   groups.forEach(group => {
-    // Day header
     const rrCls = group.rrTotal > 0 ? 'pos' : group.rrTotal < 0 ? 'neg' : 'neu';
     const rrText = group.hasRR ? `${group.rrTotal > 0 ? '+' : ''}${group.rrTotal} RR` : '';
     const wlText = `${group.wins}W ${group.losses}L`;
@@ -2277,141 +2304,190 @@ function renderMatches(matches){
     </div>`;
 
     group.matches.forEach(({ m, idx }) => {
-    const wl=m.won?'win':'loss';
-    const acs=Math.round(m.score/100);
-    const hsPct=m.shots?Math.round((m.hs/m.shots)*100):0;
-    const grade=getGrade(m.kills,m.deaths,m.assists,acs,m.won);
-    const kd=m.deaths?(m.kills/m.deaths).toFixed(2):m.kills.toFixed(2);
-    const agentIcon=getAgentIconUrl(m.agentName);
-    const allPlayers = getPlayerList(m.rawMatch);
-    const getACS=p=>Math.round((p.stats?.score||0)/100);
-    const matchMVPPlayer=allPlayers.length?allPlayers.reduce((b,p)=>getACS(p)>getACS(b)?p:b,allPlayers[0]):null;
-    const alliedPlayers=allPlayers.filter(p=>(p.team||'').toLowerCase()===m.myTeamId);
-    const teamMVPPlayer=alliedPlayers.length?alliedPlayers.reduce((b,p)=>getACS(p)>getACS(b)?p:b,alliedPlayers[0]):null;
-    const isMatchMVP=matchMVPPlayer?.name?.toLowerCase()===PLAYER_NAME.toLowerCase();
-    const isTeamMVP=!isMatchMVP&&teamMVPPlayer?.name?.toLowerCase()===PLAYER_NAME.toLowerCase();
-    const mvpBadge=isMatchMVP?`<div class="mvp-header-badge match-mvp">👑 Match MVP</div>`:isTeamMVP?`<div class="mvp-header-badge team-mvp">⭐ Team MVP</div>`:'';
-    const _isRanked=(window._currentMode||'competitive')==='competitive';
-    const scoreboardHTML=buildScoreboard(m.rawMatch,m.myTeamId,_isRanked);
+      const wl = m.won ? 'win' : 'loss';
+      const acs = Math.round(m.score / 100);
+      const grade = getGrade(m.kills, m.deaths, m.assists, acs, m.won);
+      const kd = m.deaths ? (m.kills / m.deaths).toFixed(2) : m.kills.toFixed(2);
+      const agentIcon = getAgentIconUrl(m.agentName);
+      
+      const allPlayers = getPlayerList(m.rawMatch);
+      const getACS = p => Math.round((p.stats?.score || 0) / 100);
+      const matchMVPPlayer = allPlayers.length ? allPlayers.reduce((b, p) => getACS(p) > getACS(b) ? p : b, allPlayers[0]) : null;
+      const alliedPlayers = allPlayers.filter(p => (p.team || '').toLowerCase() === m.myTeamId);
+      const teamMVPPlayer = alliedPlayers.length ? alliedPlayers.reduce((b, p) => getACS(p) > getACS(b) ? p : b, alliedPlayers[0]) : null;
+      const isMatchMVP = matchMVPPlayer?.name?.toLowerCase() === PLAYER_NAME.toLowerCase();
+      const isTeamMVP = !isMatchMVP && teamMVPPlayer?.name?.toLowerCase() === PLAYER_NAME.toLowerCase();
 
-    const matchDateStr=formatMatchDate(m.gameStart);const matchIsToday=isToday(m.gameStart);html+=`<div class="match-item" data-won="${m.won}" data-agent="${(m.agentName||'').toLowerCase()}" data-map="${(m.map||'').toLowerCase()}" data-today="${matchIsToday}" style="animation-delay:${globalIdx++*40}ms">
-      <div class="match-row" id="mrow-${idx}" onclick="togglePanel(${idx},'${m.matchId||''}')">
-        <div class="mr-result ${wl}">${m.won?'WIN':'LOSS'}</div>
-        <div class="mr-agent" style="padding:0;gap:0;overflow:hidden;">
-          ${(()=>{const mi=getMapImg(m.map||'');const mn=m.map||'';return mi?`<div class="mr-map-thumb"><img data-map="${mn}" src="${mi}" alt="${mn}" onerror="retryMapImg(this, this.dataset.map)"><div class="mr-map-thumb-label">${mn.toUpperCase()}</div></div>`:`<div class="mr-map-thumb" style="background:var(--surface2);"><div class="mr-map-thumb-label">${mn.toUpperCase()}</div></div>`;})()}
-          <div style="padding:12px 12px;">
-            ${agentIcon?`<img class="mr-agent-icon" src="${agentIcon}" onerror="this.style.display='none'">`:``}
-          </div>
-          <div style="padding:12px 0;">
-            <div class="mr-agent-name">${(m.agentName||'—').toUpperCase()}</div>
-            <div class="mr-map" style="margin-top:2px;">${(m.map||'—').toUpperCase()}</div>
-            ${matchDateStr?`<div class="mr-date">${matchDateStr}</div>`:''}
-          </div>
-        </div>
-        <div class="mr-score">${m.rounds}</div>
-        <div class="mr-lobby">
-          ${(()=>{const info=getLobbyRankInfo(allPlayers,m.myTeamId);if(!info||!info.overall)return'<span class="mr-lobby-txt">—</span>';const img=getRankImgUrl(info.overall.name)||'';return(img?`<img class="mr-lobby-img" src="${img}" onerror="this.style.display='none'">`:'')+'<span class="mr-lobby-txt" style="color:'+getRankColor(info.overall.name)+'">'+info.overall.name.replace(' ','<br>')+'</span>';})()}
-        </div>
-        <div class="mr-kda">
-          <div class="mr-kda-main">${m.kills} / ${m.deaths} / ${m.assists}</div>
-          <div class="mr-kda-sub">K / D / A</div>
-        </div>
-        <div>
-          <div class="mr-acs">${acs}</div>
-          <div class="mr-acs-sub">ACS</div>
-        </div>
-        <div>
-          <div class="mr-grade ${grade}">${grade}</div>
-          <div class="mr-grade-sub">${isMatchMVP?'MATCH MVP':isTeamMVP?'TEAM MVP':'GRADE'}</div>
-        </div>
-        <div class="mr-rr">
-          ${(()=>{
-            const rr=(window._mmrHistory||{})[m.matchId||''];
-            if(rr===undefined||rr===null)return`<div class="mr-rr-val unk">—</div><div class="mr-rr-lbl">RR</div>`;
-            const cls=rr>0?'pos':rr<0?'neg':'unk';
-            return`<div class="mr-rr-val ${cls}">${rr>0?'+':''}${rr}</div><div class="mr-rr-lbl">RR</div>`;
-          })()}
-        </div>
-        <div class="mr-chevron">▼</div>
-      </div>
-      <div class="match-panel" id="mpanel-${idx}">
-        <div class="panel-body">
-          <div class="panel-header-row">
-            <div class="panel-grade-badge ${grade}">${grade}</div>
-            <div class="panel-match-meta">
-              <div class="panel-meta-left">
-                <div class="panel-match-title">
-                  ${agentIcon?`<img src="${agentIcon}" style="width:28px;height:28px;object-fit:contain;" onerror="this.style.display='none'">`:``}
-                  ${(m.agentName||'—').toUpperCase()} · ${(m.map||'—').toUpperCase()}
-                </div>
-                <div class="panel-match-sub">${m.won?'VICTORY':'DEFEAT'} · ${m.rounds} rounds</div>
-                ${mvpBadge}
-                <div style="margin: 8px 0 12px; display: flex; gap: 8px; align-items: center;">
-                  <button class="share-flex-btn" onclick="openShareMatchModal(${idx}, event)" style="background: linear-gradient(135deg, rgba(250, 68, 84, 0.25) 0%, rgba(232, 255, 71, 0.2) 100%); color: #fff; border: 1px solid rgba(250, 68, 84, 0.5); font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.2px; padding: 7px 16px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 14px rgba(250, 68, 84, 0.15), 0 0 10px rgba(232, 255, 71, 0.05); vertical-align: middle;" onmouseover="this.style.background='linear-gradient(135deg, rgba(250, 68, 84, 0.38) 0%, rgba(232, 255, 71, 0.3) 100%)'; this.style.borderColor='rgba(250, 68, 84, 0.8)'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 20px rgba(250, 68, 84, 0.3), 0 0 12px rgba(232, 255, 71, 0.15)';" onmouseout="this.style.background='linear-gradient(135deg, rgba(250, 68, 84, 0.25) 0%, rgba(232, 255, 71, 0.2) 100%)'; this.style.borderColor='rgba(250, 68, 84, 0.5)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 14px rgba(250, 68, 84, 0.15), 0 0 10px rgba(232, 255, 71, 0.05)';">
-                    <span>✨ Share Flex Card</span>
-                  </button>
-                </div>
-              </div>
-              <div class="panel-stat-row">
-                <div class="ps-item"><div class="psv">${m.kills}/${m.deaths}/${m.assists}</div><div class="psl">K / D / A</div></div>
-                <div class="ps-item"><div class="psv">${kd}</div><div class="psl">K/D</div></div>
-                <div class="ps-item"><div class="psv">${acs}</div><div class="psl">ACS</div></div>
-                <div class="ps-item"><div class="psv">${hsPct}%</div><div class="psl">HS Rate</div></div>
-                ${(()=>{const rr=(window._mmrHistory||{})[m.matchId||''];if(rr===undefined||rr===null)return'';const col=rr>0?'var(--win)':rr<0?'var(--loss)':'var(--muted)';return`<div class="ps-item"><div class="psv" style="color:${col}">${rr>0?'+':''}${rr}</div><div class="psl">RR Change</div></div>`;})()}
-                ${(()=>{const info=getLobbyRankInfo(allPlayers,m.myTeamId);if(!info||!info.overall)return'';const img=getRankImgUrl(info.overall.name)||'';return`<div class="ps-item"><div class="psv" style="display:flex;align-items:center;gap:6px;font-size:18px;">${img?`<img src="${img}" style="width:22px;height:22px;object-fit:contain;" onerror="this.style.display='none'">`:''}${info.overall.name}</div><div class="psl">Lobby Avg Rank</div></div>`;})()}
-              </div>
+      const matchDateStr = formatMatchDate(m.gameStart);
+      const matchIsToday = isToday(m.gameStart);
+
+      html += `<div class="match-item" data-won="${m.won}" data-agent="${(m.agentName || '').toLowerCase()}" data-map="${(m.map || '').toLowerCase()}" data-today="${matchIsToday}" style="animation-delay:${globalIdx++ * 40}ms">
+        <div class="match-row" id="mrow-${idx}" onclick="togglePanel(${idx},'${m.matchId || ''}')">
+          <div class="mr-result ${wl}">${m.won ? 'WIN' : 'LOSS'}</div>
+          <div class="mr-agent" style="padding:0;gap:0;overflow:hidden;">
+            ${(() => {
+              const mi = getMapImg(m.map || '');
+              const mn = m.map || '';
+              return mi ? `<div class="mr-map-thumb"><img data-map="${mn}" src="${mi}" alt="${mn}" onerror="retryMapImg(this, this.dataset.map)"><div class="mr-map-thumb-label">${mn.toUpperCase()}</div></div>` : `<div class="mr-map-thumb" style="background:var(--surface2);"><div class="mr-map-thumb-label">${mn.toUpperCase()}</div></div>`;
+            })()}
+            <div style="padding:12px 12px;">
+              ${agentIcon ? `<img class="mr-agent-icon" src="${agentIcon}" onerror="this.style.display='none'">` : ``}
+            </div>
+            <div style="padding:12px 0;">
+              <div class="mr-agent-name">${(m.agentName || '—').toUpperCase()}</div>
+              <div class="mr-map" style="margin-top:2px;">${(m.map || '—').toUpperCase()}</div>
+              ${matchDateStr ? `<div class="mr-date">${matchDateStr}</div>` : ''}
             </div>
           </div>
+          <div class="mr-score">${m.rounds}</div>
+          <div class="mr-lobby">
+            ${(() => {
+              const info = getLobbyRankInfo(allPlayers, m.myTeamId);
+              if (!info || !info.overall) return '<span class="mr-lobby-txt">—</span>';
+              const img = getRankImgUrl(info.overall.name) || '';
+              return (img ? `<img class="mr-lobby-img" src="${img}" onerror="this.style.display='none'">` : '') + '<span class="mr-lobby-txt" style="color:' + getRankColor(info.overall.name) + '">' + info.overall.name.replace(' ', '<br>') + '</span>';
+            })()}
+          </div>
+          <div class="mr-kda">
+            <div class="mr-kda-main">${m.kills} / ${m.deaths} / ${m.assists}</div>
+            <div class="mr-kda-sub">K / D / A</div>
+          </div>
+          <div>
+            <div class="mr-acs">${acs}</div>
+            <div class="mr-acs-sub">ACS</div>
+          </div>
+          <div>
+            <div class="mr-grade ${grade}">${grade}</div>
+            <div class="mr-grade-sub">${isMatchMVP ? 'MATCH MVP' : isTeamMVP ? 'TEAM MVP' : 'GRADE'}</div>
+          </div>
+          <div class="mr-rr">
+            ${(() => {
+              const rr = (window._mmrHistory || {})[m.matchId || ''];
+              if (rr === undefined || rr === null) return `<div class="mr-rr-val unk">—</div><div class="mr-rr-lbl">RR</div>`;
+              const cls = rr > 0 ? 'pos' : rr < 0 ? 'neg' : 'unk';
+              return `<div class="mr-rr-val ${cls}">${rr > 0 ? '+' : ''}${rr}</div><div class="mr-rr-lbl">RR</div>`;
+            })()}
+          </div>
+          <div class="mr-chevron">▼</div>
+        </div>
+        <div class="match-panel" id="mpanel-${idx}"></div>
+      </div>`;
+    });
+  });
 
-          <!-- TABS CONTAINER -->
-          <div class="panel-tabs">
-            <button class="panel-tab-btn active" data-tab="scoreboard" onclick="switchPanelTab(${idx}, 'scoreboard')">🏆 Scoreboard</button>
-            <button class="panel-tab-btn" data-tab="performance" onclick="switchPanelTab(${idx}, 'performance')">📊 Performance</button>
-            <button class="panel-tab-btn" data-tab="duels" onclick="switchPanelTab(${idx}, 'duels')">🎯 Fights</button>
-            <button class="panel-tab-btn" data-tab="timeline" onclick="switchPanelTab(${idx}, 'timeline')">⏱️ Rounds</button>
-            <button class="panel-tab-btn" data-tab="ai" onclick="switchPanelTab(${idx}, 'ai')">🤖 AI Analysis</button>
-          </div>
+  if (filtered.length > window._matchesLimit) {
+    html += `
+      <div id="load-more-container" style="grid-column: span 12; display: flex; justify-content: center; padding: 24px 0;">
+        <button class="load-more-btn" onclick="loadMoreMatches()">
+          <span>Show More Matches</span>
+          <span class="load-more-count">(${filtered.length - window._matchesLimit} remaining)</span>
+        </button>
+      </div>
+    `;
+  }
 
-          <!-- TAB CONTENTS -->
-          <div class="panel-tab-content active" id="tabcontent-${idx}-scoreboard">
-            ${scoreboardHTML}
-          </div>
-          <div class="panel-tab-content" id="tabcontent-${idx}-performance">
-            <div class="detail-loading">Click match to load full details...</div>
-          </div>
-          <div class="panel-tab-content" id="tabcontent-${idx}-duels">
-            <div class="detail-loading">Click match to load full details...</div>
-          </div>
-          <div class="panel-tab-content" id="tabcontent-${idx}-timeline">
-            <div class="detail-loading">Click match to load full details...</div>
-          </div>
-          <div class="panel-tab-content" id="tabcontent-${idx}-ai">
-            <div class="match-ai-wrap" style="margin-top:0;">
-              <div class="match-ai-header">
-                <div class="match-ai-title">🤖 ValBot Match Analysis</div>
-                <button class="match-ai-btn" id="mai-btn-${idx}" onclick="runMatchAnalysis(${idx}, event)">⚡ Analyse This Match</button>
-              </div>
-              <div class="match-ai-loading" id="mai-loading-${idx}">
-                <div class="match-ai-spinner"></div>
-                <span id="mai-loading-txt-${idx}">ANALYSING MATCH...</span>
-              </div>
-              <div class="match-ai-body" id="mai-body-${idx}"></div>
+  wrap.innerHTML = html;
+  setTimeout(() => animateIn('#matches-list .match-item'), 50);
+
+  const fc = document.getElementById('filter-count');
+  if (fc) fc.textContent = filtered.length + ' match' + (filtered.length !== 1 ? 'es' : '');
+}
+
+function buildMatchPanelHTML(m, idx) {
+  const wl = m.won ? 'win' : 'loss';
+  const acs = Math.round(m.score / 100);
+  const hsPct = m.hs && m.shots ? Math.round((m.hs / m.shots) * 100) : 0;
+  const grade = getGrade(m.kills, m.deaths, m.assists, acs, m.won);
+  const kd = m.deaths ? (m.kills / m.deaths).toFixed(2) : m.kills.toFixed(2);
+  const agentIcon = getAgentIconUrl(m.agentName);
+  
+  const allPlayers = getPlayerList(m.rawMatch);
+  const getACS = p => Math.round((p.stats?.score || 0) / 100);
+  const matchMVPPlayer = allPlayers.length ? allPlayers.reduce((b, p) => getACS(p) > getACS(b) ? p : b, allPlayers[0]) : null;
+  const alliedPlayers = allPlayers.filter(p => (p.team || '').toLowerCase() === m.myTeamId);
+  const teamMVPPlayer = alliedPlayers.length ? alliedPlayers.reduce((b, p) => getACS(p) > getACS(b) ? p : b, alliedPlayers[0]) : null;
+  const isMatchMVP = matchMVPPlayer?.name?.toLowerCase() === PLAYER_NAME.toLowerCase();
+  const isTeamMVP = !isMatchMVP && teamMVPPlayer?.name?.toLowerCase() === PLAYER_NAME.toLowerCase();
+  const mvpBadge = isMatchMVP ? `<div class="mvp-header-badge match-mvp">👑 Match MVP</div>` : isTeamMVP ? `<div class="mvp-header-badge team-mvp">⭐ Team MVP</div>` : '';
+  const _isRanked = (window._currentMode || 'competitive') === 'competitive';
+  const scoreboardHTML = buildScoreboard(m.rawMatch, m.myTeamId, _isRanked);
+
+  return `
+    <div class="panel-body">
+      <div class="panel-header-row">
+        <div class="panel-grade-badge ${grade}">${grade}</div>
+        <div class="panel-match-meta">
+          <div class="panel-meta-left">
+            <div class="panel-match-title">
+              ${agentIcon ? `<img src="${agentIcon}" style="width:28px;height:28px;object-fit:contain;" onerror="this.style.display='none'">` : ``}
+              ${(m.agentName || '—').toUpperCase()} · ${(m.map || '—').toUpperCase()}
+            </div>
+            <div class="panel-match-sub">${m.won ? 'VICTORY' : 'DEFEAT'} · ${m.rounds} rounds</div>
+            ${mvpBadge}
+            <div style="margin: 8px 0 12px; display: flex; gap: 8px; align-items: center;">
+              <button class="share-flex-btn" onclick="openShareMatchModal(${idx}, event)" style="background: linear-gradient(135deg, rgba(250, 68, 84, 0.25) 0%, rgba(232, 255, 71, 0.2) 100%); color: #fff; border: 1px solid rgba(250, 68, 84, 0.5); font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.2px; padding: 7px 16px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 14px rgba(250, 68, 84, 0.15), 0 0 10px rgba(232, 255, 71, 0.05); vertical-align: middle;" onmouseover="this.style.background='linear-gradient(135deg, rgba(250, 68, 84, 0.38) 0%, rgba(232, 255, 71, 0.3) 100%)'; this.style.borderColor='rgba(250, 68, 84, 0.8)'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 20px rgba(250, 68, 84, 0.3), 0 0 12px rgba(232, 255, 71, 0.15)';" onmouseout="this.style.background='linear-gradient(135deg, rgba(250, 68, 84, 0.25) 0%, rgba(232, 255, 71, 0.2) 100%)'; this.style.borderColor='rgba(250, 68, 84, 0.5)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 14px rgba(250, 68, 84, 0.15), 0 0 10px rgba(232, 255, 71, 0.05)';">
+                <span>✨ Share Flex Card</span>
+              </button>
             </div>
           </div>
-
+          <div class="panel-stat-row">
+            <div class="ps-item"><div class="psv">${m.kills}/${m.deaths}/${m.assists}</div><div class="psl">K / D / A</div></div>
+            <div class="ps-item"><div class="psv">${kd}</div><div class="psl">K/D</div></div>
+            <div class="ps-item"><div class="psv">${acs}</div><div class="psl">ACS</div></div>
+            <div class="ps-item"><div class="psv">${hsPct}%</div><div class="psl">HS Rate</div></div>
+            ${(() => {
+              const rr = (window._mmrHistory || {})[m.matchId || ''];
+              if (rr === undefined || rr === null) return '';
+              const col = rr > 0 ? 'var(--win)' : rr < 0 ? 'var(--loss)' : 'var(--muted)';
+              return `<div class="ps-item"><div class="psv" style="color:${col}">${rr > 0 ? '+' : ''}${rr}</div><div class="psl">RR Change</div></div>`;
+            })()}
+            ${(() => {
+              const info = getLobbyRankInfo(allPlayers, m.myTeamId);
+              if (!info || !info.overall) return '';
+              const img = getRankImgUrl(info.overall.name) || '';
+              return `<div class="ps-item"><div class="psv" style="display:flex;align-items:center;gap:6px;font-size:18px;">${img ? `<img src="${img}" style="width:22px;height:22px;object-fit:contain;" onerror="this.style.display='none'">` : ''}${info.overall.name}</div><div class="psl">Lobby Avg Rank</div></div>`;
+            })()}
+          </div>
         </div>
       </div>
-    </div>`;
-    }); // end group.matches.forEach
-  }); // end groups.forEach
-  wrap.innerHTML=html;
-  window._allRenderedMatches = matches;
-  setTimeout(()=>animateIn('#matches-list .match-item'),50);
-  // update filter count
-  const fc=document.getElementById('filter-count');
-  if(fc)fc.textContent=matches.length+' match'+(matches.length!==1?'es':'');
-  // render session banner
-  renderSessionBanner(matches);
+
+      <!-- TABS CONTAINER -->
+      <div class="panel-tabs">
+        <button class="panel-tab-btn active" data-tab="scoreboard" onclick="switchPanelTab(${idx}, 'scoreboard')">🏆 Scoreboard</button>
+        <button class="panel-tab-btn" data-tab="performance" onclick="switchPanelTab(${idx}, 'performance')">📊 Performance</button>
+        <button class="panel-tab-btn" data-tab="duels" onclick="switchPanelTab(${idx}, 'duels')">🎯 Fights</button>
+        <button class="panel-tab-btn" data-tab="timeline" onclick="switchPanelTab(${idx}, 'timeline')">⏱️ Rounds</button>
+        <button class="panel-tab-btn" data-tab="ai" onclick="switchPanelTab(${idx}, 'ai')">🤖 AI Analysis</button>
+      </div>
+
+      <!-- TAB CONTENTS -->
+      <div class="panel-tab-content active" id="tabcontent-${idx}-scoreboard">
+        ${scoreboardHTML}
+      </div>
+      <div class="panel-tab-content" id="tabcontent-${idx}-performance">
+        <div class="detail-loading">Click match to load full details...</div>
+      </div>
+      <div class="panel-tab-content" id="tabcontent-${idx}-duels">
+        <div class="detail-loading">Click match to load full details...</div>
+      </div>
+      <div class="panel-tab-content" id="tabcontent-${idx}-timeline">
+        <div class="detail-loading">Click match to load full details...</div>
+      </div>
+      <div class="panel-tab-content" id="tabcontent-${idx}-ai">
+        <div class="match-ai-wrap" style="margin-top:0;">
+          <div class="match-ai-header">
+            <div class="match-ai-title">🤖 ValBot Match Analysis</div>
+            <button class="match-ai-btn" id="mai-btn-${idx}" onclick="runMatchAnalysis(${idx}, event)">⚡ Analyse This Match</button>
+          </div>
+          <div class="match-ai-loading" id="mai-loading-${idx}">
+            <div class="match-ai-spinner"></div>
+            <span id="mai-loading-txt-${idx}">ANALYSING MATCH...</span>
+          </div>
+          <div class="match-ai-body" id="mai-body-${idx}"></div>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 // ── AI ANALYSIS ──

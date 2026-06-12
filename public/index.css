@@ -6279,3 +6279,40 @@ select option {
   }
 }
 
+/* LOAD MORE BUTTON */
+.load-more-btn {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 10px 24px;
+  background: var(--surface2);
+  color: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.load-more-btn:hover {
+  background: var(--accent);
+  color: #0d0d0f;
+  border-color: var(--accentborder);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(232, 255, 71, 0.3);
+}
+.load-more-btn:active {
+  transform: translateY(0) scale(0.97);
+}
+.load-more-count {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  opacity: 0.75;
+}
+.load-more-btn:hover .load-more-count {
+  color: #000;
+}
