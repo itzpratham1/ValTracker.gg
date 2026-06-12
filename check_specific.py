@@ -13,7 +13,7 @@ def tokenize_and_check(s):
     stack = []
     
     lines = s.split('\n')
-    line_no = 5012 
+    line_no = 1
     
     for i, line in enumerate(lines):
         for j, c in enumerate(line):

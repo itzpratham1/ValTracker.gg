@@ -1,5 +1,4 @@
 import urllib.request
-import json
 
 try:
     res = urllib.request.urlopen("http://127.0.0.1:5000/api/esports/live", timeout=2)

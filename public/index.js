@@ -1,3 +1,13 @@
+function escapeJsString(str) {
+  if (!str) return '';
+  return str.replace(/\\/g, "\\\\")
+            .replace(/'/g, "\\'")
+            .replace(/"/g, '\\"')
+            .replace(/`/g, "\\`")
+            .replace(/\(/g, "\\(")
+            .replace(/\)/g, "\\)");
+}
+
 function expandTeamName(name) {
   if (!name) return 'TBD';
   const clean = name.trim();
@@ -126,7 +136,6 @@ const AGENT_UUIDS = {
   'Chamber':  '22697a3d-45bf-8dd7-4fec-84a9e28c69d7',
   'Deadlock': 'cc8b64c8-4b25-4ff9-6e7f-37b4da43d235',
   'Vyse':     'efba5359-4016-a1e5-7626-b1ae7d0ac65a',
-  'Veto':     'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
   'Veto':     'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
   // Initiators
   'Sova':     '320b2a48-4d9b-a075-30f1-1f93a9b638fa',
@@ -334,7 +343,7 @@ async function retryMapImg(imgEl, mapName) {
 }
 
 function setStatus(msg,type=''){ if(type==='error') { showToast(msg); } else { console.log('[STATUS]', msg); } }
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+function showToast(msg){const t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 
 // ── Copy Riot ID ──
 function copyRiotId() {
@@ -997,15 +1006,15 @@ async function handleClear(){
   ['v-kd','v-kills','v-deaths','v-assists','v-acs','v-hs','v-wr','v-wins','v-losses'].forEach(id=>{
     const el=document.getElementById(id);if(el)el.textContent='—';
   });
-  document.getElementById('v-wr').textContent='—%';
-  document.getElementById('wr-bar').style.width='0%';
-  document.getElementById('agents-wrap').innerHTML='<div class="card placeholder-card span-12"><div class="placeholder-txt">Fetch stats to see agents</div></div>';
-  document.getElementById('maps-wrap').innerHTML='<div class="card placeholder-card span-12"><div class="placeholder-txt">Fetch stats to see maps</div></div>';
-  document.getElementById('clutch-wrap').innerHTML='<div class="card placeholder-card span-12"><div class="placeholder-txt">Fetch stats to see impact</div></div>';
-  document.getElementById('matches-list').innerHTML='<div class="card placeholder-card span-12"><div class="placeholder-txt">Fetch stats to see match history</div></div>';
-  document.getElementById('rr-placeholder').style.display='block';
-  document.getElementById('rr-chart').style.display='none';
-  document.getElementById('graph-note').style.display='none';
+  const vWr = document.getElementById('v-wr'); if(vWr) vWr.textContent='—%';
+  const wrBar = document.getElementById('wr-bar'); if(wrBar) wrBar.style.width='0%';
+  const agentsWrap = document.getElementById('agents-wrap'); if(agentsWrap) agentsWrap.innerHTML='<div class="card placeholder-card span-12"><div class="placeholder-txt">Fetch stats to see agents</div></div>';
+  const mapsWrap = document.getElementById('maps-wrap'); if(mapsWrap) mapsWrap.innerHTML='<div class="card placeholder-card span-12"><div class="placeholder-txt">Fetch stats to see maps</div></div>';
+  const clutchWrap = document.getElementById('clutch-wrap'); if(clutchWrap) clutchWrap.innerHTML='<div class="card placeholder-card span-12"><div class="placeholder-txt">Fetch stats to see impact</div></div>';
+  const matchesList = document.getElementById('matches-list'); if(matchesList) matchesList.innerHTML='<div class="card placeholder-card span-12"><div class="placeholder-txt">Fetch stats to see match history</div></div>';
+  const rrPlaceholder = document.getElementById('rr-placeholder'); if(rrPlaceholder) rrPlaceholder.style.display='block';
+  const rrChartEl = document.getElementById('rr-chart'); if(rrChartEl) rrChartEl.style.display='none';
+  const graphNote = document.getElementById('graph-note'); if(graphNote) graphNote.style.display='none';
   if(rrChart){rrChart.destroy();rrChart=null;}
   // tracker-nav is inside tracker-view; no need to explicitly hide it
 }
@@ -1021,7 +1030,7 @@ async function fetchAll(){
   if (inputName) PLAYER_NAME = inputName;
   if (inputTag)  PLAYER_TAG  = inputTag;
 
-  const region=document.getElementById('region-select').value;
+  const region=document.getElementById('region-select')?.value || 'ap';
   const mode=document.getElementById('mode-select')?.value||'competitive';
   window._currentMode = mode;
   const btn=document.getElementById('fetch-btn');
@@ -1295,10 +1304,13 @@ function processMatches(matches){
     } else if (myTeam?.rounds_won != null && oppTeam?.rounds_won != null) {
       won = myTeam.rounds_won > oppTeam.rounds_won;
     } else {
-      // DM / no teams structure — highest scorer wins
-      const allScores = getPlayerList(match).map(p=>p.stats?.score||0).sort((a,b)=>b-a);
-      const myScoreVal = me.stats?.score||0;
-      won = allScores.length > 0 && myScoreVal >= allScores[0];
+      // DM / no teams structure — highest scorer wins (ties do not count as wins)
+      const otherScores = getPlayerList(match)
+        .filter(p => (p.puuid || p.subject || p.id) !== (me.puuid || me.subject || me.id))
+        .map(p => p.stats?.score || 0)
+        .sort((a,b)=>b-a);
+      const myScoreVal = me.stats?.score || 0;
+      won = otherScores.length === 0 || myScoreVal > otherScores[0];
     }
     if(won)wins++;else losses++;
     const agentName=me.character||me.agent?.name||'Unknown';
@@ -1737,6 +1749,27 @@ function buildClutches(match,myTeamId){
       if(myKills>=5) aces.push({round:i+1});
     }
   });
+
+  const hasRoundData = rounds.some(r=>(r.player_stats||[]).length>0);
+
+  if(!hasRoundData){
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;">
+      <div style="font-size:18px">ℹ️</div>
+      <div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;margin-bottom:2px;">Clutch data requires full match details</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.5px;">Click <b style="color:var(--accent)">Load Full Details</b> below to fetch round-by-round data from the match API — clutch moments will appear here.</div>
+      </div>
+    </div>`;
+  }
+
+  if(!clutches.length && !aces.length)
+    return'<div class="no-detail">No clutch or ace moments detected this match</div>';
+
+  let html='<div class="clutch-highlight">';
+  clutches.forEach(c=>html+=`<div class="clutch-pill">🏅 ${c.vsCount} Clutch · Rnd ${c.round}${c.kills?' ('+c.kills+' kills)':''}</div>`);
+  aces.forEach(a=>html+=`<div class="clutch-pill" style="color:var(--accent);border-color:var(--accentborder)">⭐ ACE · Rnd ${a.round}</div>`);
+  html+='</div>';
+  return html;
 }
 
 async function togglePanel(idx,matchId){
@@ -3204,12 +3237,20 @@ function buildMatchAnalysis(match, allMatches = null) {
   let bestRoundNum = 1, maxRoundKills = 0, bestRoundWon = false;
 
   // Determine dynamic round sides (Attack vs Defense) for starting team side normalization
+  const modeName = (match.metadata?.mode || '').toLowerCase();
+  let halfSize = 12;
+  if (modeName.includes('swiftplay')) {
+    halfSize = 4;
+  } else if (modeName.includes('spike rush')) {
+    halfSize = 3;
+  }
+
   const roundSides = [];
   for (let i = 0; i < rounds.length; i++) {
-    roundSides[i] = i < 12 ? 'Attack' : 'Defense';
+    roundSides[i] = i < halfSize ? 'Attack' : 'Defense';
   }
   let firstHalfAttackTeam = null;
-  for (let i = 0; i < Math.min(rounds.length, 12); i++) {
+  for (let i = 0; i < Math.min(rounds.length, halfSize); i++) {
     const r = rounds[i];
     if (r.bomb_planted && r.plant_events?.planted_by?.team) {
       firstHalfAttackTeam = r.plant_events.planted_by.team.toLowerCase();
@@ -3218,7 +3259,7 @@ function buildMatchAnalysis(match, allMatches = null) {
   }
   if (!firstHalfAttackTeam) {
     let secondHalfAttackTeam = null;
-    for (let i = 12; i < rounds.length; i++) {
+    for (let i = halfSize; i < Math.min(rounds.length, halfSize * 2); i++) {
       const r = rounds[i];
       if (r.bomb_planted && r.plant_events?.planted_by?.team) {
         secondHalfAttackTeam = r.plant_events.planted_by.team.toLowerCase();
@@ -3235,9 +3276,9 @@ function buildMatchAnalysis(match, allMatches = null) {
     const secondHalfSide = firstHalfSide === 'Attack' ? 'Defense' : 'Attack';
     for (let i = 0; i < rounds.length; i++) {
       const r = rounds[i];
-      if (i < 12) {
+      if (i < halfSize) {
         roundSides[i] = firstHalfSide;
-      } else if (i < 24) {
+      } else if (i < halfSize * 2) {
         roundSides[i] = secondHalfSide;
       } else {
         if (r.bomb_planted && r.plant_events?.planted_by?.team) {
@@ -4896,11 +4937,17 @@ function buildDeepAnalysis(matches) {
     let atkWins = 0, defWins = 0, atkRoundsPlayed = 0, defRoundsPlayed = 0;
 
     // Determine which half my team attacked
-    // v3 API: teams.red attacks first rounds 1-12, blue defends
+    const modeName = (match.metadata?.mode || '').toLowerCase();
+    let halfSize = 12;
+    if (modeName.includes('swiftplay')) {
+      halfSize = 4;
+    } else if (modeName.includes('spike rush')) {
+      halfSize = 3;
+    }
     const myTeamAttacksFirst = myTeamId === 'red';
-    const regularRounds = Math.min(totalRounds, 24);
-    const half = Math.min(12, regularRounds);
-    const secondHalf = Math.max(0, regularRounds - 12);
+    const regularRounds = Math.min(totalRounds, halfSize * 2);
+    const half = Math.min(halfSize, regularRounds);
+    const secondHalf = Math.max(0, regularRounds - halfSize);
 
     // First half
     const firstHalfAtk = myTeamAttacksFirst;
@@ -6311,9 +6358,6 @@ function applyModeUI() {
   updateHeroName();
 }
 
-// Patch fetchAll to call applyModeUI after fetch
-const _origFetchAll = fetchAll;
-
 
 // ══ LANDING PAGE ══
 function landingQuick(name, tag, region, mode) {
@@ -6351,10 +6395,14 @@ async function landingFetch() {
   btn.textContent = 'Loading...';
 
   // Sync inputs to topbar
-  document.getElementById('player-name-input').value = name;
-  document.getElementById('player-tag-input').value  = tag;
-  document.getElementById('region-select').value     = region;
-  document.getElementById('mode-select').value       = mode;
+  const nameInput = document.getElementById('player-name-input');
+  if (nameInput) nameInput.value = name;
+  const tagInput = document.getElementById('player-tag-input');
+  if (tagInput) tagInput.value = tag;
+  const regionSelect = document.getElementById('region-select');
+  if (regionSelect) regionSelect.value = region;
+  const modeSelect = document.getElementById('mode-select');
+  if (modeSelect) modeSelect.value = mode;
 
   // Update globals
   PLAYER_NAME = name;
@@ -6565,7 +6613,7 @@ function toggleActiveBookmark() {
   
   const idx = bookmarks.findIndex(p => p.name.toLowerCase() === PLAYER_NAME.toLowerCase() && p.tag.toLowerCase() === PLAYER_TAG.toLowerCase());
   
-  const region = document.getElementById('region-select').value;
+  const region = document.getElementById('region-select')?.value || 'ap';
   const mode = document.getElementById('mode-select')?.value || 'competitive';
   const rankEl = document.getElementById('rank-display');
   const rankName = rankEl ? rankEl.textContent.trim() : 'UNRANKED';
@@ -6608,14 +6656,15 @@ function renderLandingHistory() {
     bookmarksList.innerHTML = `<div style="font-size:10px; color:var(--muted2); text-align:center; padding:16px 12px; font-family:'DM Mono',monospace; border:1px dashed rgba(255,255,255,0.05); border-radius:8px;">No bookmarked players.<br>Click ★ next to their name in header.</div>`;
   } else {
     bookmarksList.innerHTML = bookmarks.map(p => {
-      const escapedName = p.name.replace(/'/g, "\\'");
+      const escapedName = escapeJsString(p.name);
+      const escapedTag = escapeJsString(p.tag);
       return `
         <div class="landing-quick-btn" style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; margin-bottom: 2px;">
-          <div onclick="landingQuick('${escapedName}','${p.tag}','${p.region}','${p.mode}')" style="display:flex; align-items:center; gap:8px; flex:1; cursor:pointer;">
+          <div onclick="landingQuick('${escapedName}','${escapedTag}','${p.region}','${p.mode}')" style="display:flex; align-items:center; gap:8px; flex:1; cursor:pointer;">
             ${p.rankImg ? `<img src="${p.rankImg}" style="width:18px; height:18px; object-fit:contain;">` : `<div style="width:18px; height:18px; background:rgba(255,255,255,0.05); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--muted2)">👤</div>`}
             <div style="font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700; color:#fff;">${p.name}<span style="color:var(--muted2); font-weight:normal; font-size:10px;">#${p.tag}</span></div>
           </div>
-          <button onclick="removeBookmarkDirect('${escapedName}','${p.tag}')" style="background:none; border:none; color:var(--muted); font-size:14px; cursor:pointer; padding:0 4px; transition:color 0.2s;" onmouseover="this.style.color='#ff4655'" onmouseout="this.style.color='var(--muted)'">×</button>
+          <button onclick="removeBookmarkDirect('${escapedName}','${escapedTag}')" style="background:none; border:none; color:var(--muted); font-size:14px; cursor:pointer; padding:0 4px; transition:color 0.2s;" onmouseover="this.style.color='#ff4655'" onmouseout="this.style.color='var(--muted)'">×</button>
         </div>
       `;
     }).join('');
@@ -6628,9 +6677,10 @@ function renderLandingHistory() {
     recentList.innerHTML = `<div style="font-size:10px; color:var(--muted2); text-align:center; padding:16px 12px; font-family:'DM Mono',monospace; border:1px dashed rgba(255,255,255,0.05); border-radius:8px;">No recent searches yet.</div>`;
   } else {
     recentList.innerHTML = recent.map(p => {
-      const escapedName = p.name.replace(/'/g, "\\'");
+      const escapedName = escapeJsString(p.name);
+      const escapedTag = escapeJsString(p.tag);
       return `
-        <div class="landing-quick-btn" onclick="landingQuick('${escapedName}','${p.tag}','${p.region}','${p.mode}')" style="display:flex; align-items:center; gap:8px; padding:8px 12px; cursor:pointer; margin-bottom: 2px;">
+        <div class="landing-quick-btn" onclick="landingQuick('${escapedName}','${escapedTag}','${p.region}','${p.mode}')" style="display:flex; align-items:center; gap:8px; padding:8px 12px; cursor:pointer; margin-bottom: 2px;">
           ${p.rankImg ? `<img src="${p.rankImg}" style="width:18px; height:18px; object-fit:contain;">` : `<div style="width:18px; height:18px; background:rgba(255,255,255,0.05); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--muted2)">👤</div>`}
           <div style="font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700; color:#fff; flex:1;">${p.name}<span style="color:var(--muted2); font-weight:normal; font-size:10px;">#${p.tag}</span></div>
           <div style="font-family:'DM Mono',monospace; font-size:8px; color:var(--muted2); text-transform:uppercase; border:1px solid rgba(255,255,255,0.08); padding:1px 4px; border-radius:3px;">${p.region}</div>
@@ -6714,10 +6764,11 @@ function showBookmarksModal() {
     `;
   } else {
     listContainer.innerHTML = bookmarks.map(p => {
-      const escapedName = p.name.replace(/'/g, "\\'");
+      const escapedName = escapeJsString(p.name);
+      const escapedTag = escapeJsString(p.tag);
       return `
         <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 16px; border:1px solid rgba(255,255,255,0.04); background:rgba(255,255,255,0.015); border-radius:10px; transition:all 0.2s ease;">
-          <div onclick="bookmarksModalJump('${escapedName}','${p.tag}','${p.region}','${p.mode}')" style="display:flex; align-items:center; gap:12px; flex:1; cursor:pointer;">
+          <div onclick="bookmarksModalJump('${escapedName}','${escapedTag}','${p.region}','${p.mode}')" style="display:flex; align-items:center; gap:12px; flex:1; cursor:pointer;">
             ${p.rankImg ? `<img src="${p.rankImg}" style="width:24px; height:24px; object-fit:contain;">` : `<div style="width:24px; height:24px; background:rgba(255,255,255,0.05); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; color:var(--muted2)">👤</div>`}
             <div style="display:flex; flex-direction:column; gap:2px;">
               <div style="font-family:'Barlow Condensed',sans-serif; font-size:15px; font-weight:800; color:#fff; text-transform:uppercase; line-height:1.2;">
@@ -6728,7 +6779,7 @@ function showBookmarksModal() {
               </div>
             </div>
           </div>
-          <button onclick="removeBookmarkModal('${escapedName}','${p.tag}')" style="background:none; border:none; color:#ffd700; font-size:18px; cursor:pointer; padding:4px 8px; transition:all 0.2s; display:flex; align-items:center; justify-content:center;" onmouseover="this.style.color='#ff4655'; this.style.transform='scale(1.2)'" onmouseout="this.style.color='#ffd700'; this.style.transform='none'">★</button>
+          <button onclick="removeBookmarkModal('${escapedName}','${escapedTag}')" style="background:none; border:none; color:#ffd700; font-size:18px; cursor:pointer; padding:4px 8px; transition:all 0.2s; display:flex; align-items:center; justify-content:center;" onmouseover="this.style.color='#ff4655'; this.style.transform='scale(1.2)'" onmouseout="this.style.color='#ffd700'; this.style.transform='none'">★</button>
         </div>
       `;
     }).join('');
@@ -6792,7 +6843,9 @@ function renderLandingProfile() {
     </div>`;
     return;
   }
-  wrap.innerHTML = `<button class="landing-quick-btn" onclick="landingQuick('${p.name.replace(/'/g,"\'")}','${p.tag}','${p.region}','${p.mode}')">
+  const escapedName = escapeJsString(p.name);
+  const escapedTag = escapeJsString(p.tag);
+  wrap.innerHTML = `<button class="landing-quick-btn" onclick="landingQuick('${escapedName}','${escapedTag}','${p.region}','${p.mode}')">
     <div class="landing-quick-dot"></div>
     <div>
       <span style="font-size:15px">${p.name}</span>
@@ -7510,32 +7563,38 @@ function updateRankPrediction(matches, currentRR) {
   const avgLoss = lossCount > 0 ? rrLosses / lossCount : 15;
   
   const totalWins = matches.filter(m => {
-      const me = findMe(m);
-      if (!me) return false;
-      const myTeamId = (me.team||'').toLowerCase();
-      const myTeam = m.teams && m.teams[myTeamId];
-      return myTeam && (myTeam.has_won === true || myTeam.rounds_won > (m.teams[myTeamId==='red'?'blue':'red']?.rounds_won||0));
-    }).length;
-    
-    // Smooth out win rate using all available matches (up to 25) to prevent extreme volatility
-    const wr = matches.length > 5 ? (totalWins / matches.length) : 0.5;
-    const netGainPerMatch = (wr * avgGain) - ((1 - wr) * avgLoss);
-    
-    if (netGainPerMatch > 2.5) {
-      const rrNeeded = 100 - (currentRR % 100);
-      const matchesNeeded = Math.ceil(rrNeeded / netGainPerMatch);
-      el.innerHTML = `At your current pace, you'll hit the <b>Next Rank</b> in ~${matchesNeeded} games.`;
-      el.style.display = 'block';
-    } else if (netGainPerMatch > 0) {
-      el.innerHTML = `You are climbing very slowly. Improve your win rate to rank up faster!`;
-      el.style.display = 'block';
-    } else {
-      el.innerHTML = `Trend is negative. Focus on improvement to rank up!`;
-      el.style.display = 'block';
-    }
+    const me = findMe(m);
+    if (!me) return false;
+    const myTeamId = (me.team||'').toLowerCase();
+    const myTeam = m.teams && m.teams[myTeamId];
+    return myTeam && (myTeam.has_won === true || myTeam.rounds_won > (m.teams[myTeamId==='red'?'blue':'red']?.rounds_won||0));
+  }).length;
+  
+  // Smooth out win rate using all available matches (up to 25) to prevent extreme volatility
+  const wr = matches.length > 5 ? (totalWins / matches.length) : 0.5;
+  const netGainPerMatch = (wr * avgGain) - ((1 - wr) * avgLoss);
+  
+  if (netGainPerMatch > 2.5) {
+    const rrNeeded = 100 - (currentRR % 100);
+    const matchesNeeded = Math.ceil(rrNeeded / netGainPerMatch);
+    el.innerHTML = `At your current pace, you'll hit the <b>Next Rank</b> in ~${matchesNeeded} games.`;
+    el.style.display = 'block';
+  } else if (netGainPerMatch > 0) {
+    el.innerHTML = `You are climbing very slowly. Improve your win rate to rank up faster!`;
+    el.style.display = 'block';
+  } else {
+    el.innerHTML = `Trend is negative. Focus on improvement to rank up!`;
+    el.style.display = 'block';
   }
+}
   
   // Hook into the fetch pipeline for Rank Prediction
+// 2. Session Tracker
+let sessionActive = false;
+let sessionStartTime = null;
+let sessionStartRR = null;
+let sessionMatches = [];
+
 const originalProcessMatches = processMatches;
 processMatches = function(matches) {
   originalProcessMatches(matches);
@@ -7552,12 +7611,6 @@ processMatches = function(matches) {
     sessionMatches = newMatches;
   }
 };
-
-// 2. Session Tracker
-let sessionActive = false;
-let sessionStartTime = null;
-let sessionStartRR = null;
-let sessionMatches = [];
 
 function toggleSession() {
   const btn = document.getElementById('session-btn');
@@ -7957,10 +8010,10 @@ function checkUrlParams() {
 
 const v2originalFetchAll = fetchAll;
 fetchAll = async function() {
-  const pName = document.getElementById('player-name-input').value.trim();
-  const pTag = document.getElementById('player-tag-input').value.trim().replace(/^#/,'');
-  const pRegion = document.getElementById('region-select').value;
-  const pMode = document.getElementById('mode-select').value;
+  const pName = document.getElementById('player-name-input')?.value.trim() || '';
+  const pTag = document.getElementById('player-tag-input')?.value.trim().replace(/^#/,'') || '';
+  const pRegion = document.getElementById('region-select')?.value || 'ap';
+  const pMode = document.getElementById('mode-select')?.value || 'competitive';
   
   if (pName && pTag) {
     const newUrl = `?player=${encodeURIComponent(pName)}&tag=${encodeURIComponent(pTag)}&region=${pRegion}&mode=${pMode}`;
@@ -7979,10 +8032,11 @@ function shareProfile() {
 async function fetchLeaderboard() {
   const modal = document.getElementById('leaderboard-modal');
   const content = document.getElementById('leaderboard-content');
-  const region = document.getElementById('region-select').value;
+  const region = document.getElementById('region-select')?.value || 'ap';
   
-  document.getElementById('lb-region-txt').innerText = '(' + region.toUpperCase() + ')';
-  content.innerHTML = '<div class="detail-loading" style="text-align:center;">FETCHING TOP 500...</div>';
+  const lbRegionTxt = document.getElementById('lb-region-txt');
+  if (lbRegionTxt) lbRegionTxt.innerText = '(' + region.toUpperCase() + ')';
+  if (content) content.innerHTML = '<div class="detail-loading" style="text-align:center;">FETCHING TOP 500...</div>';
   modal.style.display = 'flex';
   lockBackgroundScroll();
   
@@ -8160,10 +8214,10 @@ function compilePlayerStats(matchData, pname, ptag) {
 }
 
 async function fetchH2H() {
-  const p1Name = document.getElementById('h2h-p1-name').value.trim();
-  const p1Tag = document.getElementById('h2h-p1-tag').value.trim().replace(/^#/, '');
-  const p2Name = document.getElementById('h2h-p2-name').value.trim();
-  const p2Tag = document.getElementById('h2h-p2-tag').value.trim().replace(/^#/, '');
+  const p1Name = document.getElementById('h2h-p1-name')?.value.trim() || '';
+  const p1Tag = document.getElementById('h2h-p1-tag')?.value.trim().replace(/^#/, '') || '';
+  const p2Name = document.getElementById('h2h-p2-name')?.value.trim() || '';
+  const p2Tag = document.getElementById('h2h-p2-tag')?.value.trim().replace(/^#/, '') || '';
   
   if(!p1Name || !p1Tag || !p2Name || !p2Tag) {
     showToast('Please fill all fields for both players');
@@ -8171,7 +8225,7 @@ async function fetchH2H() {
   }
   
   const content = document.getElementById('h2h-content');
-  const region = document.getElementById('region-select').value;
+  const region = document.getElementById('region-select')?.value || 'ap';
   content.innerHTML = `
     <div style="text-align:center; padding:50px 0; color:var(--accent);">
       <div class="ai-spinner" style="margin:0 auto 15px auto; width:30px; height:30px; border:2px solid rgba(232,255,71,0.1); border-top-color:var(--accent);"></div>
@@ -10195,7 +10249,7 @@ function renderFeaturedBundles(bundles) {
       let clickAttr = '';
       let cursorStyle = 'cursor:default;';
       if (item.type === 'skin') {
-        clickAttr = `onclick="openSkinByName('${item.name.replace(/'/g, "\\'")}')"`;
+        clickAttr = `onclick="openSkinByName('${escapeJsString(item.name)}')"`;
         cursorStyle = 'cursor:pointer;';
       }
       

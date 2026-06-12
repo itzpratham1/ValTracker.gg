@@ -10,8 +10,11 @@ try:
     for line in lines:
         if 'LISTENING' in line:
             pid = line.split()[-1]
-            print('Killing PID', pid)
-            os.system(f'taskkill /F /PID {pid}')
+            if pid.isdigit():
+                print('Killing PID', pid)
+                subprocess.run(['taskkill', '/F', '/PID', pid], capture_output=True, text=True)
+            else:
+                print('Invalid PID:', pid)
             break
 except Exception as e:
     print('Port 5000 is free')

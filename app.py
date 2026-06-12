@@ -966,10 +966,6 @@ def proxy_api(subpath):
 
         # E. Merge & Deduplicate
         merged_map = {}
-        for dm in db_matches:
-            m_id = dm.get("metadata", {}).get("matchid") or dm.get("metadata", {}).get("match_id")
-            if m_id:
-                merged_map[m_id] = dm
 
         # Merge lifetime matches
         for lm in lifetime_matches:

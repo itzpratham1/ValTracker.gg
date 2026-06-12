@@ -31,8 +31,9 @@ def check_js_syntax(file_path):
     braces = {'(': ')', '{': '}', '[': ']'}
     stack = []
     
+    script_idx = data.find('<script>')
+    line_no = data[:script_idx].count('\n') + 2 if script_idx != -1 else 1
     lines = s.split('\n')
-    line_no = 511 # Assuming script starts at 510
     
     for i, line in enumerate(lines):
         for j, c in enumerate(line):

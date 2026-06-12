@@ -1,5 +1,5 @@
-from bs4 import BeautifulSoup
-soup = BeautifulSoup(open('public/index.html', encoding='utf-8'), 'html.parser')
+with open('public/index.html', encoding='utf-8') as f:
+    soup = BeautifulSoup(f, 'html.parser')
 esp = soup.find(id='esports-view')
 if esp:
     curr = esp.parent

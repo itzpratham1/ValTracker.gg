@@ -15,7 +15,7 @@ DB_PATH = "public/vct_pro_comps.json"
 VALID_AGENTS = {
     "jett", "raze", "neon", "yoru", "phoenix", "iso", "reyna",
     "sova", "fade", "breach", "skye", "gekko", "kayo",
-    "omen", "viper", "brimstone", "astra", "harbor", "clove", "miks",
+    "omen", "viper", "brimstone", "astra", "harbor", "clove",
     "cypher", "killjoy", "sage", "deadlock", "vyse", "veto"
 }
 

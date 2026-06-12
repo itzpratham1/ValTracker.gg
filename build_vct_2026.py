@@ -24,8 +24,9 @@ def scrape_roster(team_id):
         return {'id': str(team_id), 'name': f'Team {team_id}', 'logo': 'https://owcdn.net/img/65a3922c2a07e.png', 'roster': []}
     name = name_el.text.strip()
     
-    logo_el = soup.find('div', {'class': 'team-header-logo'}).find('img')
-    logo = logo_el['src'] if logo_el else ''
+    logo_div = soup.find('div', {'class': 'team-header-logo'})
+    logo_el = logo_div.find('img') if logo_div else None
+    logo = logo_el['src'] if logo_el and logo_el.has_attr('src') else ''
     if logo.startswith('//'): logo = 'https:' + logo
     
     for card in soup.find_all('div', {'class': 'team-roster-item'}):
@@ -35,7 +36,8 @@ def scrape_roster(team_id):
         real_name = real_name.text.strip() if real_name else ''
         role = 'PLAYER'
         avatar_el = card.find('div', {'class': 'team-roster-item-img'})
-        avatar = avatar_el.find('img')['src'] if avatar_el else ''
+        avatar_img = avatar_el.find('img') if avatar_el else None
+        avatar = avatar_img['src'] if avatar_img and avatar_img.has_attr('src') else ''
         
         if avatar.startswith('//'): avatar = 'https:' + avatar
         if avatar == '' or 'ghost' in avatar:

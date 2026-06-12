@@ -1,4 +1,5 @@
-lines = open('public/index.html', encoding='utf-8').readlines()
+with open('public/index.html', encoding='utf-8') as f:
+    lines = f.readlines()
 div_count = 0
 in_main = False
 for i, line in enumerate(lines):

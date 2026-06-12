@@ -23,14 +23,17 @@ def scrape_roster(team_id):
     name_el = soup.find('h1', {'class': 'wf-title'})
     if not name_el: return None
     name = name_el.text.strip()
-    logo_el = soup.find('div', {'class': 'team-header-logo'}).find('img')
-    logo = logo_el['src'] if logo_el else ''
+    logo_div = soup.find('div', {'class': 'team-header-logo'})
+    logo_el = logo_div.find('img') if logo_div else None
+    logo = logo_el['src'] if logo_el and logo_el.has_attr('src') else ''
     if logo.startswith('//'): logo = 'https:' + logo
     for card in soup.find_all('div', {'class': 'team-roster-item'}):
         p_name = card.find('div', {'class': 'team-roster-item-name-alias'}).text.strip() if card.find('div', {'class': 'team-roster-item-name-alias'}) else ''
         real_name = card.find('div', {'class': 'team-roster-item-name-real'}).text.strip() if card.find('div', {'class': 'team-roster-item-name-real'}) else ''
         role = 'PLAYER'
-        avatar = card.find('div', {'class': 'team-roster-item-img'}).find('img')['src'] if card.find('div', {'class': 'team-roster-item-img'}) else ''
+        avatar_el = card.find('div', {'class': 'team-roster-item-img'})
+        avatar_img = avatar_el.find('img') if avatar_el else None
+        avatar = avatar_img['src'] if avatar_img and avatar_img.has_attr('src') else ''
         if avatar.startswith('//'): avatar = 'https:' + avatar
         if avatar == '' or 'ghost' in avatar:
             avatar = '/api/image?url=https://owcdn.net/img/65a3922c2a07e.png'
