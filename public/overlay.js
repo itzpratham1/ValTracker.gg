@@ -1,10 +1,16 @@
 // Stream Overlay Controller - ValTracker.gg
 
 (async function () {
+  // Escape HTML to prevent XSS from URL parameters
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
   // 1. Parse URL Parameters
   const params = new URLSearchParams(window.location.search);
-  const playerName = params.get('name') || params.get('player') || '';
-  const playerTag = params.get('tag') || '';
+  const playerName = escapeHtml(params.get('name') || params.get('player') || '');
+  const playerTag = escapeHtml(params.get('tag') || '');
   let region = params.get('region') || '';
   const variant = (params.get('variant') || 'competitive').toLowerCase();
   
@@ -613,9 +619,11 @@
     hideLoading();
     const container = document.getElementById('overlay-container');
     if (container) {
-      container.innerHTML = `
-        <div class="error-text">⚠️ Error: ${msg}</div>
-      `;
+      const div = document.createElement('div');
+      div.className = 'error-text';
+      div.textContent = '⚠️ Error: ' + msg;
+      container.innerHTML = '';
+      container.appendChild(div);
     }
   }
 

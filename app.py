@@ -62,7 +62,10 @@ def file_lock(lock_path):
 def sanitize_postgrest_value(val):
     if not val:
         return ""
-    return re.sub(r'[\\,.:()\"\'%]', '', str(val)).strip()
+    # Strip PostgREST operators, wildcards, and injection characters
+    cleaned = re.sub(r'[\\,.:()\"\'%*!<>=&|{}[\]@#^~`?;]', '', str(val)).strip()
+    # Limit length to prevent abuse
+    return cleaned[:100]
 
 load_dotenv()
 API_KEY = os.getenv("HENRIKDEV_API_KEY", "")
@@ -71,6 +74,9 @@ SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
 
 ADMIN_SECRET = os.getenv("ADMIN_SECRET")
 if not ADMIN_SECRET:
+    is_production = os.getenv("RENDER") is not None or os.getenv("FLASK_ENV") == "production"
+    if is_production:
+        raise RuntimeError("FATAL: ADMIN_SECRET environment variable is not set. Refusing to start in production without it.")
     ADMIN_SECRET = str(uuid.uuid4())
     print("[SECURITY WARNING] ADMIN_SECRET not set in environment! A random secret has been generated for this session. Set ADMIN_SECRET in .env for a stable value.")
 
@@ -338,9 +344,7 @@ allowed_origins = [o.strip() for o in allowed_origins if o.strip()]
 if not allowed_origins:
     allowed_origins = [
         "https://valtracker-gg.onrender.com",
-        "https://valtracker.gg",
-        "http://localhost:5000",
-        "http://127.0.0.1:5000"
+        "https://valtracker.gg"
     ]
 CORS(app, origins=allowed_origins)
 
@@ -348,6 +352,14 @@ CORS(app, origins=allowed_origins)
 @app.after_request
 def optimize_response(response):
     path = request.path.lower()
+    
+    # 0. Security headers on all responses
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    response.headers['Permissions-Policy'] = 'camera=(), microphone=(), geolocation=()'
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://media.valorant-api.com https://valorant-api.com https://owcdn.net https://vlr.gg https://rstatic.net; connect-src 'self' https://api.henrikdev.xyz https://valtrackergg.supabase.co; frame-ancestors 'none';"
     
     # 1. Apply premium Caching Headers
     if 'overlay' in path or 'index.html' in path or path in ('/', '', '/app', '/login') or 'landing.html' in path:
@@ -433,7 +445,10 @@ def prune_rate_limit_records():
     now = time.time()
     for k in list(rate_limit_records.keys()):
         history = rate_limit_records.get(k)
-        if not history or now - history[-1] > 60:
+        if not history:
+            rate_limit_records.pop(k, None)
+        elif now - history[0] > 60:
+            # Only prune when the oldest request in the window is > 60s old
             rate_limit_records.pop(k, None)
 
 @app.before_request
@@ -446,24 +461,8 @@ def rate_limit(requests_per_minute=30):
     def decorator(f):
         @wraps(f)
         def wrapped(*args, **kwargs):
-            ip = request.remote_addr or "127.0.0.1"
-            
-            # Bypass rate limiter for localhost and RFC-1918 private subnets only
-            def _is_private(addr):
-                if addr in ("127.0.0.1", "localhost", "::1"):
-                    return True
-                if addr.startswith("192.168.") or addr.startswith("10."):
-                    return True
-                # 172.16.0.0/12 → 172.16.x.x – 172.31.x.x only
-                if addr.startswith("172."):
-                    try:
-                        second_octet = int(addr.split(".")[1])
-                        return 16 <= second_octet <= 31
-                    except (IndexError, ValueError):
-                        pass
-                return False
-            if _is_private(ip):
-                return f(*args, **kwargs)
+            # Use ProxyFix-parsed real client IP (X-Forwarded-For), fallback to remote_addr
+            ip = request.headers.get("X-Forwarded-For", request.remote_addr or "127.0.0.1").split(",")[0].strip()
             
             now = time.time()
             if ip not in rate_limit_records:
@@ -573,6 +572,12 @@ def submit_feedback():
         if not feedback_text:
             return jsonify({"status": "error", "message": "Feedback content is empty"}), 400
             
+        if len(feedback_text) > 5000:
+            return jsonify({"status": "error", "message": "Feedback content exceeds 5000 character limit"}), 400
+            
+        if len(contact) > 200:
+            return jsonify({"status": "error", "message": "Contact info exceeds 200 character limit"}), 400
+            
         feedback_record = {
             "timestamp": datetime.now().isoformat(),
             "feedback": feedback_text,
@@ -602,11 +607,11 @@ def submit_feedback():
 
 @app.route("/api/admin/feedback", methods=["GET"])
 def get_feedback():
-    # Simple security token verification (configurable via environment variable)
-    token = request.args.get("secret")
+    # Accept secret from X-Admin-Secret header only (never query params — those get logged)
+    token = request.headers.get("X-Admin-Secret")
     
     if not token or token != ADMIN_SECRET:
-        print(f"[SECURITY] Unauthorized access attempt to get_feedback API prefix")
+        print(f"[SECURITY] Unauthorized access attempt to get_feedback API")
         return jsonify({"status": 403, "message": "Forbidden: Invalid or missing secret token"}), 403
         
     filepath = os.path.join(os.path.dirname(__file__), "feedback.json")
@@ -624,8 +629,8 @@ def get_feedback():
 
 @app.route("/api/clear-cache", methods=["POST"])
 def clear_server_cache():
-    data = request.get_json() or {}
-    token = request.args.get("secret") or data.get("secret")
+    # Accept secret from X-Admin-Secret header only (never query params — those get logged)
+    token = request.headers.get("X-Admin-Secret")
     if not token or token != ADMIN_SECRET:
         return jsonify({"status": 403, "message": "Forbidden: Invalid secret token"}), 403
     cache.clear()
@@ -652,7 +657,15 @@ def proxy_image():
         if not valid_domain:
             return "Forbidden image domain", 403
             
-        r = requests.get(url, headers={'User-Agent': 'Mozilla/5.0', 'Referer': 'https://www.vlr.gg/'}, timeout=8)
+        r = requests.get(url, headers={'User-Agent': 'Mozilla/5.0', 'Referer': 'https://www.vlr.gg/'}, timeout=8, allow_redirects=False)
+        # Follow at most one redirect (prevent redirect chains / SSRF)
+        if r.status_code in (301, 302, 307, 308) and 'Location' in r:
+            redirect_url = r.headers['Location']
+            parsed_redirect = urllib.parse.urlparse(redirect_url)
+            redirect_domain = parsed_redirect.netloc.lower()
+            valid_redirect = any(redirect_domain == a or redirect_domain.endswith('.' + a) for a in ALLOWED_IMAGE_DOMAINS)
+            if valid_redirect:
+                r = requests.get(redirect_url, headers={'User-Agent': 'Mozilla/5.0', 'Referer': 'https://www.vlr.gg/'}, timeout=8, allow_redirects=False)
         if r.status_code != 200:
             return "Failed to load image from upstream", r.status_code
         return send_file(
@@ -828,7 +841,7 @@ def proxy_api(subpath):
         except Exception as e:
             print(f"[MATCH INTERCEPT ERROR] Failed to fetch live matches: {e}")
             live_status_code = 500
-            live_matches_data = {"status": 500, "error": str(e)}
+            live_matches_data = {"status": 500, "error": "Internal server error while fetching live matches"}
             
         # B. Resolve player PUUID
         puuid = None

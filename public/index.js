@@ -5628,7 +5628,7 @@ async function runPerfLab() {
     results.classList.add('active');
     showToast('Performance Lab complete ✓');
   } catch(e) {
-    results.innerHTML = `<div style="padding:16px;color:var(--loss);font-family:'DM Mono',monospace;font-size:11px;">Error: ${e.message}</div>`;
+    results.innerHTML = `<div style="padding:16px;color:var(--loss);font-family:'DM Mono',monospace;font-size:11px;">Error: ${escapeHtml(e.message)}</div>`;
     results.classList.add('active');
     console.error(e);
   } finally {
@@ -6338,7 +6338,7 @@ function updateHeroName() {
   const base = match ? match[1] : name;
   const suffix = match ? match[2] : '';
   const titleEl = document.getElementById('hero-title');
-  if (titleEl) titleEl.innerHTML = base + (suffix ? `<span class="dim">${suffix}</span>` : '');
+  if (titleEl) titleEl.innerHTML = escapeHtml(base) + (suffix ? `<span class="dim">${escapeHtml(suffix)}</span>` : '');
   const subEl = document.getElementById('hero-sub');
   if (subEl) {
     subEl.innerHTML = `<span style="font-size:15px; color:var(--muted); letter-spacing:0.5px;">#${tag}</span><span class="hero-level-badge-new" id="player-level">LVL —</span>`;
@@ -6729,9 +6729,9 @@ function renderLandingHistory() {
       const escapedTag = escapeJsString(p.tag);
       return `
         <div class="landing-quick-btn" style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; margin-bottom: 2px;">
-          <div onclick="landingQuick('${escapedName}','${escapedTag}','${p.region}','${p.mode}')" style="display:flex; align-items:center; gap:8px; flex:1; cursor:pointer;">
+          <div onclick="landingQuick('${escapedName}','${escapedTag}','${escapeJsString(p.region)}','${escapeJsString(p.mode)}')" style="display:flex; align-items:center; gap:8px; flex:1; cursor:pointer;">
             ${p.rankImg ? `<img src="${p.rankImg}" style="width:18px; height:18px; object-fit:contain;">` : `<div style="width:18px; height:18px; background:rgba(255,255,255,0.05); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--muted2)">👤</div>`}
-            <div style="font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700; color:#fff;">${p.name}<span style="color:var(--muted2); font-weight:normal; font-size:10px;">#${p.tag}</span></div>
+            <div style="font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700; color:#fff;">${escapeHtml(p.name)}<span style="color:var(--muted2); font-weight:normal; font-size:10px;">#${escapeHtml(p.tag)}</span></div>
           </div>
           <button onclick="removeBookmarkDirect('${escapedName}','${escapedTag}')" style="background:none; border:none; color:var(--muted); font-size:14px; cursor:pointer; padding:0 4px; transition:color 0.2s;" onmouseover="this.style.color='#ff4655'" onmouseout="this.style.color='var(--muted)'">×</button>
         </div>
@@ -6749,10 +6749,10 @@ function renderLandingHistory() {
       const escapedName = escapeJsString(p.name);
       const escapedTag = escapeJsString(p.tag);
       return `
-        <div class="landing-quick-btn" onclick="landingQuick('${escapedName}','${escapedTag}','${p.region}','${p.mode}')" style="display:flex; align-items:center; gap:8px; padding:8px 12px; cursor:pointer; margin-bottom: 2px;">
+        <div class="landing-quick-btn" onclick="landingQuick('${escapedName}','${escapedTag}','${escapeJsString(p.region)}','${escapeJsString(p.mode)}')" style="display:flex; align-items:center; gap:8px; padding:8px 12px; cursor:pointer; margin-bottom: 2px;">
           ${p.rankImg ? `<img src="${p.rankImg}" style="width:18px; height:18px; object-fit:contain;">` : `<div style="width:18px; height:18px; background:rgba(255,255,255,0.05); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--muted2)">👤</div>`}
-          <div style="font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700; color:#fff; flex:1;">${p.name}<span style="color:var(--muted2); font-weight:normal; font-size:10px;">#${p.tag}</span></div>
-          <div style="font-family:'DM Mono',monospace; font-size:8px; color:var(--muted2); text-transform:uppercase; border:1px solid rgba(255,255,255,0.08); padding:1px 4px; border-radius:3px;">${p.region}</div>
+          <div style="font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700; color:#fff; flex:1;">${escapeHtml(p.name)}<span style="color:var(--muted2); font-weight:normal; font-size:10px;">#${escapeHtml(p.tag)}</span></div>
+          <div style="font-family:'DM Mono',monospace; font-size:8px; color:var(--muted2); text-transform:uppercase; border:1px solid rgba(255,255,255,0.08); padding:1px 4px; border-radius:3px;">${escapeHtml(p.region)}</div>
         </div>
       `;
     }).join('');
@@ -6914,13 +6914,13 @@ function renderLandingProfile() {
   }
   const escapedName = escapeJsString(p.name);
   const escapedTag = escapeJsString(p.tag);
-  wrap.innerHTML = `<button class="landing-quick-btn" onclick="landingQuick('${escapedName}','${escapedTag}','${p.region}','${p.mode}')">
+  wrap.innerHTML = `<button class="landing-quick-btn" onclick="landingQuick('${escapedName}','${escapedTag}','${escapeJsString(p.region)}','${escapeJsString(p.mode)}')">
     <div class="landing-quick-dot"></div>
     <div>
-      <span style="font-size:15px">${p.name}</span>
-      <span style="color:var(--muted);font-size:12px;margin-left:4px">#${p.tag}</span>
+      <span style="font-size:15px">${escapeHtml(p.name)}</span>
+      <span style="color:var(--muted);font-size:12px;margin-left:4px">#${escapeHtml(p.tag)}</span>
     </div>
-    <div style="margin-left:auto;font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2);letter-spacing:1px">${p.region.toUpperCase()} · ${p.mode}</div>
+    <div style="margin-left:auto;font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2);letter-spacing:1px">${escapeHtml(p.region.toUpperCase())} · ${escapeHtml(p.mode)}</div>
   </button>`;
 }
 
@@ -8202,7 +8202,7 @@ function toggleHeadToHead() {
       const [name, tag] = key.split('#');
       const chip = document.createElement('div');
       chip.className = 'h2h-quick-chip';
-      chip.innerHTML = `👤 ${name}#${tag}`;
+      chip.innerHTML = `👤 ${escapeHtml(name)}#${escapeHtml(tag)}`;
       chip.onclick = () => {
         document.getElementById('h2h-p2-name').value = name;
         document.getElementById('h2h-p2-tag').value = tag;
