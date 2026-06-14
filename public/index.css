@@ -5700,7 +5700,7 @@ input:checked + .slider:before {
     padding-left: 8px !important;
   }
   .esp-match-card .esp-team.t-right .esp-tname {
-    text-align: right !important;
+    text-align: left !important;
   }
   .esp-match-card .esp-team.t-right .esp-tscore {
     padding-left: 0 !important;
