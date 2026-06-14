@@ -12488,6 +12488,13 @@ function updateOverlayPreview() {
 
   if (!name || !tag) {
     document.getElementById('obs-generated-url').value = "Please enter name and tag first";
+    const sandbox = document.getElementById('overlay-preview-sandbox');
+    if (sandbox) {
+      sandbox.style.width = '';
+      sandbox.style.height = '';
+      sandbox.style.display = '';
+      sandbox.style.position = '';
+    }
     document.getElementById('overlay-preview-sandbox').innerHTML = `
       <div style="font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); text-align:center; padding: 40px;">
         Enter a player's Name and Tag to generate the stream overlay preview.
@@ -12536,8 +12543,19 @@ function updateOverlayPreview() {
 
   const previewScale = Math.min(scaleW, scaleH);
 
+  // Set the layout footprint of the sandbox container to the exact scaled dimensions
+  const sandbox = document.getElementById('overlay-preview-sandbox');
+  if (sandbox) {
+    sandbox.style.width = `${w * previewScale}px`;
+    sandbox.style.height = `${h * previewScale}px`;
+    sandbox.style.display = 'flex';
+    sandbox.style.alignItems = 'center';
+    sandbox.style.justifyContent = 'center';
+    sandbox.style.position = 'relative';
+  }
+
   document.getElementById('overlay-preview-sandbox').innerHTML = `
-    <iframe src="${url}" style="border: none; background: transparent; width: ${w}px; height: ${h}px; overflow: hidden; transform: scale(${previewScale}); transform-origin: center center;" scrolling="no"></iframe>
+    <iframe src="${url}" style="border: none; background: transparent; width: ${w}px; height: ${h}px; overflow: hidden; transform: scale(${previewScale}); transform-origin: center center; position: absolute;" scrolling="no"></iframe>
   `;
 }
 
