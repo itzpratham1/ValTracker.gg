@@ -5602,6 +5602,7 @@ input:checked + .slider:before {
     align-items: stretch !important;
   }
   .esp-match-card .esp-team {
+    grid-row: 1 !important;
     display: flex !important;
     align-items: center !important;
     justify-content: flex-start !important;
@@ -5610,6 +5611,7 @@ input:checked + .slider:before {
     gap: 10px !important;
   }
   .esp-match-card .esp-team.t-right {
+    grid-row: 2 !important;
     flex-direction: row !important;
     justify-content: flex-start !important;
   }
@@ -5643,11 +5645,11 @@ input:checked + .slider:before {
     font-weight: 800 !important;
   }
   .esp-match-card .esp-match-info {
-    grid-row: 2 !important;
+    grid-row: 3 !important;
     border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-    padding: 6px 0 !important;
-    margin: 4px 0 !important;
+    border-bottom: none !important;
+    padding: 10px 0 0 0 !important;
+    margin: 6px 0 0 0 !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
