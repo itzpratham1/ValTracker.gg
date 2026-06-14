@@ -8804,7 +8804,7 @@ function toggleMainView(view, updateUrl = true) {
   if (view === 'tracker') {
     const urlParams = new URLSearchParams(window.location.search);
     const hasPlayerParams = urlParams.has('player') && urlParams.has('tag');
-    if (statsLoaded || hasPlayerParams) {
+    if (statsLoaded || (hasPlayerParams && window._isCheckingUrlParams)) {
       if (landing) {
         landing.classList.add('hidden');
         landing.style.display = 'none';
