@@ -5695,10 +5695,10 @@ input:checked + .slider:before {
     margin: 0 !important;
     padding-left: 8px !important;
   }
-  /* Right team: score on left, name middle, logo right */
+  /* Right team: score left, name fills middle, logo right */
   .esp-match-card .esp-team.t-right {
-    justify-content: flex-end !important;
-    text-align: right !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
   }
   .esp-match-card .esp-team.t-right .esp-tscore {
     order: -1 !important;
@@ -5707,8 +5707,8 @@ input:checked + .slider:before {
     padding-left: 0 !important;
   }
   .esp-match-card .esp-team.t-right .esp-tname {
-    text-align: right !important;
-    margin-left: auto !important;
+    text-align: left !important;
+    margin-left: 0 !important;
   }
   /* Divider between team rows */
   .esp-match-card .esp-team + .esp-team {
