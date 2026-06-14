@@ -2822,8 +2822,7 @@ body::before {
 .esp-match-card:hover { border-color: rgba(255,255,255,0.12); }
 .esp-match-head { grid-column: 2; grid-row: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding-bottom: 10px; }
 .esp-match-foot { grid-column: 2; grid-row: 2; display: flex; flex-direction: column; align-items: center; gap: 6px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); }
-.esp-match-head + .esp-team { grid-row: 1; }
-.esp-team { display: flex; align-items: center; gap: 12px; flex: 1; }
+.esp-team { display: flex; align-items: center; gap: 12px; flex: 1; grid-row: 1; }
 .esp-team.t-right { justify-content: flex-end; text-align: right; flex-direction: row-reverse; }
 .esp-tlogo { width: 40px; height: 40px; object-fit: contain; }
 .esp-team-logo { filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 3px rgba(255, 255, 255, 0.35)); }
@@ -5628,6 +5627,11 @@ input:checked + .slider:before {
     font-size: 9px !important;
     letter-spacing: 0.5px !important;
     justify-content: flex-start !important;
+    min-width: 0 !important;
+    flex: 1 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
   }
   .esp-match-head .tier-badge {
     font-size: 8px !important;
@@ -5643,6 +5647,7 @@ input:checked + .slider:before {
   /* Team rows: each row is logo | name | score */
   .esp-match-card .esp-team {
     grid-column: 1 !important;
+    grid-row: auto !important;
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
@@ -5705,6 +5710,7 @@ input:checked + .slider:before {
   /* Footer: date + buttons */
   .esp-match-foot {
     grid-column: 1 !important;
+    grid-row: auto !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
