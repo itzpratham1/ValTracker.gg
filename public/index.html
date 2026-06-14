@@ -1201,7 +1201,7 @@ body {
           </div>
 
           <div style="font-family:'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; color: #fff; text-transform: uppercase; margin-bottom: 4px;">Selected Agent Draft</div>
-          <div style="display: flex; justify-content: space-around; gap: 10px; flex-wrap: wrap;">
+          <div id="dc-team-slots" style="display: flex; justify-content: space-around; gap: 10px; flex-wrap: wrap;">
             <div class="dc-slot-card" onclick="openDraftSelector(0)">
               <div id="dc-slot-avatar-0" class="dc-slot-avatar">➕</div>
               <div id="dc-slot-name-0" class="dc-slot-name">Slot 1</div>
@@ -1224,12 +1224,12 @@ body {
             </div>
           </div>
 
-          <div style="display: flex; gap: 10px; margin-top: 10px;">
+          <div class="dc-btn-row" style="display: flex; gap: 10px; margin-top: 10px;">
             <button class="fetch-btn" style="flex: 1.5; margin: 0; background: linear-gradient(135deg, var(--accent) 0%, #ff4655 100%); color: #0d0d0f; font-weight: 800;" onclick="buildAroundMe()">✨ Build Around Me</button>
             <button class="fetch-btn" style="flex: 0.8; margin: 0; background: rgba(255,255,255,0.05); border: 1px solid var(--border);" onclick="resetDraftComp()">↻ Clear</button>
           </div>
           
-          <div style="display: flex; gap: 10px; margin-top: 10px;">
+          <div class="dc-btn-row" style="display: flex; gap: 10px; margin-top: 10px;">
             <button class="fetch-btn" style="flex: 1; margin: 0; background: var(--accent); color: #0d0d0f;" onclick="saveCurrentDraftComp()">💾 Save Draft</button>
             <button class="fetch-btn" style="flex: 1; margin: 0; background: rgba(255,255,255,0.05); border: 1px solid var(--border);" onclick="exportCurrentDraftCompPNG()">📥 Export Lineup</button>
           </div>
@@ -2040,6 +2040,9 @@ body.is-scrolling .glass-orb-2 {
   #schedule-col-results {
     display: none;
   }
+  }
+
+  @media (min-width: 601px) and (max-width: 800px) {
   /* Match Cards */
   .esp-match-card {
     display: grid !important;
@@ -2098,7 +2101,7 @@ body.is-scrolling .glass-orb-2 {
     gap: 6px !important;
     width: 100% !important;
     padding: 0 !important;
-  }
+    }
   .esp-tname {
     order: 2 !important;
     font-size: 14px !important;
@@ -2122,6 +2125,9 @@ body.is-scrolling .glass-orb-2 {
     display: block !important;
   }
   .esp-team.t-right .esp-tscore { text-align: center !important; margin: 0 auto !important; }
+  }
+
+  @media (max-width: 800px) {
   /* Esports Teams section */
   .esp-teams-layout { grid-template-columns: 1fr !important; gap: 16px !important; }
   .esp-sidebar { max-height: 260px !important; overflow-y: auto !important; }

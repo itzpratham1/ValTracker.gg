@@ -12519,12 +12519,22 @@ function updateOverlayPreview() {
   if (variant === 'center') { w = 720; h = 120; }
   else if (variant === 'flexible') { w = 320; h = 480; }
 
-  // Adjust preview scaling to fit in preview canvas
-  const canvasWidth = document.getElementById('overlay-preview-canvas').clientWidth || 700;
-  let previewScale = 1.0;
+  // Adjust preview scaling to fit in preview canvas (both width and height constraints)
+  const canvasEl = document.getElementById('overlay-preview-canvas');
+  const canvasWidth = canvasEl ? canvasEl.clientWidth : 700;
+  const canvasHeight = canvasEl ? canvasEl.clientHeight : 480;
+
+  let scaleW = 1.0;
   if (w > (canvasWidth - 40)) {
-    previewScale = (canvasWidth - 40) / w;
+    scaleW = (canvasWidth - 40) / w;
   }
+
+  let scaleH = 1.0;
+  if (h > (canvasHeight - 40)) {
+    scaleH = (canvasHeight - 40) / h;
+  }
+
+  const previewScale = Math.min(scaleW, scaleH);
 
   document.getElementById('overlay-preview-sandbox').innerHTML = `
     <iframe src="${url}" style="border: none; background: transparent; width: ${w}px; height: ${h}px; overflow: hidden; transform: scale(${previewScale}); transform-origin: center center;" scrolling="no"></iframe>
@@ -12938,7 +12948,13 @@ function updateHeaderHeights() {
     cacheSectionOffsets();
   }
 }
-window.addEventListener('resize', updateHeaderHeights);
+window.addEventListener('resize', () => {
+  updateHeaderHeights();
+  const oView = document.getElementById('overlay-view');
+  if (oView && oView.style.display !== 'none') {
+    updateOverlayPreview();
+  }
+});
 
 document.addEventListener('DOMContentLoaded', () => { 
   setTimeout(checkUrlParams, 200); 

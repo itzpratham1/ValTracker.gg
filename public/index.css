@@ -5650,6 +5650,18 @@ input:checked + .slider:before {
     justify-content: center !important;
     box-sizing: border-box !important;
   }
+
+  /* OBS Stream Overlay mobile fixes */
+  .overlay-studio-preview-col {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+  .overlay-studio-canvas {
+    height: 320px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
 }
 
 /* Hide schedule sub-tabs on desktop viewports by default */
@@ -6276,6 +6288,16 @@ select option {
   .loading-estimate {
     font-size: 8px;
     margin-top: 14px;
+  }
+
+  /* Meta Comp Architect mobile button stacking */
+  .dc-btn-row {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  .dc-btn-row button {
+    width: 100% !important;
+    flex: none !important;
   }
 }
 
