@@ -9922,21 +9922,31 @@ function getEspHTML(m, type) {
     }
   } catch(e) {}
 
+  const score1 = m.state==='unstarted'?'':s1;
+  const score2 = m.state==='unstarted'?'':s2;
+
   return `
     <div class="esp-match-card ${tierClass} ${m.state || ''}">
       <div class="esp-match-head">
         <span class="esp-tourney">${tierBadge} ${event}</span>
         ${statusHtml}
       </div>
-      <div class="esp-team">
-        <div class="esp-tlogo-wrap">${getEsportsTeamLogoHtml(t1).replace('margin-right:8px;', '')}</div>
-        <div class="esp-tname">${t1}</div>
-        <div class="esp-tscore ${w1}">${m.state==='unstarted'?'':s1}</div>
-      </div>
-      <div class="esp-team t-right">
-        <div class="esp-tscore ${w2}">${m.state==='unstarted'?'':s2}</div>
-        <div class="esp-tname">${t2}</div>
-        <div class="esp-tlogo-wrap">${getEsportsTeamLogoHtml(t2).replace('margin-right:8px;', '')}</div>
+      <div class="esp-match-teams">
+        <div class="esp-team esp-team-l">
+          <div class="esp-tlogo-wrap">${getEsportsTeamLogoHtml(t1).replace('margin-right:8px;', '')}</div>
+          <div class="esp-tname">${t1}</div>
+          <div class="esp-tscore ${w1}">${score1}</div>
+        </div>
+        <div class="esp-match-vs">
+          <span class="esp-vs-score ${w1}">${score1}</span>
+          <span class="esp-vs-sep">vs</span>
+          <span class="esp-vs-score ${w2}">${score2}</span>
+        </div>
+        <div class="esp-team esp-team-r">
+          <div class="esp-tname">${t2}</div>
+          <div class="esp-tlogo-wrap">${getEsportsTeamLogoHtml(t2).replace('margin-right:8px;', '')}</div>
+          <div class="esp-tscore ${w2}">${score2}</div>
+        </div>
       </div>
       <div class="esp-match-foot">
         <div class="esp-meta">${displayDate}</div>
