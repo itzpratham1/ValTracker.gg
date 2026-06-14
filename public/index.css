@@ -2823,6 +2823,7 @@ body::before {
 .esp-team { display: flex; align-items: center; gap: 12px; flex: 1; }
 .esp-team.t-right { justify-content: flex-end; text-align: right; flex-direction: row-reverse; }
 .esp-tlogo { width: 40px; height: 40px; object-fit: contain; }
+.esp-team-logo { filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 3px rgba(255, 255, 255, 0.35)); }
 .esp-tname { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 20px; text-transform: uppercase; }
 .esp-tscore { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 28px; color: var(--muted); }
 .esp-tscore.winner { color: var(--win); }

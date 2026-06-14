@@ -354,12 +354,19 @@ def optimize_response(response):
     path = request.path.lower()
     
     # 0. Security headers on all responses
-    response.headers['X-Frame-Options'] = 'DENY'
+    is_overlay = 'overlay' in path
+    if is_overlay:
+        response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    else:
+        response.headers['X-Frame-Options'] = 'DENY'
     response.headers['X-Content-Type-Options'] = 'nosniff'
     response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
     response.headers['Permissions-Policy'] = 'camera=(), microphone=(), geolocation=()'
     response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
-    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://media.valorant-api.com https://valorant-api.com https://owcdn.net https://vlr.gg https://rstatic.net; connect-src 'self' https://api.henrikdev.xyz https://valtrackergg.supabase.co; frame-ancestors 'none';"
+    if is_overlay:
+        response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://media.valorant-api.com https://valorant-api.com https://owcdn.net https://vlr.gg https://rstatic.net; connect-src 'self' https://api.henrikdev.xyz https://valtrackergg.supabase.co; frame-ancestors 'self';"
+    else:
+        response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://media.valorant-api.com https://valorant-api.com https://owcdn.net https://vlr.gg https://rstatic.net; connect-src 'self' https://api.henrikdev.xyz https://valtrackergg.supabase.co; frame-ancestors 'none';"
     
     # 1. Apply premium Caching Headers
     if 'overlay' in path or 'index.html' in path or path in ('/', '', '/app', '/login') or 'landing.html' in path:
