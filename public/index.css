@@ -5610,54 +5610,61 @@ input:checked + .slider:before {
     grid-template-rows: auto !important;
     gap: 0 !important;
     padding: 0 !important;
+    overflow: hidden !important;
+    max-width: 100% !important;
   }
-  /* Header: tournament + status on top as a compact row */
+  /* Header: tier badge + tournament left, status right */
   .esp-match-head {
     grid-column: 1 !important;
     grid-row: 1 !important;
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
-    justify-content: space-between !important;
+    justify-content: flex-start !important;
     gap: 6px !important;
     padding: 8px 12px !important;
     border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+    overflow: hidden !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
   .esp-match-head .esp-tourney {
     font-size: 9px !important;
     letter-spacing: 0.5px !important;
     justify-content: flex-start !important;
-    min-width: 0 !important;
     flex: 1 !important;
+    min-width: 0 !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 6px !important;
   }
   .esp-match-head .tier-badge {
     font-size: 8px !important;
     padding: 1px 4px !important;
+    flex-shrink: 0 !important;
   }
   .esp-match-head .esp-status {
     font-size: 10px !important;
     padding: 2px 6px !important;
     letter-spacing: 0.5px !important;
-    margin-left: auto !important;
     flex-shrink: 0 !important;
   }
-  /* Team rows: each row is logo | name | score */
+  /* Team rows: logo | name | score */
   .esp-match-card .esp-team {
     grid-column: 1 !important;
     grid-row: auto !important;
     display: flex !important;
     align-items: center !important;
-    justify-content: space-between !important;
     width: 100% !important;
+    box-sizing: border-box !important;
     text-align: left !important;
     gap: 8px !important;
     padding: 8px 12px !important;
-  }
-  .esp-match-card .esp-team + .esp-match-head {
-    border-top: none !important;
+    overflow: hidden !important;
   }
   .esp-match-card .esp-team .esp-tlogo-wrap {
     flex-shrink: 0 !important;
@@ -5686,22 +5693,22 @@ input:checked + .slider:before {
     font-size: 18px !important;
     font-weight: 900 !important;
     margin: 0 !important;
+    padding-left: 8px !important;
   }
-  /* Right team: score on left, name middle, logo on right */
+  /* Right team: score on left, name middle, logo right */
   .esp-match-card .esp-team.t-right {
-    flex-direction: row !important;
-    justify-content: space-between !important;
+    justify-content: flex-end !important;
     text-align: right !important;
-  }
-  .esp-match-card .esp-team.t-right .esp-tname {
-    text-align: right !important;
-    margin-right: 0 !important;
-    margin-left: auto !important;
   }
   .esp-match-card .esp-team.t-right .esp-tscore {
     order: -1 !important;
     margin-right: 8px !important;
     margin-left: 0 !important;
+    padding-left: 0 !important;
+  }
+  .esp-match-card .esp-team.t-right .esp-tname {
+    text-align: right !important;
+    margin-left: auto !important;
   }
   /* Divider between team rows */
   .esp-match-card .esp-team + .esp-team {
@@ -5717,15 +5724,20 @@ input:checked + .slider:before {
     gap: 6px !important;
     padding: 8px 12px !important;
     border-top: 1px solid rgba(255,255,255,0.06) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
   }
   .esp-match-foot .esp-meta {
     font-size: 9px !important;
+    text-align: center !important;
+    width: 100% !important;
   }
   .esp-match-foot > div {
     display: flex !important;
     flex-direction: row !important;
     width: 100% !important;
-    gap: 6px !important;
+    gap: 8px !important;
     justify-content: center !important;
   }
   .esp-match-foot .esp-btn {
@@ -5736,6 +5748,9 @@ input:checked + .slider:before {
     min-height: 32px !important;
     padding: 0 8px !important;
     font-size: 11px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
   }
 
   /* OBS Stream Overlay mobile fixes */
