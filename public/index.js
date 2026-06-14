@@ -613,18 +613,68 @@ async function saveMatches(matches) {
   });
 }
 
+function getActivePlayerInfo() {
+  let name = (typeof PLAYER_NAME !== 'undefined' ? PLAYER_NAME : '') || '';
+  let tag = (typeof PLAYER_TAG !== 'undefined' ? PLAYER_TAG : '') || '';
+  
+  if (!name || !tag) {
+    name = document.getElementById('player-name-input')?.value?.trim() || 
+           document.getElementById('l-name')?.value?.trim() || '';
+    tag = document.getElementById('player-tag-input')?.value?.trim()?.replace(/^#/, '') || 
+          document.getElementById('l-tag')?.value?.trim()?.replace(/^#/, '') || '';
+  }
+  
+  if (!name || !tag) {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      name = params.get('player') || '';
+      tag = params.get('tag') || '';
+    } catch(e) {}
+  }
+  
+  return {
+    name: name.trim(),
+    tag: tag.trim().replace(/^#/, '')
+  };
+}
+
+function getActiveMode() {
+  let mode = (typeof _currentMode !== 'undefined' ? _currentMode : '') || (typeof window !== 'undefined' && window._currentMode) || '';
+  if (!mode) {
+    mode = document.getElementById('mode-select')?.value || 
+           document.getElementById('l-mode')?.value || '';
+  }
+  if (!mode) {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      mode = params.get('mode') || '';
+    } catch(e) {}
+  }
+  return mode || 'competitive';
+}
+
 async function loadAllMatches() {
   const db = await openDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE_NAME, 'readonly');
-    const req = tx.objectStore(STORE_NAME).index('date').getAll();
+    const store = tx.objectStore(STORE_NAME);
+    let req;
+    if (store.indexNames.contains('date')) {
+      req = store.index('date').getAll();
+    } else {
+      req = store.getAll();
+    }
     req.onsuccess = () => {
-      const currentModeNormalized = normalizeMode(window._currentMode || 'competitive');
-      const prefix = `${PLAYER_NAME.toLowerCase()}#${PLAYER_TAG.toLowerCase()}|${currentModeNormalized}|`;
+      const activeMode = getActiveMode();
+      const currentModeNormalized = normalizeMode(activeMode);
+      const playerInfo = getActivePlayerInfo();
+      const prefix = `${playerInfo.name.toLowerCase()}#${playerInfo.tag.toLowerCase()}|${currentModeNormalized}|`;
       
       const all = (req.result || []).filter(r => {
-        // Must start with prefix
-        if (!r.matchId.startsWith(prefix)) return false;
+        if (!r.matchId) return false;
+        const matchIdLower = r.matchId.toLowerCase();
+        if (!matchIdLower.startsWith(prefix)) return false;
+        
         // Strict double-check: verify that the actual match mode matches current mode
         const mMode = r.data?.metadata?.mode || r.data?.metadata?.queue;
         return normalizeMode(mMode) === currentModeNormalized;
@@ -647,19 +697,26 @@ async function clearAllMatches() {
   });
 }
 
-// Clears only matches for the current player+mode — preserves other players' data
 async function clearPlayerMatches() {
   const db = await openDB();
   return new Promise((resolve, reject) => {
-    const currentModeNormalized = normalizeMode(window._currentMode || 'competitive');
-    const prefix = `${PLAYER_NAME.toLowerCase()}#${PLAYER_TAG.toLowerCase()}|${currentModeNormalized}|`;
-    // Use a key range: everything from prefix to prefix + \uffff (last unicode char)
-    // This efficiently deletes all records whose matchId starts with the prefix
-    const range = IDBKeyRange.bound(prefix, prefix + '\uffff', false, false);
+    const activeMode = getActiveMode();
+    const currentModeNormalized = normalizeMode(activeMode);
+    const playerInfo = getActivePlayerInfo();
+    const prefix = `${playerInfo.name.toLowerCase()}#${playerInfo.tag.toLowerCase()}|${currentModeNormalized}|`;
+    
     const tx = db.transaction(STORE_NAME, 'readwrite');
     const store = tx.objectStore(STORE_NAME);
-    const req = store.delete(range);
-    req.onerror = () => reject(req.error);
+    const req = store.openCursor();
+    req.onsuccess = (e) => {
+      const cursor = e.target.result;
+      if (cursor) {
+        if (cursor.key && cursor.key.toLowerCase().startsWith(prefix)) {
+          cursor.delete();
+        }
+        cursor.continue();
+      }
+    };
     tx.oncomplete = () => resolve();
     tx.onerror = () => reject(tx.error);
   });
