@@ -987,12 +987,12 @@ window.addEventListener('DOMContentLoaded', async () => {
         setTimeout(() => {
           prefetchMatchDetails(stored);
         }, 500);
-        // Restore active session by dismissing landing page
-        dismissLanding();
       }
+      // Note: We deliberately do NOT call dismissLanding() here anymore! 
+      // The user now lands on the Login page with their last profile Riot ID elegantly prefilled,
+      // letting them explicitly click "Fetch Stats" or look up other players easily.
     } else if (count > 0) {
       setStatus(`${count} matches cached — fetch to view`, 'ok');
-      dismissLanding();
     }
   } catch(e) { console.warn('DB load:', e); }
 
@@ -8802,9 +8802,7 @@ function toggleMainView(view, updateUrl = true) {
   }
   
   if (view === 'tracker') {
-    const urlParams = new URLSearchParams(window.location.search);
-    const hasPlayerParams = urlParams.has('player') && urlParams.has('tag');
-    if (statsLoaded || (hasPlayerParams && window._isCheckingUrlParams)) {
+    if (statsLoaded) {
       if (landing) {
         landing.classList.add('hidden');
         landing.style.display = 'none';
