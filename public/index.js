@@ -987,12 +987,12 @@ window.addEventListener('DOMContentLoaded', async () => {
         setTimeout(() => {
           prefetchMatchDetails(stored);
         }, 500);
+        // Restore active session by dismissing landing page
+        dismissLanding();
       }
-      // Note: We deliberately do NOT call dismissLanding() here anymore! 
-      // The user now lands on the Login page with their last profile Riot ID elegantly prefilled,
-      // letting them explicitly click "Fetch Stats" or look up other players easily.
     } else if (count > 0) {
       setStatus(`${count} matches cached — fetch to view`, 'ok');
+      dismissLanding();
     }
   } catch(e) { console.warn('DB load:', e); }
 
@@ -8182,10 +8182,11 @@ function checkUrlParams() {
       if(document.getElementById('l-mode')) document.getElementById('l-mode').value = pMode;
     }
     
+    window._isCheckingUrlParams = true;
     if(typeof landingFetch === 'function' && document.getElementById('landing') && document.getElementById('landing').style.display !== 'none') {
-        landingFetch();
+        landingFetch().finally(() => { window._isCheckingUrlParams = false; });
     } else {
-        fetchAll();
+        fetchAll().finally(() => { window._isCheckingUrlParams = false; });
     }
   }
 }
@@ -8198,7 +8199,7 @@ fetchAll = async function() {
   const pMode = document.getElementById('mode-select')?.value || 'competitive';
   
   if (pName && pTag) {
-    const targetView = 'tracker';
+    const targetView = window._isCheckingUrlParams ? getActiveViewFromPath() : 'tracker';
     const newUrl = `/app/${targetView}?player=${encodeURIComponent(pName)}&tag=${encodeURIComponent(pTag)}&region=${pRegion}&mode=${pMode}`;
     window.history.replaceState({path:newUrl}, '', newUrl);
     toggleMainView(targetView, false);
@@ -8801,7 +8802,9 @@ function toggleMainView(view, updateUrl = true) {
   }
   
   if (view === 'tracker') {
-    if (statsLoaded) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasPlayerParams = urlParams.has('player') && urlParams.has('tag');
+    if (statsLoaded || hasPlayerParams) {
       if (landing) {
         landing.classList.add('hidden');
         landing.style.display = 'none';
