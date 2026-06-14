@@ -5613,13 +5613,13 @@ input:checked + .slider:before {
     overflow: hidden !important;
     max-width: 100% !important;
   }
-  /* Header: tier badge + tournament left, status right — allow wrap for long names */
+  /* Header: badge + tournament wrap to show full name, FINAL on right */
   .esp-match-head {
     grid-column: 1 !important;
     grid-row: 1 !important;
     display: flex !important;
     flex-direction: row !important;
-    align-items: center !important;
+    align-items: flex-start !important;
     justify-content: space-between !important;
     gap: 6px !important;
     padding: 8px 12px !important;
@@ -5633,11 +5633,10 @@ input:checked + .slider:before {
     min-width: 0 !important;
     flex: 1 !important;
     display: flex !important;
-    flex-wrap: nowrap !important;
+    flex-wrap: wrap !important;
     align-items: center !important;
-    gap: 6px !important;
-    overflow: hidden !important;
-    white-space: nowrap !important;
+    gap: 4px 6px !important;
+    line-height: 1.4 !important;
   }
   .esp-match-head .tier-badge {
     font-size: 8px !important;
@@ -5650,9 +5649,8 @@ input:checked + .slider:before {
     letter-spacing: 0.5px !important;
     flex-shrink: 0 !important;
   }
-  /* Team rows: both teams [logo] [name] [score] */
-  .esp-match-card .esp-team,
-  .esp-match-card .esp-team.t-right {
+  /* First team: [logo] [name] [score] — row direction */
+  .esp-match-card .esp-team {
     grid-column: 1 !important;
     grid-row: auto !important;
     display: flex !important;
@@ -5665,6 +5663,12 @@ input:checked + .slider:before {
     gap: 8px !important;
     padding: 8px 12px !important;
     overflow: hidden !important;
+  }
+  /* Second team: keep row-reverse from base so DOM (score,name,logo) 
+     renders visually as [logo] [name] [score] matching first team */
+  .esp-match-card .esp-team.t-right {
+    flex-direction: row-reverse !important;
+    justify-content: space-between !important;
   }
   .esp-match-card .esp-team .esp-tlogo-wrap {
     flex-shrink: 0 !important;
@@ -5695,10 +5699,12 @@ input:checked + .slider:before {
     margin: 0 !important;
     padding-left: 8px !important;
   }
+  .esp-match-card .esp-team.t-right .esp-tname {
+    text-align: right !important;
+  }
   .esp-match-card .esp-team.t-right .esp-tscore {
-    margin-left: auto !important;
-    margin-right: 0 !important;
-    padding-left: 8px !important;
+    padding-left: 0 !important;
+    padding-right: 8px !important;
   }
   /* Divider between team rows */
   .esp-match-card .esp-team + .esp-team {
