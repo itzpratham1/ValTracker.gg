@@ -1371,9 +1371,25 @@ async function prefetchMatchDetails(matchesToFetch) {
   }
 }
 
+function normalizePlayerName(str) {
+  if (!str) return '';
+  return str.toLowerCase().replace(/\s+/g, '');
+}
+
 function findMe(match){
+  if (!match) return null;
+  if (match._me !== undefined) return match._me;
+  
   const all = getPlayerList(match);
-  return(Array.isArray(all)?all:[]).find(p=>p.name?.toLowerCase()===PLAYER_NAME.toLowerCase()&&p.tag?.toLowerCase()===PLAYER_TAG.toLowerCase());
+  const targetName = normalizePlayerName(PLAYER_NAME);
+  const targetTag = normalizePlayerName(PLAYER_TAG);
+  
+  const me = (Array.isArray(all) ? all : []).find(p => {
+    return normalizePlayerName(p.name) === targetName && normalizePlayerName(p.tag) === targetTag;
+  });
+  
+  match._me = me || null;
+  return me;
 }
 
 let _lastAgentMap = {}, _lastMapData = {}, _lastAllMatches = [];
@@ -7301,10 +7317,19 @@ function renderTopWeapons(matches) {
     const wpnMatchStats = {};
     const rounds = match.rounds || [];
     rounds.forEach(r => {
+      if (typeof r.player_stats === 'string') {
+        try { r.player_stats = JSON.parse(r.player_stats); } catch(e) { r.player_stats = []; }
+      }
       let ps = r.player_stats || [];
-      if (typeof ps === 'string') { try { ps = JSON.parse(ps); } catch(e) { ps = []; } }
       if (!Array.isArray(ps)) ps = Object.values(ps);
-      const myPs = ps.find(p => (p.player_puuid || p.subject || p.puuid) === me.puuid);
+      
+      let myPs;
+      if (r._myPs !== undefined) {
+        myPs = r._myPs;
+      } else {
+        myPs = ps.find(p => (p.player_puuid || p.subject || p.puuid) === me.puuid);
+        r._myPs = myPs || null;
+      }
       if (!myPs) return;
       
       const kills = Array.isArray(myPs.kill_events) ? myPs.kill_events : [];
