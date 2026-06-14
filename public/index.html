@@ -13,7 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"
   crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
-<link rel="stylesheet" href="index.css?v=15.13">
+<link rel="stylesheet" href="/index.css?v=15.14">
 <style>
 /* ── GLASSMORPHISM OVERRIDES & VALORANT CRIMSON THEME ── */
 html {
@@ -1567,7 +1567,7 @@ body {
 
 <div class="toast" id="toast"></div>
 
-<script src="index.js?v=2.0" defer></script>
+<script src="/index.js?v=2.0" defer></script>
 <style>/* ── GLASSMORPHISM OVERRIDES ── */
 
 /* Glow-borders on Match panel containers */
@@ -2174,17 +2174,32 @@ body.is-scrolling .glass-orb-2 {
 
   /* DC agent slot cards row → wrap */
   #dc-team-slots {
-    flex-wrap: wrap !important;
-    justify-content: center !important;
-    gap: 8px !important;
+    flex-wrap: nowrap !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+    width: 100% !important;
   }
   .dc-slot-card {
-    min-width: 75px !important;
+    min-width: 0 !important;
+    flex: 1 !important;
     max-width: 90px !important;
-    padding: 10px 4px !important;
+    padding: 8px 2px !important;
   }
-  .dc-slot-avatar { width: 40px !important; height: 40px !important; }
-  .dc-slot-name { font-size: 10px !important; max-width: 70px !important; }
+  .dc-slot-avatar {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  .dc-slot-name {
+    font-size: 9px !important;
+    max-width: 100% !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
   /* Agent picker grid */
   #dc-agent-list {
     grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)) !important;

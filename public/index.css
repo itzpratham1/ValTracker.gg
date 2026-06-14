@@ -5549,9 +5549,12 @@ input:checked + .slider:before {
 /* Mobile match card stacked layout overrides */
 @media (max-width: 600px) {
   .esp-match-card {
-    padding: 0 !important;
+    padding: 10px 12px !important;
     overflow: hidden !important;
     max-width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
   }
   /* Header: badge + tournament + status in one row */
   .esp-match-head {
@@ -5560,22 +5563,20 @@ input:checked + .slider:before {
     align-items: center !important;
     justify-content: space-between !important;
     gap: 6px !important;
-    padding: 8px 12px !important;
+    padding-bottom: 8px !important;
     border-bottom: 1px solid rgba(255,255,255,0.06) !important;
     width: 100% !important;
     box-sizing: border-box !important;
   }
   .esp-match-head .esp-tourney {
     font-size: 9px !important;
-    letter-spacing: 0.5px !important;
-    min-width: 0 !important;
-    flex: 1 !important;
+    line-height: 1.2 !important;
+    max-width: 150px !important;
+    word-break: break-word !important;
+    white-space: normal !important;
     display: flex !important;
-    flex-wrap: wrap !important;
     align-items: center !important;
-    justify-content: flex-start !important;
-    gap: 4px 6px !important;
-    line-height: 1.4 !important;
+    gap: 4px !important;
   }
   .esp-match-head .tier-badge {
     font-size: 8px !important;
@@ -5588,40 +5589,33 @@ input:checked + .slider:before {
     letter-spacing: 0.5px !important;
     flex-shrink: 0 !important;
   }
-  /* Teams: stack vertically, hide center score */
+  /* Teams: horizontal layout */
   .esp-match-teams {
-    display: flex !important;
-    flex-direction: column !important;
-    padding: 0 !important;
-  }
-  .esp-match-vs {
-    display: none !important;
-  }
-  .esp-match-card .esp-tscore {
-    display: block !important;
-    flex-shrink: 0 !important;
-    width: 28px !important;
-    text-align: center !important;
-    font-size: 18px !important;
-    font-weight: 900 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-  .esp-team-l,
-  .esp-team-r {
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
     justify-content: space-between !important;
+    padding: 10px 0 !important;
     width: 100% !important;
     box-sizing: border-box !important;
-    text-align: left !important;
+  }
+  .esp-team-l {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
     gap: 8px !important;
-    padding: 8px 12px !important;
-    overflow: hidden !important;
+    flex: 1 !important;
+    min-width: 0 !important;
   }
   .esp-team-r {
-    justify-content: space-between !important;
+    display: flex !important;
+    flex-direction: row-reverse !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+    flex: 1 !important;
+    min-width: 0 !important;
   }
   .esp-match-card .esp-team .esp-tlogo-wrap {
     flex-shrink: 0 !important;
@@ -5630,55 +5624,87 @@ input:checked + .slider:before {
   }
   .esp-match-card .esp-team .esp-tlogo,
   .esp-match-card .esp-team .team-logo-fallback {
-    width: 26px !important;
-    height: 26px !important;
+    width: 28px !important;
+    height: 28px !important;
   }
   .esp-match-card .esp-team .esp-tname {
-    flex: 1 !important;
-    min-width: 0 !important;
-    font-size: 15px !important;
+    font-size: 13px !important;
     font-weight: 700 !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
     line-height: 1.2 !important;
   }
-  /* Divider between team rows */
-  .esp-team-l + .esp-team-r {
-    border-top: 1px solid rgba(255,255,255,0.04) !important;
+  .esp-team-l .esp-tname {
+    text-align: right !important;
   }
-  /* Footer: date + buttons */
+  .esp-team-r .esp-tname {
+    text-align: left !important;
+  }
+  .esp-match-vs {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    padding: 0 10px !important;
+    flex-shrink: 0 !important;
+  }
+  .esp-vs-score {
+    font-size: 20px !important;
+    font-weight: 900 !important;
+    min-width: 20px !important;
+    text-align: center !important;
+    color: var(--muted) !important;
+  }
+  .esp-vs-score:empty {
+    display: none !important;
+  }
+  .esp-vs-score.winner {
+    color: var(--win) !important;
+    text-shadow: 0 0 8px rgba(16, 185, 129, 0.2) !important;
+  }
+  .esp-vs-sep {
+    font-size: 10px !important;
+    color: var(--muted2) !important;
+    text-transform: uppercase !important;
+  }
+  .esp-match-card .esp-tscore {
+    display: none !important;
+  }
+  /* Footer: date + details buttons in one line */
   .esp-match-foot {
     display: flex !important;
-    flex-direction: column !important;
+    flex-direction: row !important;
     align-items: center !important;
-    gap: 6px !important;
-    padding: 8px 12px !important;
-    border-top: 1px solid rgba(255,255,255,0.06) !important;
+    justify-content: space-between !important;
+    padding-top: 8px !important;
+    border-top: 1px solid rgba(255,255,255,0.05) !important;
     width: 100% !important;
     box-sizing: border-box !important;
-    overflow: hidden !important;
+    gap: 8px !important;
   }
   .esp-match-foot .esp-meta {
     font-size: 9px !important;
-    text-align: center !important;
-    width: 100% !important;
+    color: var(--muted2) !important;
+    text-align: left !important;
+    width: auto !important;
   }
   .esp-match-foot > div {
     display: flex !important;
     flex-direction: row !important;
-    width: 100% !important;
-    gap: 8px !important;
-    justify-content: center !important;
+    gap: 6px !important;
+    width: auto !important;
+    margin: 0 !important;
   }
   .esp-match-foot .esp-btn {
-    flex: 1 !important;
-    min-width: 0 !important;
-    justify-content: center !important;
-    box-sizing: border-box !important;
-    min-height: 32px !important;
+    min-height: 28px !important;
     padding: 0 8px !important;
-    font-size: 11px !important;
+    font-size: 9px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 4px !important;
+    flex: none !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
@@ -5694,6 +5720,36 @@ input:checked + .slider:before {
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
+  }
+  .overlay-studio-settings-col {
+    max-height: none !important;
+    overflow-y: visible !important;
+    padding: 16px !important;
+  }
+  .overlay-settings-row {
+    display: grid !important;
+    grid-template-columns: 1fr auto 65px 70px !important;
+    align-items: center !important;
+    gap: 6px !important;
+    width: 100% !important;
+  }
+  .overlay-studio-tag-input {
+    width: 100% !important;
+  }
+  .overlay-studio-select {
+    width: 100% !important;
+  }
+  .obs-url-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+  .obs-url-row input {
+    width: 100% !important;
+  }
+  .obs-url-row button {
+    width: 100% !important;
+    min-height: 40px !important;
   }
 }
 
