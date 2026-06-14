@@ -5635,6 +5635,7 @@ input:checked + .slider:before {
     display: flex !important;
     flex-wrap: wrap !important;
     align-items: center !important;
+    justify-content: flex-start !important;
     gap: 4px 6px !important;
     line-height: 1.4 !important;
   }
