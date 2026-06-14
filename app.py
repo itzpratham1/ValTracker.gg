@@ -536,8 +536,7 @@ def landing():
     return resp
 
 @app.route("/app")
-@app.route("/app/<path:section>")
-def index(section=None):
+def index():
     """Full stats tracker app — the main ValTracker dashboard."""
     resp = make_response(send_from_directory(app.static_folder, "index.html"))
     resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"

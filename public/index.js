@@ -6611,26 +6611,19 @@ function dismissLanding() {
       }
     }, 350);
   }
-  const currentView = getActiveViewFromPath();
-  const targetViewId = currentView === 'tracker' ? 'tracker-view' : 
-                       currentView === 'esports' ? 'esports-view' : 
-                       currentView === 'store' ? 'store-view' : 
-                       currentView === 'coach' ? 'coach-view' : 
-                       currentView === 'overlay' ? 'overlay-view' : 'tracker-view';
-  
-  const activeViewEl = document.getElementById(targetViewId);
+  const tv = document.getElementById('tracker-view');
   const subRow = document.getElementById('topbar-sub-row');
   const gf = document.getElementById('global-footer');
   
-  if (activeViewEl) {
-    activeViewEl.style.transition = 'opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-    activeViewEl.style.display = 'block';
-    activeViewEl.style.opacity = '0';
+  if (tv) {
+    tv.style.transition = 'opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    tv.style.display = 'block';
+    tv.style.opacity = '0';
   }
   if (subRow) {
     subRow.style.transition = 'opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-    subRow.style.display = (currentView === 'tracker') ? 'flex' : 'none';
-    subRow.style.opacity = (currentView === 'tracker') ? '0' : '1';
+    subRow.style.display = 'flex';
+    subRow.style.opacity = '0';
   }
   if (gf) {
     gf.style.transition = 'opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
@@ -6639,12 +6632,12 @@ function dismissLanding() {
   }
   
   // Force a browser repaint reflow
-  if (activeViewEl) activeViewEl.offsetHeight;
+  if (tv) tv.offsetHeight;
   
   // Smoothly fade in
   setTimeout(() => {
-    if (activeViewEl) activeViewEl.style.opacity = '1';
-    if (subRow && currentView === 'tracker') subRow.style.opacity = '1';
+    if (tv) tv.style.opacity = '1';
+    if (subRow) subRow.style.opacity = '1';
     if (gf) gf.style.opacity = '1';
   }, 30);
   
@@ -8182,11 +8175,10 @@ function checkUrlParams() {
       if(document.getElementById('l-mode')) document.getElementById('l-mode').value = pMode;
     }
     
-    window._isCheckingUrlParams = true;
     if(typeof landingFetch === 'function' && document.getElementById('landing') && document.getElementById('landing').style.display !== 'none') {
-        landingFetch().finally(() => { window._isCheckingUrlParams = false; });
+        landingFetch();
     } else {
-        fetchAll().finally(() => { window._isCheckingUrlParams = false; });
+        fetchAll();
     }
   }
 }
@@ -8199,10 +8191,8 @@ fetchAll = async function() {
   const pMode = document.getElementById('mode-select')?.value || 'competitive';
   
   if (pName && pTag) {
-    const targetView = window._isCheckingUrlParams ? getActiveViewFromPath() : 'tracker';
-    const newUrl = `/app/${targetView}?player=${encodeURIComponent(pName)}&tag=${encodeURIComponent(pTag)}&region=${pRegion}&mode=${pMode}`;
+    const newUrl = `?player=${encodeURIComponent(pName)}&tag=${encodeURIComponent(pTag)}&region=${pRegion}&mode=${pMode}`;
     window.history.replaceState({path:newUrl}, '', newUrl);
-    toggleMainView(targetView, false);
   }
   return v2originalFetchAll.apply(this, arguments);
 };
@@ -8769,7 +8759,7 @@ let esportsCountdownInterval = null;
 let vctFranchiseData = null;
 let allMatchesCache = [];
 
-function toggleMainView(view, updateUrl = true) {
+function toggleMainView(view) {
   document.body.classList.remove('scrolled-down');
   document.body.classList.remove('scrolled-up');
   document.querySelectorAll('.topbar-tab').forEach(t => t.classList.remove('active'));
@@ -8790,16 +8780,6 @@ function toggleMainView(view, updateUrl = true) {
   
   const mft = document.getElementById('mobile-filter-toggle');
   const subRow = document.getElementById('topbar-sub-row');
-
-  // HTML5 History Routing: Update dynamic path (preserving search query parameters)
-  if (updateUrl) {
-    const currentView = getActiveViewFromPath();
-    if (currentView !== view) {
-      const url = new URL(window.location.href);
-      url.pathname = '/app/' + view;
-      window.history.pushState({ view: view }, '', url.toString());
-    }
-  }
   
   if (view === 'tracker') {
     if (statsLoaded) {
@@ -8839,13 +8819,6 @@ function toggleMainView(view, updateUrl = true) {
       if(esportsCountdownInterval) clearInterval(esportsCountdownInterval);
     }
   } else {
-    // Hide landing lookup page when other tabs are loaded
-    if (landing) {
-      landing.classList.add('hidden');
-      landing.style.display = 'none';
-    }
-    if (gf) gf.style.display = 'flex';
-
     // Hide tracker-specific filters and search on other tabs
     if (subRow) subRow.style.display = 'none';
     
@@ -13013,31 +12986,7 @@ window.addEventListener('resize', () => {
   }
 });
 
-// HTML5 History routing helper functions
-function getActiveViewFromPath() {
-  const path = window.location.pathname;
-  const parts = path.split('/').filter(p => p);
-  if (parts.length >= 2 && parts[0] === 'app') {
-    const view = parts[1].toLowerCase();
-    if (['tracker', 'esports', 'store', 'coach', 'overlay'].includes(view)) {
-      return view;
-    }
-  }
-  return 'tracker';
-}
-
-function initRouter() {
-  const initialView = getActiveViewFromPath();
-  toggleMainView(initialView, false);
-
-  window.addEventListener('popstate', () => {
-    const view = getActiveViewFromPath();
-    toggleMainView(view, false);
-  });
-}
-
 document.addEventListener('DOMContentLoaded', () => { 
-  initRouter();
   setTimeout(checkUrlParams, 200); 
   setTimeout(initUnifiedScrollManager, 500);
   initSearchAutocomplete('l-name', 'l-tag', 'landing-search-dropdown', 'l-region');
