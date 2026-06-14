@@ -1044,27 +1044,61 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 let rrChart=null;
 
+function resetStatsUI() {
+  ['v-kd','v-kills','v-deaths','v-assists','v-acs','v-hs','v-wr','v-wins','v-losses'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.textContent='—';
+  });
+  const vWr = document.getElementById('v-wr'); if(vWr) vWr.textContent='—%';
+  const wrBar = document.getElementById('wr-bar'); if(wrBar) wrBar.style.width='0%';
+  
+  // Reset Rank UI
+  if (document.getElementById('rank-display')) document.getElementById('rank-display').textContent = 'UNRANKED';
+  if (document.getElementById('rank-rr-txt')) document.getElementById('rank-rr-txt').textContent = '—';
+  safeSetInnerHtml('rank-icon', `<div style="width:64px;height:64px;background:var(--surface2);border-radius:8px;"></div>`);
+  safeSetInnerHtml('peak-icon', '');
+  const rankPred = document.getElementById('rank-prediction');
+  if (rankPred) {
+    rankPred.textContent = '';
+    rankPred.style.display = 'none';
+  }
+  
+  // Reset wrappers
+  const agentsWrap = document.getElementById('agents-wrap'); if(agentsWrap) agentsWrap.innerHTML='<div class="card placeholder-card span-12"><div class="placeholder-txt">Fetch stats to see agents</div></div>';
+  const mapsWrap = document.getElementById('maps-wrap'); if(mapsWrap) mapsWrap.innerHTML='<div class="card placeholder-card span-12"><div class="placeholder-txt">Fetch stats to see maps</div></div>';
+  const clutchWrap = document.getElementById('clutch-wrap'); if(clutchWrap) clutchWrap.innerHTML='<div class="card placeholder-card span-12"><div class="placeholder-txt">Fetch stats to see impact</div></div>';
+  const matchesList = document.getElementById('matches-list'); if(matchesList) matchesList.innerHTML='<div class="card placeholder-card span-12"><div class="placeholder-txt">Fetch stats to see match history</div></div>';
+  
+  const rrPlaceholder = document.getElementById('rr-placeholder'); if(rrPlaceholder) rrPlaceholder.style.display='block';
+  const rrChartEl = document.getElementById('rr-chart'); if(rrChartEl) rrChartEl.style.display='none';
+  const graphNote = document.getElementById('graph-note'); if(graphNote) graphNote.style.display='none';
+  if(rrChart){rrChart.destroy();rrChart=null;}
+
+  const trendPlaceholder = document.getElementById('perf-trend-placeholder'); if(trendPlaceholder) trendPlaceholder.style.display='block';
+  const trendChart = document.getElementById('perf-trend-chart'); if(trendChart) trendChart.style.display='none';
+  if(_perfTrendChart){_perfTrendChart.destroy();_perfTrendChart=null;}
+
+  const lvlEl = document.getElementById('player-level'); if (lvlEl) lvlEl.textContent = 'LVL —';
+  const heroLvlEl = document.getElementById('hero-level-badge'); if (heroLvlEl) { heroLvlEl.textContent = 'LVL —'; heroLvlEl.style.display = 'none'; }
+  const avatarImg = document.getElementById('player-avatar-img'); if (avatarImg) { avatarImg.style.display = 'none'; if (avatarImg.nextElementSibling) avatarImg.nextElementSibling.style.display = 'flex'; }
+  const bg = document.getElementById('player-card-bg'); if (bg) { bg.style.backgroundImage = ''; bg.style.opacity = '0'; }
+
+  const streakBlock = document.getElementById('streak-block'); if (streakBlock) streakBlock.style.display = 'none';
+  const streakVal = document.getElementById('streak-val'); if (streakVal) streakVal.textContent = '—';
+
+  const aiResults = document.getElementById('ai-results'); if (aiResults) aiResults.style.display = 'none';
+  const aiPlaceholder = document.getElementById('ai-placeholder'); if (aiPlaceholder) aiPlaceholder.style.display = 'block';
+
+  const deepResults = document.getElementById('deep-results'); if (deepResults) { deepResults.innerHTML = ''; deepResults.style.display = 'none'; }
+  const plabResults = document.getElementById('plab-results'); if (plabResults) { plabResults.innerHTML = ''; plabResults.style.display = 'none'; }
+}
+
 async function handleClear(){
   if(!confirm('Clear all stored match history? This cannot be undone.')) return;
   await clearAllMatches();
   _db = null;
   setStatus('Storage cleared','');
   showToast('All match data cleared');
-  // Reset UI
-  ['v-kd','v-kills','v-deaths','v-assists','v-acs','v-hs','v-wr','v-wins','v-losses'].forEach(id=>{
-    const el=document.getElementById(id);if(el)el.textContent='—';
-  });
-  const vWr = document.getElementById('v-wr'); if(vWr) vWr.textContent='—%';
-  const wrBar = document.getElementById('wr-bar'); if(wrBar) wrBar.style.width='0%';
-  const agentsWrap = document.getElementById('agents-wrap'); if(agentsWrap) agentsWrap.innerHTML='<div class="card placeholder-card span-12"><div class="placeholder-txt">Fetch stats to see agents</div></div>';
-  const mapsWrap = document.getElementById('maps-wrap'); if(mapsWrap) mapsWrap.innerHTML='<div class="card placeholder-card span-12"><div class="placeholder-txt">Fetch stats to see maps</div></div>';
-  const clutchWrap = document.getElementById('clutch-wrap'); if(clutchWrap) clutchWrap.innerHTML='<div class="card placeholder-card span-12"><div class="placeholder-txt">Fetch stats to see impact</div></div>';
-  const matchesList = document.getElementById('matches-list'); if(matchesList) matchesList.innerHTML='<div class="card placeholder-card span-12"><div class="placeholder-txt">Fetch stats to see match history</div></div>';
-  const rrPlaceholder = document.getElementById('rr-placeholder'); if(rrPlaceholder) rrPlaceholder.style.display='block';
-  const rrChartEl = document.getElementById('rr-chart'); if(rrChartEl) rrChartEl.style.display='none';
-  const graphNote = document.getElementById('graph-note'); if(graphNote) graphNote.style.display='none';
-  if(rrChart){rrChart.destroy();rrChart=null;}
-  // tracker-nav is inside tracker-view; no need to explicitly hide it
+  resetStatsUI();
 }
 
 async function fetchAll(){
@@ -1084,7 +1118,12 @@ async function fetchAll(){
   const btn=document.getElementById('fetch-btn');
   btn.disabled=true;btn.textContent='Fetching...';
   setStatus('Connecting...','');
+  
+  // Reset UI and skeletons before fetching
+  resetStatsUI();
   showSkeletons();
+  window._rawMmrData = null;
+  window._currentRankRR = 0;
 
   // Update hero immediately with input values
   updateHeroName();
@@ -1112,6 +1151,23 @@ async function fetchAll(){
 
     if(accountData?.data){
       const a=accountData.data;
+      if (a.name) PLAYER_NAME = a.name;
+      if (a.tag) PLAYER_TAG = a.tag;
+
+      const pNameInput = document.getElementById('player-name-input');
+      const pTagInput = document.getElementById('player-tag-input');
+      if (pNameInput && a.name) pNameInput.value = a.name;
+      if (pTagInput && a.tag) pTagInput.value = a.tag;
+
+      updateActivePill();
+      updateHeroName();
+
+      const savedProfile = loadMyProfile();
+      if (savedProfile && savedProfile.name.toLowerCase() === PLAYER_NAME.toLowerCase() && savedProfile.tag.toLowerCase() === PLAYER_TAG.toLowerCase()) {
+        saveMyProfile(PLAYER_NAME, PLAYER_TAG, region, mode);
+        renderLandingProfile();
+      }
+
       const cardUrl=a.card?.wide||a.card?.large||(typeof a.card==='string'?`https://media.valorant-api.com/playercards/${a.card}/wideart.png`:null);
       const smallCardUrl=a.card?.small||(typeof a.card==='string'?`https://media.valorant-api.com/playercards/${a.card}/smallart.png`:null);
       const lvl=`LVL ${a.account_level||'—'}`;
@@ -1243,6 +1299,19 @@ async function fetchAll(){
       applyModeUI();
       updateActivePill();
       renderActiveBookmarkButton();
+      
+      // Reload last successful player's MMR and matches from local cache to restore UI
+      const mmrKey = `vt_mmr_${PLAYER_NAME.toLowerCase()}_${PLAYER_TAG.toLowerCase()}`;
+      try { window._rawMmrData = JSON.parse(localStorage.getItem(mmrKey)); } catch(e) {}
+      updateRankDisplayForAct(document.getElementById('act-select')?.value || 'v26a3');
+      
+      loadAllMatches().then(stored => {
+        if (stored && stored.length > 0) {
+          processMatches(stored);
+        }
+      }).catch(err => {
+        console.warn('Failed to restore last successful player matches:', err);
+      });
     }
     
     throw e;
@@ -7571,7 +7640,17 @@ function renderTopWeapons(matches) {
 
 function updateRankDisplayForAct(selectedAct) {
   const d = window._rawMmrData;
-  if (!d) return;
+  if (!d) {
+    const rankDisplayEl = document.getElementById('rank-display');
+    if (rankDisplayEl) rankDisplayEl.textContent = 'UNRANKED';
+    const rankRrTxtEl = document.getElementById('rank-rr-txt');
+    if (rankRrTxtEl) rankRrTxtEl.textContent = '—';
+    const rankIconEl = document.getElementById('rank-icon');
+    if (rankIconEl) rankIconEl.innerHTML = `<div style="width:64px;height:64px;background:var(--surface2);border-radius:8px;"></div>`;
+    const peakIconEl = document.getElementById('peak-icon');
+    if (peakIconEl) peakIconEl.innerHTML = '';
+    return;
+  }
   
   let rankName = '—';
   let rankImgUrl = null;
