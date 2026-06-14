@@ -5692,19 +5692,15 @@ input:checked + .slider:before {
   }
   .esp-match-card .esp-team .esp-tscore {
     flex-shrink: 0 !important;
-    min-width: 22px !important;
+    width: 28px !important;
     text-align: center !important;
     font-size: 18px !important;
     font-weight: 900 !important;
     margin: 0 !important;
-    padding-left: 8px !important;
+    padding: 0 !important;
   }
   .esp-match-card .esp-team.t-right .esp-tname {
     text-align: left !important;
-  }
-  .esp-match-card .esp-team.t-right .esp-tscore {
-    padding-left: 0 !important;
-    padding-right: 8px !important;
   }
   /* Divider between team rows */
   .esp-match-card .esp-team + .esp-team {
