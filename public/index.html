@@ -13,7 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"
   crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
-<link rel="stylesheet" href="index.css?v=14.09">
+<link rel="stylesheet" href="index.css?v=15.00">
 <style>
 /* ── GLASSMORPHISM OVERRIDES & VALORANT CRIMSON THEME ── */
 html {
@@ -1567,7 +1567,7 @@ body {
 
 <div class="toast" id="toast"></div>
 
-<script src="index.js?v=1.6" defer></script>
+<script src="index.js?v=2.0" defer></script>
 <style>/* ── GLASSMORPHISM OVERRIDES ── */
 
 /* Glow-borders on Match panel containers */
@@ -2046,9 +2046,48 @@ body.is-scrolling .glass-orb-2 {
   /* Match Cards - compact 3-column like desktop but tighter */
   .esp-match-card {
     grid-template-columns: 1fr auto 1fr !important;
-    gap: 10px !important;
+    grid-template-rows: auto auto !important;
+    gap: 0 !important;
     padding: 10px 12px !important;
     align-items: center !important;
+  }
+  .esp-match-head {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 3px !important;
+    padding-bottom: 8px !important;
+  }
+  .esp-match-head .esp-tourney {
+    font-size: 9px !important;
+    line-height: 1.2 !important;
+    max-width: 80px !important;
+    word-break: break-word !important;
+    white-space: normal !important;
+  }
+  .esp-match-head .tier-badge {
+    font-size: 8px !important;
+    padding: 1px 4px !important;
+  }
+  .esp-match-head .esp-status {
+    font-size: 11px !important;
+    padding: 2px 6px !important;
+  }
+  .esp-match-foot {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    padding-top: 8px !important;
+    border-top: 1px solid rgba(255,255,255,0.05) !important;
+    gap: 4px !important;
+  }
+  .esp-match-foot .esp-meta {
+    font-size: 9px !important;
+  }
+  .esp-match-foot .esp-btn {
+    font-size: 9px !important;
+    padding: 3px 6px !important;
   }
   .esp-match-card .esp-team {
     display: flex !important;
@@ -2062,7 +2101,8 @@ body.is-scrolling .glass-orb-2 {
     text-align: right !important;
     flex-direction: row-reverse !important;
   }
-  .esp-match-card .esp-team .esp-tlogo {
+  .esp-match-card .esp-team .esp-tlogo,
+  .esp-match-card .esp-team .team-logo-fallback {
     width: 32px !important;
     height: 32px !important;
   }
@@ -2079,36 +2119,6 @@ body.is-scrolling .glass-orb-2 {
     font-size: 20px !important;
     font-weight: 900 !important;
     flex-shrink: 0 !important;
-  }
-  .esp-match-card .esp-match-info {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    gap: 3px !important;
-    min-width: 70px !important;
-    text-align: center !important;
-  }
-  .esp-match-card .esp-match-info .esp-tourney {
-    font-size: 9px !important;
-    line-height: 1.2 !important;
-    max-width: 80px !important;
-    word-break: break-word !important;
-    white-space: normal !important;
-  }
-  .esp-match-card .esp-match-info .tier-badge {
-    font-size: 8px !important;
-    padding: 1px 4px !important;
-  }
-  .esp-match-card .esp-match-info .esp-status {
-    font-size: 11px !important;
-    padding: 2px 6px !important;
-  }
-  .esp-match-card .esp-match-info .esp-meta {
-    font-size: 9px !important;
-  }
-  .esp-match-card .esp-match-info .esp-btn {
-    font-size: 9px !important;
-    padding: 3px 6px !important;
   }
   }
 

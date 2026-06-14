@@ -9924,21 +9924,23 @@ function getEspHTML(m, type) {
 
   return `
     <div class="esp-match-card ${tierClass} ${m.state || ''}">
-      <div class="esp-team" style="display:flex; align-items:center;">
-        <div class="esp-tlogo-wrap" style="margin-right:8px;">${getEsportsTeamLogoHtml(t1).replace('margin-right:8px;', '')}</div>
-        <div class="esp-tname">${t1}</div>
-        <div class="esp-tscore ${w1}" style="margin-left:auto;">${m.state==='unstarted'?'':s1}</div>
-      </div>
-      <div class="esp-match-info">
-        <div class="esp-tourney">${tierBadge} ${event}</div>
+      <div class="esp-match-head">
+        <span class="esp-tourney">${tierBadge} ${event}</span>
         ${statusHtml}
-        <div class="esp-meta">${displayDate}</div>
-        <div style="margin-top: 8px;">${mediaBtn}</div>
       </div>
-      <div class="esp-team t-right" style="display:flex; align-items:center; justify-content:flex-end;">
-        <div class="esp-tscore ${w2}" style="margin-right:auto;">${m.state==='unstarted'?'':s2}</div>
+      <div class="esp-team">
+        <div class="esp-tlogo-wrap">${getEsportsTeamLogoHtml(t1).replace('margin-right:8px;', '')}</div>
+        <div class="esp-tname">${t1}</div>
+        <div class="esp-tscore ${w1}">${m.state==='unstarted'?'':s1}</div>
+      </div>
+      <div class="esp-team t-right">
+        <div class="esp-tscore ${w2}">${m.state==='unstarted'?'':s2}</div>
         <div class="esp-tname">${t2}</div>
-        <div class="esp-tlogo-wrap" style="margin-left:8px;">${getEsportsTeamLogoHtml(t2).replace('margin-right:8px;', '')}</div>
+        <div class="esp-tlogo-wrap">${getEsportsTeamLogoHtml(t2).replace('margin-right:8px;', '')}</div>
+      </div>
+      <div class="esp-match-foot">
+        <div class="esp-meta">${displayDate}</div>
+        ${mediaBtn}
       </div>
     </div>
   `;
