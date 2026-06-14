@@ -9925,7 +9925,7 @@ function getEspHTML(m, type) {
   return `
     <div class="esp-match-card ${tierClass}">
       <div class="esp-team" style="display:flex; align-items:center;">
-        ${getEsportsTeamLogoHtml(t1)}
+        <div class="esp-tlogo-wrap" style="margin-right:8px;">${getEsportsTeamLogoHtml(t1).replace('margin-right:8px;', '')}</div>
         <div class="esp-tname">${t1}</div>
         <div class="esp-tscore ${w1}" style="margin-left:auto;">${m.state==='unstarted'?'':s1}</div>
       </div>
