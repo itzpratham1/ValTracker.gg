@@ -5621,12 +5621,13 @@ input:checked + .slider:before {
     height: 28px !important;
   }
   .esp-match-card .esp-team .esp-tname {
-    font-size: 13px !important;
+    font-size: 12px !important;
     font-weight: 700 !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
     line-height: 1.2 !important;
+    min-width: 0 !important;
   }
   .esp-team-l .esp-tname {
     text-align: right !important;
@@ -5638,8 +5639,8 @@ input:checked + .slider:before {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 6px !important;
-    padding: 0 10px !important;
+    gap: 4px !important;
+    padding: 0 6px !important;
     flex-shrink: 0 !important;
   }
   .esp-vs-score {
