@@ -89,9 +89,7 @@ body::before {
   padding: 12px 20px 10px;
   border-bottom: 1px solid var(--border);
   position: sticky; top: 0; z-index: 100;
-  background: rgba(3, 3, 4, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(3, 3, 4, 0.95);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
   gap: 8px;
 }
@@ -233,9 +231,7 @@ body::before {
   position: sticky;
   top: 60px;
   z-index: 99;
-  background: rgba(10, 10, 12, 0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(10, 10, 12, 0.95);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
   align-items: center;
@@ -381,8 +377,6 @@ body::before {
   top: calc(100% + 8px);
   width: 220px;
   background: rgba(13, 13, 16, 0.96);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 70, 85, 0.02);
@@ -563,9 +557,7 @@ body::before {
 /* Glassmorphism card blocks */
 .hero-rank-block,
 .hero-streak-block {
-  background: rgba(15, 15, 18, 0.7) !important;
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
+  background: rgba(15, 15, 18, 0.85) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-radius: 12px !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.02) !important;
@@ -672,8 +664,7 @@ body::before {
   padding: 20px;
   position: relative;
   overflow: hidden;
-  will-change: transform, opacity;
-  transition: border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+  transition: border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
               transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
               box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
@@ -803,7 +794,6 @@ body::before {
   overflow: hidden;
   position: relative;
   cursor: default;
-  will-change: transform, opacity;
   transition: var(--transition);
   grid-column: span 2;
   opacity: 0;
@@ -907,7 +897,6 @@ body::before {
   opacity: 0; transition: var(--transition);
   overflow: hidden;
   position: relative;
-  will-change: transform, opacity;
 }
 .map-card-bento.visible { animation: cardIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .map-card-bento:hover { border-color: rgba(255,255,255,0.12); transform: translate3d(0, -4px, 0); }
@@ -961,7 +950,7 @@ body::before {
 
 /* ── MATCH ROWS ── */
 .matches-wrap { display: contents; }
-.match-item { grid-column: span 12; opacity: 0; will-change: transform, opacity; }
+.match-item { grid-column: span 12; opacity: 0; }
 .match-item.visible { animation: cardIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
 .match-row {

@@ -376,8 +376,8 @@ def optimize_response(response):
     elif path.startswith('/api/v3/meta-comps') or path.startswith('/api/v2/') or path.endswith('.json'):
         response.headers['Cache-Control'] = 'public, max-age=600' # 10 minutes
     elif path.endswith('.css') or path.endswith('.js'):
-        # Client-side static assets are immutable and cache-busted, cache for 1 year
-        response.headers['Cache-Control'] = 'public, max-age=31536000, immutable'
+        # Cache-busted via query params (e.g. ?v=3.0) — allow revalidation, not immutable
+        response.headers['Cache-Control'] = 'public, max-age=0, must-revalidate'
     elif path.endswith('.html') or path.endswith('.svg') or path.endswith('.png') or path.endswith('.jpg') or path.endswith('.webp') or path.endswith('.gif'):
         response.headers['Cache-Control'] = 'public, max-age=86400' # 24 hours
         

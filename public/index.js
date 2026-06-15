@@ -2589,12 +2589,6 @@ function updateMatchesListUI() {
       const kd = m.deaths ? (m.kills / m.deaths).toFixed(2) : m.kills.toFixed(2);
       const agentIcon = getAgentIconUrl(m.agentName);
       
-      const wl = m.won ? 'win' : 'loss';
-      const acs = Math.round(m.score / 100);
-      const grade = getGrade(m.kills, m.deaths, m.assists, acs, m.won);
-      const kd = m.deaths ? (m.kills / m.deaths).toFixed(2) : m.kills.toFixed(2);
-      const agentIcon = getAgentIconUrl(m.agentName);
-      
       const isMatchMVP = m.mvpNames?.match?.toLowerCase() === PLAYER_NAME.toLowerCase();
       const isTeamMVP = !isMatchMVP && m.mvpNames?.team?.toLowerCase() === PLAYER_NAME.toLowerCase();
 
