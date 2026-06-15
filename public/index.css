@@ -92,7 +92,6 @@ body::before {
   background: rgba(3, 3, 4, 0.95);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
   gap: 8px;
-  will-change: transform;
 }
 .topbar-main-row {
   display: flex;
@@ -240,7 +239,6 @@ body::before {
   padding: 10px 24px;
   gap: 16px;
   overflow: visible;
-  will-change: transform;
 }
 
 .tracker-nav-left {
