@@ -8828,6 +8828,8 @@ let vctFranchiseData = null;
 let allMatchesCache = [];
 
 function toggleMainView(view) {
+  document.body.classList.remove('scrolled-down');
+  document.body.classList.remove('scrolled-up');
   document.querySelectorAll('.topbar-tab').forEach(t => t.classList.remove('active'));
   const targetTab = document.getElementById('tab-' + view);
   if (targetTab) targetTab.classList.add('active');
@@ -10368,6 +10370,8 @@ function smoothScrollTo(elementId, event) {
     
     // Set the header to scrolled-down state immediately to hide the topbar in parallel
     isProgrammaticScroll = true;
+    document.body.classList.remove('scrolled-up');
+    document.body.classList.add('scrolled-down');
     
     window.scrollTo({
       top: offsetPosition,
@@ -10490,7 +10494,44 @@ function initUnifiedScrollManager() {
           }
         }
 
-        // 2. Sticky Header Hiding removed — scrolled-down/scrolled-up classes had no CSS rules
+        // 2. Sticky Header Hiding (Desktop width > 800px)
+        if (!isProgrammaticScroll) {
+          const activeTab = document.querySelector('.topbar-tab.active');
+          const isTrackerActive = activeTab && activeTab.id === 'tab-tracker';
+
+          if (isTrackerActive && currentScrollY > 150) {
+            const diff = currentScrollY - lastScrollY;
+            
+            if ((diff > 0 && scrollAccumulator < 0) || (diff < 0 && scrollAccumulator > 0)) {
+              scrollAccumulator = 0;
+            }
+            scrollAccumulator += diff;
+            
+            const threshold = 15;
+            if (scrollAccumulator > threshold) {
+              if (headerState !== 'down') {
+                headerState = 'down';
+                body.classList.add('scrolled-down');
+                body.classList.remove('scrolled-up');
+              }
+              scrollAccumulator = 0;
+            } else if (scrollAccumulator < -threshold) {
+              if (headerState !== 'up') {
+                headerState = 'up';
+                body.classList.add('scrolled-up');
+                body.classList.remove('scrolled-down');
+              }
+              scrollAccumulator = 0;
+            }
+          } else {
+            if (headerState !== '') {
+              headerState = '';
+              body.classList.remove('scrolled-down');
+              body.classList.remove('scrolled-up');
+            }
+            scrollAccumulator = 0;
+          }
+        }
 
         lastScrollY = currentScrollY;
         rAFScheduled = false;
