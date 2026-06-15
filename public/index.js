@@ -1040,10 +1040,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         setStatus(`${count} matches stored — hit Fetch to update`, 'ok');
         const stored = await loadAllMatches();
         processMatches(stored);
-        // Asynchronously prefetch match details in background on startup to populate weapons and rounds automatically
-        setTimeout(() => {
-          prefetchMatchDetails(stored);
-        }, 500);
+        // Prefetching all match details in the background is disabled to prevent HenrikDev API 429 rate limit blocks, IndexedDB lockups, and page crashes. Details are fetched dynamically on expansion.
       }
       // Note: We deliberately do NOT call dismissLanding() here anymore! 
       // The user now lands on the Login page with their last profile Riot ID elegantly prefilled,
@@ -1300,12 +1297,7 @@ async function fetchAll(){
       setTimeout(() => {
         processMatches(allMatches);
         
-        // Asynchronously prefetch match details in background to populate weapons and rounds automatically
-        if (allMatches.length > 0) {
-          setTimeout(() => {
-            prefetchMatchDetails(allMatches);
-          }, 300);
-        }
+        // Prefetching match details in the background is disabled to prevent API rate limit blocks, IndexedDB lockups, and page crashes.
 
         const newCount = matchData.data.length;
         const totalCount = allMatches.length;
@@ -3342,10 +3334,7 @@ window.switchMatchAiTab = function(btn, tabName) {
 function buildMatchAnalysis(match, allMatches = null) {
   const allPlayers = getPlayerList(match);
   const rounds     = match.rounds || [];
-  const me = allPlayers.find(p =>
-    p.name?.toLowerCase() === PLAYER_NAME.toLowerCase() &&
-    p.tag?.toLowerCase()  === PLAYER_TAG.toLowerCase()
-  );
+  const me = findMe(match);
   if (!me) return '<div class="no-detail">Player not found in match data</div>';
 
   // Calculate historical baseline averages
@@ -3354,10 +3343,7 @@ function buildMatchAnalysis(match, allMatches = null) {
   if (allMatches && allMatches.length > 0) {
     let sumK = 0, sumD = 0, sumACS = 0, sumHS = 0, sumShots = 0, count = 0;
     allMatches.forEach(m => {
-      const p = getPlayerList(m).find(pl =>
-        pl.name?.toLowerCase() === PLAYER_NAME.toLowerCase() &&
-        pl.tag?.toLowerCase()  === PLAYER_TAG.toLowerCase()
-      );
+      const p = findMe(m);
       if (p) {
         const s = p.stats || {};
         sumK += s.kills || 0;
@@ -3381,10 +3367,7 @@ function buildMatchAnalysis(match, allMatches = null) {
     // Fatigue warning checking (drop-off in last 5 matches)
     for (let i = 0; i < Math.min(allMatches.length, 5); i++) {
       const m = allMatches[i];
-      const p = getPlayerList(m).find(pl =>
-        pl.name?.toLowerCase() === PLAYER_NAME.toLowerCase() &&
-        pl.tag?.toLowerCase()  === PLAYER_TAG.toLowerCase()
-      );
+      const p = findMe(m);
       if (p && m.rounds) {
         const myP = p.puuid || p.subject || p.id || '';
         const myPuuids = [p.puuid, p.subject, p.id, myP].filter(Boolean);
@@ -3725,7 +3708,11 @@ function buildMatchAnalysis(match, allMatches = null) {
     : 0;
   const myRankInTeam = [...allied]
     .sort((a, b) => (b.stats?.score || 0) - (a.stats?.score || 0))
-    .findIndex(p => p.name?.toLowerCase() === PLAYER_NAME.toLowerCase()) + 1;
+    .findIndex(p => {
+      const targetName = normalizePlayerName(PLAYER_NAME);
+      const targetTag = normalizePlayerName(PLAYER_TAG);
+      return normalizePlayerName(p.name) === targetName && normalizePlayerName(p.tag) === targetTag;
+    }) + 1;
 
   // ── GENERATE ANALYSIS ──
   const strengths = [];
@@ -10462,15 +10449,8 @@ function initUnifiedScrollManager() {
   // Initialize the observer for section Scrollspy tracking
   initScrollspyObserver();
 
-  let scrollTimeout;
+  // scrollTimeout is not needed since is-scrolling is disabled to optimize scrolling performance and prevent layout thrashing crashes
   window.addEventListener('scroll', () => {
-    if (!body.classList.contains('is-scrolling')) {
-      body.classList.add('is-scrolling');
-    }
-    clearTimeout(scrollTimeout);
-    scrollTimeout = setTimeout(() => {
-      body.classList.remove('is-scrolling');
-    }, 150);
 
     if (!rAFScheduled) {
       rAFScheduled = true;

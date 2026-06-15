@@ -1823,37 +1823,7 @@ body::after {
   -webkit-backdrop-filter: blur(12px) !important;
 }
 
-/* Disable pointer events globally on scroll to prevent hover state triggering */
-body.is-scrolling * {
-  pointer-events: none !important;
-}
 
-/* Reset transforms, transitions, and shadows ONLY on hoverable cards and rows when scrolling starts */
-body.is-scrolling .card,
-body.is-scrolling .agent-bento,
-body.is-scrolling .map-card-bento,
-body.is-scrolling .impact-bento,
-body.is-scrolling .match-row,
-body.is-scrolling .deep-card {
-  transition: none !important;
-  transform: none !important;
-  box-shadow: none !important;
-}
-
-/* Remove backdrop-filter from sticky headers only during active scroll to avoid massive GPU recomposition costs */
-body.is-scrolling .topbar,
-body.is-scrolling .tracker-nav {
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  background: rgba(11, 11, 15, 0.98) !important;
-}
-
-/* Disable the heavy noise filter overlay and background glows during scrolls to maximize frame rate */
-body.is-scrolling::before,
-body.is-scrolling::after,
-body.is-scrolling .glass-orb-2 {
-  display: none !important;
-}
 
 .card:hover, .agent-bento:hover, .map-card-bento:hover, .impact-bento:hover, .match-row:hover, .deep-card:hover {
   transform: translateY(-4px);
