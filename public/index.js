@@ -3287,7 +3287,9 @@ function renderAnalysis(result, stats) {
 
   safeSetInnerHtml('ai-verdict-txt', sanitizeHtml(result.verdict));
   document.getElementById('ai-verdict').style.display = 'block';
-  document.getElementById('ai-results').classList.add('active');
+  const aiRes = document.getElementById('ai-results');
+  aiRes.style.display = '';
+  aiRes.classList.add('active');
 }
 
 async function runAnalysis() {
@@ -5164,10 +5166,12 @@ async function runDeepAnalysis() {
   try {
     const html = buildDeepAnalysis(matches);
     results.innerHTML = html;
+    results.style.display = '';
     results.classList.add('active');
     showToast('Deep analysis complete ✓');
   } catch(e) {
     results.innerHTML = `<div class="no-detail" style="color:var(--loss);padding:16px">Analysis error: ${escapeHtml(e.message)}</div>`;
+    results.style.display = '';
     results.classList.add('active');
     console.error(e);
   } finally {
@@ -5840,10 +5844,12 @@ async function runPerfLab() {
 
   try {
     results.innerHTML = buildPerfLab(matches);
+    results.style.display = '';
     results.classList.add('active');
     showToast('Performance Lab complete ✓');
   } catch(e) {
     results.innerHTML = `<div style="padding:16px;color:var(--loss);font-family:'DM Mono',monospace;font-size:11px;">Error: ${escapeHtml(e.message)}</div>`;
+    results.style.display = '';
     results.classList.add('active');
     console.error(e);
   } finally {
