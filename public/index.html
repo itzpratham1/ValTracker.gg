@@ -13,7 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"
   crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
-<link rel="stylesheet" href="/index.css?v=16.2">
+<link rel="stylesheet" href="/index.css?v=16.3">
 <style>
 /* ── GLASSMORPHISM OVERRIDES & VALORANT CRIMSON THEME ── */
 html {
@@ -1567,7 +1567,7 @@ body {
 
 <div class="toast" id="toast"></div>
 
-<script src="/index.js?v=3.3" defer></script>
+<script src="/index.js?v=3.4" defer></script>
 <style>/* ── GLASSMORPHISM OVERRIDES ── */
 
 /* Glow-borders on Match panel containers */
@@ -1748,12 +1748,6 @@ body::after {
     z-index: 999 !important;
     transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1) !important;
     will-change: transform;
-  }
-  body.scrolled-down .topbar {
-    transform: translateY(-100%) !important;
-  }
-  body.scrolled-down .tracker-nav {
-    transform: translateY(calc(-1 * var(--topbar-height, 108px) - 1.5px)) !important;
   }
 }
 @media (max-width: 800px) {
