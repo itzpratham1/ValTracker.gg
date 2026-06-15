@@ -8828,10 +8828,8 @@ let vctFranchiseData = null;
 let allMatchesCache = [];
 
 function toggleMainView(view) {
-  const tb = document.querySelector('.topbar');
-  const tn = document.getElementById('tracker-nav');
-  if (tb) tb.style.transform = '';
-  if (tn) tn.style.transform = '';
+  document.body.classList.remove('scrolled-down');
+  document.body.classList.remove('scrolled-up');
   document.querySelectorAll('.topbar-tab').forEach(t => t.classList.remove('active'));
   const targetTab = document.getElementById('tab-' + view);
   if (targetTab) targetTab.classList.add('active');
@@ -10372,10 +10370,8 @@ function smoothScrollTo(elementId, event) {
     
     // Set the header to scrolled-down state immediately to hide the topbar in parallel
     isProgrammaticScroll = true;
-    const tb = document.querySelector('.topbar');
-    const tn = document.getElementById('tracker-nav');
-    if (tb) tb.style.transform = 'translateY(-100%)';
-    if (tn) tn.style.transform = 'translateY(calc(-1 * var(--topbar-height, 108px) - 1.5px))';
+    document.body.classList.remove('scrolled-up');
+    document.body.classList.add('scrolled-down');
     
     window.scrollTo({
       top: offsetPosition,
@@ -10468,8 +10464,6 @@ function initUnifiedScrollManager() {
 
   const body = document.body;
   const backToTopBtn = document.getElementById('back-to-top');
-  const topbarEl = document.querySelector('.topbar');
-  const trackerNavEl = document.getElementById('tracker-nav');
 
   let backToTopVisible = false;
   let headerState = ''; // 'up', 'down', or ''
@@ -10500,7 +10494,7 @@ function initUnifiedScrollManager() {
           }
         }
 
-        // 2. Sticky Header Hiding — direct transform on 2 elements (no body class = no full-DOM recalc)
+        // 2. Sticky Header Hiding (Desktop width > 800px)
         if (!isProgrammaticScroll) {
           const activeTab = document.querySelector('.topbar-tab.active');
           const isTrackerActive = activeTab && activeTab.id === 'tab-tracker';
@@ -10517,23 +10511,23 @@ function initUnifiedScrollManager() {
             if (scrollAccumulator > threshold) {
               if (headerState !== 'down') {
                 headerState = 'down';
-                if (topbarEl) topbarEl.style.transform = 'translateY(-100%)';
-                if (trackerNavEl) trackerNavEl.style.transform = 'translateY(calc(-1 * var(--topbar-height, 108px) - 1.5px))';
+                body.classList.add('scrolled-down');
+                body.classList.remove('scrolled-up');
               }
               scrollAccumulator = 0;
             } else if (scrollAccumulator < -threshold) {
               if (headerState !== 'up') {
                 headerState = 'up';
-                if (topbarEl) topbarEl.style.transform = '';
-                if (trackerNavEl) trackerNavEl.style.transform = '';
+                body.classList.add('scrolled-up');
+                body.classList.remove('scrolled-down');
               }
               scrollAccumulator = 0;
             }
           } else {
             if (headerState !== '') {
               headerState = '';
-              if (topbarEl) topbarEl.style.transform = '';
-              if (trackerNavEl) trackerNavEl.style.transform = '';
+              body.classList.remove('scrolled-down');
+              body.classList.remove('scrolled-up');
             }
             scrollAccumulator = 0;
           }
