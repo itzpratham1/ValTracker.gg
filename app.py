@@ -413,11 +413,11 @@ def optimize_response(response):
     if len(data) < 500:
         return response
         
-    gzip_buffer = io.BytesIO()
-    with gzip.GzipFile(mode="wb", fileobj=gzip_buffer) as gzip_file:
-        gzip_file.write(data)
-        
-    response.set_data(gzip_buffer.getvalue())
+    compressed = gzip.compress(data)
+    del data  # Free original immediately to reduce peak memory
+    
+    response.set_data(compressed)
+    del compressed  # Free compressed buffer after setting
     response.headers["Content-Encoding"] = "gzip"
     response.headers["Content-Length"] = len(response.get_data())
     response.headers["Vary"] = "Accept-Encoding"
@@ -430,12 +430,15 @@ rate_limit_records = {}
 # In-memory cache to prevent rate-limits and load data instantly
 cache = {}
 CACHE_TTL = 60  # 1 minute caching
-CACHE_MAX_SIZE = 1000  # Max entries to prevent memory leaks on 512MB free tier
+CACHE_MAX_SIZE = 150  # Keep small — each entry can be 100KB+ of API JSON
 
 # In-memory image proxy cache to avoid repeated upstream fetches
 image_cache = {}
 IMAGE_CACHE_TTL = 600  # 10 minutes
-IMAGE_CACHE_MAX = 200
+IMAGE_CACHE_MAX = 30  # Keep small — each entry is raw binary
+
+# Rate limit records — cap to prevent unbounded growth
+RATE_LIMIT_MAX = 5000
 
 # Lazy pruning: only prune every 30 seconds, not on every request
 _last_prune_time = time.time()
@@ -461,6 +464,12 @@ def prune_rate_limit_records():
         if not history:
             rate_limit_records.pop(k, None)
         elif now - history[0] > 60:
+            rate_limit_records.pop(k, None)
+    # Hard cap to prevent unbounded growth under traffic spikes
+    if len(rate_limit_records) > RATE_LIMIT_MAX:
+        # Keep only the most recent half
+        sorted_keys = sorted(rate_limit_records.keys(), key=lambda k: rate_limit_records[k][-1] if rate_limit_records[k] else 0)
+        for k in sorted_keys[:len(rate_limit_records) - RATE_LIMIT_MAX // 2]:
             rate_limit_records.pop(k, None)
 
 def prune_image_cache():
