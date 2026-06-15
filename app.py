@@ -430,23 +430,29 @@ rate_limit_records = {}
 # In-memory cache to prevent rate-limits and load data instantly
 cache = {}
 CACHE_TTL = 60  # 1 minute caching
+CACHE_MAX_SIZE = 1000  # Max entries to prevent memory leaks on 512MB free tier
 
-# In-memory player rank cache to respect HenrikDev API limits
-player_rank_cache = {}
+# In-memory image proxy cache to avoid repeated upstream fetches
+image_cache = {}
+IMAGE_CACHE_TTL = 600  # 10 minutes
+IMAGE_CACHE_MAX = 200
+
+# Lazy pruning: only prune every 30 seconds, not on every request
+_last_prune_time = time.time()
+_PRUNE_INTERVAL = 30
 
 def prune_cache():
     now = time.time()
+    # Remove expired entries
     for k in list(cache.keys()):
         entry = cache.get(k)
         if entry and now - entry.get("timestamp", 0) > CACHE_TTL:
             cache.pop(k, None)
-
-def prune_player_rank_cache():
-    now = time.time()
-    for k in list(player_rank_cache.keys()):
-        entry = player_rank_cache.get(k)
-        if entry and now - entry.get("timestamp", 0) > 3600:
-            player_rank_cache.pop(k, None)
+    # Cap total cache size to prevent memory leak on constrained environments
+    if len(cache) > CACHE_MAX_SIZE:
+        sorted_keys = sorted(cache.keys(), key=lambda k: cache[k].get("timestamp", 0))
+        for k in sorted_keys[:len(cache) - CACHE_MAX_SIZE]:
+            cache.pop(k, None)
 
 def prune_rate_limit_records():
     now = time.time()
@@ -455,14 +461,28 @@ def prune_rate_limit_records():
         if not history:
             rate_limit_records.pop(k, None)
         elif now - history[0] > 60:
-            # Only prune when the oldest request in the window is > 60s old
             rate_limit_records.pop(k, None)
+
+def prune_image_cache():
+    now = time.time()
+    for k in list(image_cache.keys()):
+        entry = image_cache.get(k)
+        if entry and now - entry.get("timestamp", 0) > IMAGE_CACHE_TTL:
+            image_cache.pop(k, None)
+    if len(image_cache) > IMAGE_CACHE_MAX:
+        sorted_keys = sorted(image_cache.keys(), key=lambda k: image_cache[k].get("timestamp", 0))
+        for k in sorted_keys[:len(image_cache) - IMAGE_CACHE_MAX]:
+            image_cache.pop(k, None)
 
 @app.before_request
 def before_request_cleanup():
-    prune_cache()
-    prune_player_rank_cache()
-    prune_rate_limit_records()
+    global _last_prune_time
+    now = time.time()
+    if now - _last_prune_time > _PRUNE_INTERVAL:
+        _last_prune_time = now
+        prune_cache()
+        prune_rate_limit_records()
+        prune_image_cache()
 
 def rate_limit(requests_per_minute=30):
     def decorator(f):
@@ -641,6 +661,7 @@ def clear_server_cache():
     if not token or token != ADMIN_SECRET:
         return jsonify({"status": 403, "message": "Forbidden: Invalid secret token"}), 403
     cache.clear()
+    image_cache.clear()
     return jsonify({"status": "ok", "message": "Server cache cleared"})
 
 ALLOWED_IMAGE_DOMAINS = {"owcdn.net", "vlr.gg", "valorant-api.com", "rstatic.net"}
@@ -663,7 +684,16 @@ def proxy_image():
                 break
         if not valid_domain:
             return "Forbidden image domain", 403
-            
+
+        # Check in-memory image cache
+        now = time.time()
+        cached = image_cache.get(url)
+        if cached and now - cached["timestamp"] < IMAGE_CACHE_TTL:
+            return send_file(
+                io.BytesIO(cached["content"]),
+                mimetype=cached["mimetype"]
+            )
+
         r = requests.get(url, headers={'User-Agent': 'Mozilla/5.0', 'Referer': 'https://www.vlr.gg/'}, timeout=8, allow_redirects=False)
         # Follow at most one redirect (prevent redirect chains / SSRF)
         if r.status_code in (301, 302, 307, 308) and 'Location' in r:
@@ -675,6 +705,10 @@ def proxy_image():
                 r = requests.get(redirect_url, headers={'User-Agent': 'Mozilla/5.0', 'Referer': 'https://www.vlr.gg/'}, timeout=8, allow_redirects=False)
         if r.status_code != 200:
             return "Failed to load image from upstream", r.status_code
+
+        # Cache successful responses
+        image_cache[url] = {"content": r.content, "mimetype": r.headers.get('Content-Type', 'image/png'), "timestamp": now}
+
         return send_file(
             io.BytesIO(r.content),
             mimetype=r.headers.get('Content-Type', 'image/png')

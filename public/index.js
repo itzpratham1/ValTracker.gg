@@ -5738,7 +5738,11 @@ async function runPerfLab() {
   const loading = document.getElementById('plab-loading');
   const results = document.getElementById('plab-results');
   let matches = [];
-  try { matches = await loadAllMatches(); } catch(e) {}
+  try { matches = await loadAllMatches(); } catch(e) {
+    console.error('Performance Lab: loadAllMatches failed:', e);
+    showToast('Failed to load match data.');
+    return;
+  }
   if (!matches.length) { showToast('Fetch your stats first'); return; }
 
   btn.disabled = true;
@@ -10517,7 +10521,7 @@ function initUnifiedScrollManager() {
 }
 
 // --- SKINS STORE & COSMETICS LOGIC ---
-let storeBundleTimer = null;
+let storeBundleTimers = [];
 let allSkinsList = [];
 let allBundlesList = [];
 let filteredSkinsList = [];
@@ -10686,15 +10690,16 @@ async function initStoreView() {
 
 function renderFeaturedBundles(bundles) {
   const container = document.getElementById('store-featured-container');
-  if (storeBundleTimer) clearInterval(storeBundleTimer);
+  storeBundleTimers.forEach(t => clearInterval(t));
+  storeBundleTimers = [];
   
   container.innerHTML = bundles.map((b, idx) => {
     let secondsLeft = b.seconds_remaining;
-    const timerId = `bundle-timer-${idx}`;
+    const elTimerId = `bundle-timer-${idx}`;
     
     // Set up countdown timer interval
-    storeBundleTimer = setInterval(() => {
-      const el = document.getElementById(timerId);
+    const bundleInterval = setInterval(() => {
+      const el = document.getElementById(elTimerId);
       if (!el) return;
       if (secondsLeft <= 0) {
         el.textContent = "EXPIRED";
@@ -10707,6 +10712,7 @@ function renderFeaturedBundles(bundles) {
       const s = Math.floor(secondsLeft % 60);
       el.textContent = `${d}D ${h}H ${m}M ${s}S`;
     }, 1000);
+    storeBundleTimers.push(bundleInterval);
 
     // Look up bundle name dynamically from valorant-api bundles metadata
     const bundleMeta = allBundlesList.find(x => x.uuid === b.bundle_uuid);
@@ -12392,6 +12398,13 @@ function fetchVCTMetaComps(mapKey) {
     })
     .catch(err => {
       console.error("Failed to load VCT Meta Comps:", err);
+      if (lastFetchedMap !== mapKey) {
+        favLineup.innerHTML = '<div style="font-size: 10px; color: var(--loss); text-align: center; width: 100%;">Failed to load pro data</div>';
+        champLineup.innerHTML = '<div style="font-size: 10px; color: var(--loss); text-align: center; width: 100%;">Failed to load pro data</div>';
+        heatmapList.innerHTML = '<div style="grid-column: 1 / -1; font-size: 11px; color: var(--loss); text-align: center; padding: 12px;">Failed to load pro composition data. Try again.</div>';
+        patchTxt.innerText = 'Patch --';
+        totalMatchesTxt.innerText = '0 matches';
+      }
     });
 }
 
@@ -12635,6 +12648,10 @@ function initSearchAutocomplete(inputId, tagInputId, dropdownId, regionSelectId)
   let debounceTimeout = null;
 
   if (!input || !dropdown) return;
+
+  // Prevent duplicate listener registration
+  if (input.dataset.autocompleteInit) return;
+  input.dataset.autocompleteInit = '1';
 
   const showRecsIfEmpty = () => {
     const val = input.value.trim();
