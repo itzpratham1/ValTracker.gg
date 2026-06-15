@@ -4764,6 +4764,11 @@ input:checked + .slider:before {
   .coach-grid, .store-grid, .esp-schedule-grid {
     grid-template-columns: 1fr !important;
     gap: 20px !important;
+    overflow: hidden !important;
+  }
+  #schedule-col-upcoming, #schedule-col-results {
+    overflow: hidden !important;
+    min-width: 0 !important;
   }
 }
 
