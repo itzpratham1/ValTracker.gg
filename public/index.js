@@ -393,6 +393,29 @@ async function retryMapImg(imgEl, mapName) {
 function setStatus(msg,type=''){ if(type==='error') { showToast(msg); } else { console.log('[STATUS]', msg); } }
 function showToast(msg){const t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 
+// ── Memory-aware cleanup: monitors browser memory and evicts data if approaching limit ──
+function checkMemoryPressure() {
+  try {
+    if (!performance.memory) return;
+    const usedMB = performance.memory.usedJSHeapSize / (1024 * 1024);
+    const limitMB = performance.memory.jsHeapSizeLimit / (1024 * 1024);
+    const usage = usedMB / limitMB;
+    if (usage > 0.75) {
+      console.warn(`[MEMORY] High memory usage: ${Math.round(usedMB)}MB / ${Math.round(limitMB)}MB (${Math.round(usage*100)}%)`);
+      // Evict the match detail store entirely
+      if (window._matchDetailStore.size > 5) {
+        const keys = [...window._matchDetailStore.keys()];
+        for (let i = 5; i < keys.length; i++) window._matchDetailStore.delete(keys[i]);
+        console.warn('[MEMORY] Evicted old match detail data');
+      }
+      // Close open match panels to free DOM memory
+      document.querySelectorAll('.match-panel.open').forEach(p => { p.classList.remove('open'); p.innerHTML = ''; });
+      document.querySelectorAll('.match-row.open').forEach(r => r.classList.remove('open'));
+    }
+  } catch(e) {}
+}
+setInterval(checkMemoryPressure, 15000);
+
 // ── Copy Riot ID ──
 function copyRiotId() {
   const name = document.getElementById('player-name-input')?.value.trim() || '';
@@ -680,7 +703,7 @@ async function loadAllMatches() {
         return normalizeMode(mMode) === currentModeNormalized;
       });
       
-      const records = all.sort((a,b) => (b.date||0)-(a.date||0));
+      const records = all.sort((a,b) => (b.date||0)-(a.date||0)).slice(0, 50);
       resolve(records.map(r => r.data));
     };
     req.onerror = () => reject(req.error);
@@ -805,7 +828,10 @@ function generateVctTrivia(comps) {
     const agentWinCounts = {};
     const agentMatchCounts = {};
     
-    comps.forEach(c => {
+    // Only process latest 200 comps to save memory
+    const limitedComps = comps.slice(0, 200);
+    
+    limitedComps.forEach(c => {
       const agents = c.agents || [];
       const map = c.map_name;
       const won = c.has_won;
@@ -1509,7 +1535,15 @@ function processMatches(matches){
     const myR=myTeam?.rounds_won??'?';
     const oppR=oppTeam?.rounds_won??'?';
     rrHistory.push({won,kills:k,matchId:match.metadata?.matchid||match.metadata?.match_id});
-    const gameStart=match.metadata?.game_start||match.metadata?.gameStart||null;const totalRoundsPlayed=(typeof myR==='number'&&typeof oppR==='number')?(myR+oppR):(match.rounds?.length||1);const matchACS=Math.round(sc/Math.max(1,totalRoundsPlayed));recentMatches.push({won,agentName,map:mapName,kills:k,deaths:d,assists:a,score:sc,acs:matchACS,rounds:`${myR}-${oppR}`,hs,shots,myTeamId,matchId:match.metadata?.matchid||match.metadata?.match_id,gameStart,rawMatch:match});
+    const gameStart=match.metadata?.game_start||match.metadata?.gameStart||null;const totalRoundsPlayed=(typeof myR==='number'&&typeof oppR==='number')?(myR+oppR):(match.rounds?.length||1);const matchACS=Math.round(sc/Math.max(1,totalRoundsPlayed));
+    const _matchId = match.metadata?.matchid||match.metadata?.match_id;
+    const _allP = getPlayerList(match);
+    const _lobbyInfo = getLobbyRankInfo(_allP, myTeamId);
+    const _getACS = p => Math.round((p.stats?.score || 0) / 100);
+    const _matchMVP = _allP.length ? _allP.reduce((b,p)=>_getACS(p)>_getACS(b)?p:b,_allP[0]) : null;
+    const _allied = _allP.filter(p=>(p.team||'').toLowerCase()===myTeamId);
+    const _teamMVP = _allied.length ? _allied.reduce((b,p)=>_getACS(p)>_getACS(b)?p:b,_allied[0]) : null;
+    recentMatches.push({won,agentName,map:mapName,kills:k,deaths:d,assists:a,score:sc,acs:matchACS,rounds:`${myR}-${oppR}`,hs,shots,myTeamId,matchId:_matchId,gameStart,lobbyRank:_lobbyInfo,mvpNames:{match:_matchMVP?.name,team:_teamMVP?.name}});
   });
 
   const n=counted||1;
@@ -1536,6 +1570,14 @@ function processMatches(matches){
 
   _lastAgentMap = agentMap; _lastMapData = mapData; _lastAllMatches = matches;
   window._recentMatchStats = recentMatches.slice().reverse(); // oldest→newest for graph
+
+  // Store raw match data in a capped Map for panel expansion (prevents OOM)
+  window._matchDetailStore.clear();
+  for (let i = 0; i < Math.min(matches.length, 30); i++) {
+    const m = matches[i];
+    const mid = m.metadata?.matchid || m.metadata?.match_id;
+    if (mid) window._matchDetailStore.set(mid, m);
+  }
   
   if (matches && matches.length > 0) {
     const me = findMe(matches[0]);
@@ -1986,7 +2028,7 @@ async function togglePanel(idx,matchId){
     panel.classList.add('open');
     
     if (!panel.dataset.panelRendered) {
-      const m = window._allRenderedMatches.find(x => x.matchId === matchId);
+      const m = window._allRenderedMatches[idx];
       if (m) {
         panel.innerHTML = buildMatchPanelHTML(m, idx);
         panel.dataset.panelRendered = '1';
@@ -2404,7 +2446,8 @@ function populateFullDetailTabs(match, idx) {
 
 
 
-window._allRenderedMatches = []; // store for filtering
+window._allRenderedMatches = []; // store for filtering (NO rawMatch — lightweight)
+window._matchDetailStore = new Map(); // matchId → rawMatch (capped at 30 to prevent OOM)
 window._activeFilter = 'all';
 window._activeSearch = '';
 
@@ -2546,13 +2589,14 @@ function updateMatchesListUI() {
       const kd = m.deaths ? (m.kills / m.deaths).toFixed(2) : m.kills.toFixed(2);
       const agentIcon = getAgentIconUrl(m.agentName);
       
-      const allPlayers = getPlayerList(m.rawMatch);
-      const getACS = p => Math.round((p.stats?.score || 0) / 100);
-      const matchMVPPlayer = allPlayers.length ? allPlayers.reduce((b, p) => getACS(p) > getACS(b) ? p : b, allPlayers[0]) : null;
-      const alliedPlayers = allPlayers.filter(p => (p.team || '').toLowerCase() === m.myTeamId);
-      const teamMVPPlayer = alliedPlayers.length ? alliedPlayers.reduce((b, p) => getACS(p) > getACS(b) ? p : b, alliedPlayers[0]) : null;
-      const isMatchMVP = matchMVPPlayer?.name?.toLowerCase() === PLAYER_NAME.toLowerCase();
-      const isTeamMVP = !isMatchMVP && teamMVPPlayer?.name?.toLowerCase() === PLAYER_NAME.toLowerCase();
+      const wl = m.won ? 'win' : 'loss';
+      const acs = Math.round(m.score / 100);
+      const grade = getGrade(m.kills, m.deaths, m.assists, acs, m.won);
+      const kd = m.deaths ? (m.kills / m.deaths).toFixed(2) : m.kills.toFixed(2);
+      const agentIcon = getAgentIconUrl(m.agentName);
+      
+      const isMatchMVP = m.mvpNames?.match?.toLowerCase() === PLAYER_NAME.toLowerCase();
+      const isTeamMVP = !isMatchMVP && m.mvpNames?.team?.toLowerCase() === PLAYER_NAME.toLowerCase();
 
       const matchDateStr = formatMatchDate(m.gameStart);
       const matchIsToday = isToday(m.gameStart);
@@ -2578,7 +2622,7 @@ function updateMatchesListUI() {
           <div class="mr-score">${m.rounds}</div>
           <div class="mr-lobby">
             ${(() => {
-              const info = getLobbyRankInfo(allPlayers, m.myTeamId);
+              const info = m.lobbyRank;
               if (!info || !info.overall) return '<span class="mr-lobby-txt">—</span>';
               const img = getRankImgUrl(info.overall.name) || '';
               return (img ? `<img class="mr-lobby-img" src="${img}" loading="lazy" onerror="this.style.display='none'">` : '') + '<span class="mr-lobby-txt" style="color:' + getRankColor(info.overall.name) + '">' + info.overall.name.replace(' ', '<br>') + '</span>';
@@ -2637,7 +2681,8 @@ function buildMatchPanelHTML(m, idx) {
   const kd = m.deaths ? (m.kills / m.deaths).toFixed(2) : m.kills.toFixed(2);
   const agentIcon = getAgentIconUrl(m.agentName);
   
-  const allPlayers = getPlayerList(m.rawMatch);
+  const rawMatch = window._matchDetailStore.get(m.matchId) || null;
+  const allPlayers = rawMatch ? getPlayerList(rawMatch) : [];
   const getACS = p => Math.round((p.stats?.score || 0) / 100);
   const matchMVPPlayer = allPlayers.length ? allPlayers.reduce((b, p) => getACS(p) > getACS(b) ? p : b, allPlayers[0]) : null;
   const alliedPlayers = allPlayers.filter(p => (p.team || '').toLowerCase() === m.myTeamId);
@@ -2646,7 +2691,7 @@ function buildMatchPanelHTML(m, idx) {
   const isTeamMVP = !isMatchMVP && teamMVPPlayer?.name?.toLowerCase() === PLAYER_NAME.toLowerCase();
   const mvpBadge = isMatchMVP ? `<div class="mvp-header-badge match-mvp">👑 Match MVP</div>` : isTeamMVP ? `<div class="mvp-header-badge team-mvp">⭐ Team MVP</div>` : '';
   const _isRanked = (window._currentMode || 'competitive') === 'competitive';
-  const scoreboardHTML = buildScoreboard(m.rawMatch, m.myTeamId, _isRanked);
+  const scoreboardHTML = rawMatch ? buildScoreboard(rawMatch, m.myTeamId, _isRanked) : '<div class="no-detail">Match data not cached — click a tab to load</div>';
 
   return `
     <div class="panel-body">
@@ -2678,6 +2723,7 @@ function buildMatchPanelHTML(m, idx) {
               return `<div class="ps-item"><div class="psv" style="color:${col}">${rr > 0 ? '+' : ''}${rr}</div><div class="psl">RR Change</div></div>`;
             })()}
             ${(() => {
+              if (!rawMatch) return '';
               const info = getLobbyRankInfo(allPlayers, m.myTeamId);
               if (!info || !info.overall) return '';
               const img = getRankImgUrl(info.overall.name) || '';
@@ -4294,7 +4340,8 @@ window.openShareMatchModal = async function(idx, event) {
   const hsPct = m.shots ? Math.round((m.hs / m.shots) * 100) : 0;
   const grade = getGrade(m.kills, m.deaths, m.assists, acs, m.won);
   const kd = m.deaths ? (m.kills / m.deaths).toFixed(2) : m.kills.toFixed(2);
-  const allPlayers = getPlayerList(m.rawMatch);
+  const rawMatch = window._matchDetailStore.get(m.matchId) || null;
+  const allPlayers = rawMatch ? getPlayerList(rawMatch) : [];
   
   // Calculate MVP
   const getACS = p => Math.round((p.stats?.score || 0) / 100);
@@ -4327,7 +4374,7 @@ window.openShareMatchModal = async function(idx, event) {
   const userRankImg = getRankImgUrl(userRank) || '';
 
   // --- RICH MULTI-KILL & CLUTCH TELEMETRY EXTRACTION ---
-  const rounds = m.rawMatch.rounds || [];
+  const rounds = rawMatch?.rounds || [];
   let doubleKills = 0;
   let tripleKills = 0;
   let quadKills = 0;
@@ -7320,7 +7367,7 @@ function getHeatmapSvg(hsPct, height = 115) {
 function renderTopWeapons(matches) {
   // Aggregate weapon stats from match-level data (headshots per match)
   // We use agent names as proxy for weapon preference since we don't have
-  // per-weapon data in v3 — but we DO store rawMatch which has stats
+  // per-weapon data in v3 — we aggregate from match rounds if available
   const weaponData = {};
 
   // Weapon image URLs from valorant-api CDN (display names as keys)
@@ -8331,7 +8378,9 @@ function toggleHeadToHead() {
   const recentPlMap = {};
   const matches = window._allRenderedMatches || window._recentMatchStats || [];
   matches.forEach(m => {
-    const rawM = m.rawMatch || m;
+    const mid = m.matchId || '';
+    const rawM = window._matchDetailStore.get(mid) || null;
+    if (!rawM) return;
     getPlayerList(rawM).forEach(p => {
       if (!p.name || !p.tag) return;
       if (p.name.toLowerCase() === PLAYER_NAME.toLowerCase() && p.tag.toLowerCase() === PLAYER_TAG.toLowerCase()) return;

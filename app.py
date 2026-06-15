@@ -412,8 +412,12 @@ def optimize_response(response):
     # Don't compress very small responses
     if len(data) < 500:
         return response
+    
+    # Cap uncompressed data to 2MB to prevent memory explosion on free tier
+    if len(data) > 2 * 1024 * 1024:
+        return response
         
-    compressed = gzip.compress(data)
+    compressed = gzip.compress(data, compresslevel=6)  # level 6 balances speed vs ratio
     del data  # Free original immediately to reduce peak memory
     
     response.set_data(compressed)
@@ -430,19 +434,19 @@ rate_limit_records = {}
 # In-memory cache to prevent rate-limits and load data instantly
 cache = {}
 CACHE_TTL = 60  # 1 minute caching
-CACHE_MAX_SIZE = 150  # Keep small — each entry can be 100KB+ of API JSON
+CACHE_MAX_SIZE = 80  # Reduced from 150 to save RAM on free tier (512MB)
 
 # In-memory image proxy cache to avoid repeated upstream fetches
 image_cache = {}
 IMAGE_CACHE_TTL = 600  # 10 minutes
-IMAGE_CACHE_MAX = 30  # Keep small — each entry is raw binary
+IMAGE_CACHE_MAX = 15  # Reduced from 30 to save RAM
 
 # Rate limit records — cap to prevent unbounded growth
-RATE_LIMIT_MAX = 5000
+RATE_LIMIT_MAX = 2000  # Reduced from 5000
 
-# Lazy pruning: only prune every 30 seconds, not on every request
+# Lazy pruning: only prune every 15 seconds, not on every request
 _last_prune_time = time.time()
-_PRUNE_INTERVAL = 30
+_PRUNE_INTERVAL = 15
 
 def prune_cache():
     now = time.time()
@@ -996,7 +1000,7 @@ def proxy_api(subpath):
                 "puuid": f"eq.{puuid}",
                 "mode": f"eq.{mode}",
                 "order": "game_start.desc",
-                "limit": "100"
+                "limit": "50"
             }
             r_db = supabase_request("GET", "matches_cache", params=params_db)
             if r_db and r_db.status_code == 200:
@@ -1011,7 +1015,7 @@ def proxy_api(subpath):
                 subpath_parts = subpath.split('/')
                 region_lt = subpath_parts[2] if len(subpath_parts) >= 3 else "ap"
                 lifetime_url = f"https://api.henrikdev.xyz/valorant/v1/lifetime/matches/{region_lt}/{urllib.parse.quote(name)}/{urllib.parse.quote(tag)}"
-                lifetime_params = {"mode": mode, "size": 100}
+                lifetime_params = {"mode": mode, "size": 50}
                 headers_lt = {
                     "Authorization": API_KEY,
                     "Content-Type": "application/json"
