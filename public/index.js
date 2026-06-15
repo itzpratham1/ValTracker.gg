@@ -1489,6 +1489,7 @@ function processMatches(matches){
 
   let tK=0,tD=0,tA=0,tS=0,tHS=0,tShots=0,wins=0,losses=0,counted=0;
   const agentMap={},mapData={},rrHistory=[],recentMatches=[];
+  const precomputedWeapons = {};
 
   matchesToProcess.forEach(match=>{
     const me=findMe(match);
@@ -1544,6 +1545,36 @@ function processMatches(matches){
     const _allied = _allP.filter(p=>(p.team||'').toLowerCase()===myTeamId);
     const _teamMVP = _allied.length ? _allied.reduce((b,p)=>_getACS(p)>_getACS(b)?p:b,_allied[0]) : null;
     recentMatches.push({won,agentName,map:mapName,kills:k,deaths:d,assists:a,score:sc,acs:matchACS,rounds:`${myR}-${oppR}`,hs,shots,myTeamId,matchId:_matchId,gameStart,lobbyRank:_lobbyInfo,mvpNames:{match:_matchMVP?.name,team:_teamMVP?.name}});
+
+    // Pre-compute weapon stats from rounds to avoid re-iterating full matches later
+    const rounds = match.rounds || [];
+    rounds.forEach(r => {
+      let ps = r.player_stats || [];
+      if (typeof ps === 'string') { try { ps = JSON.parse(ps); } catch(e) { ps = []; } }
+      if (!Array.isArray(ps)) ps = Object.values(ps);
+      const myPs = ps.find(p => (p.player_puuid || p.subject || p.puuid) === me.puuid);
+      if (!myPs) return;
+      const kills = Array.isArray(myPs.kill_events) ? myPs.kill_events : [];
+      kills.forEach(kill => {
+        const raw = kill.damage_weapon_name || kill.finishing_damage?.damage_item || kill.damage_weapon_id || '';
+        const cachedWpn = _assetCache.weapons[raw.toLowerCase()];
+        let wpn = cachedWpn ? cachedWpn.name : raw.replace(/^[^/]*\//, '').replace(/TX_Hud_/i, '').replace(/_/g, ' ').trim();
+        if (/^[0-9a-f]{8}-/.test(wpn)) wpn = 'Ability';
+        if (!wpn || wpn.length < 2) return;
+        if (!precomputedWeapons[wpn]) precomputedWeapons[wpn] = { kills: 0, hs: 0, matchHistory: [] };
+        precomputedWeapons[wpn].kills++;
+        let isHS = typeof kill.headshot === 'boolean' ? kill.headshot : kill.finishing_damage?.is_headshot;
+        if (!isHS && myPs.damage_events) {
+          const dE = myPs.damage_events.find(de => de.receiver_puuid === (kill.victim_puuid || kill.victim));
+          if (dE && dE.headshots > 0) isHS = true;
+        }
+        if (isHS) precomputedWeapons[wpn].hs++;
+        const last = precomputedWeapons[wpn].matchHistory;
+        const existing = last.length && last[last.length-1].gameStart === gameStart ? last[last.length-1] : null;
+        if (existing) { existing.kills++; if (isHS) existing.hs++; existing.hsPct = existing.kills ? Math.round((existing.hs/existing.kills)*100) : 0; }
+        else { last.push({ gameStart, kills: 1, hs: isHS ? 1 : 0, hsPct: isHS ? 100 : 0 }); }
+      });
+    });
   });
 
   const n=counted||1;
@@ -1569,14 +1600,19 @@ function processMatches(matches){
   setTimeout(()=>animateIn('.card'),50);
 
   _lastAgentMap = agentMap; _lastMapData = mapData; _lastAllMatches = matches;
+  window._precomputedWeapons = precomputedWeapons;
   window._recentMatchStats = recentMatches.slice().reverse(); // oldest→newest for graph
 
-  // Store raw match data in a capped Map for panel expansion (prevents OOM)
+  // Store stripped match data in a capped Map for panel expansion (prevents OOM)
   window._matchDetailStore.clear();
   for (let i = 0; i < Math.min(matches.length, 30); i++) {
     const m = matches[i];
     const mid = m.metadata?.matchid || m.metadata?.match_id;
-    if (mid) window._matchDetailStore.set(mid, m);
+    if (mid) {
+      const stripped = { ...m };
+      delete stripped.rounds;
+      window._matchDetailStore.set(mid, stripped);
+    }
   }
   
   if (matches && matches.length > 0) {
@@ -1602,7 +1638,7 @@ function processMatches(matches){
     // 3. Render weapon stats and role analytics
     setTimeout(() => {
       renderAccuracyAndRoles(matches);
-      renderTopWeapons(matches);
+      renderTopWeapons(null, precomputedWeapons);
       renderClutch(wins,losses,tK,n,agentMap);
     }, 80);
 
@@ -1614,6 +1650,11 @@ function processMatches(matches){
       if (typeof initScrollspyObserver === 'function') {
         initScrollspyObserver();
       }
+
+      // FREE MEMORY: null full match objects after all renders are complete
+      // Only lightweight recentMatches/agentMap/mapData are needed going forward
+      _lastAllMatches = [];
+      try { if (typeof window.gc === 'function') window.gc(); } catch(e) {}
     }, 120);
   });
   // tracker-nav is inside tracker-view; visibility controlled by parent
@@ -7358,11 +7399,8 @@ function getHeatmapSvg(hsPct, height = 115) {
   `;
 }
 
-function renderTopWeapons(matches) {
-  // Aggregate weapon stats from match-level data (headshots per match)
-  // We use agent names as proxy for weapon preference since we don't have
-  // per-weapon data in v3 — we aggregate from match rounds if available
-  const weaponData = {};
+function renderTopWeapons(matches, precomputed) {
+  const weaponData = precomputed || {};
 
   // Weapon image URLs from valorant-api CDN (display names as keys)
   const WEAPON_IMGS = {
@@ -7392,79 +7430,12 @@ function renderTopWeapons(matches) {
     'Ares':'LMG','Odin':'LMG',
   };
 
-  // We need to scan all stored v3 match data and extract weapon from kill events if available
-  // For v3 (no kill_events), we approximate based on agent playstyle
-  // Best we can do without v2 data: track total kills/hs% per match, group by common weapons
-  // Since v3 doesn't have weapon data, we show a note and use demo data format
-  // Actually — we DO have kill_events in v2 stored if detail was loaded. 
-  // For now aggregate from rawMatch if has round data
-  matches.forEach(match => {
-    const me = findMe(match);
-    if (!me) return;
-    
-    // Track stats for this specific match
-    const wpnMatchStats = {};
-    const rounds = match.rounds || [];
-    rounds.forEach(r => {
-      if (typeof r.player_stats === 'string') {
-        try { r.player_stats = JSON.parse(r.player_stats); } catch(e) { r.player_stats = []; }
-      }
-      let ps = r.player_stats || [];
-      if (!Array.isArray(ps)) ps = Object.values(ps);
-      
-      let myPs;
-      if (r._myPs !== undefined) {
-        myPs = r._myPs;
-      } else {
-        myPs = ps.find(p => (p.player_puuid || p.subject || p.puuid) === me.puuid);
-        r._myPs = myPs || null;
-      }
-      if (!myPs) return;
-      
-      const kills = Array.isArray(myPs.kill_events) ? myPs.kill_events : [];
-      kills.forEach(k => {
-        const raw = k.damage_weapon_name || k.finishing_damage?.damage_item || k.damage_weapon_id || '';
-        const cachedWpn = _assetCache.weapons[raw.toLowerCase()];
-        let wpn = cachedWpn ? cachedWpn.name : raw.replace(/^[^/]*\//, '').replace(/TX_Hud_/i, '').replace(/_/g, ' ').trim();
-        if (/^[0-9a-f]{8}-/.test(wpn)) wpn = 'Ability'; // filter raw UUIDs
-        if (!wpn || wpn.length < 2) return;
-        
-        if (!wpnMatchStats[wpn]) {
-          wpnMatchStats[wpn] = { kills: 0, hs: 0 };
-        }
-        wpnMatchStats[wpn].kills++;
-        
-        let isHS = typeof k.headshot === 'boolean' ? k.headshot : k.finishing_damage?.is_headshot;
-        if (!isHS && myPs.damage_events) {
-          const dE = myPs.damage_events.find(de => de.receiver_puuid === (k.victim_puuid || k.victim));
-          if (dE && dE.headshots > 0) isHS = true;
-        }
-        if (isHS) {
-          wpnMatchStats[wpn].hs++;
-        }
-      });
-    });
-    
-    // Now aggregate these match-specific stats into the global weaponData
-    const gameStart = match.metadata?.game_start || match.metadata?.gameStart || 0;
-    Object.entries(wpnMatchStats).forEach(([wpn, stats]) => {
-      if (!weaponData[wpn]) {
-        weaponData[wpn] = { kills: 0, hs: 0, matchHistory: [] };
-      }
-      weaponData[wpn].kills += stats.kills;
-      weaponData[wpn].hs += stats.hs;
-      weaponData[wpn].matchHistory.push({
-        gameStart: gameStart,
-        kills: stats.kills,
-        hs: stats.hs,
-        hsPct: Math.round((stats.hs / stats.kills) * 100)
-      });
-    });
-  });
+  // Use precomputed weapon data from processMatches (avoids iterating full matches)
+  // If no precomputed data available, weaponData stays empty and we show empty state
 
   // Sort matchHistory chronological (oldest to newest) for line charts
   Object.values(weaponData).forEach(w => {
-    w.matchHistory.sort((a, b) => a.gameStart - b.gameStart);
+    if (w.matchHistory) w.matchHistory.sort((a, b) => a.gameStart - b.gameStart);
   });
 
   const wrap = document.getElementById('weapons-grid-wrap');
