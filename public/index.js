@@ -10745,7 +10745,7 @@ function renderFeaturedBundles(bundles) {
       // Let's see if we can link this item to our skin catalog if it's a skin
       let clickAttr = '';
       let cursorStyle = 'cursor:default;';
-      if (item.type === 'skin') {
+      if (item.type === 'skin' || item.type === 'skin_level') {
         clickAttr = `onclick="openSkinByName('${escapeJsString(item.name)}')"`;
         cursorStyle = 'cursor:pointer;';
       }
@@ -10785,7 +10785,7 @@ function renderFeaturedBundles(bundles) {
             
             <div style="text-align:right; border-left: 1px solid rgba(255,255,255,0.08); padding-left:16px;">
               <div style="font-size:9px; color:var(--muted); text-transform:uppercase; font-family:'DM Mono',monospace;">Bundle Expiry</div>
-              <div id="${timerId}" style="font-family:'DM Mono',monospace; font-weight:800; font-size:14px; color:var(--accent); text-shadow:0 0 8px rgba(250,68,84,0.3); margin-top:4px;">0D 0H 0M 0S</div>
+              <div id="${elTimerId}" style="font-family:'DM Mono',monospace; font-weight:800; font-size:14px; color:var(--accent); text-shadow:0 0 8px rgba(250,68,84,0.3); margin-top:4px;">0D 0H 0M 0S</div>
             </div>
           </div>
         </div>
