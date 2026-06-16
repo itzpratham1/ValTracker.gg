@@ -5,7 +5,7 @@
 /* ── TOKENS & DYNAMIC GLOBAL VARIABLES ── */
 :root {
   --bg:           #030304; /* Deeper dark cyberpunk background */
-  --bg-glow:      radial-gradient(circle at 50% -20%, rgba(232, 255, 71, 0.04) 0%, transparent 60%);
+  --bg-glow:      radial-gradient(circle at 50% -20%, rgba(250, 68, 84, 0.04) 0%, transparent 60%);
   --surface:      rgba(15, 15, 18, 0.72); /* Glassmorphism surface */
   --surface2:     rgba(24, 24, 28, 0.88); /* Mid surface */
   --surface3:     rgba(36, 36, 42, 0.95); /* Brightest surface */
@@ -14,9 +14,9 @@
   --text:         #f4f4f7; /* High contrast body text */
   --muted:        #a0a0ab; /* Softer secondary text */
   --muted2:       #5b5b66; /* Sub-labels and disabled states */
-  --accent:       #e8ff47; /* Sharp Valorant-style pop yellow-lime */
-  --accentdim:    rgba(232, 255, 71, 0.06); /* Highly transparent accent */
-  --accentborder: rgba(232, 255, 71, 0.16); /* Border accent tint */
+  --accent:       #fa4454;
+  --accentdim:    rgba(250, 68, 84, 0.15);
+  --accentborder: rgba(250, 68, 84, 0.35);
   --win:          #10b981; /* Premium Emerald green */
   --loss:         #f43f5e; /* Premium Rose red */
   --blue:         #3b82f6; /* Premium Cobalt blue */
@@ -279,10 +279,10 @@ body::before {
   border-color: rgba(255, 255, 255, 0.1);
 }
 .tracker-nav-item.active {
-  color: #ff4655;
-  background: rgba(255, 70, 85, 0.08);
-  border-color: rgba(255, 70, 85, 0.45);
-  box-shadow: 0 0 15px rgba(255, 70, 85, 0.12);
+  color: var(--accent);
+  background: var(--accentdim);
+  border-color: var(--accentborder);
+  box-shadow: 0 0 15px rgba(250, 68, 84, 0.12);
   font-weight: 700;
 }
 .nav-icon { font-size: 13px; }
