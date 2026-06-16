@@ -5812,7 +5812,8 @@ const RANK_ORDER = ['Iron','Bronze','Silver','Gold','Platinum','Diamond','Ascend
 
 function getRankTier(rankName) {
   if (!rankName) return 'Silver';
-  return RANK_ORDER.find(r => rankName.startsWith(r)) || 'Silver';
+  const lower = rankName.toLowerCase();
+  return RANK_ORDER.find(r => lower.startsWith(r.toLowerCase())) || 'Silver';
 }
 function getNextRank(tier) {
   const idx = RANK_ORDER.indexOf(tier);
