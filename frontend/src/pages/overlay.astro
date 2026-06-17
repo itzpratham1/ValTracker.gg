@@ -1,0 +1,18 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Overlay from '../components/overlay/Overlay.svelte';
+---
+
+<Layout title="Stream Overlay — ValTracker" noIndex={true}>
+  <style is:global>
+    html, body {
+      margin: 0 !important;
+      padding: 0 !important;
+      background: transparent !important;
+      overflow: hidden !important;
+      width: 100% !important;
+      height: 100% !important;
+    }
+  </style>
+  <Overlay client:only="svelte" />
+</Layout>

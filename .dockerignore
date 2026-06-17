@@ -1,0 +1,16 @@
+node_modules/
+frontend/node_modules/
+frontend/dist/
+__pycache__/
+*.pyc
+.env
+.env.local
+firebase-key.json
+*.log
+feedback.json
+shared_meta.json
+vlr_matches_backup.json
+vlr_results_backup.json
+vlr_news_backup.json
+store_featured_backup.json
+frontend/public/shared/

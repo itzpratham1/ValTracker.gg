@@ -2154,6 +2154,28 @@ def search_players():
 
 
 
+@app.route("/api/share-meta/<share_id>", methods=["GET"])
+def get_share_meta(share_id):
+    meta_filepath = os.path.join(os.path.dirname(__file__), "shared_meta.json")
+    meta = {}
+    with file_lock(meta_filepath):
+        if os.path.exists(meta_filepath):
+            try:
+                with open(meta_filepath, "r", encoding="utf-8") as f:
+                    records = json.load(f)
+                    meta = records.get(share_id, {})
+            except Exception:
+                meta = {}
+    ext = "png"
+    shared_dir = os.path.join(app.static_folder, "shared")
+    if os.path.exists(os.path.join(shared_dir, f"{share_id}.jpg")):
+        ext = "jpg"
+    elif os.path.exists(os.path.join(shared_dir, f"{share_id}.jpeg")):
+        ext = "jpeg"
+    meta["ext"] = ext
+    return jsonify({"status": "ok", "meta": meta})
+
+
 @app.route("/share/<share_id>", methods=["GET"])
 def get_share_page(share_id):
     meta_filepath = os.path.join(os.path.dirname(__file__), "shared_meta.json")

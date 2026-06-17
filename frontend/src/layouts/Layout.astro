@@ -1,0 +1,101 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+  noIndex?: boolean;
+  structuredData?: Record<string, any>;
+}
+
+const {
+  title,
+  description = "ValTracker is a premium, real-time stats tracker for Valorant. Analyse your competitive match history, weapon accuracy, maps, and agent performance.",
+  ogImage = "/og-image.png",
+  noIndex = false,
+  structuredData
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, 'https://valtracker.live');
+
+const defaultStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "ValTracker",
+  "url": "https://valtracker.live",
+  "description": description,
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Pratham"
+  },
+  "screenshot": "https://valtracker.live/stats_tracker_card.webp",
+  "featureList": [
+    "Real-time Valorant stats tracking",
+    "AI-powered coaching",
+    "OBS stream overlay",
+    "Match history analysis",
+    "Weapon accuracy stats",
+    "Agent performance tracking",
+    "VCT esports coverage",
+    "Skin store browser",
+    "Meta comp architect"
+  ]
+};
+
+const jsonLd = structuredData || defaultStructuredData;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#030304">
+  {noIndex && <meta name="robots" content="noindex, nofollow">}
+
+  <title>{title}</title>
+  <meta name="description" content={description}>
+  <link rel="canonical" href={canonicalURL.href}>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content={title}>
+  <meta property="og:description" content={description}>
+  <meta property="og:type" content="website">
+  <meta property="og:url" content={canonicalURL.href}>
+  <meta property="og:image" content={ogImage}>
+  <meta property="og:site_name" content="ValTracker">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content={title}>
+  <meta name="twitter:description" content={description}>
+  <meta name="twitter:image" content={ogImage}>
+
+  <!-- Structured Data -->
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/logo.png">
+  <link rel="shortcut icon" href="/logo.png" type="image/x-icon">
+  <link rel="apple-touch-icon" href="/logo.png">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style is:global>
+    @import '../styles/global.css';
+  </style>
+</head>
+<body>
+  <slot />
+</body>
+</html>
