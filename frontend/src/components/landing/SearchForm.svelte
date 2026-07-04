@@ -4,9 +4,13 @@
   import { fetchSearch } from '../../lib/api';
   import { getRankImgUrl } from '../../lib/constants';
   import { escapeHtml } from '../../lib/utils';
+  import { player, setPlayer } from '../../lib/appStore';
 
-  export let onSearch = (name, tag, region, mode) => {};
+  export let onSearch = (name, tag, region, mode) => {
+    setPlayer({ name, tag, region, mode, fetching: true, loaded: false });
+  };
   export let loading = false;
+  $: currentLoading = loading || $player.fetching;
 
   let name = '';
   let tag = '';
@@ -157,7 +161,7 @@
       placeholder="PlayerName"
       autocomplete="off"
       spellcheck="false"
-      disabled={loading}
+      disabled={currentLoading}
     >
     <span class="sf-hash">#</span>
     <input
@@ -171,7 +175,7 @@
       maxlength="8"
       autocomplete="off"
       spellcheck="false"
-      disabled={loading}
+      disabled={currentLoading}
     >
 
     {#if showDropdown && dropdownResults.length > 0}
@@ -206,7 +210,7 @@
   <div class="sf-row2">
     <div>
       <div class="sf-label">Region</div>
-      <select class="sf-select" bind:value={region} disabled={loading}>
+      <select class="sf-select" bind:value={region} disabled={currentLoading}>
         {#each REGIONS as r}
           <option value={r.value}>{r.label}</option>
         {/each}
@@ -214,7 +218,7 @@
     </div>
     <div>
       <div class="sf-label">Mode</div>
-      <select class="sf-select" bind:value={mode} disabled={loading}>
+      <select class="sf-select" bind:value={mode} disabled={currentLoading}>
         {#each MODES as m}
           <option value={m.value}>{m.label}</option>
         {/each}
@@ -222,8 +226,8 @@
     </div>
   </div>
 
-  <button class="sf-btn" on:click={handleSubmit} disabled={loading}>
-    {loading ? 'Loading...' : '▶ View Stats'}
+  <button class="sf-btn" on:click={handleSubmit} disabled={currentLoading}>
+    {currentLoading ? 'Loading...' : '▶ View Stats'}
   </button>
 
   {#if error}

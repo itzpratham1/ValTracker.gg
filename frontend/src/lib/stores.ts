@@ -80,6 +80,35 @@ function createBookmarksStore() {
     clear() {
       set([]);
       saveToStorage(BOOKMARKS_KEY, []);
+    },
+    toggle(player: Omit<SavedPlayer, 'rankImg' | 'timestamp'>) {
+      let isBookmarked = false;
+      const unsub = subscribe(bookmarks => {
+        isBookmarked = bookmarks.some(
+          b => b.name.toLowerCase() === player.name.toLowerCase() &&
+               b.tag.toLowerCase() === player.tag.toLowerCase()
+        );
+      });
+      unsub();
+      if (isBookmarked) {
+        update(bookmarks => {
+          const updated = bookmarks.filter(
+            b => !(b.name.toLowerCase() === player.name.toLowerCase() &&
+                   b.tag.toLowerCase() === player.tag.toLowerCase())
+          );
+          saveToStorage(BOOKMARKS_KEY, updated);
+          return updated;
+        });
+      } else {
+        update(bookmarks => {
+          const updated = [
+            { ...player, rankImg: getRankImgUrl(player.rankName), timestamp: Date.now() },
+            ...bookmarks
+          ];
+          saveToStorage(BOOKMARKS_KEY, updated);
+          return updated;
+        });
+      }
     }
   };
 }

@@ -1,8 +1,11 @@
 <script>
   import { bookmarks, bookmarksCount } from '../../lib/stores';
   import { escapeHtml } from '../../lib/utils';
+  import { setPlayer } from '../../lib/appStore';
 
-  export let onSelect = (name, tag, region, mode) => {};
+  export let onSelect = (name, tag, region, mode) => {
+    setPlayer({ name, tag, region, mode, fetching: true, loaded: false });
+  };
 
   function handleSelect(player) {
     onSelect(player.name, player.tag, player.region, player.mode);

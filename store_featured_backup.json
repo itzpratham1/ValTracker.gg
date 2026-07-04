@@ -2,14 +2,69 @@
   "status": 200,
   "data": [
     {
-      "bundle_uuid": "602900ed-4e10-d214-acc5-8883ed2430f5",
+      "bundle_uuid": "734b6803-44ca-19c3-8da9-62a27f1656b8",
       "bundle_price": 8700,
       "whole_sale_only": false,
       "items": [
         {
-          "uuid": "b987198e-40da-cbc3-8cd2-1abd36d3a983",
-          "name": "Rogue Buddy",
-          "image": "https://media.valorant-api.com/buddies/b987198e-40da-cbc3-8cd2-1abd36d3a983/displayicon.png",
+          "uuid": "a179674b-4069-ea5f-b86d-1f8aa15f8d74",
+          "name": "Blackspyre Divide",
+          "image": "https://media.valorant-api.com/weaponskins/a179674b-4069-ea5f-b86d-1f8aa15f8d74/displayicon.png",
+          "type": "skin_level",
+          "amount": 1,
+          "discount_percent": 1.0,
+          "base_price": 5350,
+          "discounted_price": 0,
+          "promo_item": false
+        },
+        {
+          "uuid": "80bb82f9-4891-7340-c8d8-7daac5567ee2",
+          "name": "Blackspyre Ares",
+          "image": "https://media.valorant-api.com/weaponskins/80bb82f9-4891-7340-c8d8-7daac5567ee2/displayicon.png",
+          "type": "skin_level",
+          "amount": 1,
+          "discount_percent": 0.0,
+          "base_price": 2175,
+          "discounted_price": 2175,
+          "promo_item": false
+        },
+        {
+          "uuid": "02ed7299-4035-c973-4a26-9f8c6d454e63",
+          "name": "Blackspyre Phantom",
+          "image": "https://media.valorant-api.com/weaponskins/02ed7299-4035-c973-4a26-9f8c6d454e63/displayicon.png",
+          "type": "skin_level",
+          "amount": 1,
+          "discount_percent": 0.0,
+          "base_price": 2175,
+          "discounted_price": 2175,
+          "promo_item": false
+        },
+        {
+          "uuid": "8504529f-4555-64a6-6f18-28a4438336e1",
+          "name": "Blackspyre Sheriff",
+          "image": "https://media.valorant-api.com/weaponskins/8504529f-4555-64a6-6f18-28a4438336e1/displayicon.png",
+          "type": "skin_level",
+          "amount": 1,
+          "discount_percent": 0.0,
+          "base_price": 2175,
+          "discounted_price": 2175,
+          "promo_item": false
+        },
+        {
+          "uuid": "2052a76e-411a-ebfc-e516-fd80dba0ddf9",
+          "name": "Blackspyre Spectre",
+          "image": "https://media.valorant-api.com/weaponskins/2052a76e-411a-ebfc-e516-fd80dba0ddf9/displayicon.png",
+          "type": "skin_level",
+          "amount": 1,
+          "discount_percent": 0.0,
+          "base_price": 2175,
+          "discounted_price": 2175,
+          "promo_item": false
+        },
+        {
+          "uuid": "c97191a4-4dac-ead5-6332-a694cbd3c0ab",
+          "name": "Blackspyre Buddy",
+          "image": "https://media.valorant-api.com/buddies/c97191a4-4dac-ead5-6332-a694cbd3c0ab/displayicon.png",
           "type": "buddy",
           "amount": 2,
           "discount_percent": 1.0,
@@ -18,9 +73,9 @@
           "promo_item": false
         },
         {
-          "uuid": "c429531b-4980-ca36-c3e0-689d1cbcaf6f",
-          "name": "Rogue Card",
-          "image": "https://media.valorant-api.com/playercards/c429531b-4980-ca36-c3e0-689d1cbcaf6f/displayicon.png",
+          "uuid": "0d6995aa-49c1-2e67-f423-39bfed03676a",
+          "name": "Blackspyre Card",
+          "image": "https://media.valorant-api.com/playercards/0d6995aa-49c1-2e67-f423-39bfed03676a/displayicon.png",
           "type": "player_card",
           "amount": 1,
           "discount_percent": 1.0,
@@ -29,74 +84,72 @@
           "promo_item": false
         },
         {
-          "uuid": "67908139-4960-5f8f-ccbf-d2a96eea1ea8",
-          "name": "Rogue Spray",
-          "image": "https://media.valorant-api.com/sprays/67908139-4960-5f8f-ccbf-d2a96eea1ea8/displayicon.png",
+          "uuid": "f3b1dd15-45e6-fd00-0d79-0d829fb4f34d",
+          "name": "Blackspyre Spray",
+          "image": "https://media.valorant-api.com/sprays/f3b1dd15-45e6-fd00-0d79-0d829fb4f34d/displayicon.png",
           "type": "spray",
           "amount": 1,
           "discount_percent": 1.0,
           "base_price": 325,
           "discounted_price": 0,
           "promo_item": false
-        },
+        }
+      ],
+      "seconds_remaining": 2285561,
+      "expires_at": "2026-07-22T17:59:59.792Z"
+    },
+    {
+      "bundle_uuid": "c55d5784-4c6d-e4ec-4d9e-b59615475694",
+      "bundle_price": 2320,
+      "whole_sale_only": true,
+      "items": [
         {
-          "uuid": "1b9b0131-42fe-b6a7-d212-699b342ba642",
-          "name": "Rogue Vandal",
-          "image": "https://media.valorant-api.com/weaponskins/1b9b0131-42fe-b6a7-d212-699b342ba642/displayicon.png",
-          "type": "skin_level",
-          "amount": 1,
+          "uuid": "9053abd3-4462-b531-bb5e-ee8da11b7a41",
+          "name": "VCT x LEV Buddy",
+          "image": "https://media.valorant-api.com/buddies/9053abd3-4462-b531-bb5e-ee8da11b7a41/displayicon.png",
+          "type": "buddy",
+          "amount": 2,
           "discount_percent": 0.0,
-          "base_price": 2175,
-          "discounted_price": 2175,
+          "base_price": 475,
+          "discounted_price": 475,
           "promo_item": false
         },
         {
-          "uuid": "ea3e6c8a-4e5e-baf9-33c3-7abacf07aaee",
-          "name": "Rogue Bucky",
-          "image": "https://media.valorant-api.com/weaponskins/ea3e6c8a-4e5e-baf9-33c3-7abacf07aaee/displayicon.png",
-          "type": "skin_level",
+          "uuid": "1ad8901b-49c7-cb36-0948-fdb5ebe0a565",
+          "name": "VCT26 x LEV Card",
+          "image": "https://media.valorant-api.com/playercards/1ad8901b-49c7-cb36-0948-fdb5ebe0a565/displayicon.png",
+          "type": "player_card",
           "amount": 1,
-          "discount_percent": 0.0,
-          "base_price": 2175,
-          "discounted_price": 2175,
+          "discount_percent": 0.4,
+          "base_price": 575,
+          "discounted_price": 345,
           "promo_item": false
         },
         {
-          "uuid": "902a3bcb-4164-3315-fe03-2088fb897ce4",
-          "name": "Rogue Bandit",
-          "image": "https://media.valorant-api.com/weaponskins/902a3bcb-4164-3315-fe03-2088fb897ce4/displayicon.png",
-          "type": "skin_level",
+          "uuid": "82539f42-4355-c7a1-205c-8990bd93d3ac",
+          "name": "VCT x LEV Spray",
+          "image": "https://media.valorant-api.com/sprays/82539f42-4355-c7a1-205c-8990bd93d3ac/displayicon.png",
+          "type": "spray",
           "amount": 1,
-          "discount_percent": 0.0,
-          "base_price": 2175,
-          "discounted_price": 2175,
+          "discount_percent": 0.4,
+          "base_price": 325,
+          "discounted_price": 195,
           "promo_item": false
         },
         {
-          "uuid": "2460c852-4d1b-a9e3-ccda-43a8e30cb739",
-          "name": "Rogue Operator",
-          "image": "https://media.valorant-api.com/weaponskins/2460c852-4d1b-a9e3-ccda-43a8e30cb739/displayicon.png",
+          "uuid": "e2c5ccb5-4eba-cdc5-23e4-329f037023c9",
+          "name": "VCT26 x LEV Classic",
+          "image": "https://media.valorant-api.com/weaponskins/e2c5ccb5-4eba-cdc5-23e4-329f037023c9/displayicon.png",
           "type": "skin_level",
           "amount": 1,
-          "discount_percent": 0.0,
+          "discount_percent": 0.4,
           "base_price": 2175,
-          "discounted_price": 2175,
-          "promo_item": false
-        },
-        {
-          "uuid": "1c808469-4aee-ae6c-fcd2-1099e96ac6a0",
-          "name": "Rogue Push Daggers",
-          "image": "https://media.valorant-api.com/weaponskins/1c808469-4aee-ae6c-fcd2-1099e96ac6a0/displayicon.png",
-          "type": "skin_level",
-          "amount": 1,
-          "discount_percent": 1.0,
-          "base_price": 4350,
-          "discounted_price": 0,
+          "discounted_price": 1305,
           "promo_item": false
         }
       ],
-      "seconds_remaining": 1638368,
-      "expires_at": "2026-06-17T17:59:59.023Z"
+      "seconds_remaining": 1075961,
+      "expires_at": "2026-07-08T17:59:59.792Z"
     }
   ]
 }

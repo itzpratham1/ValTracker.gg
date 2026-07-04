@@ -10,7 +10,7 @@ let shareUrl = '';
 let error = false;
 
 try {
-  const backendUrl = import.meta.env.PUBLIC_API_URL || '';
+  const backendUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:5000';
   const res = await fetch(`${backendUrl}/api/share-meta/${id}`);
   if (res.ok) {
     const data = await res.json();

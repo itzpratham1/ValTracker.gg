@@ -12,25 +12,29 @@
   export let allRawMatches = [];
   export let playerName = '';
   export let playerTag = '';
+  export let onShareMatch = () => {};
 
   let matchesLimit = 10;
-  let filterAgent = 'all';
-  let filterMap = 'all';
-  let filterResult = 'all';
+  let filterResult = 'all'; // 'all', 'win', 'loss', 'today'
+  let searchQuery = '';
   let openIdx = null;
 
   $: filtered = recentMatches.filter(m => {
-    if (filterAgent !== 'all' && (m.agentName || '').toLowerCase() !== filterAgent) return false;
-    if (filterMap !== 'all' && (m.map || '').toLowerCase() !== filterMap) return false;
     if (filterResult === 'win' && !m.won) return false;
     if (filterResult === 'loss' && m.won) return false;
+    if (filterResult === 'today') {
+      if (!isToday(m.gameStart)) return false;
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      const agent = (m.agentName || '').toLowerCase();
+      const map = (m.map || '').toLowerCase();
+      if (!agent.includes(q) && !map.includes(q)) return false;
+    }
     return true;
   });
 
   $: displayed = filtered.slice(0, matchesLimit);
-
-  $: agentList = [...new Set(recentMatches.map(m => (m.agentName || '').toLowerCase()).filter(Boolean))].sort();
-  $: mapList = [...new Set(recentMatches.map(m => (m.map || '').toLowerCase()).filter(Boolean))].sort();
 
   function groupByDay(matches) {
     const groups = [];
@@ -73,33 +77,21 @@
 </script>
 
 {#if recentMatches.length > 0}
-  <div class="match-filters">
-    <select class="match-filter-select" bind:value={filterResult}>
-      <option value="all">All Results</option>
-      <option value="win">Wins</option>
-      <option value="loss">Losses</option>
-    </select>
-    <select class="match-filter-select" bind:value={filterAgent}>
-      <option value="all">All Agents</option>
-      {#each agentList as agent}
-        <option value={agent}>{agent.charAt(0).toUpperCase() + agent.slice(1)}</option>
-      {/each}
-    </select>
-    <select class="match-filter-select" bind:value={filterMap}>
-      <option value="all">All Maps</option>
-      {#each mapList as map}
-        <option value={map}>{map.charAt(0).toUpperCase() + map.slice(1)}</option>
-      {/each}
-    </select>
-    <span class="filter-count">{filtered.length} match{filtered.length !== 1 ? 'es' : ''}</span>
+  <div class="filter-bar" id="filter-bar" style="grid-column:span 12;">
+    <button class="filter-btn" class:active={filterResult === 'all'} on:click={() => filterResult = 'all'}>All</button>
+    <button class="filter-btn" class:active={filterResult === 'win'} on:click={() => filterResult = 'win'}>Wins</button>
+    <button class="filter-btn" class:active={filterResult === 'loss'} on:click={() => filterResult = 'loss'}>Losses</button>
+    <button class="filter-btn" class:active={filterResult === 'today'} on:click={() => filterResult = 'today'}>Today</button>
+    <input class="filter-search" bind:value={searchQuery} placeholder="Search agent or map...">
+    <span class="filter-count" id="filter-count">{filtered.length} match{filtered.length !== 1 ? 'es' : ''}</span>
   </div>
 
-  <div class="matches-list">
+  <div style="display:contents;">
     {#each groups as group}
       <div class="day-group-header">
-        <span class="day-group-label">{group.label}</span>
+        <span class="day-group-title">{group.label}</span>
         <div class="day-group-line"></div>
-        <span class="day-group-wl">{group.wins}W {group.losses}L</span>
+        <span class="day-group-record">{group.wins}W {group.losses}L</span>
         {#if group.hasRR}
           <span class="day-group-rr {group.rrTotal > 0 ? 'pos' : group.rrTotal < 0 ? 'neg' : 'neu'}">
             {group.rrTotal > 0 ? '+' : ''}{group.rrTotal} RR
@@ -117,7 +109,7 @@
         {@const matchIsToday = isToday(m.gameStart)}
         {@const rr = mmrHistory[m.matchId]}
 
-        <div class="match-item" class:visible={true}>
+        <div class="match-item visible">
           <div
             class="match-row"
             class:open={openIdx === idx}
@@ -184,6 +176,7 @@
                 rawMatch={getRawMatch(m.matchId)}
                 {playerName}
                 {playerTag}
+                onShare={() => onShareMatch(m)}
               />
             </div>
           {/if}
@@ -201,7 +194,10 @@
     {/if}
   </div>
 {:else}
-  <div class="placeholder-card">
+  <div class="card span-12 placeholder-card">
     <div class="placeholder-txt">No matches found for the selected filters</div>
   </div>
 {/if}
+
+<style>
+</style>

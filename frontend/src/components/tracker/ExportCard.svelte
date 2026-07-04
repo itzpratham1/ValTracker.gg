@@ -1,4 +1,5 @@
 <script>
+  import { tick } from 'svelte';
   import { createShareCard } from '../../lib/api';
 
   export let match = null;
@@ -133,8 +134,8 @@
       window.open(url, '_blank');
     } else if (platform === 'reddit') {
       const title = match?.won
-        ? `[ValTracker] Secured an epic ${match?.rounds} VICTORY on ${mapStr} as ${agentStr}!`
-        : `[ValTracker] Match on ${mapStr} as ${agentStr} (${match?.rounds})`;
+        ? `[ValTracker] Secured an epic ${match?.rounds} VICTORY on ${match?.map?.toUpperCase() || 'VALORANT'} as ${match?.agentName?.toUpperCase() || 'Agent'}!`
+        : `[ValTracker] Match on ${match?.map?.toUpperCase() || 'VALORANT'} as ${match?.agentName?.toUpperCase() || 'Agent'} (${match?.rounds})`;
       const urlWithBuster = shareUrl ? `${shareUrl}?v=${Date.now()}` : '';
       const url = shareUrl
         ? `https://www.reddit.com/r/VALORANT/submit?url=${encodeURIComponent(urlWithBuster)}&title=${encodeURIComponent(title)}`
@@ -314,17 +315,6 @@
     padding: 40px 0;
     gap: 16px;
   }
-
-  .share-spinner {
-    width: 24px;
-    height: 24px;
-    border: 3px solid rgba(255,255,255,0.05);
-    border-left-color: var(--accent, #fa4454);
-    border-right-color: var(--accent, #fa4454);
-    border-radius: 50%;
-    animation: spin 0.8s cubic-bezier(0.5,0.1,0.5,0.9) infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
 
   .share-loading-txt {
     font-family: 'DM Mono', monospace;

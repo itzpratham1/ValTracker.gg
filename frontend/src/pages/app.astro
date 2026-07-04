@@ -1,6 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import TrackerView from '../components/tracker/TrackerView.svelte';
+import AppShell from '../components/tracker/AppShell.svelte';
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -32,7 +32,5 @@ const structuredData = {
   description="ValTracker is a premium, real-time stats tracker for Valorant. Analyse your competitive match history, weapon accuracy, maps, and agent performance."
   structuredData={structuredData}
 >
-  <main id="app-root">
-    <TrackerView client:only="svelte" />
-  </main>
+  <AppShell client:only="svelte" initialView="tracker" />
 </Layout>

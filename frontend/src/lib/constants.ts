@@ -1,6 +1,7 @@
 // ValTracker — Constants & Game Data
 
 export const ACTS_TIMELINE: Record<string, { name: string; start: number; end: number }> = {
+  'v26a4': { name: 'V26 Act 4', start: new Date('2026-06-24T00:00:00Z').getTime(), end: new Date('2026-08-19T00:00:00Z').getTime() },
   'v26a3': { name: 'V26 Act 3', start: new Date('2026-04-29T00:00:00Z').getTime(), end: new Date('2026-06-24T00:00:00Z').getTime() },
   'v26a2': { name: 'V26 Act 2', start: new Date('2026-03-17T00:00:00Z').getTime(), end: new Date('2026-04-29T00:00:00Z').getTime() },
   'v26a1': { name: 'V26 Act 1', start: new Date('2026-01-07T00:00:00Z').getTime(), end: new Date('2026-03-17T00:00:00Z').getTime() },
@@ -13,7 +14,7 @@ export const ACTS_TIMELINE: Record<string, { name: string; start: number; end: n
 };
 
 export const SEASONS_MAP: Record<string, string> = {
-  'v26a3': 'e12a3', 'v26a2': 'e12a2', 'v26a1': 'e12a1',
+  'v26a4': 'e12a4', 'v26a3': 'e12a3', 'v26a2': 'e12a2', 'v26a1': 'e12a1',
   'v25a6': 'e11a3', 'v25a5': 'e11a2', 'v25a4': 'e11a1',
   'v25a3': 'e10a3', 'v25a2': 'e10a2', 'v25a1': 'e10a1'
 };

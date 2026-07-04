@@ -6,7 +6,34 @@
   import { getRankImgUrl, ACTS_TIMELINE } from '../../lib/constants';
   import { escapeHtml } from '../../lib/utils';
 
+  import { clearAllMatches } from '../../lib/indexeddb';
+
   export let onFetchStats = () => {};
+  export let onOpenH2H = () => {};
+  export let onOpenLeaderboard = () => {};
+  export let onOpenFeedback = () => {};
+  export let onOpenBookmarks = () => {};
+
+  let utilitiesOpen = false;
+  let copied = false;
+
+  function copyProfileLink() {
+    navigator.clipboard?.writeText(window.location.href).then(() => {
+      copied = true;
+      setTimeout(() => { copied = false; }, 2000);
+    });
+    utilitiesOpen = false;
+  }
+
+  function handleClearCache() {
+    if (confirm('Are you sure you want to clear all stored matches and cache?')) {
+      localStorage.clear();
+      clearAllMatches().then(() => {
+        window.location.reload();
+      });
+    }
+    utilitiesOpen = false;
+  }
 
   let scrolled = false;
   let subRowVisible = false;
@@ -49,10 +76,33 @@
 
   $: subRowVisible = $player.loaded;
 
+  $: filterSummaryText = (() => {
+    const r = ($player.region || 'ap').toUpperCase();
+    const mRaw = $player.mode || 'competitive';
+    let m = mRaw;
+    if (mRaw === 'competitive') m = 'Comp';
+    else if (mRaw === 'unrated') m = 'Unrated';
+    else if (mRaw === 'deathmatch') m = 'DM';
+    else if (mRaw === 'teamdeathmatch') m = 'Team DM';
+    else if (mRaw === 'swiftplay') m = 'Swift';
+    else if (mRaw === 'spikerush') m = 'Spike';
+    const actEntry = ACTS_TIMELINE[$player.act];
+    const a = actEntry ? actEntry.name : ($player.act || 'v26a4');
+    return `${r} \u00B7 ${m} \u00B7 ${a}`;
+  })();
+
   onMount(() => {
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    document.addEventListener('click', closeDropdowns);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      document.removeEventListener('click', closeDropdowns);
+    };
   });
+
+  function closeDropdowns() {
+    utilitiesOpen = false;
+  }
 
   function handleScroll() {
     const y = window.scrollY;
@@ -72,13 +122,34 @@
   }
 
   function switchTab(id) {
+    if (id === 'overlay') {
+      if ($player.name && $player.tag) {
+        const name = encodeURIComponent($player.name);
+        const tag = encodeURIComponent($player.tag);
+        const reg = $player.region || 'ap';
+        window.open(`/overlay?name=${name}&tag=${tag}&region=${reg}`, '_blank', 'noopener,noreferrer');
+      } else {
+        window.open('/overlay', '_blank', 'noopener,noreferrer');
+      }
+      return;
+    }
     $currentView = id;
     document.body.classList.remove('scrolled-down', 'scrolled-up');
   }
 
+  function sanitizeTag(raw) {
+    if (!raw) return raw;
+    let tag = raw;
+    tag = tag.replace(/\u00AE/g, '&');
+    const sepIdx = tag.search(/[=&]/);
+    if (sepIdx !== -1) tag = tag.substring(0, sepIdx);
+    return tag.replace(/[^a-zA-Z0-9_-]/g, '');
+  }
+
   function handleSearch(name, tag) {
     if (!name || !tag) return;
-    setPlayer({ name, tag });
+    const cleanTag = sanitizeTag(tag);
+    setPlayer({ name, tag: cleanTag });
     onFetchStats();
   }
 
@@ -92,11 +163,17 @@
 
   function toggleBookmark() {
     if (!$player.name || !$player.tag) return;
-    bookmarks.toggle?.($player.name, $player.tag, $player.region, $player.mode);
+    bookmarks.toggle({
+      name: $player.name,
+      tag: $player.tag,
+      region: $player.region || 'ap',
+      mode: $player.mode || 'competitive',
+      rankName: ''
+    });
   }
 
   function copyRiotId() {
-    const id = `${$player.name}#${$player.tag}`;
+    const id = `${$player.name}#{$player.tag}`;
     navigator.clipboard?.writeText(id).then(() => {
       // toast would go here
     });
@@ -105,16 +182,31 @@
   function toggleMobileFilters() {
     mobileFiltersOpen = !mobileFiltersOpen;
   }
+
+  function goHome(e) {
+    if (e) e.preventDefault();
+    player.set({
+      name: '',
+      tag: '',
+      region: 'ap',
+      mode: 'competitive',
+      act: 'v26a4',
+      loaded: false,
+      fetching: false
+    });
+    $currentView = 'tracker';
+    window.history.pushState({}, '', '/');
+  }
 </script>
 
 <nav class="topbar" class:topbar-scrolled={scrolled}>
-  <!-- Row 1: Main Header -->
+  <!-- Row 1: Main Header (Logo & Navigation) -->
   <div class="topbar-main-row">
-    <a href="/" class="topbar-logo">
+    <a href="/" class="topbar-logo" on:click|preventDefault={goHome}>
       <img src="/logo.png" alt="" class="topbar-logo-icon">
       <span>ValTracker</span>
     </a>
-
+    
     <div class="topbar-tabs">
       {#each TABS as tab}
         <button
@@ -125,24 +217,27 @@
       {/each}
     </div>
 
-    <div class="topbar-search-area">
-      <PlayerSearch
-        compact={subRowVisible}
-        value={$player.name}
-        tagValue={$player.tag}
-        region={$player.region}
-        onSubmit={handleSearch}
-        onRegionChange={handleRegionChange}
-      />
+    <!-- Persistent Global Searchbar in Row 1 -->
+    <div class="player-search-wrap" style="position: relative;">
+      <input class="player-input" type="text" placeholder="Name" bind:value={$player.name} autocomplete="off" spellcheck="false">
+      <span class="player-input-hash">#</span>
+      <input class="player-input player-input-tag" type="text" placeholder="TAG" bind:value={$player.tag} maxlength="8" autocomplete="off" spellcheck="false" on:input={() => { $player.tag = sanitizeTag($player.tag); }}>
+      <button class="topbar-search-submit-btn" on:click={() => handleSearch($player.name, $player.tag)} title="Search">
+        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </button>
+      <div id="topbar-search-dropdown" class="search-dropdown"></div>
     </div>
   </div>
-
-  <!-- Row 2: Sub Header (Active Pill + Filters) -->
+  
+  <!-- Row 2: Sub Header (Search Controls & Filters) -->
   {#if subRowVisible}
     <div class="topbar-sub-row">
       <div class="topbar-sub-left">
-        <div class="active-pill">
-          <div class="active-pill-avatar">
+        <div class="player-active-pill">
+          <div class="active-pill-avatar-wrap">
             <div class="active-pill-avatar-fallback">👤</div>
           </div>
           <span class="active-pill-name">{$player.name}#{$player.tag}</span>
@@ -160,49 +255,90 @@
           </button>
         </div>
 
+        <div class="filter-summary-text">
+          <span class="filter-summary-icon">
+            <svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </span>
+          {filterSummaryText}
+        </div>
+
         <button class="mobile-filter-toggle" on:click={toggleMobileFilters}>
           ⚙️ Filters
         </button>
       </div>
-
+      
       <div class="topbar-right" class:mobile-expanded={mobileFiltersOpen}>
-        <div class="filter-capsule">
+        <div class="topbar-filter-capsule">
           <div class="filter-item">
             <span class="filter-icon">
-              <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="filter-icon-svg">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
             </span>
-            <select class="filter-select" value={$player.region} on:change={(e) => handleFilterChange('region', e.target.value)}>
+            <select class="region-select" value={$player.region} on:change={(e) => handleFilterChange('region', e.target.value)}>
               {#each REGIONS as r}
                 <option value={r.value}>{r.label}</option>
               {/each}
             </select>
+            <span class="chevron-icon">
+              <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </span>
           </div>
 
           <div class="filter-divider"></div>
 
           <div class="filter-item">
             <span class="filter-icon">
-              <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none"><rect x="2" y="6" width="20" height="12" rx="3"/><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/></svg>
+              <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="filter-icon-svg">
+                <rect x="2" y="6" width="20" height="12" rx="3"></rect>
+                <line x1="6" y1="12" x2="10" y2="12"></line>
+                <line x1="8" y1="10" x2="8" y2="14"></line>
+                <circle cx="15.5" cy="10.5" r="1" fill="currentColor"></circle>
+                <circle cx="15.5" cy="13.5" r="1" fill="currentColor"></circle>
+                <circle cx="18.5" cy="12" r="1" fill="currentColor"></circle>
+              </svg>
             </span>
-            <select class="filter-select" value={$player.mode} on:change={(e) => handleFilterChange('mode', e.target.value)}>
+            <select class="region-select" value={$player.mode} on:change={(e) => handleFilterChange('mode', e.target.value)}>
               {#each MODES as m}
                 <option value={m.value}>{m.label}</option>
               {/each}
             </select>
+            <span class="chevron-icon">
+              <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </span>
           </div>
 
           <div class="filter-divider"></div>
 
           <div class="filter-item">
             <span class="filter-icon">
-              <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="filter-icon-svg">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
             </span>
-            <select class="filter-select" value={$player.act} on:change={(e) => handleFilterChange('act', e.target.value)}>
+            <select class="region-select" value={$player.act} on:change={(e) => handleFilterChange('act', e.target.value)}>
               {#each ACTS as a}
                 <option value={a.value}>{a.label}</option>
               {/each}
               <option value="all">Lifetime</option>
             </select>
+            <span class="chevron-icon">
+              <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </span>
           </div>
         </div>
 
@@ -215,41 +351,6 @@
 </nav>
 
 <style>
-  .topbar {
-    display: flex;
-    flex-direction: column;
-    padding: 12px 20px 10px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: rgba(3, 3, 4, 0.95);
-    backdrop-filter: blur(16px);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-    gap: 8px;
-    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  }
-
-  :global(body.scrolled-down) .topbar {
-    transform: translateY(-100%);
-  }
-
-  :global(body.scrolled-up) .topbar {
-    transform: translateY(0);
-  }
-
-  .topbar-scrolled {
-    border-bottom-color: rgba(255, 255, 255, 0.08);
-  }
-
-  .topbar-main-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    gap: 16px;
-  }
-
   .topbar-logo {
     display: flex;
     align-items: center;
@@ -264,271 +365,13 @@
     flex-shrink: 0;
     white-space: nowrap;
   }
-
-  .topbar-logo span {
-    color: var(--accent);
-  }
-
+  .topbar-logo span { color: var(--accent); }
   .topbar-logo-icon {
     height: 24px;
     width: auto;
     filter: drop-shadow(0 0 6px rgba(255, 70, 85, 0.6));
   }
-
-  .topbar-tabs {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-    flex-shrink: 0;
-  }
-
-  .topbar-tab {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 600;
-    font-size: 12px;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    padding: 6px 14px;
-    background: none;
-    border: none;
-    color: var(--muted);
-    cursor: pointer;
-    border-radius: 6px;
-    transition: all 0.2s;
-    white-space: nowrap;
-  }
-
-  .topbar-tab:hover {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.06);
-  }
-
-  .topbar-tab.active {
-    color: #fff;
-    background: rgba(255, 70, 85, 0.12);
-    border: 1px solid rgba(255, 70, 85, 0.25);
-  }
-
-  .topbar-search-area {
-    position: relative;
-    flex-shrink: 0;
-  }
-
-  .topbar-sub-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    border-top: 1px solid rgba(255, 255, 255, 0.04);
-    padding-top: 8px;
-    animation: fadeIn 0.3s ease;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-4px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .topbar-sub-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .active-pill {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 4px 12px 4px 4px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 100px;
-  }
-
-  .active-pill-avatar {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    overflow: hidden;
-    background: rgba(255, 255, 255, 0.05);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .active-pill-avatar-fallback {
-    font-size: 12px;
-  }
-
-  .active-pill-name {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    color: #fff;
-    white-space: nowrap;
-  }
-
-  .active-pill-btn {
-    background: none;
-    border: none;
-    color: var(--muted);
-    cursor: pointer;
-    padding: 2px 4px;
-    border-radius: 4px;
-    transition: all 0.15s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .bookmark-btn {
-    font-size: 14px;
-  }
-
-  .bookmark-btn:hover {
-    color: #ffd700;
-    transform: scale(1.2);
-  }
-
-  .bookmark-btn.bookmarked {
-    color: #ffd700;
-    text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
-  }
-
-  .active-pill-btn:hover {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.08);
-  }
-
-  .mobile-filter-toggle {
-    display: none;
-    align-items: center;
-    gap: 4px;
-    font-family: 'Inter', sans-serif;
-    font-size: 11px;
-    color: var(--muted);
-    background: none;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 6px;
-    padding: 5px 10px;
-    cursor: pointer;
-  }
-
-  .topbar-right {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .filter-capsule {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 8px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 8px;
-  }
-
-  .filter-item {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .filter-icon {
-    color: var(--muted);
-    display: flex;
-    align-items: center;
-  }
-
-  .filter-select {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    background: transparent;
-    border: none;
-    color: var(--text);
-    padding: 4px 4px;
-    cursor: pointer;
-    outline: none;
-    appearance: none;
-  }
-
-  .filter-select option {
-    background: #121216;
-    color: var(--text);
-  }
-
-  .filter-divider {
-    width: 1px;
-    height: 16px;
-    background: rgba(255, 255, 255, 0.08);
-  }
-
-  .fetch-btn {
-    font-family: 'Inter', sans-serif;
-    font-weight: 700;
-    font-size: 11px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    padding: 7px 16px;
-    background: var(--accent);
-    color: #0d0d0f;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    box-shadow: 0 4px 14px rgba(250, 68, 84, 0.2);
-    transition: var(--transition);
-    white-space: nowrap;
-  }
-
-  .fetch-btn:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(250, 68, 84, 0.35);
-  }
-
-  .fetch-btn:active:not(:disabled) {
-    transform: translateY(0) scale(0.97);
-  }
-
-  .fetch-btn:disabled {
-    opacity: 0.4;
-    pointer-events: none;
-  }
-
   @media (max-width: 800px) {
-    .topbar-tabs {
-      display: none;
-    }
-    .mobile-filter-toggle {
-      display: inline-flex;
-    }
-    .filter-capsule {
-      display: none;
-    }
-    .topbar-right.mobile-expanded .filter-capsule {
-      display: flex;
-      flex-wrap: wrap;
-    }
-    .topbar-main-row {
-      gap: 8px;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .topbar {
-      padding: 10px 12px 8px;
-    }
-    .topbar-logo {
-      font-size: 18px;
-      letter-spacing: 2px;
-    }
-    .active-pill-name {
-      font-size: 11px;
-      max-width: 100px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+    .topbar-logo { font-size: 18px; letter-spacing: 2px; }
   }
 </style>

@@ -17,7 +17,7 @@ export const player = writable<PlayerState>({
   tag: '',
   region: 'ap',
   mode: 'competitive',
-  act: 'v26a3',
+  act: 'v26a4',
   loaded: false,
   fetching: false
 });

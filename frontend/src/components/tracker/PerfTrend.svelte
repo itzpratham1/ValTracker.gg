@@ -132,76 +132,24 @@
   }
 </script>
 
-<div class="card perf-trend-card">
+<div class="card span-12" id="perf-trend-card" style="min-height:200px;">
   <div class="card-accent-line"></div>
-  <div class="pt-header">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
     <div class="card-label" style="margin:0;">KD / ACS / HS% — Last 20 Matches</div>
-    <div class="pt-legend">
-      <div class="pt-legend-item"><div class="pt-legend-line" style="background:#e8ff47;"></div><span>K/D</span></div>
-      <div class="pt-legend-item"><div class="pt-legend-line" style="background:#3ecf8e;"></div><span>ACS/100</span></div>
-      <div class="pt-legend-item"><div class="pt-legend-line" style="background:#ff5757;border-style:dashed;"></div><span>HS%</span></div>
+    <div style="display:flex;gap:8px;">
+      <div style="display:flex;align-items:center;gap:5px;"><div style="width:10px;height:2px;background:#e8ff47;border-radius:1px;"></div><span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;">K/D</span></div>
+      <div style="display:flex;align-items:center;gap:5px;"><div style="width:10px;height:2px;background:#3ecf8e;border-radius:1px;"></div><span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;">ACS/100</span></div>
+      <div style="display:flex;align-items:center;gap:5px;"><div style="width:10px;height:2px;background:#ff5757;border-radius:1px;"></div><span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;">HS%</span></div>
     </div>
   </div>
-  <div class="pt-canvas-wrap">
+  <div style="position:relative;height:160px;width:100%;">
     {#if hasData}
       <canvas bind:this={canvas}></canvas>
     {:else}
-      <div class="placeholder-txt">Fetch stats to see trend</div>
+      <div class="placeholder-txt" id="perf-trend-placeholder">Fetch stats to see trend</div>
     {/if}
   </div>
 </div>
 
 <style>
-  .perf-trend-card {
-    min-height: 200px;
-    position: relative;
-  }
-
-  .pt-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .pt-legend {
-    display: flex;
-    gap: 8px;
-  }
-
-  .pt-legend-item {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-
-  .pt-legend-line {
-    width: 10px;
-    height: 2px;
-    border-radius: 1px;
-  }
-
-  .pt-legend-item span {
-    font-family: 'DM Mono', monospace;
-    font-size: 9px;
-    color: var(--muted);
-    letter-spacing: 1px;
-  }
-
-  .pt-canvas-wrap {
-    position: relative;
-    height: 160px;
-    width: 100%;
-  }
-
-  .placeholder-txt {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    color: var(--muted2);
-    letter-spacing: 1px;
-    text-align: center;
-    padding: 60px 20px;
-  }
 </style>

@@ -55,18 +55,18 @@
 </script>
 
 {#if sorted.length === 0}
-  <div class="placeholder-card">
+  <div class="card span-12 placeholder-card">
     <div class="placeholder-txt">No agent data available for this mode</div>
   </div>
 {:else}
-  <div class="agents-grid">
+  <div style="display:contents;">
     {#each sorted as [name, s], i}
       {@const wr = getWinRate(s)}
       {@const wrCls = wr >= 55 ? 'good' : wr >= 45 ? 'mid' : 'bad'}
       {@const role = getRole(name)}
       {@const img = getAgentIcon(name)}
       {@const trend = getAgentTrend(name, allMatches)}
-      <div class="agent-bento" style="animation-delay:{i * 60}ms">
+      <div class="agent-bento visible" style="animation-delay:{i * 60}ms">
         <div class="agent-wr-chip {wrCls}">{wr}%</div>
         {#if img}
           <img class="agent-portrait" src={img} alt={name}>
@@ -94,181 +94,3 @@
     {/each}
   </div>
 {/if}
-
-<style>
-  .agents-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 10px;
-  }
-
-  .agent-bento {
-    background: rgba(18, 18, 24, 0.92);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
-    padding: 16px;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    animation: cardIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-    transition: all 0.3s ease;
-  }
-
-  .agent-bento:hover {
-    border-color: rgba(255, 255, 255, 0.12);
-    transform: translate3d(0, -4px, 0);
-  }
-
-  @keyframes cardIn {
-    from { opacity: 0; transform: translateY(12px) scale(0.97); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
-  }
-
-  .agent-wr-chip {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 3px 8px;
-    border-radius: 6px;
-    letter-spacing: 0.5px;
-    z-index: 1;
-  }
-  .agent-wr-chip.good { background: rgba(16, 185, 129, 0.15); color: var(--win); border: 1px solid rgba(16, 185, 129, 0.3); }
-  .agent-wr-chip.mid { background: rgba(250, 68, 84, 0.1); color: var(--accent); border: 1px solid rgba(250, 68, 84, 0.25); }
-  .agent-wr-chip.bad { background: rgba(244, 63, 94, 0.15); color: var(--loss); border: 1px solid rgba(244, 63, 94, 0.3); }
-
-  .agent-portrait {
-    width: 100%;
-    height: 140px;
-    object-fit: contain;
-    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
-    transition: all 0.3s ease;
-  }
-
-  .agent-bento:hover .agent-portrait {
-    filter: saturate(1.1) contrast(1.05);
-    transform: scale(1.02);
-  }
-
-  .agent-portrait-fallback {
-    width: 100%;
-    height: 140px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 700;
-    font-size: 48px;
-    color: var(--muted2);
-    background: var(--surface2);
-    border-radius: 8px;
-  }
-
-  .agent-info {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .agent-name {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 700;
-    font-size: 16px;
-    color: var(--text);
-    letter-spacing: 0.5px;
-  }
-
-  .agent-role-chip {
-    font-family: 'DM Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 1px;
-    text-transform: capitalize;
-    padding: 2px 6px;
-    border-radius: 4px;
-    width: fit-content;
-  }
-  .agent-role-chip.duelist { background: rgba(255, 123, 123, 0.12); color: #ff7b7b; }
-  .agent-role-chip.sentinel { background: rgba(122, 184, 255, 0.12); color: #7ab8ff; }
-  .agent-role-chip.initiator { background: rgba(245, 166, 35, 0.12); color: #f5a623; }
-  .agent-role-chip.controller { background: rgba(16, 185, 129, 0.12); color: var(--win); }
-
-  .agent-stats-row {
-    display: flex;
-    gap: 12px;
-    margin-top: 4px;
-  }
-
-  .asr-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1px;
-  }
-
-  .asv {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 700;
-    font-size: 16px;
-    color: var(--text);
-  }
-
-  .asl {
-    font-family: 'DM Mono', monospace;
-    font-size: 8px;
-    color: var(--muted2);
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-  }
-
-  .agent-trend {
-    display: flex;
-    align-items: center;
-    gap: 3px;
-    margin-top: 6px;
-  }
-
-  .agent-trend-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-  }
-  .agent-trend-dot.w { background: var(--win); }
-  .agent-trend-dot.l { background: var(--loss); }
-
-  .agent-trend-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 8px;
-    color: var(--muted2);
-    margin-left: 4px;
-  }
-
-  .placeholder-card {
-    background: rgba(18, 18, 24, 0.92);
-    border: 1px dashed rgba(255, 255, 255, 0.09);
-    border-radius: 12px;
-    padding: 20px;
-  }
-
-  .placeholder-txt {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    color: var(--muted2);
-    letter-spacing: 1px;
-    text-align: center;
-    padding: 30px;
-  }
-
-  @media (max-width: 600px) {
-    .agents-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-    .agent-portrait, .agent-portrait-fallback {
-      height: 110px;
-    }
-  }
-</style>

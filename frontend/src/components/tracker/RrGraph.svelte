@@ -157,50 +157,26 @@
   }
 </script>
 
-<div class="card rr-graph-card">
+<div class="card graph-card span-8" id="rr-graph-card">
   <div class="card-accent-line"></div>
   <div class="card-label">RR Progression</div>
-  <div class="rr-graph-wrap">
+  <div class="graph-canvas-wrap">
     {#if hasData}
       <canvas bind:this={canvas}></canvas>
-      <div class="rr-note">
-        {#if history.some(m => mmrHistory[m.matchId] !== undefined)}
-          ✓ Real RR data from stored match history
-        {:else}
-          * Estimated from win/loss — stored history unavailable
-        {/if}
-      </div>
     {:else}
       <div class="placeholder-txt">Fetch stats to see RR graph</div>
     {/if}
   </div>
+  {#if hasData}
+    <div class="graph-note">
+      {#if history.some(m => mmrHistory[m.matchId] !== undefined)}
+        ✓ Real RR data from stored match history
+      {:else}
+        * Estimated from win/loss — stored history unavailable
+      {/if}
+    </div>
+  {/if}
 </div>
 
 <style>
-  .rr-graph-card {
-    position: relative;
-  }
-
-  .rr-graph-wrap {
-    position: relative;
-    min-height: 200px;
-  }
-
-  .rr-note {
-    font-family: 'DM Mono', monospace;
-    font-size: 9px;
-    color: var(--muted);
-    letter-spacing: 0.5px;
-    margin-top: 8px;
-    text-align: center;
-  }
-
-  .placeholder-txt {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    color: var(--muted2);
-    letter-spacing: 1px;
-    text-align: center;
-    padding: 60px 20px;
-  }
 </style>

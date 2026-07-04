@@ -1,1032 +1,70 @@
 [
   {
-    "id": "670466",
-    "date": "Jun 12, 2026 7:30 PM",
+    "id": "681802",
+    "date": "Jun 26, 2026 12:30 PM",
     "state": "completed",
-    "vlr_path": "/670466/paper-rex-vs-leviat-n-valorant-masters-london-2026-ubqf",
-    "league": {
-      "name": "Valorant Masters London 2026",
-      "region": "Playoffs\u2013Upper Quarterfinals"
-    },
-    "match": {
-      "id": "670466",
-      "teams": [
-        {
-          "name": "Paper Rex",
-          "game_wins": 2,
-          "has_won": true
-        },
-        {
-          "name": "LEVIAT\u00c1N",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "669119",
-    "date": "Jun 12, 2026 6:30 AM",
-    "state": "completed",
-    "vlr_path": "/669119/myvra-gc-vs-fusion-x-game-changers-2026-latam-north-stage-2-w5",
-    "league": {
-      "name": "Game Changers 2026: LATAM North Stage 2",
-      "region": "Group Stage\u2013Week 5"
-    },
-    "match": {
-      "id": "669119",
-      "teams": [
-        {
-          "name": "MYVRA GC",
-          "game_wins": 2,
-          "has_won": true
-        },
-        {
-          "name": "FUSION X",
-          "game_wins": 1,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "669101",
-    "date": "Jun 12, 2026 3:30 AM",
-    "state": "completed",
-    "vlr_path": "/669101/leviat-n-gc-vs-daruma-synergy-game-changers-2026-latam-south-stage-2-w5",
-    "league": {
-      "name": "Game Changers 2026: LATAM South Stage 2",
-      "region": "Group Stage\u2013Week 5"
-    },
-    "match": {
-      "id": "669101",
-      "teams": [
-        {
-          "name": "LEVIAT\u00c1N GC",
-          "game_wins": 2,
-          "has_won": true
-        },
-        {
-          "name": "Daruma Synergy",
-          "game_wins": 1,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "684634",
-    "date": "Jun 11, 2026 6:30 PM",
-    "state": "completed",
-    "vlr_path": "/684634/oasis-gaming-vs-boom-esports-challengers-2026-southeast-asia-split-2-lr1",
-    "league": {
-      "name": "Challengers 2026: Southeast Asia Split 2",
-      "region": "Playoffs\u2013Lower Round 1"
-    },
-    "match": {
-      "id": "684634",
-      "teams": [
-        {
-          "name": "Oasis Gaming",
-          "game_wins": 2,
-          "has_won": true
-        },
-        {
-          "name": "BOOM Esports",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "684633",
-    "date": "Jun 11, 2026 4:30 PM",
-    "state": "completed",
-    "vlr_path": "/684633/looking-for-home-vs-trinity-challengers-2026-southeast-asia-split-2-lr1",
-    "league": {
-      "name": "Challengers 2026: Southeast Asia Split 2",
-      "region": "Playoffs\u2013Lower Round 1"
-    },
-    "match": {
-      "id": "684633",
-      "teams": [
-        {
-          "name": "Looking For Home",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "Trinity",
-          "game_wins": 2,
-          "has_won": true
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "684618",
-    "date": "June 10, 2026 11:10 PM",
-    "state": "completed",
-    "vlr_path": "/684618/global-esports-vs-xi-lai-gaming-valorant-masters-london-2026-r3-1-1",
-    "league": {
-      "name": "Valorant Masters London 2026",
-      "region": "Swiss Stage\u2013Round 3 (1-1)"
-    },
-    "match": {
-      "id": "684618",
-      "teams": [
-        {
-          "name": "Global Esports",
-          "game_wins": 1,
-          "has_won": false
-        },
-        {
-          "name": "Xi Lai Gaming",
-          "game_wins": 2,
-          "has_won": true
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "684619",
-    "date": "June 10, 2026 7:30 PM",
-    "state": "completed",
-    "vlr_path": "/684619/fut-esports-vs-nrg-valorant-masters-london-2026-r3-1-1",
-    "league": {
-      "name": "Valorant Masters London 2026",
-      "region": "Swiss Stage\u2013Round 3 (1-1)"
-    },
-    "match": {
-      "id": "684619",
-      "teams": [
-        {
-          "name": "FUT Esports",
-          "game_wins": 2,
-          "has_won": true
-        },
-        {
-          "name": "NRG",
-          "game_wins": 1,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "684617",
-    "date": "June 9, 2026 10:50 PM",
-    "state": "completed",
-    "vlr_path": "/684617/global-esports-vs-full-sense-valorant-masters-london-2026-r2-0-1",
-    "league": {
-      "name": "Valorant Masters London 2026",
-      "region": "Swiss Stage\u2013Round 2 (0-1)"
-    },
-    "match": {
-      "id": "684617",
-      "teams": [
-        {
-          "name": "Global Esports",
-          "game_wins": 2,
-          "has_won": true
-        },
-        {
-          "name": "FULL SENSE",
-          "game_wins": 1,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "684616",
-    "date": "June 9, 2026 7:30 PM",
-    "state": "completed",
-    "vlr_path": "/684616/dragon-ranger-gaming-vs-xi-lai-gaming-valorant-masters-london-2026-r2-0-1",
-    "league": {
-      "name": "Valorant Masters London 2026",
-      "region": "Swiss Stage\u2013Round 2 (0-1)"
-    },
-    "match": {
-      "id": "684616",
-      "teams": [
-        {
-          "name": "Dragon Ranger Gaming",
-          "game_wins": 1,
-          "has_won": false
-        },
-        {
-          "name": "Xi Lai Gaming",
-          "game_wins": 2,
-          "has_won": true
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "684615",
-    "date": "June 8, 2026 10:45 PM",
-    "state": "completed",
-    "vlr_path": "/684615/nrg-vs-leviat-n-valorant-masters-london-2026-r2-1-0",
-    "league": {
-      "name": "Valorant Masters London 2026",
-      "region": "Swiss Stage\u2013Round 2 (1-0)"
-    },
-    "match": {
-      "id": "684615",
-      "teams": [
-        {
-          "name": "NRG",
-          "game_wins": 1,
-          "has_won": false
-        },
-        {
-          "name": "LEVIAT\u00c1N",
-          "game_wins": 2,
-          "has_won": true
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "684614",
-    "date": "June 8, 2026 7:30 PM",
-    "state": "completed",
-    "vlr_path": "/684614/team-vitality-vs-fut-esports-valorant-masters-london-2026-r2-1-0",
-    "league": {
-      "name": "Valorant Masters London 2026",
-      "region": "Swiss Stage\u2013Round 2 (1-0)"
-    },
-    "match": {
-      "id": "684614",
-      "teams": [
-        {
-          "name": "Team Vitality",
-          "game_wins": 2,
-          "has_won": true
-        },
-        {
-          "name": "FUT Esports",
-          "game_wins": 1,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "684612",
-    "date": "June 7, 2026 9:30 PM",
-    "state": "completed",
-    "vlr_path": "/684612/leviat-n-vs-global-esports-valorant-masters-london-2026-r1",
-    "league": {
-      "name": "Valorant Masters London 2026",
-      "region": "Swiss Stage\u2013Round 1"
-    },
-    "match": {
-      "id": "684612",
-      "teams": [
-        {
-          "name": "LEVIAT\u00c1N",
-          "game_wins": 2,
-          "has_won": true
-        },
-        {
-          "name": "Global Esports",
-          "game_wins": 1,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "684611",
-    "date": "June 7, 2026 7:30 PM",
-    "state": "completed",
-    "vlr_path": "/684611/full-sense-vs-fut-esports-valorant-masters-london-2026-r1",
-    "league": {
-      "name": "Valorant Masters London 2026",
-      "region": "Swiss Stage\u2013Round 1"
-    },
-    "match": {
-      "id": "684611",
-      "teams": [
-        {
-          "name": "FULL SENSE",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "FUT Esports",
-          "game_wins": 2,
-          "has_won": true
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "684610",
-    "date": "June 6, 2026 10:00 PM",
-    "state": "completed",
-    "vlr_path": "/684610/team-vitality-vs-dragon-ranger-gaming-valorant-masters-london-2026-r1",
-    "league": {
-      "name": "Valorant Masters London 2026",
-      "region": "Swiss Stage\u2013Round 1"
-    },
-    "match": {
-      "id": "684610",
-      "teams": [
-        {
-          "name": "Team Vitality",
-          "game_wins": 2,
-          "has_won": true
-        },
-        {
-          "name": "Dragon Ranger Gaming",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "684613",
-    "date": "June 6, 2026 7:30 PM",
-    "state": "completed",
-    "vlr_path": "/684613/xi-lai-gaming-vs-nrg-valorant-masters-london-2026-r1",
-    "league": {
-      "name": "Valorant Masters London 2026",
-      "region": "Swiss Stage\u2013Round 1"
-    },
-    "match": {
-      "id": "684613",
-      "teams": [
-        {
-          "name": "Xi Lai Gaming",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "NRG",
-          "game_wins": 2,
-          "has_won": true
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "669118",
-    "date": "June 6, 2026 6:30 AM",
-    "state": "completed",
-    "vlr_path": "/669118/akave-esports-gc-vs-contra-gc-game-changers-2026-latam-north-stage-2-w4",
-    "league": {
-      "name": "Game Changers 2026: LATAM North Stage 2",
-      "region": "Group Stage\u2013Week 4"
-    },
-    "match": {
-      "id": "669118",
-      "teams": [
-        {
-          "name": "Akave Esports GC",
-          "game_wins": 2,
-          "has_won": true
-        },
-        {
-          "name": "Contra GC",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "669100",
-    "date": "June 6, 2026 3:30 AM",
-    "state": "completed",
-    "vlr_path": "/669100/kr-blaze-vs-looking-for-laburo-game-changers-2026-latam-south-stage-2-w4",
-    "league": {
-      "name": "Game Changers 2026: LATAM South Stage 2",
-      "region": "Group Stage\u2013Week 4"
-    },
-    "match": {
-      "id": "669100",
-      "teams": [
-        {
-          "name": "KR\u00dc BLAZE",
-          "game_wins": 1,
-          "has_won": false
-        },
-        {
-          "name": "Looking For Laburo",
-          "game_wins": 2,
-          "has_won": true
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "681643",
-    "date": "June 6, 2026 2:30 AM",
-    "state": "completed",
-    "vlr_path": "/681643/swimtrek-blue-vs-shopify-rebellion-gold-game-changers-2026-north-america-stage-1-gf",
-    "league": {
-      "name": "Game Changers 2026: North America Stage 1",
-      "region": "Playoffs\u2013Grand Final"
-    },
-    "match": {
-      "id": "681643",
-      "teams": [
-        {
-          "name": "SwimTrek Blue",
-          "game_wins": 3,
-          "has_won": true
-        },
-        {
-          "name": "Shopify Rebellion Gold",
-          "game_wins": 1,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "684628",
-    "date": "June 5, 2026 7:00 PM",
-    "state": "completed",
-    "vlr_path": "/684628/boom-esports-vs-sharper-esports-challengers-2026-southeast-asia-split-2-ubqf",
-    "league": {
-      "name": "Challengers 2026: Southeast Asia Split 2",
-      "region": "Playoffs\u2013Upper Quarterfinals"
-    },
-    "match": {
-      "id": "684628",
-      "teams": [
-        {
-          "name": "BOOM Esports",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "Sharper Esports",
-          "game_wins": 2,
-          "has_won": true
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "681321",
-    "date": "June 5, 2026 4:40 PM",
-    "state": "completed",
-    "vlr_path": "/681321/asterisk-vs-s8ul-esports-challengers-2026-south-asia-split-2-w3",
-    "league": {
-      "name": "Challengers 2026: South Asia Split 2",
-      "region": "Group Stage\u2013Week 3"
-    },
-    "match": {
-      "id": "681321",
-      "teams": [
-        {
-          "name": "Asterisk",
-          "game_wins": 2,
-          "has_won": true
-        },
-        {
-          "name": "S8UL Esports",
-          "game_wins": 1,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "684627",
-    "date": "June 5, 2026 4:30 PM",
-    "state": "completed",
-    "vlr_path": "/684627/fancy-united-esports-vs-oasis-gaming-challengers-2026-southeast-asia-split-2-ubqf",
-    "league": {
-      "name": "Challengers 2026: Southeast Asia Split 2",
-      "region": "Playoffs\u2013Upper Quarterfinals"
-    },
-    "match": {
-      "id": "684627",
-      "teams": [
-        {
-          "name": "Fancy United Esports",
-          "game_wins": 2,
-          "has_won": true
-        },
-        {
-          "name": "Oasis Gaming",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "681320",
-    "date": "June 5, 2026 3:00 PM",
-    "state": "completed",
-    "vlr_path": "/681320/x-ind-vs-leosun-esports-challengers-2026-south-asia-split-2-w3",
-    "league": {
-      "name": "Challengers 2026: South Asia Split 2",
-      "region": "Group Stage\u2013Week 3"
-    },
-    "match": {
-      "id": "681320",
-      "teams": [
-        {
-          "name": "X\u00d8 IND",
-          "game_wins": 2,
-          "has_won": true
-        },
-        {
-          "name": "Leosun Esports",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "681649",
-    "date": "June 5, 2026 2:30 AM",
-    "state": "completed",
-    "vlr_path": "/681649/flyquest-red-vs-shopify-rebellion-gold-game-changers-2026-north-america-stage-1-lbf",
-    "league": {
-      "name": "Game Changers 2026: North America Stage 1",
-      "region": "Playoffs\u2013Lower Final"
-    },
-    "match": {
-      "id": "681649",
-      "teams": [
-        {
-          "name": "FlyQuest RED",
-          "game_wins": 2,
-          "has_won": false
-        },
-        {
-          "name": "Shopify Rebellion Gold",
-          "game_wins": 3,
-          "has_won": true
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "681319",
-    "date": "June 4, 2026 7:00 PM",
-    "state": "completed",
-    "vlr_path": "/681319/revenant-xspark-vs-s8ul-esports-challengers-2026-south-asia-split-2-w3",
-    "league": {
-      "name": "Challengers 2026: South Asia Split 2",
-      "region": "Group Stage\u2013Week 3"
-    },
-    "match": {
-      "id": "681319",
-      "teams": [
-        {
-          "name": "Revenant XSpark",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "S8UL Esports",
-          "game_wins": 2,
-          "has_won": true
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "684626",
-    "date": "June 4, 2026 6:15 PM",
-    "state": "completed",
-    "vlr_path": "/684626/trinity-vs-jade-lions-challengers-2026-southeast-asia-split-2-ubqf",
-    "league": {
-      "name": "Challengers 2026: Southeast Asia Split 2",
-      "region": "Playoffs\u2013Upper Quarterfinals"
-    },
-    "match": {
-      "id": "684626",
-      "teams": [
-        {
-          "name": "Trinity",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "Jade Lions",
-          "game_wins": 2,
-          "has_won": true
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "684625",
-    "date": "June 4, 2026 4:30 PM",
-    "state": "completed",
-    "vlr_path": "/684625/555-vs-looking-for-home-challengers-2026-southeast-asia-split-2-ubqf",
-    "league": {
-      "name": "Challengers 2026: Southeast Asia Split 2",
-      "region": "Playoffs\u2013Upper Quarterfinals"
-    },
-    "match": {
-      "id": "684625",
-      "teams": [
-        {
-          "name": "555",
-          "game_wins": 2,
-          "has_won": true
-        },
-        {
-          "name": "Looking For Home",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "686187",
-    "date": "June 4, 2026 4:30 PM",
-    "state": "completed",
-    "vlr_path": "/686187/so-sweet-vs-x-cast-challengers-2026-korea-wdg-split-2-w1",
-    "league": {
-      "name": "Challengers 2026: Korea WDG Split 2",
-      "region": "Group Stage\u2013Week 1"
-    },
-    "match": {
-      "id": "686187",
-      "teams": [
-        {
-          "name": "So:sweet",
-          "game_wins": 2,
-          "has_won": true
-        },
-        {
-          "name": "X-CAST",
-          "game_wins": 1,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "681795",
-    "date": "June 4, 2026 3:30 PM",
-    "state": "completed",
-    "vlr_path": "/681795/igzist-vs-agelite-challengers-2026-japan-split-2-w3",
+    "vlr_path": "/681802/reject-vs-igzist-challengers-2026-japan-split-2-w4",
     "league": {
       "name": "Challengers 2026: Japan Split 2",
-      "region": "Main Stage\u2013Week 3"
+      "region": "Main Stage\u2013Week 4"
     },
     "match": {
-      "id": "681795",
+      "id": "681802",
       "teams": [
-        {
-          "name": "IGZIST",
-          "game_wins": 2,
-          "has_won": true
-        },
-        {
-          "name": "AGELITE",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "681318",
-    "date": "June 4, 2026 3:00 PM",
-    "state": "completed",
-    "vlr_path": "/681318/x-ind-vs-sign-esports-challengers-2026-south-asia-split-2-w3",
-    "league": {
-      "name": "Challengers 2026: South Asia Split 2",
-      "region": "Group Stage\u2013Week 3"
-    },
-    "match": {
-      "id": "681318",
-      "teams": [
-        {
-          "name": "X\u00d8 IND",
-          "game_wins": 1,
-          "has_won": false
-        },
-        {
-          "name": "SIGN Esports",
-          "game_wins": 2,
-          "has_won": true
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "686186",
-    "date": "June 4, 2026 1:30 PM",
-    "state": "completed",
-    "vlr_path": "/686186/onside-gaming-vs-drx-academy-challengers-2026-korea-wdg-split-2-w1",
-    "league": {
-      "name": "Challengers 2026: Korea WDG Split 2",
-      "region": "Group Stage\u2013Week 1"
-    },
-    "match": {
-      "id": "686186",
-      "teams": [
-        {
-          "name": "ONSIDE GAMING",
-          "game_wins": 2,
-          "has_won": true
-        },
-        {
-          "name": "DRX Academy",
-          "game_wins": 1,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "681794",
-    "date": "June 4, 2026 12:30 PM",
-    "state": "completed",
-    "vlr_path": "/681794/fennel-vs-qt-dig-challengers-2026-japan-split-2-w3",
-    "league": {
-      "name": "Challengers 2026: Japan Split 2",
-      "region": "Main Stage\u2013Week 3"
-    },
-    "match": {
-      "id": "681794",
-      "teams": [
-        {
-          "name": "FENNEL",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "QT DIG\u221e",
-          "game_wins": 2,
-          "has_won": true
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "681648",
-    "date": "June 4, 2026 5:00 AM",
-    "state": "completed",
-    "vlr_path": "/681648/shopify-rebellion-gold-vs-ghost-gaming-game-changers-2026-north-america-stage-1-lr3",
-    "league": {
-      "name": "Game Changers 2026: North America Stage 1",
-      "region": "Playoffs\u2013Lower Round 3"
-    },
-    "match": {
-      "id": "681648",
-      "teams": [
-        {
-          "name": "Shopify Rebellion Gold",
-          "game_wins": 2,
-          "has_won": true
-        },
-        {
-          "name": "Ghost Gaming",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "681642",
-    "date": "June 4, 2026 2:30 AM",
-    "state": "completed",
-    "vlr_path": "/681642/flyquest-red-vs-swimtrek-blue-game-changers-2026-north-america-stage-1-ubf",
-    "league": {
-      "name": "Game Changers 2026: North America Stage 1",
-      "region": "Playoffs\u2013Upper Final"
-    },
-    "match": {
-      "id": "681642",
-      "teams": [
-        {
-          "name": "FlyQuest RED",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "SwimTrek Blue",
-          "game_wins": 2,
-          "has_won": true
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "686185",
-    "date": "June 3, 2026 5:30 PM",
-    "state": "completed",
-    "vlr_path": "/686185/dplus-esports-vs-arete-challengers-2026-korea-wdg-split-2-w1",
-    "league": {
-      "name": "Challengers 2026: Korea WDG Split 2",
-      "region": "Group Stage\u2013Week 1"
-    },
-    "match": {
-      "id": "686185",
-      "teams": [
-        {
-          "name": "Dplus Esports",
-          "game_wins": 1,
-          "has_won": false
-        },
-        {
-          "name": "ARETE",
-          "game_wins": 2,
-          "has_won": true
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "681317",
-    "date": "June 3, 2026 5:05 PM",
-    "state": "completed",
-    "vlr_path": "/681317/no-salary-peek-vs-s8ul-esports-challengers-2026-south-asia-split-2-w3",
-    "league": {
-      "name": "Challengers 2026: South Asia Split 2",
-      "region": "Group Stage\u2013Week 3"
-    },
-    "match": {
-      "id": "681317",
-      "teams": [
-        {
-          "name": "No Salary Peek",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "S8UL Esports",
-          "game_wins": 2,
-          "has_won": true
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "681793",
-    "date": "June 3, 2026 4:10 PM",
-    "state": "completed",
-    "vlr_path": "/681793/crest-gaming-zst-vs-reject-challengers-2026-japan-split-2-w3",
-    "league": {
-      "name": "Challengers 2026: Japan Split 2",
-      "region": "Main Stage\u2013Week 3"
-    },
-    "match": {
-      "id": "681793",
-      "teams": [
-        {
-          "name": "CREST GAMING Zst",
-          "game_wins": 0,
-          "has_won": false
-        },
         {
           "name": "REJECT",
           "game_wins": 2,
           "has_won": true
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "681316",
-    "date": "June 3, 2026 3:00 PM",
-    "state": "completed",
-    "vlr_path": "/681316/sign-esports-vs-revenant-xspark-challengers-2026-south-asia-split-2-w3",
-    "league": {
-      "name": "Challengers 2026: South Asia Split 2",
-      "region": "Group Stage\u2013Week 3"
-    },
-    "match": {
-      "id": "681316",
-      "teams": [
+        },
         {
-          "name": "SIGN Esports",
+          "name": "IGZIST",
           "game_wins": 0,
           "has_won": false
-        },
-        {
-          "name": "Revenant XSpark",
-          "game_wins": 2,
-          "has_won": true
         }
       ]
     },
     "vod": null
   },
   {
-    "id": "686184",
-    "date": "June 3, 2026 1:30 PM",
+    "id": "700691",
+    "date": "Jun 26, 2026 12:00 PM",
     "state": "completed",
-    "vlr_path": "/686184/t1-academy-vs-gen-g-global-academy-challengers-2026-korea-wdg-split-2-w1",
+    "vlr_path": "/700691/s8ul-esports-vs-no-salary-peek-challengers-2026-south-asia-split-2-ubsf",
     "league": {
-      "name": "Challengers 2026: Korea WDG Split 2",
-      "region": "Group Stage\u2013Week 1"
+      "name": "Challengers 2026: South Asia Split 2",
+      "region": "Playoffs\u2013Upper Semifinals"
     },
     "match": {
-      "id": "686184",
+      "id": "700691",
       "teams": [
         {
-          "name": "T1 Academy",
-          "game_wins": 1,
-          "has_won": false
-        },
-        {
-          "name": "Gen.G Global Academy",
+          "name": "S8UL Esports",
           "game_wins": 2,
           "has_won": true
+        },
+        {
+          "name": "No Salary Peek",
+          "game_wins": 1,
+          "has_won": false
         }
       ]
     },
     "vod": null
   },
   {
-    "id": "681792",
-    "date": "June 3, 2026 12:30 PM",
+    "id": "678065",
+    "date": "Jun 26, 2026 6:30 AM",
     "state": "completed",
-    "vlr_path": "/681792/riddle-order-vs-insomnia-challengers-2026-japan-split-2-w3",
-    "league": {
-      "name": "Challengers 2026: Japan Split 2",
-      "region": "Main Stage\u2013Week 3"
-    },
-    "match": {
-      "id": "681792",
-      "teams": [
-        {
-          "name": "RIDDLE ORDER",
-          "game_wins": 1,
-          "has_won": false
-        },
-        {
-          "name": "Insomnia",
-          "game_wins": 2,
-          "has_won": true
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "678049",
-    "date": "June 3, 2026 6:30 AM",
-    "state": "completed",
-    "vlr_path": "/678049/fuego-vs-fusion-challengers-2026-latam-north-ace-stage-2-w3",
+    "vlr_path": "/678065/contra-vs-fusion-challengers-2026-latam-north-ace-stage-2-w5",
     "league": {
       "name": "Challengers 2026: LATAM North ACE Stage 2",
-      "region": "Group Stage\u2013Week 3"
+      "region": "Group Stage\u2013Week 5"
     },
     "match": {
-      "id": "678049",
+      "id": "678065",
       "teams": [
         {
-          "name": "FUEGO",
+          "name": "Contra",
           "game_wins": 2,
           "has_won": true
         },
@@ -1040,172 +78,16 @@
     "vod": null
   },
   {
-    "id": "685993",
-    "date": "June 3, 2026 4:45 AM",
+    "id": "701179",
+    "date": "Jun 26, 2026 4:10 AM",
     "state": "completed",
-    "vlr_path": "/685993/qor-vs-flyquest-challengers-2026-north-america-ace-stage-3-r3-1-1",
-    "league": {
-      "name": "Challengers 2026: North America ACE Stage 3",
-      "region": "Swiss Stage\u2013Round 3 (1-1)"
-    },
-    "match": {
-      "id": "685993",
-      "teams": [
-        {
-          "name": "QoR",
-          "game_wins": 2,
-          "has_won": true
-        },
-        {
-          "name": "FlyQuest",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "676914",
-    "date": "June 3, 2026 3:30 AM",
-    "state": "completed",
-    "vlr_path": "/676914/9z-globant-vs-shinden-challengers-2026-latam-south-ace-stage-2-w3",
-    "league": {
-      "name": "Challengers 2026: LATAM South ACE Stage 2",
-      "region": "Group Stage\u2013Week 3"
-    },
-    "match": {
-      "id": "676914",
-      "teams": [
-        {
-          "name": "9z Globant",
-          "game_wins": 2,
-          "has_won": true
-        },
-        {
-          "name": "ShindeN",
-          "game_wins": 1,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "678048",
-    "date": "June 3, 2026 3:30 AM",
-    "state": "completed",
-    "vlr_path": "/678048/streamer-arena-vs-chivas-esports-challengers-2026-latam-north-ace-stage-2-w3",
-    "league": {
-      "name": "Challengers 2026: LATAM North ACE Stage 2",
-      "region": "Group Stage\u2013Week 3"
-    },
-    "match": {
-      "id": "678048",
-      "teams": [
-        {
-          "name": "STREAMER ARENA",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "Chivas Esports",
-          "game_wins": 2,
-          "has_won": true
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "681927",
-    "date": "June 3, 2026 3:30 AM",
-    "state": "completed",
-    "vlr_path": "/681927/2game-esports-vs-team-liquid-brazil-challengers-2026-brazil-gamers-club-stage-2-w6",
+    "vlr_path": "/701179/elevate-vs-intz-challengers-2026-brazil-gamers-club-stage-2-lr1",
     "league": {
       "name": "Challengers 2026: Brazil Gamers Club Stage 2",
-      "region": "Regular Phase\u2013Week 6"
+      "region": "Play-In\u2013Lower Round 1"
     },
     "match": {
-      "id": "681927",
-      "teams": [
-        {
-          "name": "2Game Esports",
-          "game_wins": 2,
-          "has_won": true
-        },
-        {
-          "name": "Team Liquid Brazil",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "685994",
-    "date": "June 3, 2026 3:30 AM",
-    "state": "completed",
-    "vlr_path": "/685994/division-one-vs-yft-challengers-2026-north-america-ace-stage-3-r3-1-1",
-    "league": {
-      "name": "Challengers 2026: North America ACE Stage 3",
-      "region": "Swiss Stage\u2013Round 3 (1-1)"
-    },
-    "match": {
-      "id": "685994",
-      "teams": [
-        {
-          "name": "Division One",
-          "game_wins": 1,
-          "has_won": false
-        },
-        {
-          "name": "YFT",
-          "game_wins": 2,
-          "has_won": true
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "681925",
-    "date": "June 3, 2026 1:30 AM",
-    "state": "completed",
-    "vlr_path": "/681925/intz-vs-red-canids-challengers-2026-brazil-gamers-club-stage-2-w6",
-    "league": {
-      "name": "Challengers 2026: Brazil Gamers Club Stage 2",
-      "region": "Regular Phase\u2013Week 6"
-    },
-    "match": {
-      "id": "681925",
-      "teams": [
-        {
-          "name": "INTZ",
-          "game_wins": 2,
-          "has_won": true
-        },
-        {
-          "name": "RED Canids",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "681926",
-    "date": "June 3, 2026 1:30 AM",
-    "state": "completed",
-    "vlr_path": "/681926/elevate-vs-la-masia-challengers-2026-brazil-gamers-club-stage-2-w6",
-    "league": {
-      "name": "Challengers 2026: Brazil Gamers Club Stage 2",
-      "region": "Regular Phase\u2013Week 6"
-    },
-    "match": {
-      "id": "681926",
+      "id": "701179",
       "teams": [
         {
           "name": "ELEVATE",
@@ -1213,7 +95,7 @@
           "has_won": false
         },
         {
-          "name": "LA MASIA",
+          "name": "INTZ",
           "game_wins": 2,
           "has_won": true
         }
@@ -1222,50 +104,24 @@
     "vod": null
   },
   {
-    "id": "685991",
-    "date": "June 3, 2026 1:30 AM",
+    "id": "676927",
+    "date": "Jun 26, 2026 3:30 AM",
     "state": "completed",
-    "vlr_path": "/685991/sad-esports-vs-nrg-academy-challengers-2026-north-america-ace-stage-3-r3-2-0",
+    "vlr_path": "/676927/9z-globant-vs-bestia-challengers-2026-latam-south-ace-stage-2-w5",
     "league": {
-      "name": "Challengers 2026: North America ACE Stage 3",
-      "region": "Swiss Stage\u2013Round 3 (2-0)"
+      "name": "Challengers 2026: LATAM South ACE Stage 2",
+      "region": "Group Stage\u2013Week 5"
     },
     "match": {
-      "id": "685991",
+      "id": "676927",
       "teams": [
         {
-          "name": "SaD Esports",
-          "game_wins": 2,
-          "has_won": true
-        },
-        {
-          "name": "NRG Academy",
-          "game_wins": 1,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "685992",
-    "date": "June 3, 2026 1:30 AM",
-    "state": "completed",
-    "vlr_path": "/685992/azure-dragon-gaming-vs-m80-challengers-2026-north-america-ace-stage-3-r3-2-0",
-    "league": {
-      "name": "Challengers 2026: North America ACE Stage 3",
-      "region": "Swiss Stage\u2013Round 3 (2-0)"
-    },
-    "match": {
-      "id": "685992",
-      "teams": [
-        {
-          "name": "Azure Dragon Gaming",
+          "name": "9z Globant",
           "game_wins": 0,
           "has_won": false
         },
         {
-          "name": "M80",
+          "name": "BESTIA",
           "game_wins": 2,
           "has_won": true
         }
@@ -1274,25 +130,1169 @@
     "vod": null
   },
   {
-    "id": "676913",
-    "date": "June 3, 2026 12:30 AM",
+    "id": "678064",
+    "date": "Jun 26, 2026 3:30 AM",
     "state": "completed",
-    "vlr_path": "/676913/university-war-vs-bestia-challengers-2026-latam-south-ace-stage-2-w3",
+    "vlr_path": "/678064/chivas-esports-vs-lazer-challengers-2026-latam-north-ace-stage-2-w5",
     "league": {
-      "name": "Challengers 2026: LATAM South ACE Stage 2",
-      "region": "Group Stage\u2013Week 3"
+      "name": "Challengers 2026: LATAM North ACE Stage 2",
+      "region": "Group Stage\u2013Week 5"
     },
     "match": {
-      "id": "676913",
+      "id": "678064",
       "teams": [
         {
-          "name": "University War",
+          "name": "Chivas Esports",
           "game_wins": 2,
           "has_won": true
         },
         {
-          "name": "BESTIA",
+          "name": "LAZER",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "701232",
+    "date": "Jun 26, 2026 3:30 AM",
+    "state": "completed",
+    "vlr_path": "/701232/yft-vs-evil-geniuses-academy-challengers-2026-north-america-ace-stage-3-r5-2-2",
+    "league": {
+      "name": "Challengers 2026: North America ACE Stage 3",
+      "region": "Swiss Stage\u2013Round 5 (2-2)"
+    },
+    "match": {
+      "id": "701232",
+      "teams": [
+        {
+          "name": "YFT",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "Evil Geniuses Academy",
           "game_wins": 1,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "701180",
+    "date": "Jun 26, 2026 1:30 AM",
+    "state": "completed",
+    "vlr_path": "/701180/team-solid-vs-tbk-esports-challengers-2026-brazil-gamers-club-stage-2-lr1",
+    "league": {
+      "name": "Challengers 2026: Brazil Gamers Club Stage 2",
+      "region": "Play-In\u2013Lower Round 1"
+    },
+    "match": {
+      "id": "701180",
+      "teams": [
+        {
+          "name": "Team Solid",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "TBK Esports",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "701230",
+    "date": "Jun 26, 2026 1:30 AM",
+    "state": "completed",
+    "vlr_path": "/701230/nrg-academy-vs-shopify-rebellion-black-challengers-2026-north-america-ace-stage-3-r5-3-1",
+    "league": {
+      "name": "Challengers 2026: North America ACE Stage 3",
+      "region": "Swiss Stage\u2013Round 5 (3-1)"
+    },
+    "match": {
+      "id": "701230",
+      "teams": [
+        {
+          "name": "NRG Academy",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "Shopify Rebellion Black",
+          "game_wins": 2,
+          "has_won": true
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "701231",
+    "date": "Jun 26, 2026 1:30 AM",
+    "state": "completed",
+    "vlr_path": "/701231/nightblood-gaming-vs-sad-esports-challengers-2026-north-america-ace-stage-3-r5-3-1",
+    "league": {
+      "name": "Challengers 2026: North America ACE Stage 3",
+      "region": "Swiss Stage\u2013Round 5 (3-1)"
+    },
+    "match": {
+      "id": "701231",
+      "teams": [
+        {
+          "name": "Nightblood Gaming",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "SaD Esports",
+          "game_wins": 1,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "676925",
+    "date": "Jun 26, 2026 12:30 AM",
+    "state": "completed",
+    "vlr_path": "/676925/university-war-vs-kr-spark-challengers-2026-latam-south-ace-stage-2-w5",
+    "league": {
+      "name": "Challengers 2026: LATAM South ACE Stage 2",
+      "region": "Group Stage\u2013Week 5"
+    },
+    "match": {
+      "id": "676925",
+      "teams": [
+        {
+          "name": "University War",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "KR\u00dc SPARK",
+          "game_wins": 2,
+          "has_won": true
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "688445",
+    "date": "Jun 25, 2026 11:45 PM",
+    "state": "completed",
+    "vlr_path": "/688445/pixel-lumina-vs-fokus-challengers-2026-emea-stage-3-elim-c",
+    "league": {
+      "name": "Challengers 2026: EMEA Stage 3",
+      "region": "Group Stage\u2013Elimination (C)"
+    },
+    "match": {
+      "id": "688445",
+      "teams": [
+        {
+          "name": "Pixel Lumina",
+          "game_wins": 1,
+          "has_won": false
+        },
+        {
+          "name": "FOKUS",
+          "game_wins": 2,
+          "has_won": true
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "688450",
+    "date": "Jun 25, 2026 11:45 PM",
+    "state": "completed",
+    "vlr_path": "/688450/ghools-esports-vs-team-liquid-academy-challengers-2026-emea-stage-3-elim-d",
+    "league": {
+      "name": "Challengers 2026: EMEA Stage 3",
+      "region": "Group Stage\u2013Elimination (D)"
+    },
+    "match": {
+      "id": "688450",
+      "teams": [
+        {
+          "name": "Ghools Esports",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "Team Liquid Academy",
+          "game_wins": 2,
+          "has_won": true
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "688435",
+    "date": "Jun 25, 2026 8:30 PM",
+    "state": "completed",
+    "vlr_path": "/688435/be-ikta-esports-vs-alqadsiah-esports-challengers-2026-emea-stage-3-elim-a",
+    "league": {
+      "name": "Challengers 2026: EMEA Stage 3",
+      "region": "Group Stage\u2013Elimination (A)"
+    },
+    "match": {
+      "id": "688435",
+      "teams": [
+        {
+          "name": "Be\u015fikta\u015f Esports",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "AlQadsiah Esports",
+          "game_wins": 1,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "688440",
+    "date": "Jun 25, 2026 8:30 PM",
+    "state": "completed",
+    "vlr_path": "/688440/bar-a-esports-vs-cgn-esports-challengers-2026-emea-stage-3-elim-b",
+    "league": {
+      "name": "Challengers 2026: EMEA Stage 3",
+      "region": "Group Stage\u2013Elimination (B)"
+    },
+    "match": {
+      "id": "688440",
+      "teams": [
+        {
+          "name": "Bar\u00e7a eSports",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "CGN Esports",
+          "game_wins": 1,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "701325",
+    "date": "Jun 25, 2026 7:30 PM",
+    "state": "completed",
+    "vlr_path": "/701325/evictix-gc-vs-zero-sugar-game-changers-2026-southeast-asia-split-2-lr1",
+    "league": {
+      "name": "Game Changers 2026: Southeast Asia Split 2",
+      "region": "Playoffs\u2013Lower Round 1"
+    },
+    "match": {
+      "id": "701325",
+      "teams": [
+        {
+          "name": "Evictix GC",
+          "game_wins": 1,
+          "has_won": false
+        },
+        {
+          "name": "Zero Sugar",
+          "game_wins": 2,
+          "has_won": true
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "701324",
+    "date": "Jun 25, 2026 4:30 PM",
+    "state": "completed",
+    "vlr_path": "/701324/baguette-vs-roz-gc-game-changers-2026-southeast-asia-split-2-lr1",
+    "league": {
+      "name": "Game Changers 2026: Southeast Asia Split 2",
+      "region": "Playoffs\u2013Lower Round 1"
+    },
+    "match": {
+      "id": "701324",
+      "teams": [
+        {
+          "name": "Baguette",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "ROZ GC",
+          "game_wins": 2,
+          "has_won": true
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "686205",
+    "date": "Jun 25, 2026 3:35 PM",
+    "state": "completed",
+    "vlr_path": "/686205/drx-academy-vs-gen-g-global-academy-challengers-2026-korea-wdg-split-2-w3",
+    "league": {
+      "name": "Challengers 2026: Korea WDG Split 2",
+      "region": "Group Stage\u2013Week 3"
+    },
+    "match": {
+      "id": "686205",
+      "teams": [
+        {
+          "name": "DRX Academy",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "Gen.G Global Academy",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681801",
+    "date": "Jun 25, 2026 3:30 PM",
+    "state": "completed",
+    "vlr_path": "/681801/insomnia-vs-agelite-challengers-2026-japan-split-2-w4",
+    "league": {
+      "name": "Challengers 2026: Japan Split 2",
+      "region": "Main Stage\u2013Week 4"
+    },
+    "match": {
+      "id": "681801",
+      "teams": [
+        {
+          "name": "Insomnia",
+          "game_wins": 1,
+          "has_won": false
+        },
+        {
+          "name": "AGELITE",
+          "game_wins": 2,
+          "has_won": true
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "686204",
+    "date": "Jun 25, 2026 1:30 PM",
+    "state": "completed",
+    "vlr_path": "/686204/dplus-esports-vs-x-cast-challengers-2026-korea-wdg-split-2-w3",
+    "league": {
+      "name": "Challengers 2026: Korea WDG Split 2",
+      "region": "Group Stage\u2013Week 3"
+    },
+    "match": {
+      "id": "686204",
+      "teams": [
+        {
+          "name": "Dplus Esports",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "X-CAST",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681800",
+    "date": "Jun 25, 2026 12:30 PM",
+    "state": "completed",
+    "vlr_path": "/681800/crest-gaming-zst-vs-qt-dig-challengers-2026-japan-split-2-w4",
+    "league": {
+      "name": "Challengers 2026: Japan Split 2",
+      "region": "Main Stage\u2013Week 4"
+    },
+    "match": {
+      "id": "681800",
+      "teams": [
+        {
+          "name": "CREST GAMING Zst",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "QT DIG\u221e",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "701228",
+    "date": "Jun 25, 2026 4:20 AM",
+    "state": "completed",
+    "vlr_path": "/701228/flyquest-vs-division-one-challengers-2026-north-america-ace-stage-3-r5-1-3",
+    "league": {
+      "name": "Challengers 2026: North America ACE Stage 3",
+      "region": "Swiss Stage\u2013Round 5 (1-3)"
+    },
+    "match": {
+      "id": "701228",
+      "teams": [
+        {
+          "name": "FlyQuest",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "Division One",
+          "game_wins": 2,
+          "has_won": true
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "701229",
+    "date": "Jun 25, 2026 4:20 AM",
+    "state": "completed",
+    "vlr_path": "/701229/rose-vs-pigeons-challengers-2026-north-america-ace-stage-3-r5-1-3",
+    "league": {
+      "name": "Challengers 2026: North America ACE Stage 3",
+      "region": "Swiss Stage\u2013Round 5 (1-3)"
+    },
+    "match": {
+      "id": "701229",
+      "teams": [
+        {
+          "name": "ROSE",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "Pigeons",
+          "game_wins": 2,
+          "has_won": true
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "676924",
+    "date": "Jun 25, 2026 3:30 AM",
+    "state": "completed",
+    "vlr_path": "/676924/kr-blaze-vs-leviat-n-academy-challengers-2026-latam-south-ace-stage-2-w5",
+    "league": {
+      "name": "Challengers 2026: LATAM South ACE Stage 2",
+      "region": "Group Stage\u2013Week 5"
+    },
+    "match": {
+      "id": "676924",
+      "teams": [
+        {
+          "name": "KR\u00dc BLAZE",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "LEVIAT\u00c1N Academy",
+          "game_wins": 2,
+          "has_won": true
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "701226",
+    "date": "Jun 25, 2026 1:30 AM",
+    "state": "completed",
+    "vlr_path": "/701226/azure-dragon-gaming-vs-alliance-guardians-challengers-2026-north-america-ace-stage-3-r5-2-2",
+    "league": {
+      "name": "Challengers 2026: North America ACE Stage 3",
+      "region": "Swiss Stage\u2013Round 5 (2-2)"
+    },
+    "match": {
+      "id": "701226",
+      "teams": [
+        {
+          "name": "Azure Dragon Gaming",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "Alliance Guardians",
+          "game_wins": 1,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "701227",
+    "date": "Jun 25, 2026 1:30 AM",
+    "state": "completed",
+    "vlr_path": "/701227/qor-vs-evictix-challengers-2026-north-america-ace-stage-3-r5-2-2",
+    "league": {
+      "name": "Challengers 2026: North America ACE Stage 3",
+      "region": "Swiss Stage\u2013Round 5 (2-2)"
+    },
+    "match": {
+      "id": "701227",
+      "teams": [
+        {
+          "name": "QoR",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "Evictix",
+          "game_wins": 1,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "676926",
+    "date": "Jun 25, 2026 12:30 AM",
+    "state": "completed",
+    "vlr_path": "/676926/oxen-vs-shinden-challengers-2026-latam-south-ace-stage-2-w5",
+    "league": {
+      "name": "Challengers 2026: LATAM South ACE Stage 2",
+      "region": "Group Stage\u2013Week 5"
+    },
+    "match": {
+      "id": "676926",
+      "teams": [
+        {
+          "name": "OXEN",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "ShindeN",
+          "game_wins": 2,
+          "has_won": true
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "688444",
+    "date": "June 24, 2026 11:00 PM",
+    "state": "completed",
+    "vlr_path": "/688444/ucam-esports-club-vs-mir-challengers-2026-emea-stage-3-winners-c",
+    "league": {
+      "name": "Challengers 2026: EMEA Stage 3",
+      "region": "Group Stage\u2013Winner's (C)"
+    },
+    "match": {
+      "id": "688444",
+      "teams": [
+        {
+          "name": "UCAM Esports Club",
+          "game_wins": 1,
+          "has_won": false
+        },
+        {
+          "name": "MIR",
+          "game_wins": 2,
+          "has_won": true
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "688449",
+    "date": "June 24, 2026 11:00 PM",
+    "state": "completed",
+    "vlr_path": "/688449/reborn-vs-misa-esports-challengers-2026-emea-stage-3-winners-d",
+    "league": {
+      "name": "Challengers 2026: EMEA Stage 3",
+      "region": "Group Stage\u2013Winner's (D)"
+    },
+    "match": {
+      "id": "688449",
+      "teams": [
+        {
+          "name": "REBORN",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "Misa Esports",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "688434",
+    "date": "June 24, 2026 8:30 PM",
+    "state": "completed",
+    "vlr_path": "/688434/natus-vincere-junior-vs-mandatory-challengers-2026-emea-stage-3-winners-a",
+    "league": {
+      "name": "Challengers 2026: EMEA Stage 3",
+      "region": "Group Stage\u2013Winner's (A)"
+    },
+    "match": {
+      "id": "688434",
+      "teams": [
+        {
+          "name": "Natus Vincere Junior",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "Mandatory",
+          "game_wins": 1,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "688439",
+    "date": "June 24, 2026 8:30 PM",
+    "state": "completed",
+    "vlr_path": "/688439/enterprise-esports-vs-joblife-challengers-2026-emea-stage-3-winners-b",
+    "league": {
+      "name": "Challengers 2026: EMEA Stage 3",
+      "region": "Group Stage\u2013Winner's (B)"
+    },
+    "match": {
+      "id": "688439",
+      "teams": [
+        {
+          "name": "Enterprise Esports",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "Joblife",
+          "game_wins": 1,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "701319",
+    "date": "June 24, 2026 6:40 PM",
+    "state": "completed",
+    "vlr_path": "/701319/wiwiwi-vs-zero-sugar-game-changers-2026-southeast-asia-split-2-ubqf",
+    "league": {
+      "name": "Game Changers 2026: Southeast Asia Split 2",
+      "region": "Playoffs\u2013Upper Quarterfinals"
+    },
+    "match": {
+      "id": "701319",
+      "teams": [
+        {
+          "name": "wiwiwi",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "Zero Sugar",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "686203",
+    "date": "June 24, 2026 4:30 PM",
+    "state": "completed",
+    "vlr_path": "/686203/arete-vs-so-sweet-challengers-2026-korea-wdg-split-2-w3",
+    "league": {
+      "name": "Challengers 2026: Korea WDG Split 2",
+      "region": "Group Stage\u2013Week 3"
+    },
+    "match": {
+      "id": "686203",
+      "teams": [
+        {
+          "name": "ARETE",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "So:sweet",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "701318",
+    "date": "June 24, 2026 4:30 PM",
+    "state": "completed",
+    "vlr_path": "/701318/36-thieves-vs-evictix-gc-game-changers-2026-southeast-asia-split-2-ubqf",
+    "league": {
+      "name": "Game Changers 2026: Southeast Asia Split 2",
+      "region": "Playoffs\u2013Upper Quarterfinals"
+    },
+    "match": {
+      "id": "701318",
+      "teams": [
+        {
+          "name": "36 Thieves",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "Evictix GC",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681799",
+    "date": "June 24, 2026 4:00 PM",
+    "state": "completed",
+    "vlr_path": "/681799/fennel-vs-igzist-challengers-2026-japan-split-2-w4",
+    "league": {
+      "name": "Challengers 2026: Japan Split 2",
+      "region": "Main Stage\u2013Week 4"
+    },
+    "match": {
+      "id": "681799",
+      "teams": [
+        {
+          "name": "FENNEL",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "IGZIST",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "686202",
+    "date": "June 24, 2026 1:30 PM",
+    "state": "completed",
+    "vlr_path": "/686202/onside-gaming-vs-t1-academy-challengers-2026-korea-wdg-split-2-w3",
+    "league": {
+      "name": "Challengers 2026: Korea WDG Split 2",
+      "region": "Group Stage\u2013Week 3"
+    },
+    "match": {
+      "id": "686202",
+      "teams": [
+        {
+          "name": "ONSIDE GAMING",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "T1 Academy",
+          "game_wins": 1,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "681798",
+    "date": "June 24, 2026 12:30 PM",
+    "state": "completed",
+    "vlr_path": "/681798/riddle-order-vs-agelite-challengers-2026-japan-split-2-w4",
+    "league": {
+      "name": "Challengers 2026: Japan Split 2",
+      "region": "Main Stage\u2013Week 4"
+    },
+    "match": {
+      "id": "681798",
+      "teams": [
+        {
+          "name": "RIDDLE ORDER",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "AGELITE",
+          "game_wins": 1,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "678061",
+    "date": "June 24, 2026 6:30 AM",
+    "state": "completed",
+    "vlr_path": "/678061/contra-vs-lyon-challengers-2026-latam-north-ace-stage-2-w5",
+    "league": {
+      "name": "Challengers 2026: LATAM North ACE Stage 2",
+      "region": "Group Stage\u2013Week 5"
+    },
+    "match": {
+      "id": "678061",
+      "teams": [
+        {
+          "name": "Contra",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "LYON",
+          "game_wins": 2,
+          "has_won": true
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "676923",
+    "date": "June 24, 2026 3:30 AM",
+    "state": "completed",
+    "vlr_path": "/676923/9z-globant-vs-university-war-challengers-2026-latam-south-ace-stage-2-w5",
+    "league": {
+      "name": "Challengers 2026: LATAM South ACE Stage 2",
+      "region": "Group Stage\u2013Week 5"
+    },
+    "match": {
+      "id": "676923",
+      "teams": [
+        {
+          "name": "9z Globant",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "University War",
+          "game_wins": 1,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "678060",
+    "date": "June 24, 2026 3:30 AM",
+    "state": "completed",
+    "vlr_path": "/678060/streamer-arena-vs-fuego-challengers-2026-latam-north-ace-stage-2-w5",
+    "league": {
+      "name": "Challengers 2026: LATAM North ACE Stage 2",
+      "region": "Group Stage\u2013Week 5"
+    },
+    "match": {
+      "id": "678060",
+      "teams": [
+        {
+          "name": "STREAMER ARENA",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "FUEGO",
+          "game_wins": 1,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "701176",
+    "date": "June 24, 2026 3:30 AM",
+    "state": "completed",
+    "vlr_path": "/701176/la-masia-vs-intz-challengers-2026-brazil-gamers-club-stage-2-ubsf",
+    "league": {
+      "name": "Challengers 2026: Brazil Gamers Club Stage 2",
+      "region": "Play-In\u2013Upper Semifinals"
+    },
+    "match": {
+      "id": "701176",
+      "teams": [
+        {
+          "name": "LA MASIA",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "INTZ",
+          "game_wins": 1,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "701177",
+    "date": "June 24, 2026 1:30 AM",
+    "state": "completed",
+    "vlr_path": "/701177/f4tality-vs-tbk-esports-challengers-2026-brazil-gamers-club-stage-2-ubsf",
+    "league": {
+      "name": "Challengers 2026: Brazil Gamers Club Stage 2",
+      "region": "Play-In\u2013Upper Semifinals"
+    },
+    "match": {
+      "id": "701177",
+      "teams": [
+        {
+          "name": "F4TALITY",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "TBK Esports",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "676921",
+    "date": "June 24, 2026 12:30 AM",
+    "state": "completed",
+    "vlr_path": "/676921/kr-blaze-vs-bestia-challengers-2026-latam-south-ace-stage-2-w5",
+    "league": {
+      "name": "Challengers 2026: LATAM South ACE Stage 2",
+      "region": "Group Stage\u2013Week 5"
+    },
+    "match": {
+      "id": "676921",
+      "teams": [
+        {
+          "name": "KR\u00dc BLAZE",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "BESTIA",
+          "game_wins": 2,
+          "has_won": true
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "688443",
+    "date": "June 23, 2026 11:00 PM",
+    "state": "completed",
+    "vlr_path": "/688443/fokus-vs-mir-challengers-2026-emea-stage-3-opening-c",
+    "league": {
+      "name": "Challengers 2026: EMEA Stage 3",
+      "region": "Group Stage\u2013Opening (C)"
+    },
+    "match": {
+      "id": "688443",
+      "teams": [
+        {
+          "name": "FOKUS",
+          "game_wins": 1,
+          "has_won": false
+        },
+        {
+          "name": "MIR",
+          "game_wins": 2,
+          "has_won": true
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "688448",
+    "date": "June 23, 2026 11:00 PM",
+    "state": "completed",
+    "vlr_path": "/688448/team-liquid-academy-vs-misa-esports-challengers-2026-emea-stage-3-opening-d",
+    "league": {
+      "name": "Challengers 2026: EMEA Stage 3",
+      "region": "Group Stage\u2013Opening (D)"
+    },
+    "match": {
+      "id": "688448",
+      "teams": [
+        {
+          "name": "Team Liquid Academy",
+          "game_wins": 1,
+          "has_won": false
+        },
+        {
+          "name": "Misa Esports",
+          "game_wins": 2,
+          "has_won": true
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "688433",
+    "date": "June 23, 2026 8:30 PM",
+    "state": "completed",
+    "vlr_path": "/688433/mandatory-vs-alqadsiah-esports-challengers-2026-emea-stage-3-opening-a",
+    "league": {
+      "name": "Challengers 2026: EMEA Stage 3",
+      "region": "Group Stage\u2013Opening (A)"
+    },
+    "match": {
+      "id": "688433",
+      "teams": [
+        {
+          "name": "Mandatory",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "AlQadsiah Esports",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "688438",
+    "date": "June 23, 2026 8:30 PM",
+    "state": "completed",
+    "vlr_path": "/688438/joblife-vs-cgn-esports-challengers-2026-emea-stage-3-opening-b",
+    "league": {
+      "name": "Challengers 2026: EMEA Stage 3",
+      "region": "Group Stage\u2013Opening (B)"
+    },
+    "match": {
+      "id": "688438",
+      "teams": [
+        {
+          "name": "Joblife",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "CGN Esports",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "701317",
+    "date": "June 23, 2026 6:10 PM",
+    "state": "completed",
+    "vlr_path": "/701317/sisu-vs-roz-gc-game-changers-2026-southeast-asia-split-2-ubqf",
+    "league": {
+      "name": "Game Changers 2026: Southeast Asia Split 2",
+      "region": "Playoffs\u2013Upper Quarterfinals"
+    },
+    "match": {
+      "id": "701317",
+      "teams": [
+        {
+          "name": "sisu",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "ROZ GC",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "701316",
+    "date": "June 23, 2026 4:30 PM",
+    "state": "completed",
+    "vlr_path": "/701316/team-falcons-vega-vs-baguette-game-changers-2026-southeast-asia-split-2-ubqf",
+    "league": {
+      "name": "Game Changers 2026: Southeast Asia Split 2",
+      "region": "Playoffs\u2013Upper Quarterfinals"
+    },
+    "match": {
+      "id": "701316",
+      "teams": [
+        {
+          "name": "Team Falcons Vega",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "Baguette",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "701687",
+    "date": "June 23, 2026 3:50 PM",
+    "state": "completed",
+    "vlr_path": "/701687/gen-g-gc-vs-blitzray-gc-game-changers-2026-korea-split-2-d2",
+    "league": {
+      "name": "Game Changers 2026: Korea Split 2",
+      "region": "Group Stage\u2013Day 2"
+    },
+    "match": {
+      "id": "701687",
+      "teams": [
+        {
+          "name": "Gen.G GC",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "BLITZRAY GC",
+          "game_wins": 0,
           "has_won": false
         }
       ]

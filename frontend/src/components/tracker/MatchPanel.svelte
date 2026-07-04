@@ -9,6 +9,7 @@
   export let rawMatch = null;
   export let playerName = '';
   export let playerTag = '';
+  export let onShare = () => {};
 
   let activeTab = 'scoreboard';
   let detailData = null;
@@ -16,11 +17,11 @@
   let detailError = null;
   let detailLoaded = false;
 
-  $: m = match;
-  $: acs = Math.round(m.score / 100);
+  $: m = match || {};
+  $: acs = m.score != null ? Math.round(m.score / 100) : 0;
   $: hsPct = m.hs && m.shots ? Math.round((m.hs / m.shots) * 100) : 0;
-  $: grade = getGrade(m.kills, m.deaths, m.assists, acs, m.won);
-  $: kd = m.deaths ? (m.kills / m.deaths).toFixed(2) : m.kills.toFixed(2);
+  $: grade = getGrade(m.kills || 0, m.deaths || 0, m.assists || 0, acs, m.won);
+  $: kd = m.deaths ? ((m.kills || 0) / m.deaths).toFixed(2) : (m.kills || 0).toFixed(2);
   $: agentIcon = getAgentIconUrl(m.agentName);
   $: wl = m.won ? 'win' : 'loss';
 
@@ -37,7 +38,7 @@
     detailError = null;
 
     try {
-      const res = await fetch(`/api/v2/match/${m.matchId}`);
+      const res = await fetch(`/api/v3/match/${m.matchId}?region=${m.region || 'ap'}`);
       if (res.ok) {
         const data = await res.json();
         if (data?.data) {
@@ -97,6 +98,11 @@
             {mvpInfo.isMatchMVP ? 'Match MVP' : 'Team MVP'}
           </div>
         {/if}
+        <div style="margin: 8px 0 10px; display: flex; gap: 8px; align-items: center;">
+          <button class="share-flex-btn" on:click|stopPropagation={onShare}>
+            <span>✨ Share Flex Card</span>
+          </button>
+        </div>
       </div>
       <div class="panel-stat-row">
         <div class="ps-item">

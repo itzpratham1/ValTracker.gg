@@ -1,188 +1,199 @@
 <script>
   import { onMount } from 'svelte';
   import Topbar from './Topbar.svelte';
+  import TrackerNav from './TrackerNav.svelte';
   import HeroSection from './HeroSection.svelte';
   import StatCards from './StatCards.svelte';
-  import RankDisplay from './RankDisplay.svelte';
   import MatchHistory from './MatchHistory.svelte';
   import RrGraph from './RrGraph.svelte';
   import PerfTrend from './PerfTrend.svelte';
   import AgentCards from './AgentCards.svelte';
   import MapCards from './MapCards.svelte';
   import WeaponLab from './WeaponLab.svelte';
+  import ClutchImpact from './ClutchImpact.svelte';
+  import AccuracyRoles from './AccuracyRoles.svelte';
   import ValBotCoach from './ValBotCoach.svelte';
   import DeepAnalysis from './DeepAnalysis.svelte';
+  import PerformanceLab from './PerformanceLab.svelte';
+  import StatModal from './StatModal.svelte';
+  import SessionSummary from './SessionSummary.svelte';
+  import ExportCard from './ExportCard.svelte';
+  import HeadToHead from './HeadToHead.svelte';
+  import LeaderboardModal from './LeaderboardModal.svelte';
+  import FeedbackModal from './FeedbackModal.svelte';
+  import Toast from '../shared/Toast.svelte';
+  import Footer from '../shared/Footer.svelte';
+  import ProfileShare from '../shared/ProfileShare.svelte';
   import { player, currentView, setPlayer, startFetch, endFetch } from '../../lib/appStore';
   import { processMatches } from '../../lib/processMatches';
-  import { ACTS_TIMELINE, RANKS, getRankFromRR } from '../../lib/constants';
+  import { ACTS_TIMELINE, RANKS, getRankFromRR, getRankImgUrl } from '../../lib/constants';
+  import { clearPlayerMatches } from '../../lib/indexeddb';
+  import { normalizeMode } from '../../lib/utils';
   import EsportsHub from '../esports/EsportsHub.svelte';
   import SkinsStore from '../store/SkinsStore.svelte';
   import DraftCoach from '../coach/DraftCoach.svelte';
+  import { getPlayerList } from '../../lib/utils';
 
-  let stats = null;
-  let mmrData = null;
-  let accountData = null;
-  let allMatches = [];
-  let mmrHistory = {};
+  export let stats = null;
+  export let mmrData = null;
+  export let accountData = null;
+  export let allMatches = [];
+  export let mmrHistory = {};
+  export let onFetchStats = () => {};
+
   let playerState = { name: '', tag: '', region: 'ap', mode: 'competitive' };
+  
+  let selectedShareMatch = null;
+  let h2hOpen = false;
+  let leaderboardOpen = false;
+  let feedbackOpen = false;
+  let statModalOpen = false;
+  let statModalKey = 'kd';
+  let profileShareOpen = false;
+  let activeSection = 'sec-combat';
+
+  // Session management
+  let sessionActive = false;
+  let sessionStartTime = null;
+  let sessionStartRR = 0;
+  let sessionMatchesList = [];
+  let sessionSummaryOpen = false;
+  let sessionSummaryVisible = false;
 
   $: rankName = mmrData?.current?.tier?.name || 'Silver 2';
+  $: winRate = stats?.winRate ?? 0;
+  $: wins = stats?.wins ?? 0;
+  $: losses = stats?.losses ?? 0;
+  $: totalMatches = wins + losses;
+
+  $: totalKills = (stats?.recentMatches || []).reduce((s, m) => s + (m.kills || 0), 0);
 
   player.subscribe(p => { playerState = p; });
 
-  onMount(() => {
-    checkUrlParams();
-  });
+  function scrollToSection(sectionId) {
+    const el = document.getElementById(sectionId);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 
-  function checkUrlParams() {
-    const params = new URLSearchParams(window.location.search);
-    const name = params.get('name');
-    const tag = params.get('tag');
-    const region = params.get('region');
-    const mode = params.get('mode');
-    if (name && tag) {
-      setPlayer({
-        name,
-        tag,
-        region: region || 'ap',
-        mode: mode || 'competitive'
-      });
-      fetchStats();
+  function setupScrollTracker() {
+    const sectionIds = [
+      'sec-combat', 'sec-performance', 'sec-trend', 'sec-agents', 'sec-maps',
+      'sec-clutch', 'sec-accuracy', 'sec-weapons', 'sec-matches',
+      'sec-ai', 'sec-deep', 'sec-lab'
+    ];
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          activeSection = entry.target.id;
+        }
+      }
+    }, { rootMargin: '-20% 0px -60% 0px' });
+    sectionIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+  }
+
+  function toggleSession() {
+    if (!sessionActive) {
+      sessionActive = true;
+      sessionStartTime = new Date();
+      sessionStartRR = mmrData?.current?.rr ?? 0;
+      sessionMatchesList = [];
+      sessionSummaryVisible = false;
+      if (window.showToast) window.showToast('Session Started');
+    } else {
+      sessionActive = false;
+      sessionSummaryVisible = true;
+      if (window.showToast) window.showToast('Session Ended');
     }
   }
 
-  async function fetchStats() {
-    const p = get(player);
-    if (!p.name || !p.tag) return;
+  function showSessionSummary() {
+    sessionSummaryOpen = true;
+  }
 
-    startFetch();
+  function openStatModal(key) {
+    statModalKey = key;
+    statModalOpen = true;
+  }
 
-    const enc = encodeURIComponent(p.name);
-    const isRanked = p.mode === 'competitive';
-    const nc = Date.now();
-
+  async function handleClearMatches() {
     try {
-      const [mmrRes, matchRes, accountRes, mmrHistRes] = await Promise.all([
-        isRanked
-          ? fetch(`/api/v3/mmr/${p.region}/${enc}/${p.tag}?_nocache=${nc}`)
-          : Promise.resolve(null),
-        fetch(`/api/v3/matches/${p.region}/${enc}/${p.tag}?mode=${p.mode}&size=20&_nocache=${nc}`),
-        fetch(`/api/v1/account/${enc}/${p.tag}?_nocache=${nc}`),
-        fetch(`/api/v1/stored-mmr-history/${p.region}/${enc}/${p.tag}?_nocache=${nc}`)
-      ]);
-
-      const mmrResData = mmrRes?.ok ? await mmrRes.json() : null;
-      const matchResData = matchRes.ok ? await matchRes.json() : null;
-      const accountResData = accountRes.ok ? await accountRes.json() : null;
-      const mmrHistResData = mmrHistRes?.ok ? await mmrHistRes.json() : null;
-
-      if (!matchResData && !accountResData) {
-        throw new Error('Invalid Riot ID or player not found.');
-      }
-
-      mmrData = mmrResData?.data || null;
-      accountData = accountResData || null;
-      allMatches = matchResData?.data || [];
-
-      // Build mmr history map
-      mmrHistory = {};
-      if (mmrHistResData?.data?.length) {
-        mmrHistResData.data.forEach(e => {
-          mmrHistory[e.match_id] = e.last_mmr_change;
-        });
-      }
-
-      // Process matches
-      stats = processMatches(allMatches, p.name, p.tag, p.act);
-
-      endFetch(p.name, p.tag);
-
-      // Add to recent searches
-      try {
-        const rankName = mmrData?.current?.tier?.name || 'UNRANKED';
-        const { getRankImgUrl } = await import('../../lib/constants');
-        const entry = {
-          name: p.name,
-          tag: p.tag,
-          region: p.region,
-          mode: p.mode,
-          rankName,
-          rankImg: getRankImgUrl(rankName),
-          timestamp: Date.now()
-        };
-        const raw = localStorage.getItem('valtracker_recent_searches');
-        let recent = raw ? JSON.parse(raw) : [];
-        recent = recent.filter(r => !(r.name.toLowerCase() === p.name.toLowerCase() && r.tag.toLowerCase() === p.tag.toLowerCase()));
-        recent.unshift(entry);
-        recent = recent.slice(0, 6);
-        localStorage.setItem('valtracker_recent_searches', JSON.stringify(recent));
-      } catch {}
-
-    } catch (err) {
-      console.error('Fetch error:', err);
-      endFetch(p.name, p.tag);
+      await clearPlayerMatches(playerState.name, playerState.tag, normalizeMode(playerState.mode || 'competitive'));
+      if (window.showToast) window.showToast('Stored matches cleared');
+    } catch(e) {
+      if (window.showToast) window.showToast('Failed to clear matches');
     }
   }
 
-  function get(store) {
-    let value;
-    store.subscribe(v => value = v)();
-    return value;
-  }
+  onMount(() => {
+    setupScrollTracker();
+  });
 </script>
 
+<Toast />
+
 <div class="tracker-layout">
-  <Topbar onFetchStats={fetchStats} />
+  <Topbar
+    onFetchStats={onFetchStats}
+    onOpenH2H={() => h2hOpen = true}
+    onOpenLeaderboard={() => leaderboardOpen = true}
+    onOpenFeedback={() => feedbackOpen = true}
+  />
 
   {#if $currentView === 'tracker'}
   <HeroSection {mmrData} {accountData} matches={allMatches} />
 
-  <div class="tracker-content">
-    <div class="tracker-grid">
-      <div class="grid-rank">
-        <RankDisplay {mmrData} {stats} {mmrHistory} />
+  <TrackerNav
+    {activeSection}
+    {sessionActive}
+    {sessionSummaryVisible}
+    onToggleSession={toggleSession}
+    onShowSessionSummary={showSessionSummary}
+    onScrollTo={scrollToSection}
+    on:openLeaderboard={() => leaderboardOpen = true}
+    on:openH2H={() => h2hOpen = true}
+    on:shareProfile={() => profileShareOpen = true}
+    on:openBookmarks={() => {}}
+    on:clearMatches={handleClearMatches}
+  />
+
+  <main class="main">
+    <!-- Q1: Combat -->
+    <div class="section-label" id="sec-combat">
+      <span class="sl-text">Combat</span>
+      <span class="sl-line"></span>
+      <span class="sl-num">01</span>
+    </div>
+    <StatCards {stats} onStatClick={openStatModal} />
+
+    <!-- Q2: Performance (Win Rate + RR Progression) -->
+    <div class="section-label" id="sec-performance">
+      <span class="sl-text">Performance</span>
+      <span class="sl-line"></span>
+      <span class="sl-num">02</span>
+    </div>
+    <div class="card wr-card span-4">
+      <div class="card-accent-line"></div>
+      <div class="card-label">Win Rate</div>
+      <div class="wr-big">{winRate}%</div>
+      <div class="wr-bar-wrap">
+        <div class="wr-track">
+          <div class="wr-fill" style="width: {winRate}%"></div>
+        </div>
       </div>
-      <div class="grid-stats">
-        <StatCards {stats} />
+      <div class="wl-grid">
+        <div class="wl-block wins">
+          <div class="wlv">{wins}</div>
+          <div class="wll">Wins</div>
+        </div>
+        <div class="wl-block losses">
+          <div class="wlv">{losses}</div>
+          <div class="wll">Losses</div>
+        </div>
       </div>
-    </div>
-
-    <!-- Agent Roster -->
-    <div class="section-label">
-      <span class="sl-text">Agent Roster</span>
-      <span class="sl-line"></span>
-      <span class="sl-num">03</span>
-    </div>
-    <AgentCards
-      agentMap={stats?.agentMap || {}}
-      {allMatches}
-    />
-
-    <!-- Map Performance -->
-    <div class="section-label">
-      <span class="sl-text">Map Performance</span>
-      <span class="sl-line"></span>
-      <span class="sl-num">04</span>
-    </div>
-    <MapCards mapData={stats?.mapData || {}} />
-
-    <div class="section-label">
-      <span class="sl-text">Match History</span>
-      <span class="sl-line"></span>
-      <span class="sl-num">05</span>
-    </div>
-    <MatchHistory
-      recentMatches={stats?.recentMatches || []}
-      {mmrHistory}
-      allRawMatches={allMatches}
-      playerName={playerState.name}
-      playerTag={playerState.tag}
-    />
-
-    <div class="section-label">
-      <span class="sl-text">RR Progression</span>
-      <span class="sl-line"></span>
-      <span class="sl-num">06</span>
+      <div class="card-sub wr-detail">Last 20 competitive</div>
     </div>
     <RrGraph
       history={stats?.rrHistory || []}
@@ -190,16 +201,62 @@
       {mmrHistory}
     />
 
-    <div class="section-label">
+    <!-- Q3: Performance Trend -->
+    <div class="section-label" id="sec-trend">
       <span class="sl-text">Performance Trend</span>
       <span class="sl-line"></span>
-      <span class="sl-num">07</span>
+      <span class="sl-num">03</span>
     </div>
     <PerfTrend matches={stats?.recentMatches || []} />
 
-    <!-- Weapon Lab -->
-    <div class="section-label">
-      <span class="sl-text">Weapon Lab</span>
+    <!-- Q4: Agent Roster -->
+    <div class="section-label" id="sec-agents">
+      <span class="sl-text">Agent Roster</span>
+      <span class="sl-line"></span>
+      <span class="sl-num">04</span>
+    </div>
+    <AgentCards
+      agentMap={stats?.agentMap || {}}
+      {allMatches}
+    />
+
+    <!-- Q5: Map Performance -->
+    <div class="section-label" id="sec-maps">
+      <span class="sl-text">Map Performance</span>
+      <span class="sl-line"></span>
+      <span class="sl-num">05</span>
+    </div>
+    <MapCards mapData={stats?.mapData || {}} />
+
+    <!-- Q6: Clutch & Impact -->
+    <div class="section-label" id="sec-clutch">
+      <span class="sl-text">Clutch & Impact</span>
+      <span class="sl-line"></span>
+      <span class="sl-num">06</span>
+    </div>
+    <ClutchImpact
+      {wins}
+      {losses}
+      {totalKills}
+      matchCount={stats?.recentMatches?.length || 0}
+      agentMap={stats?.agentMap || {}}
+    />
+
+    <!-- Q7: Accuracy & Roles -->
+    <div class="section-label" id="sec-accuracy">
+      <span class="sl-text">Accuracy & Roles</span>
+      <span class="sl-line"></span>
+      <span class="sl-num">07</span>
+    </div>
+    <AccuracyRoles
+      matches={allMatches}
+      playerName={playerState.name}
+      playerTag={playerState.tag}
+    />
+
+    <!-- Q8: Top Weapons -->
+    <div class="section-label" id="sec-weapons">
+      <span class="sl-text">Top Weapons</span>
       <span class="sl-line"></span>
       <span class="sl-num">08</span>
     </div>
@@ -209,11 +266,26 @@
       playerTag={playerState.tag}
     />
 
-    <!-- AI Performance Analysis -->
-    <div class="section-label">
-      <span class="sl-text">AI Performance Analysis</span>
+    <!-- Q9: Recent Matches -->
+    <div class="section-label" id="sec-matches">
+      <span class="sl-text">Recent Matches</span>
       <span class="sl-line"></span>
       <span class="sl-num">09</span>
+    </div>
+    <MatchHistory
+      recentMatches={stats?.recentMatches || []}
+      {mmrHistory}
+      allRawMatches={allMatches}
+      playerName={playerState.name}
+      playerTag={playerState.tag}
+      onShareMatch={(m) => selectedShareMatch = m}
+    />
+
+    <!-- Q10: AI Performance Analysis -->
+    <div class="section-label" id="sec-ai">
+      <span class="sl-text">AI Performance Analysis</span>
+      <span class="sl-line"></span>
+      <span class="sl-num">10</span>
     </div>
     <ValBotCoach
       matches={allMatches}
@@ -222,11 +294,11 @@
       {rankName}
     />
 
-    <!-- Deep Game Analysis -->
-    <div class="section-label">
+    <!-- Q11: Deep Game Analysis -->
+    <div class="section-label" id="sec-deep">
       <span class="sl-text">Deep Game Analysis</span>
       <span class="sl-line"></span>
-      <span class="sl-num">10</span>
+      <span class="sl-num">11</span>
     </div>
     <DeepAnalysis
       matches={allMatches}
@@ -234,7 +306,25 @@
       playerTag={playerState.tag}
       {mmrHistory}
     />
-  </div>
+
+    <!-- Q12: Performance Lab -->
+    <div class="section-label" id="sec-lab">
+      <span class="sl-text">Performance Lab</span>
+      <span class="sl-line"></span>
+      <span class="sl-num">12</span>
+    </div>
+    <PerformanceLab
+      playerName={playerState.name}
+      playerTag={playerState.tag}
+      currentMode={playerState.mode || 'competitive'}
+      {mmrHistory}
+      {rankName}
+      agentMap={stats?.agentMap || {}}
+      {allMatches}
+    />
+  </main>
+
+  <Footer />
   {/if}
 
   {#if $currentView === 'esports'}
@@ -248,69 +338,65 @@
   {#if $currentView === 'coach'}
     <DraftCoach playerAgentPool={stats?.agentMap || {}} />
   {/if}
+
+  <HeadToHead
+    open={h2hOpen}
+    playerName={playerState.name}
+    playerTag={playerState.tag}
+    region={playerState.region}
+    onClose={() => h2hOpen = false}
+  />
+
+  <LeaderboardModal
+    open={leaderboardOpen}
+    region={playerState.region}
+    onClose={() => leaderboardOpen = false}
+  />
+
+  <FeedbackModal
+    open={feedbackOpen}
+    onClose={() => feedbackOpen = false}
+  />
+
+  <StatModal
+    open={statModalOpen}
+    statKey={statModalKey}
+    matches={stats?.recentMatches || []}
+    onClose={() => statModalOpen = false}
+  />
+
+  <SessionSummary
+    open={sessionSummaryOpen}
+    sessionMatches={sessionMatchesList}
+    startRR={sessionStartRR}
+    currentRR={mmrData?.current?.rr ?? 0}
+    onClose={() => sessionSummaryOpen = false}
+  />
+
+  <ProfileShare
+    open={profileShareOpen}
+    playerName={playerState.name}
+    playerTag={playerState.tag}
+    region={playerState.region}
+    onClose={() => profileShareOpen = false}
+  />
+
+  {#if selectedShareMatch}
+    {@const rawMatch = allMatches.find(m => (m.metadata?.matchid || m.metadata?.match_id) === selectedShareMatch.matchId)}
+    <ExportCard
+      match={selectedShareMatch}
+      playerName={playerState.name}
+      playerTag={playerState.tag}
+      allPlayers={rawMatch ? getPlayerList(rawMatch) : []}
+      playerBannerUrl={accountData?.card?.wide || accountData?.card?.large || ''}
+      playerLevel={accountData?.account_level || ''}
+      onClose={() => selectedShareMatch = null}
+    />
+  {/if}
 </div>
 
 <style>
   .tracker-layout {
     min-height: 100vh;
-  }
-
-  .tracker-content {
-    padding: 0 28px 60px;
-    max-width: 1400px;
-    margin: 0 auto;
-  }
-
-  .tracker-grid {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 10px;
-    margin-bottom: 8px;
-  }
-
-  .grid-rank {
-    min-width: 0;
-  }
-
-  .grid-stats {
-    min-width: 0;
-  }
-
-  .section-label {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 24px 2px 10px;
-  }
-
-  .sl-text {
-    font-family: 'Exo 2', sans-serif;
-    font-weight: 600;
-    font-size: 11px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  .sl-line {
-    flex: 1;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  .sl-num {
-    font-family: 'DM Mono', monospace;
-    font-size: 9px;
-    color: var(--muted2);
-    letter-spacing: 1px;
-  }
-
-  @media (max-width: 900px) {
-    .tracker-grid {
-      grid-template-columns: 1fr;
-    }
-    .tracker-content {
-      padding: 0 16px 40px;
-    }
   }
 </style>

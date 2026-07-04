@@ -26,7 +26,7 @@ export default defineConfig({
       }
     })
   ],
-  output: 'static',
+  output: 'server',
   adapter: node({
     mode: 'standalone'
   }),
@@ -38,6 +38,11 @@ export default defineConfig({
   vite: {
     build: {
       cssMinify: true
+    },
+    server: {
+      proxy: {
+        '/api': 'http://localhost:5000'
+      }
     }
   }
 });
