@@ -6988,3 +6988,222 @@ body::after {
     display: none !important;
   }
 }
+
+/* ── PREMIUM GLASSMORPHISM OVERRIDES FROM OLD INDEX.HTML ── */
+
+/* Glow-borders on Match panel containers */
+.match-panel {
+  background: rgba(14, 14, 20, 0.8) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.06) !important;
+  border-top: none !important;
+  backdrop-filter: blur(16px);
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+}
+
+/* Premium 3D glowing Grade badges */
+.panel-grade-badge {
+  width: 52px !important;
+  height: 52px !important;
+  border-radius: 12px !important;
+  font-size: 26px !important;
+  font-weight: 900 !important;
+  font-family: 'Barlow Condensed', sans-serif !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+.panel-grade-badge:hover {
+  transform: scale(1.1) rotate(4deg);
+}
+
+.panel-grade-badge.S {
+  color: #ffd700 !important;
+  border: 2.5px solid #ffd700 !important;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(218, 165, 32, 0.05) 100%) !important;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.45), inset 0 0 8px rgba(255, 215, 0, 0.2) !important;
+  text-shadow: 0 0 6px rgba(255, 215, 0, 0.6) !important;
+}
+
+.panel-grade-badge.A {
+  color: #3ecf8e !important;
+  border: 2.5px solid #3ecf8e !important;
+  background: linear-gradient(135deg, rgba(62, 207, 142, 0.2) 0%, rgba(50, 205, 50, 0.05) 100%) !important;
+  box-shadow: 0 0 15px rgba(62, 207, 142, 0.35), inset 0 0 8px rgba(62, 207, 142, 0.15) !important;
+  text-shadow: 0 0 6px rgba(62, 207, 142, 0.5) !important;
+}
+
+.panel-grade-badge.B {
+  color: #38bdf8 !important;
+  border: 2.5px solid #38bdf8 !important;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.2) 0%, rgba(3, 105, 161, 0.05) 100%) !important;
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.35), inset 0 0 8px rgba(56, 189, 248, 0.15) !important;
+  text-shadow: 0 0 6px rgba(56, 189, 248, 0.5) !important;
+}
+
+.panel-grade-badge.C {
+  color: #ffb01f !important;
+  border: 2.5px solid #ffb01f !important;
+  background: linear-gradient(135deg, rgba(255, 176, 31, 0.2) 0%, rgba(180, 83, 9, 0.05) 100%) !important;
+  box-shadow: 0 0 15px rgba(255, 176, 31, 0.35), inset 0 0 8px rgba(255, 176, 31, 0.15) !important;
+  text-shadow: 0 0 6px rgba(255, 176, 31, 0.5) !important;
+}
+
+.panel-grade-badge.D {
+  color: #ff4655 !important;
+  border: 2.5px solid #ff4655 !important;
+  background: linear-gradient(135deg, rgba(255, 70, 85, 0.2) 0%, rgba(190, 24, 74, 0.05) 100%) !important;
+  box-shadow: 0 0 15px rgba(255, 70, 85, 0.35), inset 0 0 8px rgba(255, 70, 85, 0.15) !important;
+  text-shadow: 0 0 6px rgba(255, 70, 85, 0.5) !important;
+}
+
+/* Premium stat row & cards overrides */
+.panel-stat-row {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)) !important;
+  gap: 12px !important;
+  margin-top: 16px !important;
+  background: rgba(8, 8, 12, 0.5) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-radius: 12px !important;
+  padding: 16px !important;
+  backdrop-filter: blur(10px) !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.ps-item {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 12px 10px !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-radius: 8px !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  min-height: 64px !important;
+  text-align: center !important;
+  box-sizing: border-box !important;
+}
+
+.ps-item:hover {
+  transform: translateY(-2px) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(250, 68, 84, 0.2) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.psv {
+  font-family: 'Barlow Condensed', sans-serif !important;
+  font-size: 26px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.5px !important;
+  line-height: 1 !important;
+}
+
+.psl {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 8px !important;
+  color: var(--muted) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  margin-top: 6px !important;
+  line-height: 1 !important;
+  opacity: 0.8 !important;
+}
+
+/* Glowing text shadows for each specific metric card */
+.ps-item:nth-child(1) .psv {
+  color: #f1f5f9 !important;
+  text-shadow: 0 0 12px rgba(241, 245, 249, 0.3) !important;
+}
+
+.ps-item:nth-child(2) .psv {
+  color: #e8ff47 !important;
+  text-shadow: 0 0 12px rgba(232, 255, 71, 0.3) !important;
+}
+
+.ps-item:nth-child(3) .psv {
+  color: #ffd700 !important;
+  text-shadow: 0 0 12px rgba(255, 215, 0, 0.3) !important;
+}
+
+.ps-item:nth-child(4) .psv {
+  color: #38bdf8 !important;
+  text-shadow: 0 0 12px rgba(56, 189, 248, 0.35) !important;
+}
+
+.ps-item:nth-child(5) .psv {
+  text-shadow: 0 0 12px currentColor !important;
+}
+
+.ps-item:nth-child(6) .psv {
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Mobile & Tablet Overrides for Match details header & stat grid (max-width: 800px) */
+@media (max-width: 800px) {
+  .panel-header-row {
+    display: grid !important;
+    grid-template-columns: auto 1fr !important;
+    gap: 16px 12px !important;
+    align-items: center !important;
+    margin-bottom: 16px !important;
+  }
+  .panel-grade-badge {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+  }
+  .panel-match-meta {
+    display: contents !important;
+  }
+  .panel-meta-left {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    width: 100% !important;
+  }
+  .panel-stat-row {
+    grid-column: 1 / span 2 !important;
+    grid-row: 2 !important;
+    width: 100% !important;
+    margin-top: 0 !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    grid-auto-rows: 1fr !important;
+    gap: 10px !important;
+    padding: 12px !important;
+  }
+  .ps-item {
+    padding: 8px 6px !important;
+  }
+  .ps-item .psv {
+    font-size: 18px !important;
+  }
+}
+
+/* Ultra-small Breakpoint Overrides (max-width: 480px) */
+@media (max-width: 480px) {
+  .panel-stat-row {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    grid-auto-rows: 1fr !important;
+    gap: 8px !important;
+    padding: 10px !important;
+  }
+  .ps-item {
+    padding: 8px 4px !important;
+    min-height: 52px !important;
+  }
+  .ps-item .psv {
+    font-size: 15px !important;
+  }
+  .ps-item .psl {
+    font-size: 8px !important;
+    margin-top: 4px !important;
+    letter-spacing: 0.5px !important;
+  }
+}
+

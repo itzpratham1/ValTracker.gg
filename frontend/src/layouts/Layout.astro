@@ -96,5 +96,26 @@ const jsonLd = structuredData || defaultStructuredData;
 </head>
 <body>
   <slot />
+  <!-- Service Worker cleanup to prevent aggressive caching from old architecture -->
+  <script is:inline>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for (var registration of registrations) {
+          registration.unregister().then(function(success) {
+            if (success) console.log('[ValTracker] Unregistered active service worker.');
+          });
+        }
+      });
+    }
+    if ('caches' in window) {
+      caches.keys().then(function(keys) {
+        keys.forEach(function(key) {
+          caches.delete(key).then(function() {
+            console.log('[ValTracker] Cleared cache storage:', key);
+          });
+        });
+      });
+    }
+  </script>
 </body>
 </html>
