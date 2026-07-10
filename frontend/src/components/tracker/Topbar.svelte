@@ -7,7 +7,9 @@
   import { escapeHtml } from '../../lib/utils';
 
   import { clearAllMatches } from '../../lib/indexeddb';
+  import { getAgentIconUrl } from '../../lib/assets';
 
+  export let currentAgentName = '';
   export let onFetchStats = () => {};
   export let onOpenH2H = () => {};
   export let onOpenLeaderboard = () => {};
@@ -20,6 +22,7 @@
   function copyProfileLink() {
     navigator.clipboard?.writeText(window.location.href).then(() => {
       copied = true;
+      if (window.showToast) window.showToast('Link copied!');
       setTimeout(() => { copied = false; }, 2000);
     });
     utilitiesOpen = false;
@@ -74,7 +77,7 @@
          b.tag.toLowerCase() === $player.tag.toLowerCase()
   );
 
-  $: subRowVisible = $player.loaded;
+  $: subRowVisible = $player.loaded && $player.name && $player.tag;
 
   $: filterSummaryText = (() => {
     const r = ($player.region || 'ap').toUpperCase();
@@ -122,15 +125,36 @@
   }
 
   function switchTab(id) {
-    if (id === 'overlay') {
-      if ($player.name && $player.tag) {
-        const name = encodeURIComponent($player.name);
-        const tag = encodeURIComponent($player.tag);
-        const reg = $player.region || 'ap';
-        window.open(`/overlay?name=${name}&tag=${tag}&region=${reg}`, '_blank', 'noopener,noreferrer');
+    if (id === 'coach') {
+      history.pushState({}, '', '/comp');
+      $currentView = 'coach';
+      return;
+    }
+    if (id === 'esports' || id === 'store' || id === 'overlay') {
+      const targetHash = id === 'esports' ? '#esports' : id === 'store' ? '#skins' : '#overlay';
+      if (window.location.pathname !== '/app') {
+        history.pushState({}, '', `/app${targetHash}`);
       } else {
-        window.open('/overlay', '_blank', 'noopener,noreferrer');
+        history.replaceState({}, '', `/app${targetHash}`);
       }
+      $currentView = id;
+      return;
+    }
+    if (id === 'tracker') {
+      if ($player.name && $player.tag) {
+        const p = new URLSearchParams();
+        p.set('name', $player.name);
+        p.set('tag', $player.tag);
+        p.set('region', $player.region || 'ap');
+        p.set('mode', $player.mode || 'competitive');
+        history.replaceState({}, '', `/app?${p.toString()}`);
+        $currentView = 'tracker';
+      } else {
+        setPlayer({ loaded: false, fetching: false });
+        history.replaceState({}, '', '/app');
+        $currentView = 'tracker';
+      }
+      document.body.classList.remove('scrolled-down', 'scrolled-up');
       return;
     }
     $currentView = id;
@@ -175,7 +199,7 @@
   function copyRiotId() {
     const id = `${$player.name}#{$player.tag}`;
     navigator.clipboard?.writeText(id).then(() => {
-      // toast would go here
+      if (window.showToast) window.showToast('ID copied!');
     });
   }
 
@@ -238,7 +262,10 @@
       <div class="topbar-sub-left">
         <div class="player-active-pill">
           <div class="active-pill-avatar-wrap">
-            <div class="active-pill-avatar-fallback">👤</div>
+            {#if currentAgentName}
+              <img class="active-pill-avatar-img" src={getAgentIconUrl(currentAgentName)} alt={currentAgentName} on:error={(e) => e.target.style.display='none'}>
+            {/if}
+            <div class="active-pill-avatar-fallback" style="display:{currentAgentName ? 'none' : 'flex'};">👤</div>
           </div>
           <span class="active-pill-name">{$player.name}#{$player.tag}</span>
           <button
@@ -365,7 +392,7 @@
     flex-shrink: 0;
     white-space: nowrap;
   }
-  .topbar-logo span { color: var(--accent); }
+  .topbar-logo span { color: #fff; }
   .topbar-logo-icon {
     height: 24px;
     width: auto;

@@ -481,9 +481,7 @@ export function buildAroundMe(
   if (mainRoleIdx > -1) requiredRoles.splice(mainRoleIdx, 1);
 
   const neededRoles = [...requiredRoles];
-  if (mainRole === 'controller') neededRoles.push('initiator');
-  else if (mainRole === 'sentinel') neededRoles.push('controller');
-  else neededRoles.push('controller');
+  neededRoles.push(mainRole);
 
   const pickedAgents = new Set([mainAgent]);
 

@@ -9,14 +9,14 @@ from bs4 import BeautifulSoup
 # VLR.gg scraper settings
 RESULTS_URL = "https://www.vlr.gg/matches/results"
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-DB_PATH = "public/vct_pro_comps.json"
+DB_PATH = "frontend/public/vct_pro_comps.json"
 
 # List of agents for verification/normalizing
 VALID_AGENTS = {
-    "jett", "raze", "neon", "yoru", "phoenix", "iso", "reyna",
-    "sova", "fade", "breach", "skye", "gekko", "kayo",
-    "omen", "viper", "brimstone", "astra", "harbor", "clove",
-    "cypher", "killjoy", "sage", "deadlock", "vyse", "veto"
+    "jett", "raze", "neon", "yoru", "phoenix", "iso", "reyna", "waylay",
+    "sova", "fade", "breach", "skye", "gekko", "kayo", "tejo",
+    "omen", "viper", "brimstone", "astra", "harbor", "clove", "miks",
+    "cypher", "killjoy", "sage", "deadlock", "vyse", "veto", "chamber"
 }
 
 def date_to_patch(date_str):
@@ -147,7 +147,8 @@ def run_scraper(limit_new=100, max_pages=5):
         
         # We target professional leagues
         is_pro = any(term in event_name_clean.lower() for term in [
-            'vct', 'champions', 'masters', 'challengers', 'game changers', 'evolution series', 'premier'
+            'vct', 'champions', 'masters', 'challengers', 'game changers',
+            'evolution series', 'premier', 'world cup', 'ewc'
         ])
         if not is_pro:
             # Skip non-professional or casual community tournaments
@@ -170,17 +171,23 @@ def run_scraper(limit_new=100, max_pages=5):
                 continue
             team_names = [t.text.strip() for t in teams_el]
             
-            # 2. Parse Match Date and Map Patch
+            # 2. Parse Match Date and Actual Patch from VLR.gg
             header_div = match_soup.find(class_='match-header')
             match_date = "Unknown Date"
+            patch_version = "12.08"
             if header_div:
                 date_div = header_div.find('div', {'class': 'match-header-date'})
                 if date_div:
                     moment = date_div.find('div', {'class': 'moment-tz-convert'})
                     if moment:
                         match_date = moment.text.strip()
-            
-            patch_version = date_to_patch(match_date)
+                header_text = header_div.get_text()
+                patch_match = re.search(r'Patch\s*(\d+)\.(\d+)', header_text, re.IGNORECASE)
+                if patch_match:
+                    major, minor = patch_match.group(1), patch_match.group(2)
+                    patch_version = f'{major}.{int(minor):02d}'
+                else:
+                    patch_version = date_to_patch(match_date)
             print(f"  Teams: {team_names[0]} vs {team_names[1]} | Date: {match_date} | Patch: {patch_version}")
             
             # 3. Parse Played Maps List

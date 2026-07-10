@@ -12,6 +12,7 @@
   export let allRawMatches = [];
   export let playerName = '';
   export let playerTag = '';
+  export let currentMode = 'competitive';
   export let onShareMatch = () => {};
 
   let matchesLimit = 10;
@@ -101,7 +102,7 @@
 
       {#each group.matches as { m, idx }}
         {@const wl = m.won ? 'win' : 'loss'}
-        {@const acs = Math.round(m.score / 100)}
+        {@const acs = m.acs != null ? m.acs : Math.round(m.score / 100)}
         {@const grade = getGrade(m.kills, m.deaths, m.assists, acs, m.won)}
         {@const kd = m.deaths ? (m.kills / m.deaths).toFixed(2) : m.kills.toFixed(2)}
         {@const agentIcon = getAgentIconUrl(m.agentName)}
@@ -144,15 +145,31 @@
               </div>
             </div>
             <div class="mr-score">{m.rounds}</div>
+            <div class="mr-lobby">
+              {#if m.lobbyRank && m.lobbyRank.overall}
+                {@const rank = m.lobbyRank.overall}
+                {@const rankImg = getRankImgUrl(rank.name)}
+                {#if rankImg}
+                  <img class="mr-lobby-img" src={rankImg} alt={rank.name} loading="lazy" on:error={(e) => e.target.style.display='none'}>
+                {/if}
+                <span class="mr-lobby-txt" style="color:{getRankColor(rank.name)}">
+                  {#each rank.name.split(' ') as part, pi}
+                    {#if pi > 0}<br>{/if}{part}
+                  {/each}
+                </span>
+              {:else}
+                <span class="mr-lobby-txt">—</span>
+              {/if}
+            </div>
             <div class="mr-kda">
               <div class="mr-kda-main">{m.kills} / {m.deaths} / {m.assists}</div>
               <div class="mr-kda-sub">K / D / A</div>
             </div>
-            <div>
+            <div class="mr-acs-wrap">
               <div class="mr-acs">{acs}</div>
               <div class="mr-acs-sub">ACS</div>
             </div>
-            <div>
+            <div class="mr-grade-wrap">
               <div class="mr-grade {grade}">{grade}</div>
               <div class="mr-grade-sub">GRADE</div>
             </div>
@@ -176,6 +193,8 @@
                 rawMatch={getRawMatch(m.matchId)}
                 {playerName}
                 {playerTag}
+                {currentMode}
+                {mmrHistory}
                 onShare={() => onShareMatch(m)}
               />
             </div>

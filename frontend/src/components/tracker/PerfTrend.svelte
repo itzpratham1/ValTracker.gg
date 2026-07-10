@@ -132,7 +132,7 @@
   }
 </script>
 
-<div class="card span-12" id="perf-trend-card" style="min-height:200px;">
+<div class="card span-12 visible" id="perf-trend-card" style="min-height:200px;">
   <div class="card-accent-line"></div>
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
     <div class="card-label" style="margin:0;">KD / ACS / HS% — Last 20 Matches</div>

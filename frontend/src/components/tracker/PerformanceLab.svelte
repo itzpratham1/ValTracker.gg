@@ -7,8 +7,6 @@
   export let currentMode = 'competitive';
   export let mmrHistory = {};
   export let rankName = 'Silver 2';
-  export let agentMap = {};
-  export let allMatches = [];
 
   let loading = false;
   let results = '';

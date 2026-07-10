@@ -111,17 +111,23 @@ export function getRankColor(name: string): string {
 }
 
 export const MAP_IMAGES_FALLBACK: Record<string, string> = {
-  'Ascent':      'https://media.valorant-api.com/maps/ascent/map splash.png',
-  'Bind':        'https://media.valorant-api.com/maps/bind/map splash.png',
-  'Haven':       'https://media.valorant-api.com/maps/haven/map splash.png',
-  'Split':       'https://media.valorant-api.com/maps/split/map splash.png',
-  'Icebox':      'https://media.valorant-api.com/maps/icebox/map splash.png',
-  'Breeze':      'https://media.valorant-api.com/maps/breeze/map splash.png',
-  'Fracture':    'https://media.valorant-api.com/maps/fracture/map splash.png',
-  'Pearl':       'https://media.valorant-api.com/maps/polyestris/map splash.png',
-  'Lotus':       'https://media.valorant-api.com/maps/jng_pt/map splash.png',
-  'Sunset':      'https://media.valorant-api.com/maps/canyon/map splash.png',
-  'Abyss':       'https://media.valorant-api.com/maps/abyss/map splash.png',
+  'Ascent':   'https://media.valorant-api.com/maps/7eaecc1b-4337-bbf6-6ab9-04b8f06b3319/splash.png',
+  'Bind':     'https://media.valorant-api.com/maps/2c9d57ec-4431-9c5e-2939-8f9ef6dd5cba/splash.png',
+  'Haven':    'https://media.valorant-api.com/maps/2bee0dc9-4ffe-519b-1cbd-7fbe763a6047/splash.png',
+  'Split':    'https://media.valorant-api.com/maps/d960549e-485c-e861-8d71-aa9d1aed12a2/splash.png',
+  'Icebox':   'https://media.valorant-api.com/maps/e2ad5c54-4114-a870-9641-8ea21279579a/splash.png',
+  'Breeze':   'https://media.valorant-api.com/maps/2fb9a4fd-47b8-4e7d-a969-74b4046ebd53/splash.png',
+  'Fracture': 'https://media.valorant-api.com/maps/b529448b-4d60-346e-e89e-00a4c527a405/splash.png',
+  'Pearl':    'https://media.valorant-api.com/maps/fd267378-4d1d-484f-ff52-77821ed10dc2/splash.png',
+  'Lotus':    'https://media.valorant-api.com/maps/2fe4ed3a-450a-948b-6d6b-e89a78e680a9/splash.png',
+  'Sunset':   'https://media.valorant-api.com/maps/92584fbe-486a-b1b2-9faa-39b0f486b498/splash.png',
+  'Abyss':    'https://media.valorant-api.com/maps/224b0a95-48b9-f703-1bd8-67aca101a61f/splash.png',
+  'District': 'https://media.valorant-api.com/maps/690b3ed2-4dff-945b-8223-6da834e30d24/splash.png',
+  'Kasbah':   'https://media.valorant-api.com/maps/12452a9d-48c3-0b02-e7eb-0381c3520404/splash.png',
+  'Drift':    'https://media.valorant-api.com/maps/2c09d728-42d5-30d8-43dc-96a05cc7ee9d/splash.png',
+  'Glitch':   'https://media.valorant-api.com/maps/d6336a5a-428f-c591-98db-c8a291159134/splash.png',
+  'Piazza':   'https://media.valorant-api.com/maps/de28aa9b-4cbe-1003-320e-6cb3ec309557/splash.png',
+  'Summit':   'https://media.valorant-api.com/maps/756da597-416b-c0f2-f47b-afbdf28670bc/splash.png',
 };
 
 export const WEAPON_TYPES: Record<string, string> = {

@@ -48,7 +48,7 @@
     } else {
       hist.forEach(m => {
         points.unshift(totalRR);
-        totalRR -= m.won ? (18 + Math.floor(Math.random() * 8)) : -(18 + Math.floor(Math.random() * 6));
+        totalRR -= m.won ? 20 : -18;
         totalRR = Math.max(0, totalRR);
       });
     }
@@ -157,7 +157,7 @@
   }
 </script>
 
-<div class="card graph-card span-8" id="rr-graph-card">
+<div class="card graph-card span-8 visible" id="rr-graph-card">
   <div class="card-accent-line"></div>
   <div class="card-label">RR Progression</div>
   <div class="graph-canvas-wrap">

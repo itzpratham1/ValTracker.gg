@@ -1,0 +1,35 @@
+name: Weekly VCT Meta Comp Update
+
+on:
+  schedule:
+    # Run every Monday at 06:00 UTC
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install beautifulsoup4
+
+      - name: Run VLR.gg scraper
+        run: python scrape_vlr_meta.py
+
+      - name: Copy to old public path
+        run: cp frontend/public/vct_pro_comps.json public/vct_pro_comps.json
+
+      - name: Commit updated data
+        run: |
+          git config user.name "valtracker-bot"
+          git config user.email "bot@valtracker.gg"
+          git add frontend/public/vct_pro_comps.json public/vct_pro_comps.json
+          git diff --cached --quiet || git commit -m "chore: update VCT meta comps [skip ci]"
+          git push

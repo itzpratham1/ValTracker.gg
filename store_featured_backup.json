@@ -95,8 +95,8 @@
           "promo_item": false
         }
       ],
-      "seconds_remaining": 2285561,
-      "expires_at": "2026-07-22T17:59:59.792Z"
+      "seconds_remaining": 1306338,
+      "expires_at": "2026-07-22T18:00:44.623Z"
     },
     {
       "bundle_uuid": "c55d5784-4c6d-e4ec-4d9e-b59615475694",
@@ -148,8 +148,8 @@
           "promo_item": false
         }
       ],
-      "seconds_remaining": 1075961,
-      "expires_at": "2026-07-08T17:59:59.792Z"
+      "seconds_remaining": 96738,
+      "expires_at": "2026-07-08T18:00:44.623Z"
     }
   ]
 }

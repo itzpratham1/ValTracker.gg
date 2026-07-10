@@ -1,5 +1,5 @@
 <script>
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import Topbar from './Topbar.svelte';
   import TrackerNav from './TrackerNav.svelte';
   import HeroSection from './HeroSection.svelte';
@@ -18,7 +18,9 @@
   import StatModal from './StatModal.svelte';
   import SessionSummary from './SessionSummary.svelte';
   import ExportCard from './ExportCard.svelte';
+  import ExportProfileCard from './ExportProfileCard.svelte';
   import HeadToHead from './HeadToHead.svelte';
+  import BookmarksModal from './BookmarksModal.svelte';
   import LeaderboardModal from './LeaderboardModal.svelte';
   import FeedbackModal from './FeedbackModal.svelte';
   import Toast from '../shared/Toast.svelte';
@@ -32,6 +34,7 @@
   import EsportsHub from '../esports/EsportsHub.svelte';
   import SkinsStore from '../store/SkinsStore.svelte';
   import DraftCoach from '../coach/DraftCoach.svelte';
+  import OverlayStudio from '../overlay/OverlayStudio.svelte';
   import { getPlayerList } from '../../lib/utils';
 
   export let stats = null;
@@ -43,6 +46,18 @@
 
   let playerState = { name: '', tag: '', region: 'ap', mode: 'competitive' };
   
+  $: currentAgentName = (() => {
+    if (!actFilteredMatches || !actFilteredMatches.length || !playerState.name) return '';
+    const first = actFilteredMatches[0];
+    const rawPlayers = first.players?.all_players || first.players || [];
+    const players = Array.isArray(rawPlayers) ? rawPlayers : [];
+    const me = players.find(p =>
+      p.name?.toLowerCase() === playerState.name?.toLowerCase() &&
+      p.tag?.toLowerCase() === playerState.tag?.toLowerCase()
+    );
+    return me?.character || me?.agent?.name || '';
+  })();
+  
   let selectedShareMatch = null;
   let h2hOpen = false;
   let leaderboardOpen = false;
@@ -50,6 +65,8 @@
   let statModalOpen = false;
   let statModalKey = 'kd';
   let profileShareOpen = false;
+  let exportProfileOpen = false;
+  let bookmarksOpen = false;
   let activeSection = 'sec-combat';
 
   // Session management
@@ -68,30 +85,82 @@
 
   $: totalKills = (stats?.recentMatches || []).reduce((s, m) => s + (m.kills || 0), 0);
 
+  // Act-filtered matches for consistent data across all sections
+  $: actData = ACTS_TIMELINE[playerState.act];
+  $: actFilteredMatches = actData ? allMatches.filter(m => {
+    const gameStart = m.metadata?.game_start || m.metadata?.gameStart || null;
+    if (!gameStart) return false;
+    const ts = gameStart * 1000;
+    return ts >= actData.start && ts < actData.end;
+  }) : allMatches;
+
   player.subscribe(p => { playerState = p; });
 
   function scrollToSection(sectionId) {
+    activeSection = sectionId;
     const el = document.getElementById(sectionId);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (el) {
+      const topbar = document.querySelector('.topbar');
+      const nav = document.querySelector('.tracker-nav');
+      const topbarH = topbar ? topbar.offsetHeight : 108;
+      const navH = nav ? nav.offsetHeight : 52;
+      const top = el.getBoundingClientRect().top + window.scrollY - topbarH - navH - 8;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
   }
 
+  let cleanupScroll;
   function setupScrollTracker() {
-    const sectionIds = [
+    const SECTION_IDS = [
       'sec-combat', 'sec-performance', 'sec-trend', 'sec-agents', 'sec-maps',
-      'sec-clutch', 'sec-accuracy', 'sec-weapons', 'sec-matches',
-      'sec-ai', 'sec-deep', 'sec-lab'
+      'sec-weapons', 'sec-matches', 'sec-ai', 'sec-deep', 'sec-lab'
     ];
-    const observer = new IntersectionObserver((entries) => {
-      for (const entry of entries) {
-        if (entry.isIntersecting) {
-          activeSection = entry.target.id;
+    let ticking = false;
+    const OFFSET = 180;
+    function update() {
+      let current = SECTION_IDS[0];
+      const viewportH = window.innerHeight;
+      const docH = document.documentElement.scrollHeight;
+      const maxScroll = docH - viewportH;
+      const atBottom = window.scrollY >= maxScroll - 5;
+
+      if (!atBottom) {
+        for (let i = 0; i < SECTION_IDS.length; i++) {
+          const el = document.getElementById(SECTION_IDS[i]);
+          if (!el) continue;
+          if (el.getBoundingClientRect().top <= OFFSET) {
+            current = SECTION_IDS[i];
+          }
+        }
+      } else {
+        let bestDist = Infinity;
+        const centerY = viewportH / 2;
+        for (let i = 0; i < SECTION_IDS.length; i++) {
+          const el = document.getElementById(SECTION_IDS[i]);
+          if (!el) continue;
+          const rect = el.getBoundingClientRect();
+          if (rect.bottom > 0 && rect.top < viewportH) {
+            const dist = Math.abs(rect.top - centerY);
+            if (dist < bestDist) {
+              bestDist = dist;
+              current = SECTION_IDS[i];
+            }
+          }
         }
       }
-    }, { rootMargin: '-20% 0px -60% 0px' });
-    sectionIds.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
+
+      activeSection = current;
+      ticking = false;
+    }
+    function onScroll() {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    requestAnimationFrame(update);
+    cleanupScroll = () => window.removeEventListener('scroll', onScroll);
   }
 
   function toggleSession() {
@@ -119,9 +188,14 @@
   }
 
   async function handleClearMatches() {
+    if (!playerState.name || !playerState.tag) {
+      if (window.showToast) window.showToast('No player loaded');
+      return;
+    }
     try {
       await clearPlayerMatches(playerState.name, playerState.tag, normalizeMode(playerState.mode || 'competitive'));
       if (window.showToast) window.showToast('Stored matches cleared');
+      onFetchStats();
     } catch(e) {
       if (window.showToast) window.showToast('Failed to clear matches');
     }
@@ -130,12 +204,17 @@
   onMount(() => {
     setupScrollTracker();
   });
+
+  onDestroy(() => {
+    if (cleanupScroll) cleanupScroll();
+  });
 </script>
 
 <Toast />
 
 <div class="tracker-layout">
   <Topbar
+    {currentAgentName}
     onFetchStats={onFetchStats}
     onOpenH2H={() => h2hOpen = true}
     onOpenLeaderboard={() => leaderboardOpen = true}
@@ -143,7 +222,7 @@
   />
 
   {#if $currentView === 'tracker'}
-  <HeroSection {mmrData} {accountData} matches={allMatches} />
+  <HeroSection {mmrData} {accountData} matches={actFilteredMatches} />
 
   <TrackerNav
     {activeSection}
@@ -155,8 +234,9 @@
     on:openLeaderboard={() => leaderboardOpen = true}
     on:openH2H={() => h2hOpen = true}
     on:shareProfile={() => profileShareOpen = true}
-    on:openBookmarks={() => {}}
+    on:openBookmarks={() => bookmarksOpen = true}
     on:clearMatches={handleClearMatches}
+    on:exportStats={() => exportProfileOpen = true}
   />
 
   <main class="main">
@@ -174,7 +254,7 @@
       <span class="sl-line"></span>
       <span class="sl-num">02</span>
     </div>
-    <div class="card wr-card span-4">
+    <div class="card wr-card span-4 visible">
       <div class="card-accent-line"></div>
       <div class="card-label">Win Rate</div>
       <div class="wr-big">{winRate}%</div>
@@ -197,7 +277,7 @@
     </div>
     <RrGraph
       history={stats?.rrHistory || []}
-      currentRR={mmrData?.current?.rr ?? 0}
+      currentRR={((Math.max(0, (mmrData?.current?.tier?.id || 0) - 3)) * 100) + (mmrData?.current?.rr ?? 0)}
       {mmrHistory}
     />
 
@@ -217,7 +297,7 @@
     </div>
     <AgentCards
       agentMap={stats?.agentMap || {}}
-      {allMatches}
+      allMatches={actFilteredMatches}
     />
 
     <!-- Q5: Map Performance -->
@@ -249,7 +329,7 @@
       <span class="sl-num">07</span>
     </div>
     <AccuracyRoles
-      matches={allMatches}
+      matches={actFilteredMatches}
       playerName={playerState.name}
       playerTag={playerState.tag}
     />
@@ -264,6 +344,7 @@
       precomputedWeapons={stats?.precomputedWeapons || {}}
       playerName={playerState.name}
       playerTag={playerState.tag}
+      mode={playerState.mode}
     />
 
     <!-- Q9: Recent Matches -->
@@ -275,9 +356,10 @@
     <MatchHistory
       recentMatches={stats?.recentMatches || []}
       {mmrHistory}
-      allRawMatches={allMatches}
+      allRawMatches={actFilteredMatches}
       playerName={playerState.name}
       playerTag={playerState.tag}
+      currentMode={playerState.mode || 'competitive'}
       onShareMatch={(m) => selectedShareMatch = m}
     />
 
@@ -288,7 +370,7 @@
       <span class="sl-num">10</span>
     </div>
     <ValBotCoach
-      matches={allMatches}
+      matches={actFilteredMatches}
       playerName={playerState.name}
       playerTag={playerState.tag}
       {rankName}
@@ -301,7 +383,7 @@
       <span class="sl-num">11</span>
     </div>
     <DeepAnalysis
-      matches={allMatches}
+      matches={actFilteredMatches}
       playerName={playerState.name}
       playerTag={playerState.tag}
       {mmrHistory}
@@ -319,8 +401,6 @@
       currentMode={playerState.mode || 'competitive'}
       {mmrHistory}
       {rankName}
-      agentMap={stats?.agentMap || {}}
-      {allMatches}
     />
   </main>
 
@@ -339,12 +419,21 @@
     <DraftCoach playerAgentPool={stats?.agentMap || {}} />
   {/if}
 
+  {#if $currentView === 'overlay'}
+    <OverlayStudio />
+  {/if}
+
   <HeadToHead
     open={h2hOpen}
     playerName={playerState.name}
     playerTag={playerState.tag}
     region={playerState.region}
     onClose={() => h2hOpen = false}
+  />
+
+  <BookmarksModal
+    open={bookmarksOpen}
+    onClose={() => bookmarksOpen = false}
   />
 
   <LeaderboardModal
@@ -382,17 +471,32 @@
   />
 
   {#if selectedShareMatch}
-    {@const rawMatch = allMatches.find(m => (m.metadata?.matchid || m.metadata?.match_id) === selectedShareMatch.matchId)}
+    {@const rawMatch = actFilteredMatches.find(m => (m.metadata?.matchid || m.metadata?.match_id) === selectedShareMatch.matchId)}
     <ExportCard
       match={selectedShareMatch}
       playerName={playerState.name}
       playerTag={playerState.tag}
       allPlayers={rawMatch ? getPlayerList(rawMatch) : []}
+      rawMatch={rawMatch}
       playerBannerUrl={accountData?.card?.wide || accountData?.card?.large || ''}
       playerLevel={accountData?.account_level || ''}
       onClose={() => selectedShareMatch = null}
     />
   {/if}
+
+  <ExportProfileCard
+    open={exportProfileOpen}
+    {stats}
+    {mmrData}
+    {accountData}
+    {mmrHistory}
+    {actFilteredMatches}
+    playerName={playerState.name}
+    playerTag={playerState.tag}
+    region={playerState.region}
+    mode={playerState.mode}
+    onClose={() => exportProfileOpen = false}
+  />
 </div>
 
 <style>

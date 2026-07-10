@@ -105,7 +105,8 @@ export function normalizePlayerName(str: string): string {
 }
 
 export function formatMatchDate(ts: number): string {
-  const d = new Date(ts);
+  if (!ts) return '';
+  const d = new Date(toMs(ts));
   const now = new Date();
   const diffMs = now.getTime() - d.getTime();
   const diffH = Math.floor(diffMs / (1000 * 60 * 60));
@@ -123,8 +124,13 @@ export function formatMatchDate(ts: number): string {
   return `${month} ${day}, ${year}`;
 }
 
+function toMs(ts: number): number {
+  return (typeof ts === 'number' && ts < 10000000000) ? ts * 1000 : ts;
+}
+
 export function isToday(ts: number): boolean {
-  const d = new Date(ts);
+  if (!ts) return false;
+  const d = new Date(toMs(ts));
   const now = new Date();
   return d.getFullYear() === now.getFullYear() &&
          d.getMonth() === now.getMonth() &&
@@ -132,12 +138,14 @@ export function isToday(ts: number): boolean {
 }
 
 export function getDayKey(ts: number): string {
-  const d = new Date(ts);
+  if (!ts) return 'unknown';
+  const d = new Date(toMs(ts));
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
 export function getDayLabel(ts: number): string {
-  const d = new Date(ts);
+  if (!ts) return '';
+  const d = new Date(toMs(ts));
   if (isToday(ts)) return 'Today';
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);

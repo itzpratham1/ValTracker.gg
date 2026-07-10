@@ -1,6 +1,5 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
-  import { escapeJsString } from '../../lib/utils';
 
   export let bundles = [];
   export let bundleMeta = [];
@@ -8,9 +7,11 @@
 
   let bundleTimers = [];
   let secondsRemainingMap = {};
+  let bundleNameMap = {};
 
   onMount(() => {
     initTimers();
+    resolveBundleNames();
     return () => clearTimers();
   });
 
@@ -38,6 +39,47 @@
     });
   }
 
+  function findCommonPrefix(names) {
+    if (!names || names.length === 0) return '';
+    if (names.length === 1) return names[0].split(' ').slice(0, -1).join(' ');
+    const words = names.map(n => n.split(' '));
+    const prefix = [];
+    for (let i = 0; i < words[0].length; i++) {
+      const word = words[0][i];
+      if (words.every(w => w[i] === word)) {
+        prefix.push(word);
+      } else {
+        break;
+      }
+    }
+    return prefix.join(' ');
+  }
+
+  async function resolveBundleNames() {
+    for (const bundle of bundles) {
+      const uuid = bundle.bundle_uuid;
+      let name = null;
+
+      const meta = bundleMeta.find(x => x.uuid === uuid);
+      if (meta) {
+        name = meta.displayName;
+      } else {
+        try {
+          const res = await fetch(`https://valorant-api.com/v1/bundles/${uuid}`);
+          const json = await res.json();
+          if (json.data) name = json.data.displayName;
+        } catch (e) {}
+      }
+
+      if (!name) {
+        const commonPrefix = findCommonPrefix((bundle.items || []).map(i => i.name || ''));
+        name = (commonPrefix && commonPrefix.length > 2) ? commonPrefix.trim() + ' Bundle' : 'Featured Bundle Offer';
+      }
+
+      bundleNameMap = { ...bundleNameMap, [uuid]: name };
+    }
+  }
+
   function formatCountdown(totalSeconds) {
     if (totalSeconds <= 0) return "EXPIRED";
     const d = Math.floor(totalSeconds / (3600 * 24));
@@ -45,11 +87,6 @@
     const m = Math.floor((totalSeconds % 3600) / 60);
     const s = Math.floor(totalSeconds % 60);
     return `${d}D ${h}H ${m}M ${s}S`;
-  }
-
-  function getBundleName(uuid) {
-    const meta = bundleMeta.find(x => x.uuid === uuid);
-    return meta ? meta.displayName : "Featured Bundle Offer";
   }
 
   function getDiscountInfo(item) {
@@ -75,7 +112,7 @@
       <div>
         <div class="featured-bundle-name">
           <span class="featured-bundle-dot"></span>
-          {getBundleName(bundle.bundle_uuid)}
+          {bundleNameMap[bundle.bundle_uuid] || 'Featured Bundle Offer'}
         </div>
         <div class="featured-bundle-uuid">UUID: {bundle.bundle_uuid.substring(0, 8)}...</div>
       </div>

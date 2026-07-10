@@ -56,36 +56,34 @@
       {/if}
     </div>
     
-    <div class="nav-dropdown">
+    <div class="nav-dropdown" class:active={toolsOpen}>
       <button class="nav-btn dropdown-trigger"
               on:click|stopPropagation={() => toolsOpen = !toolsOpen}
               title="More Tools">
         <span>⚡ Utilities</span>
         <span class="dropdown-arrow">▼</span>
       </button>
-      {#if toolsOpen}
-        <div class="dropdown-menu" on:click|stopPropagation>
-          <button class="dropdown-item" on:click={() => { toolsOpen = false; dispatch('shareProfile'); }}>
-            <span class="dropdown-item-icon">🔗</span> Share Profile
-          </button>
-          <button class="dropdown-item" on:click={() => { toolsOpen = false; dispatch('openLeaderboard'); }}>
-            <span class="dropdown-item-icon">🏆</span> Top 500
-          </button>
-          <button class="dropdown-item" on:click={() => { toolsOpen = false; dispatch('openH2H'); }}>
-            <span class="dropdown-item-icon">⚔️</span> Compare (Vs)
-          </button>
-          <button class="dropdown-item" on:click={() => { toolsOpen = false; dispatch('exportStats'); }}>
-            <span class="dropdown-item-icon">📤</span> Export Stats Card
-          </button>
-          <button class="dropdown-item" on:click={() => { toolsOpen = false; dispatch('openBookmarks'); }}>
-            <span class="dropdown-item-icon" style="color:#ffd700;">★</span> Bookmarked Players
-          </button>
-          <div class="dropdown-divider"></div>
-          <button class="dropdown-item danger" on:click={() => { toolsOpen = false; dispatch('clearMatches'); }} title="Clear all stored matches">
-            <span class="dropdown-item-icon">🗑️</span> Clear Stored Matches
-          </button>
-        </div>
-      {/if}
+      <div class="dropdown-menu" on:click|stopPropagation>
+        <button class="dropdown-item" on:click={() => { toolsOpen = false; dispatch('shareProfile'); }}>
+          <span class="dropdown-item-icon">🔗</span> Share Profile
+        </button>
+        <button class="dropdown-item" on:click={() => { toolsOpen = false; dispatch('openLeaderboard'); }}>
+          <span class="dropdown-item-icon">🏆</span> Top 500
+        </button>
+        <button class="dropdown-item" on:click={() => { toolsOpen = false; dispatch('openH2H'); }}>
+          <span class="dropdown-item-icon">⚔️</span> Compare (Vs)
+        </button>
+        <button class="dropdown-item" on:click={() => { toolsOpen = false; dispatch('exportStats'); }}>
+          <span class="dropdown-item-icon">📤</span> Export Stats Card
+        </button>
+        <button class="dropdown-item" on:click={() => { toolsOpen = false; dispatch('openBookmarks'); }}>
+          <span class="dropdown-item-icon" style="color:#ffd700;">★</span> Bookmarked Players
+        </button>
+        <div class="dropdown-divider"></div>
+        <button class="dropdown-item danger" on:click={() => { toolsOpen = false; dispatch('clearMatches'); }} title="Clear all stored matches">
+          <span class="dropdown-item-icon">🗑️</span> Clear Stored Matches
+        </button>
+      </div>
     </div>
   </div>
 </div>

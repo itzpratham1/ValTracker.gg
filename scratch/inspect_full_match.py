@@ -14,14 +14,8 @@ r = requests.get(url, headers=headers)
 if r.status_code == 200:
     data = r.json()
     match = data.get("data", {})
-    rounds = match.get("rounds", [])
-    if rounds:
-        for i, rd in enumerate(rounds):
-            if rd.get("bomb_defused"):
-                print(f"Round {i+1} bomb_defused is True")
-                defuse = rd.get("defuse_events", {})
-                print("defuse_events keys:", list(defuse.keys()) if defuse else "None")
-                print("defused_by keys:", list(defuse.get("defused_by", {}).keys()) if defuse.get("defused_by") else "None")
-                break
+    kills = match.get("kills", [])
+    if kills:
+        print("damage_weapon_assets:", kills[0].get("damage_weapon_assets"))
 else:
     print("Error:", r.text)

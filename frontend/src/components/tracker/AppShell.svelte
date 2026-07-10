@@ -2,12 +2,15 @@
   import { onMount } from 'svelte';
   import { player, currentView, setPlayer, startFetch, endFetch } from '../../lib/appStore';
   import { processMatches } from '../../lib/processMatches';
+  import { saveMatches } from '../../lib/indexeddb';
   import { getRankImgUrl } from '../../lib/constants';
+  import { initAssetCache } from '../../lib/assets';
   import LookupView from './LookupView.svelte';
   import TrackerView from './TrackerView.svelte';
   import LoadingCard from '../landing/LoadingCard.svelte';
 
   export let initialView = 'landing';
+  let redirecting = false;
 
   function sanitizeTag(raw) {
     if (!raw) return raw;
@@ -33,6 +36,10 @@
     console.log('[AppShell] mounted. API_BASE:', API_BASE || '(relative /api)');
     console.log('[AppShell] URL:', window.location.href);
 
+    initAssetCache().then(() => {
+      console.log('[AppShell] Asset cache initialized');
+    });
+
     window.addEventListener('popstate', handlePopState);
     checkUrlParams();
 
@@ -57,6 +64,12 @@
 
   function checkUrlParams() {
     const params = new URLSearchParams(window.location.search);
+    // /comp page: always show coach view (DraftCoach works standalone even without player data)
+    if (window.location.pathname === '/comp') {
+      currentView.set('coach');
+      setPlayer({ loaded: true, fetching: false });
+      return;
+    }
     const rawName = params.get('name');
     const rawTag = params.get('tag');
     const rawRegion = params.get('region');
@@ -65,15 +78,19 @@
 
     if (hash === '#esports') {
       currentView.set('esports');
-      setPlayer({ name: '', tag: '', loaded: true, fetching: false });
+      setPlayer({ loaded: true, fetching: false });
       return;
     } else if (hash === '#skins') {
       currentView.set('store');
-      setPlayer({ name: '', tag: '', loaded: true, fetching: false });
+      setPlayer({ loaded: true, fetching: false });
       return;
     } else if (hash === '#meta') {
       currentView.set('coach');
-      setPlayer({ name: '', tag: '', loaded: true, fetching: false });
+      setPlayer({ loaded: true, fetching: false });
+      return;
+    } else if (hash === '#overlay') {
+      currentView.set('overlay');
+      setPlayer({ loaded: true, fetching: false });
       return;
     }
 
@@ -110,8 +127,10 @@
       cleanParams.set('mode', mode || 'competitive');
       window.history.replaceState({}, '', `/app?${cleanParams.toString()}`);
     } else {
-      // No name/tag in URL — show LookupView, don't redirect
-      setPlayer({ name: '', tag: '', region: region || 'ap', mode: mode || 'competitive', loaded: false, fetching: false });
+      // No name/tag in URL — redirect to /login (the standalone lookup page)
+      redirecting = true;
+      window.location.href = '/login';
+      return;
     }
   }
 
@@ -167,12 +186,18 @@
       accountData = accountResData?.data || null;
       allMatches = matchResData?.data || [];
 
-      mmrHistory = {};
+      // Save matches to IndexedDB for Performance Lab and other local features
+      saveMatches(allMatches, p.name, p.tag, p.mode).catch(e => {
+        console.warn('[AppShell] Failed to save matches to IndexedDB:', e);
+      });
+
+      const hist = {};
       if (mmrHistResData?.data?.length) {
         mmrHistResData.data.forEach(e => {
-          mmrHistory[e.match_id] = e.last_mmr_change;
+          hist[e.match_id] = e.last_mmr_change;
         });
       }
+      mmrHistory = hist;
 
       try {
         stats = processMatches(allMatches, p.name, p.tag, p.act);
@@ -221,11 +246,17 @@
 
   // Use a module-level lock to prevent any concurrent fetches regardless of reactivity batching
   let fetchLock = false;
+  let lastFetchKey = '';
 
   $: if ($player.fetching && !$player.loaded) {
-    if (!fetchLock) {
+    const currentKey = `${$player.name}|${$player.tag}|${$player.region}|${$player.mode}`;
+    if (currentKey === lastFetchKey) {
+      // Already have cached data for this exact player/config, no re-fetch needed
+      endFetch($player.name, $player.tag);
+    } else if (!fetchLock) {
       fetchLock = true;
       fetchStats().finally(() => {
+        lastFetchKey = currentKey;
         fetchLock = false;
       });
     }
@@ -236,6 +267,10 @@
 
 {#if $player.fetching && !$player.loaded}
   <div class="appshell-loading-container">
+    <div class="loading-brand">
+      <img src="/logo.png" class="loading-logo" alt="ValTracker Logo">
+      <span class="loading-brand-name">ValTracker</span>
+    </div>
     <LoadingCard
       playerName={$player.name}
       playerTag={$player.tag}
@@ -244,7 +279,7 @@
       visible={true}
     />
   </div>
-{:else}
+{:else if !redirecting}
   {#if $player.loaded}
     <TrackerView
       {stats}
@@ -262,6 +297,7 @@
 <style>
   .appshell-loading-container {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     min-height: 100vh;
@@ -271,5 +307,26 @@
   .appshell-loading-container :global(.loading-card) {
     width: 100%;
     max-width: 420px;
+  }
+  .loading-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .loading-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+  .loading-brand-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 32px;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    line-height: 1;
   }
 </style>

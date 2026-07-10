@@ -1,6 +1,6 @@
 // ValTracker — API Client
 
-const API_BASE = '/api';
+const API_BASE = (import.meta.env.PUBLIC_API_URL || '') + '/api';
 
 export async function apiFetch<T = any>(path: string, options?: RequestInit): Promise<T> {
   const url = `${API_BASE}${path}`;
@@ -13,8 +13,9 @@ export async function apiFetch<T = any>(path: string, options?: RequestInit): Pr
   });
 
   if (!res.ok) {
-    const error = await res.json().catch(() => ({ message: res.statusText }));
-    throw new Error(error.message || `API error: ${res.status}`);
+    let msg = res.statusText;
+    try { const err = await res.json(); msg = err.message || msg; } catch {}
+    throw new Error(msg || `API error: ${res.status}`);
   }
 
   return res.json();
@@ -58,6 +59,10 @@ export async function fetchEsportsNews() {
   return apiFetch('/esports/news');
 }
 
+export async function fetchEsportsTeamRoster(teamId: string) {
+  return apiFetch(`/esports/team-roster/${teamId}`);
+}
+
 export async function fetchEsportsStandings(region: string) {
   return apiFetch(`/esports/standings/${region}`);
 }
@@ -96,9 +101,7 @@ export async function createShareCard(data: any) {
 }
 
 export async function fetchSharedCard(id: string) {
-  const res = await fetch(`/share/${id}`);
-  if (!res.ok) throw new Error('Share card not found');
-  return res;
+  return apiFetch(`/share-meta/${id}`);
 }
 
 export function buildOverlayUrl(params: {

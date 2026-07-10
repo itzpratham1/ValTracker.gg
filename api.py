@@ -268,7 +268,10 @@ def compress_match_json(match_data):
             "character": p.get("character") or p.get("agent", {}).get("name"),
             "currenttier": p.get("currenttier"),
             "currenttier_patched": p.get("currenttier_patched") or p.get("currenttierpatched"),
-            "stats": stats
+            "stats": stats,
+            "ability_casts": p.get("ability_casts"),
+            "damage_made": p.get("damage_made"),
+            "damage_received": p.get("damage_received")
         })
     teams = {}
     raw_teams = match_data.get("teams", {}) or {}
@@ -282,9 +285,24 @@ def compress_match_json(match_data):
     raw_rounds = match_data.get("rounds", []) or []
     for r in raw_rounds:
         if not r: continue
-        rounds.append({
+        round_data = {
             "winning_team": r.get("winning_team") or r.get("winningTeam")
-        })
+        }
+        bomb_planted = r.get("bomb_planted") or r.get("bombPlanted")
+        if bomb_planted is not None:
+            round_data["bomb_planted"] = bomb_planted
+        plant_events = r.get("plant_events") or r.get("plantEvents")
+        if plant_events:
+            round_data["plant_events"] = plant_events
+        player_stats = r.get("player_stats") or r.get("playerStats") or []
+        if isinstance(player_stats, str):
+            try:
+                player_stats = json.loads(player_stats)
+            except Exception:
+                player_stats = []
+        if player_stats:
+            round_data["player_stats"] = player_stats
+        rounds.append(round_data)
     return {
         "metadata": metadata,
         "players": {"all_players": all_players},
@@ -434,6 +452,7 @@ ALLOWED_PROXY_PREFIXES = [
     "v1/account/",
     "v1/stored-mmr-history/",
     "v2/match/",
+    "v3/match/",
     "v1/leaderboard/"
 ]
 
@@ -670,6 +689,17 @@ def get_share_meta(share_id):
         ext = "jpeg"
     meta["ext"] = ext
     return jsonify({"status": "ok", "meta": meta})
+
+
+@app.route("/api/shared-image/<filename>", methods=["GET"])
+def get_shared_image(filename):
+    # Sanitize to prevent path traversal
+    filename = os.path.basename(filename)
+    shared_dir = os.path.join(os.path.dirname(__file__), "frontend", "public", "shared")
+    filepath = os.path.join(shared_dir, filename)
+    if os.path.exists(filepath):
+        return send_file(filepath)
+    return jsonify({"status": "error", "message": "Image not found"}), 404
 
 
 @app.route("/api/search")
@@ -1471,6 +1501,7 @@ def esports_news():
         {"title": "Nongshim RedForce make history as first Ascended team to win Masters", "description": "After a phenomenal deep run in Chile, the ascended squad swept Paper Rex in the grand final to lift the Masters Santiago trophy.", "date": "2 days ago", "author": "ValTracker News", "url_path": ""},
         {"title": f"VCT pacific franchise teams list updated for {current_year} season", "description": f"Full Sense joins as partner team for {current_year}, alongside Nongshim RedForce and Varrel as ascended contenders.", "date": "3 days ago", "author": "ValTracker News", "url_path": ""}
     ]
+    cache[cache_key] = {"data": mock_news, "timestamp": time.time()}
     return jsonify({"data": mock_news})
 
 
@@ -1613,6 +1644,47 @@ def esports_event_teams(event_id):
         return jsonify({"error": "Internal server error", "data": []}), 500
 
 
+@app.route("/api/esports/team-roster/<team_id>")
+@rate_limit(requests_per_minute=30)
+def esports_team_roster(team_id):
+    cache_key = f"vlr_roster_{team_id}"
+    if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < 3600:
+        return jsonify({"data": cache[cache_key]["data"]})
+    try:
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
+        r = requests.get(f'https://www.vlr.gg/team/{team_id}/', headers=headers, timeout=8)
+        if r.status_code != 200:
+            return jsonify({"error": "Failed to load VLR team page", "data": []}), 500
+        r.encoding = 'utf-8'
+        soup = BeautifulSoup(r.text, 'html.parser')
+        roster = []
+        for p in soup.find_all('div', class_='team-roster-item'):
+            alias = p.find('div', class_='team-roster-item-name-alias')
+            real = p.find('div', class_='team-roster-item-name-real')
+            role_el = p.find('div', class_='team-roster-item-name-role')
+            img_el = p.find('img')
+            if alias:
+                avatar = img_el['src'] if img_el else ''
+                if avatar == '/img/vlr/tmp/vlr.png':
+                    avatar = ''
+                elif avatar.startswith('//'):
+                    avatar = 'https:' + avatar
+                if 'owcdn.net' in avatar or 'liquipedia.net' in avatar:
+                    avatar = f'/api/image?url={avatar}'
+                roster.append({
+                    'name': alias.text.strip(),
+                    'real_name': real.text.strip() if real else '',
+                    'role': 'COACH' if role_el and 'coach' in role_el.text.lower() else 'PLAYER',
+                    'avatar': avatar
+                })
+        if roster:
+            cache[cache_key] = {"data": roster, "timestamp": time.time()}
+        return jsonify({"data": roster})
+    except Exception as e:
+        print(f"[ERROR] Esports Team Roster fetch failed for {team_id}:", e)
+        return jsonify({"error": "Failed to fetch roster", "data": []}), 500
+
+
 @app.route("/api/store/featured")
 @rate_limit(requests_per_minute=30)
 def store_featured():
@@ -1693,7 +1765,8 @@ def api_meta_comps():
             "agent_stats": {},
             "most_played_comp": {"agents": [], "picks": 0, "win_rate": 0},
             "highest_winrate_comp": {"agents": [], "picks": 0, "win_rate": 0},
-            "total_matches": 0,
+            "total_comps_parsed": 0,
+            "available_patches": [],
             "message": "Scraper database has not been initialized yet."
         })
     try:
@@ -1711,18 +1784,15 @@ def api_meta_comps():
             "agent_stats": {},
             "most_played_comp": {"agents": [], "picks": 0, "win_rate": 0},
             "highest_winrate_comp": {"agents": [], "picks": 0, "win_rate": 0},
-            "total_matches": 0,
-            "message": f"No pro compositions found for map: {map_param}"
+            "total_comps_parsed": 0,
+            "available_patches": [],
+            "message": f"No VCT pro matches played on {map_param} yet - data updates weekly"
         })
     available_patches = sorted(list({r.get("patch_version", "12.08") for r in records if r.get("patch_version")}), reverse=True)
     selected_patch = patch_param
     if not selected_patch or selected_patch.lower() == "latest":
         selected_patch = available_patches[0] if available_patches else "12.08"
     patch_records = [r for r in records if r.get("patch_version") == selected_patch]
-    if len(patch_records) < 5 and len(available_patches) > 1:
-        fallback_patch = available_patches[1]
-        selected_patch = fallback_patch
-        patch_records = [r for r in records if r.get("patch_version") == selected_patch]
     if not patch_records:
         patch_records = records
         selected_patch = "all"
@@ -1780,7 +1850,8 @@ def api_meta_comps():
         "total_comps_parsed": total_compositions,
         "agent_stats": agent_stats,
         "most_played_comp": most_played_meta,
-        "highest_winrate_comp": highest_winrate_meta
+        "highest_winrate_comp": highest_winrate_meta,
+        "available_patches": available_patches
     })
 
 

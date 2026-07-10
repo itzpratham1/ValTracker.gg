@@ -34,10 +34,17 @@ const mapName = meta.mapName || 'VALORANT Map';
 const won = meta.won || false;
 const score = meta.score || '';
 
+const isDraftCoach = playerName === 'Draft Coach';
 const outcome = won ? 'VICTORY' : 'DEFEAT';
 const pName = `${playerName}#${playerTag}`;
-const ogTitle = `${pName} secured a huge ${outcome}${score ? ` (${score})` : ''} as ${agentName.toUpperCase()} on ${mapName.toUpperCase()}!`;
-const ogDesc = 'Combat ACS & Stats diagnosed automatically. See the full Performance Infographic Card live on ValTracker!';
+
+const ogTitle = isDraftCoach
+  ? `VCT Draft Coach Comp for ${mapName.toUpperCase()} with Rating ${score}/100!`
+  : `${pName} secured a huge ${outcome}${score ? ` (${score})` : ''} as ${agentName.toUpperCase()} on ${mapName.toUpperCase()}!`;
+
+const ogDesc = isDraftCoach
+  ? `Check out this 5-agent team composition drafted on ValTracker. View evaluation details and build your own meta comp.`
+  : 'Combat ACS & Stats diagnosed automatically. See the full Performance Infographic Card live on ValTracker!';
 ---
 
 <Layout title="ValTracker — Performance Flex Card" noIndex={true}>
@@ -97,24 +104,24 @@ const ogDesc = 'Combat ACS & Stats diagnosed automatically. See the full Perform
       </a>
 
       <div style="display:inline-block; padding:4px 12px; border-radius:20px; background:rgba(255, 70, 85, 0.12); border:1px solid rgba(255, 70, 85, 0.3); color:#ff4655; font-family:'DM Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">
-        Match Flex Card
+        {isDraftCoach ? 'VCT Draft Coach Card' : 'Match Flex Card'}
       </div>
 
       <img
         src={imageUrl}
-        alt="Valorant Performance Flex Card"
+        alt={isDraftCoach ? 'Valorant VCT Draft Coach Card' : 'Valorant Performance Flex Card'}
         style="width:100%; max-width:850px; border-radius:16px; border:1px solid rgba(255, 70, 85, 0.3); box-shadow:0 16px 48px rgba(0,0,0,0.8), 0 0 15px rgba(255, 70, 85, 0.15); background:#0b0b0e; display:block; transition:transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);"
         onmouseover="this.style.transform='scale(1.01) translateY(-2px)'"
         onmouseout="this.style.transform='scale(1) translateY(0)'"
       />
 
       <a
-        href={`/?player=${encodeURIComponent(playerName)}%23${encodeURIComponent(playerTag)}`}
+        href={isDraftCoach ? '/app#meta' : `/?player=${encodeURIComponent(playerName)}%23${encodeURIComponent(playerTag)}`}
         style="background:linear-gradient(135deg, #ff4655 0%, #e8ff47 100%); color:#000; border:none; border-radius:8px; padding:12px 28px; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:16px; text-transform:uppercase; letter-spacing:1px; cursor:pointer; text-decoration:none; box-shadow:0 4px 15px rgba(255, 70, 85, 0.3); transition:all 0.2s; margin-top:10px;"
         onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(255, 70, 85, 0.4), 0 0 10px rgba(232, 255, 71, 0.2)'; this.style.filter='brightness(1.05)'"
         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(255, 70, 85, 0.3)'; this.style.filter='none'"
       >
-        View Full Performance Telemetry
+        {isDraftCoach ? 'Build Your Own Meta Comp' : 'View Full Performance Telemetry'}
       </a>
     </div>
   )}

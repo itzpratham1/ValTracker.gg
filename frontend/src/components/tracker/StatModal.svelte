@@ -1,5 +1,8 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
+  import { Chart, BarController, BarElement, CategoryScale, LinearScale, LineController, LineElement, PointElement, Tooltip } from 'chart.js';
+
+  Chart.register(BarController, BarElement, CategoryScale, LinearScale, LineController, LineElement, PointElement, Tooltip);
 
   export let open = false;
   export let statKey = '';

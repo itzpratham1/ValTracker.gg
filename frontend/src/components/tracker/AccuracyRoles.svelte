@@ -119,7 +119,7 @@
 
 <div class="accuracy-roles-wrap">
   <!-- Accuracy Card -->
-  <div class="card acc-card">
+  <div class="card acc-card visible" style="animation-delay:0ms;">
     <div class="card-accent-line"></div>
     <div class="card-label">Shot Accuracy</div>
     <div class="acc-body-row">
@@ -148,7 +148,7 @@
   </div>
 
   <!-- Roles Card -->
-  <div class="card roles-card">
+  <div class="card roles-card visible" style="animation-delay:60ms;">
     <div class="card-accent-line"></div>
     <div class="card-label">Performance by Role</div>
     <div class="roles-wrap">

@@ -32,7 +32,21 @@ const structuredData = {
   </a>
 
   <div class="nav-actions">
-    <a href="/app" class="btn-red" id="nav-track-btn">Track Now →</a>
+    <a href="/login" class="btn-red" id="nav-track-btn">Track Now →</a>
+  </div>
+
+  <button class="nav-mobile-toggle" id="nav-mobile-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+    <span class="nav-hamburger-line"></span>
+    <span class="nav-hamburger-line"></span>
+    <span class="nav-hamburger-line"></span>
+  </button>
+
+  <div class="nav-mobile-menu" id="nav-mobile-menu" role="menu">
+    <a href="/login" class="nav-mobile-link" role="menuitem">Tracker</a>
+    <a href="/app#esports" class="nav-mobile-link" role="menuitem">VCT Esports</a>
+    <a href="/app#skins" class="nav-mobile-link" role="menuitem">Skins Store</a>
+    <a href="/comp" class="nav-mobile-link" role="menuitem">Meta Comp</a>
+    <a href="/app#overlay" class="nav-mobile-link" role="menuitem">OBS Overlay</a>
   </div>
 </nav>
 
@@ -70,7 +84,7 @@ const structuredData = {
     </p>
 
     <div class="hero-cta-wrap">
-      <a href="/app" class="btn-hero" id="hero-cta-btn">
+      <a href="/login" class="btn-hero" id="hero-cta-btn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="5 12 12 5 19 12"></polyline><polyline points="5 19 12 12 19 19"></polyline></svg>
         Track Your Stats
       </a>
@@ -200,14 +214,16 @@ const structuredData = {
         </div>
       </article>
 
-      <article class="bento-card span-4" aria-labelledby="card-meta-title">
-        <span class="card-tag">Strategy</span>
-        <h3 class="bento-title" id="card-meta-title">Meta Comp Architect</h3>
-        <p class="bento-body">Draft 5-agent comps. Evaluated against current VCT pro meta picks.</p>
-        <div class="card-img-frame">
-          <img src="/meta_comp.webp" alt="Meta comp architect showing 5-agent draft and VCT meta evaluation" loading="lazy" decoding="async" fetchpriority="low" width="600" height="140">
-        </div>
-      </article>
+      <a href="/comp" class="bento-link">
+        <article class="bento-card span-4" aria-labelledby="card-meta-title">
+          <span class="card-tag">Strategy</span>
+          <h3 class="bento-title" id="card-meta-title">Meta Comp Architect</h3>
+          <p class="bento-body">Draft 5-agent comps. Evaluated against current VCT pro meta picks.</p>
+          <div class="card-img-frame">
+            <img src="/meta_comp.webp" alt="Meta comp architect showing 5-agent draft and VCT meta evaluation" loading="lazy" decoding="async" fetchpriority="low" width="600" height="140">
+          </div>
+        </article>
+      </a>
 
       <article class="bento-card span-4" aria-labelledby="card-store-title">
         <span class="card-tag">Browse</span>
@@ -277,11 +293,13 @@ const structuredData = {
         <p class="njt-card-desc">Analyze K/D, ACS, headshot %, win rates, and RR progression instantly. Fully operational with no account login required.</p>
       </article>
 
-      <article class="njt-card reveal" role="listitem">
-        <div class="njt-icon" aria-hidden="true">📐</div>
-        <h3 class="njt-card-title">Meta Comp Architect</h3>
-        <p class="njt-card-desc">Draft 5-agent team comps and evaluate synergies automatically against active VCT pro tournament picks and win rates.</p>
-      </article>
+      <a href="/comp" class="njt-link">
+        <article class="njt-card reveal" role="listitem">
+          <div class="njt-icon" aria-hidden="true">📐</div>
+          <h3 class="njt-card-title">Meta Comp Architect</h3>
+          <p class="njt-card-desc">Draft 5-agent team comps and evaluate synergies automatically against active VCT pro tournament picks and win rates.</p>
+        </article>
+      </a>
 
       <article class="njt-card reveal" role="listitem">
         <div class="njt-icon" aria-hidden="true">🏆</div>
@@ -357,7 +375,7 @@ const structuredData = {
     <!-- CTA Strip -->
     <div class="njt-cta reveal">
       <div class="njt-cta-btn">
-        <a href="/app" class="btn-hero" id="njt-cta-btn" style="display:inline-flex;">Start Tracking Free →</a>
+        <a href="/login" class="btn-hero" id="njt-cta-btn" style="display:inline-flex;">Start Tracking Free →</a>
       </div>
       <p class="njt-cta-label">No sign-up. Just your Riot ID.</p>
     </div>
@@ -436,7 +454,7 @@ const structuredData = {
   <div class="final-cta-card reveal">
     <h2 id="final-cta-title">Ready To See<br>Your Real Stats?</h2>
     <p>Join thousands of Valorant players already using ValTracker to rank up faster with real data.</p>
-    <a href="/app" class="btn-hero" id="final-cta-btn" style="display:inline-flex;">→ Track Now — It's Free</a>
+    <a href="/login" class="btn-hero" id="final-cta-btn" style="display:inline-flex;">→ Track Now — It's Free</a>
     <p class="final-cta-note">
       No sign-up required
       <span aria-hidden="true">·</span>
@@ -461,10 +479,10 @@ const structuredData = {
     </div>
 
     <nav class="footer-nav" aria-label="Footer navigation">
-      <a href="/app">Tracker</a>
+      <a href="/login">Tracker</a>
       <a href="/app#esports">VCT</a>
       <a href="/app#skins">Skins</a>
-      <a href="/app#meta">Meta Comp</a>
+      <a href="/comp">Meta Comp</a>
       <a href="/app#overlay">OBS Overlay</a>
     </nav>
 
@@ -511,6 +529,44 @@ const structuredData = {
 ═══════════════════════════════ -->
 
   <script is:inline src="/landing.js"></script>
+  <script is:inline>
+    (function(){
+      var toggle = document.getElementById('nav-mobile-toggle');
+      var menu = document.getElementById('nav-mobile-menu');
+      if (!toggle || !menu) return;
+      var scrollY = 0;
+      function openMenu() {
+        toggle.setAttribute('aria-expanded', 'true');
+        menu.classList.add('open');
+        scrollY = window.scrollY;
+        document.body.classList.add('nav-menu-open');
+        document.body.style.top = -scrollY + 'px';
+      }
+      function closeMenu() {
+        toggle.setAttribute('aria-expanded', 'false');
+        menu.classList.remove('open');
+        document.body.classList.remove('nav-menu-open');
+        document.body.style.top = '';
+        window.scrollTo(0, scrollY);
+      }
+      toggle.addEventListener('click', function() {
+        if (toggle.getAttribute('aria-expanded') === 'true') {
+          closeMenu();
+        } else {
+          openMenu();
+        }
+      });
+      document.addEventListener('click', function(e) {
+        if (menu.classList.contains('open') && !toggle.contains(e.target) && !menu.contains(e.target)) {
+          closeMenu();
+        }
+      });
+      var links = menu.querySelectorAll('.nav-mobile-link');
+      for (var i = 0; i < links.length; i++) {
+        links[i].addEventListener('click', closeMenu);
+      }
+    })();
+  </script>
 </Layout>
 
 <style>
@@ -556,11 +612,15 @@ body {
   font-family: var(--font-body);
   background: var(--bg-primary);
   color: var(--text-primary);
-  overflow-x: hidden;
+  overflow-x: clip;
+  position: relative;
+  width: 100%;
+  max-width: 100vw;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
+  touch-action: manipulation;
 }
 
 a { text-decoration: none; color: inherit; }
@@ -718,6 +778,7 @@ img { display: block; max-width: 100%; height: auto; }
 .hero {
   position: relative;
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1603,6 +1664,12 @@ h2.section-title {
   perspective: 1200px;
 }
 
+.bento-link {
+  display: contents;
+  text-decoration: none;
+  color: inherit;
+}
+
 .bento-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -2254,6 +2321,118 @@ footer {
 }
 
 /* ════════════════════════════════════════
+   MOBILE NAV MENU
+════════════════════════════════════════ */
+.nav-mobile-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 1001;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.nav-hamburger-line {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--text-secondary);
+  border-radius: 2px;
+  transition: transform 0.25s ease, opacity 0.2s ease;
+  transform-origin: center;
+}
+.nav-mobile-toggle[aria-expanded="true"] .nav-hamburger-line:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.nav-mobile-toggle[aria-expanded="true"] .nav-hamburger-line:nth-child(2) {
+  opacity: 0;
+}
+.nav-mobile-toggle[aria-expanded="true"] .nav-hamburger-line:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+.nav-mobile-menu {
+  display: none;
+  position: fixed;
+  top: 64px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(3,3,4,0.98);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 24px 24px;
+  z-index: 999;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.nav-mobile-menu.open {
+  display: flex;
+}
+.nav-mobile-link {
+  display: block;
+  padding: 14px 16px;
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-secondary);
+  border-radius: 8px;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.nav-mobile-link:active {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+body.nav-menu-open {
+  overflow: hidden;
+  position: fixed;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ════════════════════════════════════════
+   MOBILE PERFORMANCE OPTIMIZATIONS
+════════════════════════════════════════ */
+/* Disable heavy animations on touch devices (saves CPU/GPU) */
+@media (hover: none) and (pointer: coarse) {
+  .hero-glow, .hero-glow-2, .glow-orb { display: none; }
+  #hero-canvas { display: none; }
+  .hero-grid { animation: none; }
+  .hero-bg { transform: none !important; transition: none; }
+  .hero-browser-frame { animation: none; }
+  .btn-hero { animation: none; }
+  .bento-card, .bento-card.visible { transform: none !important; }
+  .bento-card::before { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-grid { animation: none; }
+  .glow-orb { animation: none; }
+  .hero-browser-frame { animation: none; }
+  .btn-hero { animation: none; }
+  .btn-hero::before { display: none; }
+  .hero-bg { transform: none !important; transition: none; }
+  #hero-canvas { display: none; }
+  .ticker-track { animation: none; }
+  .bento-card, .bento-card.visible { transform: none !important; }
+}
+
+/* ════════════════════════════════════════
    MOBILE RESPONSIVE
 ════════════════════════════════════════ */
 @media (max-width: 1024px) {
@@ -2285,7 +2464,8 @@ footer {
 
 @media (max-width: 768px) {
   .nav { padding: 0 24px; }
-  .nav-actions { display: flex; }
+  .nav-mobile-toggle { display: flex; }
+  .nav-actions { display: none; }
   .btn-red {
     padding: 8px 16px;
     font-size: 13px;
@@ -2325,10 +2505,164 @@ footer {
   }
 }
 
+@media (max-width: 600px) {
+  .nav { padding: 0 18px; height: 56px; }
+  .nav-mobile-toggle { display: flex; }
+  .nav-actions { display: none; }
+  .nav-logo span { font-size: 16px; }
+  .nav-logo-img { height: 22px; }
+  .btn-red { padding: 8px 14px; font-size: 12px; }
+  #nav-track-btn { padding: 6px 14px; }
+  .nav-mobile-menu { top: 56px; }
+
+  .hero { padding: 90px 18px 48px; min-height: auto; }
+  h1.hero-headline { font-size: clamp(2.2rem, 10vw, 3rem); margin-bottom: 20px; }
+  .hero-eyebrow { font-size: 10px; padding: 5px 12px; margin-bottom: 20px; }
+  .hero-sub { font-size: 14px; margin-bottom: 28px; }
+  .btn-hero { padding: 16px 24px; font-size: 16px; width: 100%; justify-content: center; min-height: 52px; }
+  .hero-note { font-size: 11px; }
+  .hero-mockup-wrap { margin-top: 40px; }
+  .browser-titlebar { padding: 8px 12px; }
+  .browser-dot { width: 8px; height: 8px; }
+  .browser-url-bar { font-size: 10px; height: 22px; }
+  .browser-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .browser-tab { padding: 8px 14px; font-size: 11px; white-space: nowrap; }
+  .browser-tabs::-webkit-scrollbar { display: none; }
+
+  .section { padding: 60px 18px; }
+  .section-label { margin-bottom: 32px; }
+  h2.section-title { font-size: clamp(1.4rem, 6vw, 2rem); }
+  .section-subtitle { font-size: 14px; }
+
+  .bento-grid { gap: 10px; }
+  .bento-card { padding: 20px; }
+  h3.bento-title { font-size: 16px; }
+  .bento-body { font-size: 12px; }
+  .card-img-frame { margin-top: 12px; }
+  .card-tag { font-size: 8px; padding: 2px 8px; }
+
+  .ticker-bar { padding: 8px 0; }
+  .ticker-item { font-size: 11px; padding: 0 24px; gap: 6px; }
+
+  .stats-bar { padding: 40px 18px; }
+  .stats-bar-inner { gap: 24px; }
+  .counter-label { font-size: 12px; letter-spacing: 1.5px; }
+
+  .steps-wrap { gap: 36px; }
+  .step-item { padding: 0 16px; }
+  .step-num-wrap { width: 52px; height: 52px; margin-bottom: 20px; }
+  .step-num { font-size: 20px; }
+  h3.step-title { font-size: 16px; }
+  .step-body { font-size: 13px; }
+
+  .final-cta-section { padding: 60px 18px; }
+  .final-cta-card { padding: 40px 24px; border-radius: 12px; }
+  .final-cta-card h2 { font-size: clamp(1.4rem, 6vw, 2rem); }
+  .final-cta-card p { font-size: 14px; margin-bottom: 28px; }
+
+  footer { padding: 32px 18px 24px; }
+  .footer-main { gap: 24px; }
+  .footer-nav { gap: 16px; }
+  .footer-nav a { font-size: 11px; letter-spacing: 1px; }
+  .footer-disclaimer { font-size: 8px; }
+
+  .njt-grid { gap: 14px; }
+  .njt-card { padding: 20px; }
+  .njt-card-title { font-size: 16px; }
+  .njt-card-desc { font-size: 12px; }
+  .njt-badge { top: 14px; right: 14px; font-size: 7px; padding: 3px 6px; }
+  .njt-icon { font-size: 20px; margin-bottom: 12px; }
+  .njt-table th, .njt-table td { padding: 10px 12px; font-size: 12px; }
+
+  .njt-section .section-eyebrow { font-size: 13px; padding: 8px 16px; letter-spacing: 3px; }
+
+  .carousel-section { padding: 50px 18px; }
+  .overlay-stats-row { flex-wrap: wrap; }
+
+  .dash-stats-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .dash-stat-card { padding: 8px; }
+  .dash-stat-val { font-size: 16px; }
+  .dash-match-row { padding: 6px 10px; gap: 6px; }
+  .match-result-pill { font-size: 10px; padding: 1px 6px; min-width: 30px; }
+  .match-agent { font-size: 14px; }
+  .match-map { font-size: 10px; }
+  .match-kda { font-size: 11px; }
+  .match-rr { font-size: 10px; min-width: 32px; }
+
+  .lightbox-viewer { width: 96vw; height: 60vh; }
+  .lightbox-close { top: 16px; right: 16px; width: 40px; height: 40px; font-size: 18px; }
+  .lightbox-controls { gap: 10px; padding: 6px 12px; }
+  .lightbox-controls button { width: 32px; height: 32px; font-size: 14px; }
+  #zoom-reset-btn { padding: 0 12px; font-size: 10px; }
+  .lightbox-instructions { font-size: 10px; }
+}
+
 @media (max-width: 480px) {
   .hero-browser-frame { border-radius: 8px; }
   .dash-stats-grid { grid-template-columns: repeat(2, 1fr); }
   .overlay-stats-row { flex-wrap: wrap; }
+
+  .nav { padding: 0 12px; height: 52px; }
+  .nav-mobile-toggle { display: flex; width: 32px; height: 32px; }
+  .nav-actions { display: none; }
+  .nav-logo span { font-size: 13px; letter-spacing: 1.5px; }
+  .nav-logo-img { height: 18px; }
+  .btn-red { padding: 6px 12px; font-size: 11px; }
+  #nav-track-btn { padding: 5px 10px; }
+  .nav-mobile-menu { top: 52px; }
+
+  .hero { padding: 72px 12px 36px; }
+  h1.hero-headline { font-size: clamp(1.8rem, 12vw, 2.4rem); }
+  .hero-eyebrow { font-size: 9px; padding: 4px 10px; margin-bottom: 16px; }
+  .hero-sub { font-size: 13px; margin-bottom: 22px; }
+  .btn-hero { padding: 12px 20px; font-size: 14px; }
+  .hero-mockup-wrap { margin-top: 28px; }
+  .browser-tabs { gap: 2px; }
+  .browser-tab { padding: 6px 10px; font-size: 10px; }
+
+  .section { padding: 48px 12px; }
+  h2.section-title { font-size: clamp(1.2rem, 7vw, 1.6rem); }
+  .bento-card { padding: 16px; border-radius: 10px; }
+  .bento-grid { gap: 8px; }
+  h3.bento-title { font-size: 14px; }
+  .bento-body { font-size: 11px; }
+  .card-img-frame { border-radius: 6px; }
+  .card-tag { font-size: 7px; padding: 2px 6px; letter-spacing: 1px; }
+
+  .ticker-bar { padding: 6px 0; }
+  .ticker-item { font-size: 10px; padding: 0 16px; }
+
+  .stats-bar { padding: 32px 12px; }
+  .counter-num { font-size: clamp(1.8rem, 8vw, 2.5rem); }
+  .counter-label { font-size: 11px; }
+
+  .step-item { padding: 0 8px; }
+  .final-cta-card { padding: 32px 18px; }
+  .final-cta-card h2 { font-size: clamp(1.2rem, 7vw, 1.6rem); }
+
+  footer { padding: 28px 12px 20px; }
+  .footer-main { gap: 16px; }
+  .footer-nav { gap: 12px; flex-direction: column; }
+  .footer-logo { justify-content: center; font-size: 16px; }
+  .footer-by { text-align: center; }
+  .footer-socials { justify-content: center; gap: 12px; }
+  .footer-disclaimer { font-size: 7px; letter-spacing: 0.3px; }
+
+  .njt-card { padding: 16px; }
+  .njt-card-title { font-size: 14px; }
+  .njt-card-desc { font-size: 12px; }
+  .njt-table { min-width: 100%; }
+  .njt-table th, .njt-table td { padding: 8px 10px; font-size: 11px; }
+  .njt-section .section-eyebrow { font-size: 11px; padding: 6px 12px; }
+
+  .dash-stats-grid { gap: 4px; }
+  .dash-stat-card { padding: 6px; border-radius: 6px; }
+  .dash-stat-label { font-size: 8px; letter-spacing: 1px; }
+  .dash-stat-val { font-size: 14px; }
+  .dash-match-row { padding: 4px 8px; }
+  .lightbox-viewer { width: 100vw; height: 50vh; border-radius: 0; }
+  .lightbox-controls { flex-wrap: wrap; justify-content: center; }
+  .card-img-frame::after { font-size: 11px; }
 }
 
 /* Zoom on Hover */
@@ -2372,6 +2706,12 @@ footer {
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   margin-bottom: 72px;
+}
+
+.njt-link {
+  display: contents;
+  text-decoration: none;
+  color: inherit;
 }
 
 .njt-card {

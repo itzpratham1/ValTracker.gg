@@ -2,6 +2,7 @@
 // Pure computation: builds stats and generates coaching advice.
 
 import { AGENT_ROLES, getRankFromRR, RANKS } from './constants';
+import { getLobbyRankInfo } from './processMatches';
 
 const RANK_BENCHMARKS: Record<string, { kd: number; wr: number; acs: number; hs: number; label: string }> = {
   'Iron':      { kd: 0.75, wr: 44, acs: 110, hs: 12, label: 'Iron' },
@@ -115,12 +116,8 @@ export function buildStatsForAI(matches: any[], playerName: string, playerTag: s
     });
 
     // Lobby rank
-    const allP = getPlayerList(match);
-    const lobbyInfo = allP.find((p: any) => p.currenttier_patched)?.currenttier_patched;
-    if (lobbyInfo) {
-      const r = getRankFromRR(0); // fallback
-      lobbyRanks.push(r.rr + 50);
-    }
+    const info = getLobbyRankInfo(getPlayerList(match), myTeamId);
+    if (info?.overall?.rr != null) lobbyRanks.push(info.overall.rr);
 
     firstBloodEst += Math.round(k * 0.18);
     if (k >= 3) multiKillEst++;
@@ -208,7 +205,7 @@ export function buildStatsForAI(matches: any[], playerName: string, playerTag: s
     topAgents,
     bestMap: bestMap ? { name: bestMap[0], wr: Math.round((bestMap[1].wins / bestMap[1].matches) * 100), matches: bestMap[1].matches } : null,
     worstMap: worstMap ? { name: worstMap[0], wr: Math.round((worstMap[1].wins / worstMap[1].matches) * 100), matches: worstMap[1].matches } : null,
-    avgLobbyRank: null,
+    avgLobbyRank: lobbyRanks.length ? getRankFromRR(Math.round(lobbyRanks.reduce((s, v) => s + v, 0) / lobbyRanks.length)).name : null,
     trendDelta, trendDir, r5kd: r5kd.toFixed(2), p5kd: p5kd.toFixed(2),
     consistencyScore, carryPct, readinessScore, attWR, defWR
   };

@@ -1,18 +1,33 @@
 ---
-import Layout from '../layouts/Layout.astro';
 import Overlay from '../components/overlay/Overlay.svelte';
 ---
-
-<Layout title="Stream Overlay — ValTracker" noIndex={true}>
-  <style is:global>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Stream Overlay — ValTracker</title>
+  <link rel="icon" type="image/png" href="/logo.png">
+  <link rel="shortcut icon" href="/logo.png" type="image/x-icon">
+  <link rel="apple-touch-icon" href="/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;0,900;1,800&family=DM+Mono:wght@500;700&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+  <style>
     html, body {
       margin: 0 !important;
       padding: 0 !important;
       background: transparent !important;
+      color: #f4f4f7;
+      font-family: 'Rajdhani', sans-serif;
       overflow: hidden !important;
       width: 100% !important;
       height: 100% !important;
     }
   </style>
+</head>
+<body>
   <Overlay client:only="svelte" />
-</Layout>
+</body>
+</html>

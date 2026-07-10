@@ -18,8 +18,9 @@
   $: modeLabel = { competitive:'Competitive', unrated:'Unrated', deathmatch:'Deathmatch', teamdeathmatch:'Team Deathmatch', swiftplay:'Swiftplay', spikerush:'Spike Rush' }[$player.mode] || $player.mode;
 
   $: accountLevel = accountData?.account_level || '—';
-  $: cardUrl = accountData?.card?.wide || accountData?.card?.large || null;
-  $: smallCardUrl = accountData?.card?.small || null;
+  $: cardId = (typeof accountData?.card === 'string') ? accountData.card : (accountData?.card?.id || null);
+  $: cardUrl = accountData?.card?.wide || accountData?.card?.large || (cardId ? `https://media.valorant-api.com/playercards/${cardId}/wideart.png` : null);
+  $: smallCardUrl = accountData?.card?.small || (cardId ? `https://media.valorant-api.com/playercards/${cardId}/smallart.png` : null);
 
   $: isRanked = $player.mode === 'competitive';
 

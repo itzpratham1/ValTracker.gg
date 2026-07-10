@@ -1,44 +1,57 @@
 <script>
-  import { onMount } from 'svelte';
   import { getAgentIconUrl } from '../../lib/draft-engine';
   import { fetchMetaComps } from '../../lib/api';
+  import { latestPatch, allPatches } from '../../lib/patchStore';
 
   export let mapKey = 'ascent';
+  export let patch = undefined;
 
   let loading = true;
   let error = null;
   let proData = null;
-  let lastFetchedMap = null;
+  let emptyMessage = null;
+  let lastFetchKey = '';
 
-  $: if (mapKey) {
+  $: fetchKey = `${mapKey}:${patch || 'latest'}`;
+  $: if (fetchKey) {
     loadProComps();
   }
 
   async function loadProComps() {
-    if (lastFetchedMap === mapKey && proData) return;
+    if (lastFetchKey === fetchKey && proData) return;
 
-    loading = true;
+    const isInitialLoad = !proData;
+    if (isInitialLoad) loading = true;
     error = null;
 
     try {
-      const data = await fetchMetaComps(mapKey);
+      const data = await fetchMetaComps(mapKey, patch);
       if (data.error || !data.total_comps_parsed) {
         proData = null;
+        emptyMessage = data.message || 'No VCT pro data available yet for this map — data updates weekly.';
       } else {
         proData = data;
+        emptyMessage = null;
+        if (data.available_patches && data.available_patches.length > 0) {
+          latestPatch.set(data.available_patches[0]);
+          allPatches.set(data.available_patches);
+        } else if (data.patch) {
+          latestPatch.set(data.patch);
+          allPatches.set([data.patch]);
+        }
       }
-      lastFetchedMap = mapKey;
+      
+      lastFetchKey = fetchKey;
     } catch (err) {
       console.error("Failed to load VCT Meta Comps:", err);
-      error = "Failed to load pro composition data.";
+      if (isInitialLoad) error = "Failed to load pro composition data.";
     }
 
-    loading = false;
+    if (isInitialLoad) loading = false;
   }
 
   function getAgentMiniIcon(ag) {
-    const icon = getAgentIconUrl(ag.charAt(0).toUpperCase() + ag.slice(1));
-    return icon;
+    return getAgentIconUrl(ag);
   }
 </script>
 
@@ -52,7 +65,7 @@
   {:else if error}
     <div class="pro-comps-error">{error}</div>
   {:else if !proData}
-    <div class="pro-comps-empty">No pro data available for this map.</div>
+    <div class="pro-comps-empty">{emptyMessage}</div>
   {:else}
     <!-- Pro Compositions Side-by-Side -->
     <div class="pro-compositions-grid">
@@ -117,7 +130,7 @@
     <div class="pro-heatmap-section">
       <div class="pro-heatmap-header">
         <h4 class="pro-heatmap-title">VCT Agent Heatmap (<span class="accent">{proData.patch}</span>)</h4>
-        <span class="pro-heatmap-meta">{proData.total_comps_parsed / 2} matches ({proData.total_comps_parsed} comps)</span>
+        <span class="pro-heatmap-meta">{Math.round(proData.total_comps_parsed / 2)} matches ({proData.total_comps_parsed} comps)</span>
       </div>
       <div class="pro-heatmap-grid">
         {#each Object.entries(proData.agent_stats).sort((a, b) => b[1].pick_rate - a[1].pick_rate) as [ag, val]}

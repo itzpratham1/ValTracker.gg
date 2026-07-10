@@ -1,7 +1,51 @@
 // ValTracker — Match Processing Engine
 // Pure computation: returns stats objects instead of writing to DOM.
 
-import { ACTS_TIMELINE, SEASONS_MAP, getRankImgUrl, AGENT_UUIDS, RANKS } from './constants';
+import { ACTS_TIMELINE, SEASONS_MAP, getRankImgUrl, getRankFromRR, AGENT_UUIDS, RANKS } from './constants';
+import { assetCache } from './assets';
+
+const TIER_RR_MAP: Record<string, number> = {
+  'Iron 1': 3, 'Iron 2': 4, 'Iron 3': 5,
+  'Bronze 1': 6, 'Bronze 2': 7, 'Bronze 3': 8,
+  'Silver 1': 9, 'Silver 2': 10, 'Silver 3': 11,
+  'Gold 1': 12, 'Gold 2': 13, 'Gold 3': 14,
+  'Platinum 1': 15, 'Platinum 2': 16, 'Platinum 3': 17,
+  'Diamond 1': 18, 'Diamond 2': 19, 'Diamond 3': 20,
+  'Ascendant 1': 21, 'Ascendant 2': 22, 'Ascendant 3': 23,
+  'Immortal 1': 24, 'Immortal 2': 25, 'Immortal 3': 26,
+  'Radiant': 27
+};
+
+function getTierRR(tierName: string): number | null {
+  const id = TIER_RR_MAP[tierName];
+  return id != null ? (id - 3) * 100 : null;
+}
+
+export function getLobbyRankInfo(allPlayers: any[], myTeamId: string): any | null {
+  const withRank = allPlayers.filter((p: any) =>
+    p.currenttier_patched && p.currenttier_patched !== 'Unranked' && p.currenttier && p.currenttier > 0
+  );
+  if (!withRank.length) return null;
+  const allied = withRank.filter((p: any) => (p.team || '').toLowerCase() === myTeamId);
+  const enemy = withRank.filter((p: any) => (p.team || '').toLowerCase() !== myTeamId);
+  const avgTierRR = (arr: any[]) => {
+    if (!arr.length) return null;
+    const total = arr.reduce((s: number, p: any) => {
+      const rr = getTierRR(p.currenttier_patched) || ((p.currenttier || 3) - 3) * 100;
+      return s + rr;
+    }, 0);
+    return Math.round(total / arr.length);
+  };
+  const allAvg = avgTierRR(withRank);
+  const allyAvg = avgTierRR(allied);
+  const enemyAvg = avgTierRR(enemy);
+  return {
+    overall: allAvg != null ? getRankFromRR(allAvg) : null,
+    ally: allyAvg != null ? getRankFromRR(allyAvg) : null,
+    enemy: enemyAvg != null ? getRankFromRR(enemyAvg) : null,
+    allPlayers: withRank
+  };
+}
 
 function normalizeName(str: string): string {
   return (str || '').toLowerCase().replace(/\s+/g, '');
@@ -73,6 +117,12 @@ export interface WeaponStats {
   matchHistory: { gameStart: number; kills: number; hs: number; hsPct: number }[];
 }
 
+export interface LobbyRankInfo {
+  overall: { name: string; rr: number } | null;
+  ally: { name: string; rr: number } | null;
+  enemy: { name: string; rr: number } | null;
+}
+
 export interface RecentMatch {
   won: boolean;
   agentName: string;
@@ -88,6 +138,7 @@ export interface RecentMatch {
   myTeamId: string;
   matchId: string;
   gameStart: number;
+  lobbyRank: LobbyRankInfo | null;
 }
 
 export interface ProcessedStats {
@@ -171,16 +222,20 @@ export function processMatches(
 
     rrHistory.push({ won, kills: k, matchId: match.metadata?.matchid || match.metadata?.match_id });
 
-    const gameStart = match.metadata?.game_start || match.metadata?.gameStart || null;
+    const rawGameStart = match.metadata?.game_start || match.metadata?.gameStart || null;
+    const gameStart = rawGameStart ? rawGameStart * 1000 : null;
     const totalRoundsPlayed = (typeof myR === 'number' && typeof oppR === 'number') ? (myR + oppR) : (match.rounds?.length || 1);
     const matchACS = Math.round(sc / Math.max(1, totalRoundsPlayed));
+
+    const allP = getPlayerList(match);
+    const lobbyRank = getLobbyRankInfo(allP, myTeamId);
 
     recentMatches.push({
       won, agentName, map: mapName,
       kills: k, deaths: d, assists: a, score: sc, acs: matchACS,
       rounds: `${myR}-${oppR}`, hs, shots, myTeamId,
       matchId: match.metadata?.matchid || match.metadata?.match_id,
-      gameStart
+      gameStart, lobbyRank
     });
 
     // Pre-compute weapon stats
@@ -194,12 +249,17 @@ export function processMatches(
       const kills = Array.isArray(myPs.kill_events) ? myPs.kill_events : [];
       for (const kill of kills) {
         const raw = kill.damage_weapon_name || kill.finishing_damage?.damage_item || kill.damage_weapon_id || '';
-        let wpn = raw.replace(/^[^/]*\//, '').replace(/TX_Hud_/i, '').replace(/_/g, ' ').trim();
+        const cachedWpn = assetCache.weapons[raw.toLowerCase()];
+        let wpn = cachedWpn ? cachedWpn.name : raw.replace(/^[^/]*\//, '').replace(/TX_Hud_/i, '').replace(/_/g, ' ').trim();
         if (/^[0-9a-f]{8}-/.test(wpn)) wpn = 'Ability';
         if (!wpn || wpn.length < 2) continue;
         if (!precomputedWeapons[wpn]) precomputedWeapons[wpn] = { kills: 0, hs: 0, matchHistory: [] };
         precomputedWeapons[wpn].kills++;
         let isHS = typeof kill.headshot === 'boolean' ? kill.headshot : kill.finishing_damage?.is_headshot;
+        if (!isHS && myPs.damage_events) {
+          const dE = myPs.damage_events.find((de: any) => de.receiver_puuid === (kill.victim_puuid || kill.victim));
+          if (dE && dE.headshots > 0) isHS = true;
+        }
         if (isHS) precomputedWeapons[wpn].hs++;
         const last = precomputedWeapons[wpn].matchHistory;
         const existing = last.length && last[last.length - 1].gameStart === gameStart ? last[last.length - 1] : null;

@@ -33,7 +33,7 @@
       <div class="map-card-bento visible" style="animation-delay:{i * 60}ms">
         {#if mapImg}
           <div class="map-splash-wrap">
-            <img class="map-splash" src={mapImg} alt={name} loading="lazy">
+            <img class="map-splash" src={mapImg} alt={name} loading="lazy" on:error={(e) => e.target.style.display='none'}>
             <div class="map-splash-overlay">
               <span class="map-splash-name">{name}</span>
             </div>

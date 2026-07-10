@@ -27,7 +27,7 @@
 
 <div class="clutch-grid">
   {#each cards as c, i}
-    <div class="impact-bento" style="animation-delay:{i * 60}ms">
+    <div class="impact-bento visible" style="animation-delay:{i * 60}ms">
       <div class="impact-icon">{c.icon}</div>
       <div class="impact-label">{c.label}</div>
       <div class="impact-val">{c.val}</div>

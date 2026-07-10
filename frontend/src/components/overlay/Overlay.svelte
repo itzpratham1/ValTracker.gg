@@ -60,9 +60,29 @@
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
+  function sanitizeTag(raw) {
+    if (!raw) return raw;
+    let tag = raw;
+    tag = tag.replace(/\u00AE/g, '&');
+    const sepIdx = tag.search(/[=&]/);
+    if (sepIdx !== -1) tag = tag.substring(0, sepIdx);
+    return tag.replace(/[^a-zA-Z0-9_-]/g, '');
+  }
+
   const playerName = escapeHtml(params.get('name') || params.get('player') || '');
-  const playerTag = escapeHtml(params.get('tag') || '');
+  const rawTag = params.get('tag') || '';
+  const playerTag = sanitizeTag(escapeHtml(rawTag));
   let region = params.get('region') || '';
+
+  // Recover region from tag if it got merged due to entity corruption
+  if (!region && rawTag) {
+    const rawTagClean = rawTag.replace(/\u00AE/g, '&');
+    const regionMatch = rawTagClean.match(/[=&](ap|na|eu|kr)\b/i);
+    if (regionMatch) {
+      region = regionMatch[1].toLowerCase();
+    }
+  }
+
   const variant = (params.get('variant') || 'competitive').toLowerCase();
 
   const accent = params.get('accent');
@@ -269,6 +289,7 @@
       loadingMsg = 'Fetching live stats...';
       const data = await fetchPlayerData(player);
       stats = aggregateStats(data, player.name, player.tag);
+      error = '';
       loading = false;
     } catch (e) {
       console.error('[STREAM OVERLAY] Error', e);
@@ -302,140 +323,142 @@
 {:else if error}
   <div class="error-text">⚠️ Error: {error}</div>
 {:else if stats}
-  {#if variant === 'competitive'}
-    <div class="comp-overlay">
-      <div class="comp-recent-games">
-        <span class="comp-player-badge">{playerName}<span class="comp-player-tag">#{playerTag}</span></span>
-        <div class="comp-avatars-row">
-          {#if stats.recentGames.length > 0}
-            {#each stats.recentGames as g}
-              <div class="comp-avatar-wrap">
-                <img class="comp-avatar-img" src={g.agentIcon || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"%3E%3Crect width="24" height="24" fill="%23222"/%3E%3C/svg%3E'} alt={g.agentName}>
-                <div class="comp-avatar-outcome {g.won ? 'win' : 'loss'}"></div>
-              </div>
-            {/each}
-          {:else}
-            <div class="comp-recent-title">No recent matches found</div>
-          {/if}
-        </div>
-      </div>
-
-      <div class="comp-stats-body">
-        <div class="comp-rank-icon-wrap">
-          <img class="comp-rank-icon" src={rankIconUrl} alt={stats.currentTierName}>
-        </div>
-        <div class="comp-rank-info">
-          <div style="display:flex; align-items:center;">
-            <div class="comp-rank-name">{stats.currentTierName}</div>
-            {#if stats.winStreak >= 2}
-              <span class="streak-badge win" style="margin-left: 8px;">🔥 {stats.winStreak} STREAK</span>
-            {:else if stats.lossStreak >= 2}
-              <span class="streak-badge loss" style="margin-left: 8px;">❄️ {stats.lossStreak} STREAK</span>
+  <div class="overlay-scaler loaded">
+    {#if variant === 'competitive'}
+      <div class="comp-overlay">
+        <div class="comp-recent-games">
+          <span class="comp-player-badge">{playerName}<span class="comp-player-tag">#{playerTag}</span></span>
+          <div class="comp-avatars-row">
+            {#if stats.recentGames.length > 0}
+              {#each stats.recentGames as g}
+                <div class="comp-avatar-wrap">
+                  <img class="comp-avatar-img" src={g.agentIcon || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"%3E%3Crect width="24" height="24" fill="%23222"/%3E%3C/svg%3E'} alt={g.agentName}>
+                  <div class="comp-avatar-outcome {g.won ? 'win' : 'loss'}"></div>
+                </div>
+              {/each}
+            {:else}
+              <div class="comp-recent-title">No recent matches found</div>
             {/if}
           </div>
-          <div class="comp-rr-bar-container">
-            <div class="comp-rr-bar-fill" style="width: {Math.min(100, Math.max(0, stats.currentRR))}%"></div>
+        </div>
+
+        <div class="comp-stats-body">
+          <div class="comp-rank-icon-wrap">
+            <img class="comp-rank-icon" src={rankIconUrl} alt={stats.currentTierName}>
           </div>
-          <div class="comp-rank-rr">{stats.currentRR} RR</div>
-        </div>
-        <div class="comp-stat-grid">
-          <div class="comp-stat-box">
-            <span class="comp-stat-val">{stats.winrate}%</span>
-            <span class="comp-stat-lbl">Win %</span>
-          </div>
-          <div class="comp-stat-box">
-            <span class="comp-stat-val">{stats.kd}</span>
-            <span class="comp-stat-lbl">K/D Ratio</span>
-          </div>
-          <div class="comp-stat-box">
-            <span class="comp-stat-val" style="color: {stats.gradeColor}; text-shadow: 0 0 8px {stats.gradeColor}40;">{stats.perfGrade}</span>
-            <span class="comp-stat-lbl">VAL INDEX</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="comp-brand-footer">
-        <div class="comp-brand-logo">Val<span>Tracker</span> <span class="live-dot" title="Live Synced"></span></div>
-        <div class="comp-brand-text">Valorant Live stream hud</div>
-      </div>
-    </div>
-
-  {:else if variant === 'center'}
-    <div class="center-overlay">
-      <div class="center-brand-tag">Val<span>Tracker</span> <span class="live-dot" title="Live Synced"></span></div>
-
-      <div class="center-left-block">
-        <img class="center-rank-icon" src={rankIconUrl} alt={stats.currentTierName}>
-        <div class="center-player-info">
-          <span class="center-player-name" style="display:flex; align-items:center;">
-            {playerName}<span class="center-player-tag">#{playerTag}</span>
-            {#if stats.winStreak >= 2}
-              <span class="streak-badge win" style="margin-left: 6px; font-size: 8px; padding: 1px 4px;">🔥 {stats.winStreak}W</span>
-            {:else if stats.lossStreak >= 2}
-              <span class="streak-badge loss" style="margin-left: 6px; font-size: 8px; padding: 1px 4px;">❄️ {stats.lossStreak}L</span>
-            {/if}
-          </span>
-          <span class="center-player-rank">{stats.currentTierName}</span>
-        </div>
-      </div>
-
-      <div class="center-divider"></div>
-
-      <div class="center-right-block">
-        <div class="center-stat-box">
-          <span class="center-stat-val">{stats.sessionWinrate}{stats.sessionWinrate !== '\u2014' ? '%' : ''}</span>
-          <span class="center-stat-lbl">Win %</span>
-        </div>
-        <div class="center-stat-box">
-          <span class="center-stat-val">{stats.sessionKd}</span>
-          <span class="center-stat-lbl">K/D Ratio</span>
-        </div>
-        <div class="center-stat-box">
-          <span class="center-stat-val" style="color: {stats.sessionGradeColor}; text-shadow: 0 0 8px {stats.sessionGradeColor}40;">{stats.sessionPerfGrade}</span>
-          <span class="center-stat-lbl">Val Index</span>
-        </div>
-        <div class="center-stat-box">
-          <span class="center-stat-val">{stats.daily_wl}</span>
-          <span class="center-stat-lbl">Session</span>
-        </div>
-      </div>
-    </div>
-
-  {:else if variant === 'flexible'}
-    <div class="flex-overlay">
-      <div class="flex-overlay-header">
-        <img class="flex-rank-icon" src={rankIconUrl} alt={stats.currentTierName}>
-        <div class="flex-header-text">
-          <span class="flex-player-name">{playerName}<span class="flex-player-tag">#{playerTag}</span></span>
-          <div class="flex-rr-bar-container">
-            <div class="flex-rr-bar-fill" style="width: {Math.min(100, Math.max(0, stats.currentRR))}%"></div>
-          </div>
-          <span class="flex-player-rank">{stats.currentRR} RR</span>
-        </div>
-      </div>
-
-      <div class="flex-stats-list">
-        {#each selectedStats as s}
-          {@const label = s === 'valindex' || s === 'val_index' ? 'VAL Index Score' : s === 'grade' || s === 'perf_grade' ? 'VAL Index Grade' : s === 'streak' || s === 'winstreak' ? (stats.winStreak >= 2 ? 'Win Streak' : stats.lossStreak >= 2 ? 'Loss Streak' : 'Streak') : s === 'session_winrate' ? 'Session Win %' : s === 'session_kd' ? 'Session K/D' : s === 'session_acs' ? 'Session ACS' : statLabels[s]}
-          {@const val = s === 'valindex' || s === 'val_index' ? stats.valIndex : s === 'grade' || s === 'perf_grade' ? stats.perfGrade : s === 'streak' || s === 'winstreak' ? (stats.winStreak >= 2 ? `🔥 ${stats.winStreak} Wins` : stats.lossStreak >= 2 ? `❄️ ${stats.lossStreak} Losses` : 'None') : s === 'session_winrate' ? (stats.sessionWinrate !== '\u2014' ? `${stats.sessionWinrate}%` : '\u2014') : s === 'session_kd' ? stats.sessionKd : s === 'session_acs' ? stats.sessionAcs : s === 'winrate' ? `${stats.winrate}%` : s === 'rank' ? stats.currentTierName : s === 'peak' ? stats.peakTierName : stats[s]}
-          {@const icon = s === 'valindex' || s === 'val_index' ? '\u{1F9E0}' : s === 'grade' || s === 'perf_grade' ? '\u2B50' : s === 'streak' || s === 'winstreak' ? '\u{1F525}' : statIcons[s] || '\u{1F4C8}'}
-          {#if label && val !== undefined}
-            <div class="flex-stat-row">
-              <div class="flex-stat-lbl-block">
-                <span class="flex-stat-icon">{icon}</span>
-                <span class="flex-stat-lbl">{label}</span>
-              </div>
-              <span class="flex-stat-val" style={s === 'grade' || s === 'perf_grade' ? `color:${stats.gradeColor}` : ''}>{val}</span>
+          <div class="comp-rank-info">
+            <div style="display:flex; align-items:center;">
+              <div class="comp-rank-name">{stats.currentTierName}</div>
+              {#if stats.winStreak >= 2}
+                <span class="streak-badge win" style="margin-left: 8px;">🔥 {stats.winStreak} STREAK</span>
+              {:else if stats.lossStreak >= 2}
+                <span class="streak-badge loss" style="margin-left: 8px;">❄️ {stats.lossStreak} STREAK</span>
+              {/if}
             </div>
-          {/if}
-        {/each}
+            <div class="comp-rr-bar-container">
+              <div class="comp-rr-bar-fill" style="width: {Math.min(100, Math.max(0, stats.currentRR))}%"></div>
+            </div>
+            <div class="comp-rank-rr">{stats.currentRR} RR</div>
+          </div>
+          <div class="comp-stat-grid">
+            <div class="comp-stat-box">
+              <span class="comp-stat-val">{stats.winrate}%</span>
+              <span class="comp-stat-lbl">Win %</span>
+            </div>
+            <div class="comp-stat-box">
+              <span class="comp-stat-val">{stats.kd}</span>
+              <span class="comp-stat-lbl">K/D Ratio</span>
+            </div>
+            <div class="comp-stat-box">
+              <span class="comp-stat-val" style="color: {stats.gradeColor}; text-shadow: 0 0 8px {stats.gradeColor}40;">{stats.perfGrade}</span>
+              <span class="comp-stat-lbl">VAL INDEX</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="comp-brand-footer">
+          <div class="comp-brand-logo">Val<span>Tracker</span> <span class="live-dot" title="Live Synced"></span></div>
+          <div class="comp-brand-text">Valorant Live stream hud</div>
+        </div>
       </div>
 
-      <div class="flex-brand-footer">
-        <div class="comp-brand-logo">Val<span>Tracker</span> <span class="live-dot" title="Live Synced"></span></div>
+    {:else if variant === 'center'}
+      <div class="center-overlay">
+        <div class="center-brand-tag">Val<span>Tracker</span> <span class="live-dot" title="Live Synced"></span></div>
+
+        <div class="center-left-block">
+          <img class="center-rank-icon" src={rankIconUrl} alt={stats.currentTierName}>
+          <div class="center-player-info">
+            <span class="center-player-name" style="display:flex; align-items:center;">
+              {playerName}<span class="center-player-tag">#{playerTag}</span>
+              {#if stats.winStreak >= 2}
+                <span class="streak-badge win" style="margin-left: 6px; font-size: 8px; padding: 1px 4px;">🔥 {stats.winStreak}W</span>
+              {:else if stats.lossStreak >= 2}
+                <span class="streak-badge loss" style="margin-left: 6px; font-size: 8px; padding: 1px 4px;">❄️ {stats.lossStreak}L</span>
+              {/if}
+            </span>
+            <span class="center-player-rank">{stats.currentTierName}</span>
+          </div>
+        </div>
+
+        <div class="center-divider"></div>
+
+        <div class="center-right-block">
+          <div class="center-stat-box">
+            <span class="center-stat-val">{stats.sessionWinrate}{stats.sessionWinrate !== '\u2014' ? '%' : ''}</span>
+            <span class="center-stat-lbl">Win %</span>
+          </div>
+          <div class="center-stat-box">
+            <span class="center-stat-val">{stats.sessionKd}</span>
+            <span class="center-stat-lbl">K/D Ratio</span>
+          </div>
+          <div class="center-stat-box">
+            <span class="center-stat-val" style="color: {stats.sessionGradeColor}; text-shadow: 0 0 8px {stats.sessionGradeColor}40;">{stats.sessionPerfGrade}</span>
+            <span class="center-stat-lbl">Val Index</span>
+          </div>
+          <div class="center-stat-box">
+            <span class="center-stat-val">{stats.daily_wl}</span>
+            <span class="center-stat-lbl">Session</span>
+          </div>
+        </div>
       </div>
-    </div>
-  {/if}
+
+    {:else if variant === 'flexible'}
+      <div class="flex-overlay">
+        <div class="flex-overlay-header">
+          <img class="flex-rank-icon" src={rankIconUrl} alt={stats.currentTierName}>
+          <div class="flex-header-text">
+            <span class="flex-player-name">{playerName}<span class="flex-player-tag">#{playerTag}</span></span>
+            <div class="flex-rr-bar-container">
+              <div class="flex-rr-bar-fill" style="width: {Math.min(100, Math.max(0, stats.currentRR))}%"></div>
+            </div>
+            <span class="flex-player-rank">{stats.currentRR} RR</span>
+          </div>
+        </div>
+
+        <div class="flex-stats-list">
+          {#each selectedStats as s}
+            {@const label = s === 'valindex' || s === 'val_index' ? 'VAL Index Score' : s === 'grade' || s === 'perf_grade' ? 'VAL Index Grade' : s === 'streak' || s === 'winstreak' ? (stats.winStreak >= 2 ? 'Win Streak' : stats.lossStreak >= 2 ? 'Loss Streak' : 'Streak') : s === 'session_winrate' ? 'Session Win %' : s === 'session_kd' ? 'Session K/D' : s === 'session_acs' ? 'Session ACS' : statLabels[s]}
+            {@const val = s === 'valindex' || s === 'val_index' ? stats.valIndex : s === 'grade' || s === 'perf_grade' ? stats.perfGrade : s === 'streak' || s === 'winstreak' ? (stats.winStreak >= 2 ? `🔥 ${stats.winStreak} Wins` : stats.lossStreak >= 2 ? `❄️ ${stats.lossStreak} Losses` : 'None') : s === 'session_winrate' ? (stats.sessionWinrate !== '\u2014' ? `${stats.sessionWinrate}%` : '\u2014') : s === 'session_kd' ? stats.sessionKd : s === 'session_acs' ? stats.sessionAcs : s === 'winrate' ? `${stats.winrate}%` : s === 'rank' ? stats.currentTierName : s === 'peak' ? stats.peakTierName : stats[s]}
+            {@const icon = s === 'valindex' || s === 'val_index' ? '\u{1F9E0}' : s === 'grade' || s === 'perf_grade' ? '\u2B50' : s === 'streak' || s === 'winstreak' ? '\u{1F525}' : statIcons[s] || '\u{1F4C8}'}
+            {#if label && val !== undefined}
+              <div class="flex-stat-row">
+                <div class="flex-stat-lbl-block">
+                  <span class="flex-stat-icon">{icon}</span>
+                  <span class="flex-stat-lbl">{label}</span>
+                </div>
+                <span class="flex-stat-val" style={s === 'grade' || s === 'perf_grade' ? `color:${stats.gradeColor}` : ''}>{val}</span>
+              </div>
+            {/if}
+          {/each}
+        </div>
+
+        <div class="flex-brand-footer">
+          <div class="comp-brand-logo">Val<span>Tracker</span> <span class="live-dot" title="Live Synced"></span></div>
+        </div>
+      </div>
+    {/if}
+  </div>
 {/if}
 
 <style>
@@ -458,12 +481,17 @@
     --font-body: 'Rajdhani', sans-serif;
   }
 
-  :global(.overlay-scaler) {
+  .overlay-scaler {
     transform: scale(var(--scale));
     transform-origin: top left;
     padding: 10px;
     box-sizing: border-box;
     display: inline-block;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+  }
+  .overlay-scaler.loaded {
+    opacity: 1;
   }
 
   .overlay-loading { position:fixed; inset:0; background:#060608; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; gap:12px; }

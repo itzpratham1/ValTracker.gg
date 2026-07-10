@@ -70,6 +70,7 @@
     .sort((a, b) => (b.stats?.score || 0) - (a.stats?.score || 0));
   $: mvpInfo = getMVPs(match, myTeamId);
   $: lobbyInfo = getLobbyRankInfo(allPlayers, myTeamId);
+  $: totalRounds = match?.rounds?.length || match?.metadata?.rounds_played || 24;
 
   function isMe(player) {
     return player.name?.toLowerCase() === playerName.toLowerCase();
@@ -136,7 +137,7 @@
           {@const hsPct = shots ? Math.round((hs / shots) * 100) : 0}
           {@const playerKd = d ? (k / d).toFixed(2) : k.toFixed(2)}
           {@const kdPct = Math.min(parseFloat(playerKd) / 3 * 100, 100)}
-          {@const playerAcs = Math.round(sc / 100)}
+          {@const playerAcs = totalRounds ? Math.round(sc / totalRounds) : Math.round(sc / 100)}
           {@const isMatchMVP = mvpInfo.matchMVP && p.name === mvpInfo.matchMVP.name && p.tag === mvpInfo.matchMVP.tag}
           {@const isTeamMVP = mvpInfo.teamMVP && p.name === mvpInfo.teamMVP.name && p.tag === mvpInfo.teamMVP.tag && !isMatchMVP}
           {@const agentIcon = getAgentIconUrl(p.character || p.agent?.name || '')}
@@ -194,7 +195,7 @@
           {@const hsPct = shots ? Math.round((hs / shots) * 100) : 0}
           {@const playerKd = d ? (k / d).toFixed(2) : k.toFixed(2)}
           {@const kdPct = Math.min(parseFloat(playerKd) / 3 * 100, 100)}
-          {@const playerAcs = Math.round(sc / 100)}
+          {@const playerAcs = totalRounds ? Math.round(sc / totalRounds) : Math.round(sc / 100)}
           {@const agentIcon = getAgentIconUrl(p.character || p.agent?.name || '')}
           {@const rankName = p.currenttier_patched || ''}
           {@const rankImg = rankName && rankName !== 'Unranked' ? getRankImgUrl(rankName) : ''}
