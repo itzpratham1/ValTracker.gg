@@ -5,6 +5,8 @@
   import { getRankImgUrl } from '../../lib/constants';
   import { escapeHtml } from '../../lib/utils';
   import { player, setPlayer } from '../../lib/appStore';
+  import { loadMyProfile, saveMyProfile } from '../../lib/session';
+  import Toast from '../shared/Toast.svelte';
 
   export let onSearch = (name, tag, region, mode) => {
     setPlayer({ name, tag, region, mode, fetching: true, loaded: false });
@@ -41,11 +43,7 @@
   ];
 
   onMount(() => {
-    try {
-      const raw = localStorage.getItem('valstats_my_profile');
-      if (raw) myProfile = JSON.parse(raw);
-    } catch {}
-
+    myProfile = loadMyProfile();
     document.addEventListener('click', handleClickOutside);
   });
 
@@ -131,12 +129,30 @@
     if (e.key === 'Enter') handleSubmit();
   }
 
-  function setMyProfile() {
+  function loadProfile() {
     if (!myProfile) return;
     name = myProfile.name || '';
     tag = myProfile.tag || '';
     if (myProfile.region) region = myProfile.region;
     handleSubmit();
+  }
+
+  function saveProfile() {
+    const cleanName = name.trim();
+    const cleanTag = tag.trim().replace(/^#/, '');
+
+    if (!cleanName || !cleanTag) {
+      error = 'Enter your name and tag first';
+      return;
+    }
+
+    error = '';
+    saveMyProfile(cleanName, cleanTag, region, mode);
+    myProfile = { name: cleanName, tag: cleanTag, region, mode };
+    
+    if (window.showToast) {
+      window.showToast('Profile saved ✓');
+    }
   }
 
   function getRankImg(rankName) {
@@ -245,17 +261,37 @@
     <div class="sf-divider-line"></div>
   </div>
 
-  <div class="sf-profile-row">
+  <div class="sf-profile-row" style="margin-bottom: 8px;">
     <span class="sf-profile-label">My Profile</span>
-    {#if myProfile}
-      <button class="sf-profile-btn" on:click={setMyProfile}>
-        {escapeHtml(myProfile.name)}#{escapeHtml(myProfile.tag)} ›
-      </button>
-    {:else}
-      <button class="sf-profile-btn sf-profile-set" disabled>SET AS MY PROFILE ›</button>
-    {/if}
+    <button class="sf-profile-btn" on:click={saveProfile} type="button">
+      SET AS MY PROFILE ›
+    </button>
   </div>
+
+  {#if myProfile}
+    <button
+      class="landing-quick-btn"
+      on:click={loadProfile}
+      type="button"
+      style="width: 100%; display: flex; align-items: center; justify-content: flex-start; text-align: left; box-sizing: border-box;"
+    >
+      <div class="landing-quick-dot"></div>
+      <div>
+        <span style="font-size: 15px; color: #fff;">{myProfile.name}</span>
+        <span style="color: var(--muted, #a0a0ab); font-size: 12px; margin-left: 4px;">#{myProfile.tag}</span>
+      </div>
+      <div style="margin-left: auto; font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted2, #70707a); letter-spacing: 1px;">
+        {(myProfile.region || '').toUpperCase()} · {myProfile.mode}
+      </div>
+    </button>
+  {:else}
+    <div style="font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted2, #70707a); letter-spacing: 1px; padding: 8px 0;">
+      No profile saved yet — enter details above and click SET AS MY PROFILE
+    </div>
+  {/if}
 </div>
+
+<Toast />
 
 <style>
   .search-form-card {
