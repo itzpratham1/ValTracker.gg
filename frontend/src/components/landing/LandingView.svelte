@@ -21,7 +21,7 @@
       tag: '',
       region: 'ap',
       mode: 'competitive',
-      act: 'v26a3',
+      act: 'v26a4',
       loaded: true,
       fetching: false
     });

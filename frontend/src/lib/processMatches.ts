@@ -163,7 +163,7 @@ export function processMatches(
   matches: any[],
   playerName: string,
   playerTag: string,
-  selectedAct: string = 'v26a3'
+  selectedAct: string = 'v26a4'
 ): ProcessedStats {
   let matchesToProcess = matches;
 

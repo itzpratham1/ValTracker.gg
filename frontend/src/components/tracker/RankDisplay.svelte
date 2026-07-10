@@ -8,7 +8,7 @@
   export let mmrHistory = {};
 
   $: selectedAct = $player.act;
-  $: isCurrentOrAll = selectedAct === 'all' || selectedAct === 'v26a3';
+  $: isCurrentOrAll = selectedAct === 'all' || selectedAct === 'v26a4';
 
   $: displayRank = getDisplayRank(mmrData, selectedAct);
   $: rankImg = getRankImgUrl(displayRank.name);
@@ -29,7 +29,7 @@
 
   function getDisplayRank(mmr, act) {
     if (!mmr) return { name: 'UNRANKED', rr: 0 };
-    if (act === 'all' || act === 'v26a3') {
+    if (act === 'all' || act === 'v26a4') {
       return {
         name: mmr.current?.tier?.name || 'UNRANKED',
         rr: mmr.current?.rr ?? 0
