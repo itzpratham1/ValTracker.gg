@@ -10,6 +10,8 @@
   import AgentSelectorModal from './AgentSelectorModal.svelte';
   import { createShareCard } from '../../lib/api';
 
+  const API_BASE = import.meta.env.PUBLIC_API_URL || '';
+
   export let playerAgentPool = {};
 
   let draftSlots = [null, null, null, null, null];
@@ -151,7 +153,10 @@
 
       const agentLineupHtml = draftSlots.map(ag => {
         const rawIcon = getAgentIconUrl(ag);
-        const icon = rawIcon ? `/api/image?url=${encodeURIComponent(rawIcon)}` : '';
+        let icon = rawIcon ? `/api/image?url=${encodeURIComponent(rawIcon)}` : '';
+        if (icon && !icon.startsWith('http')) {
+          icon = `${API_BASE}${icon}`;
+        }
         const name = getAgentDisplayName(ag);
         return `<div style="display:flex; flex-direction:column; align-items:center; gap:4px; width:75px; background:rgba(255,255,255,0.015); border:1px solid rgba(255,255,255,0.05); padding:8px; border-radius:10px; box-sizing:border-box;">
           <img src="${icon}" style="width:38px; height:38px; border-radius:50%; border:2px solid rgba(255,68,84,0.3); display:block;">

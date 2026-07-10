@@ -2,6 +2,8 @@
   import { onMount } from 'svelte';
   import { fade, fly } from 'svelte/transition';
 
+  const API_BASE = import.meta.env.PUBLIC_API_URL || '';
+
   export let open = false;
   export let region = 'ap';
   export let onClose = () => {};
@@ -26,7 +28,7 @@
     loading = true;
     error = '';
     try {
-      const res = await fetch(`/api/v1/leaderboard/${region}`);
+      const res = await fetch(`${API_BASE}/api/v1/leaderboard/${region}`);
       if (!res.ok) throw new Error('Failed to fetch leaderboard from API');
       const json = await res.json();
       if (json?.data) {

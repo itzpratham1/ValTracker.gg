@@ -43,6 +43,13 @@ export type FranchiseData = Record<string, FranchiseTeam[]>;
 let _franchiseData: FranchiseData | null = null;
 let _allMatchesCache: EsportsMatch[] = [];
 
+function getProxiedImageUrl(logoUrl: string): string {
+  if (!logoUrl) return '';
+  const API_BASE = import.meta.env.PUBLIC_API_URL || '';
+  const path = logoUrl.startsWith('/api/image') ? logoUrl : `/api/image?url=${encodeURIComponent(logoUrl)}`;
+  return path.startsWith('http') ? path : `${API_BASE}${path}`;
+}
+
 export function setFranchiseData(data: FranchiseData) {
   _franchiseData = data;
 }
@@ -68,7 +75,7 @@ export function getEsportsTeamLogoHtml(name: string): string {
   for (const region in _franchiseData) {
     for (const t of _franchiseData[region]) {
       if (t.name.toLowerCase() === name.toLowerCase() || t.tag?.toLowerCase() === name.toLowerCase()) {
-        const teamLogoUrl = t.logo.startsWith('/api/image') ? t.logo : `/api/image?url=${encodeURIComponent(t.logo)}`;
+        const teamLogoUrl = getProxiedImageUrl(t.logo);
         return `<img class="esp-team-logo" src="${teamLogoUrl}" style="width:20px;height:20px;object-fit:contain;margin-right:8px;" onerror="this.outerHTML='${fallback.replace(/"/g, '&quot;')}'" />`;
       }
     }
@@ -76,7 +83,7 @@ export function getEsportsTeamLogoHtml(name: string): string {
 
   const match = _allMatchesCache.find(m => m.match?.teams?.some(tm => tm.name.toLowerCase() === name.toLowerCase()))?.match?.teams?.find(tm => tm.name.toLowerCase() === name.toLowerCase());
   if (match && match.logo) {
-    const teamLogoUrl = match.logo.startsWith('/api/image') ? match.logo : `/api/image?url=${encodeURIComponent(match.logo)}`;
+    const teamLogoUrl = getProxiedImageUrl(match.logo);
     return `<img class="esp-team-logo" src="${teamLogoUrl}" style="width:20px;height:20px;object-fit:contain;margin-right:8px;" onerror="this.outerHTML='${fallback.replace(/"/g, '&quot;')}'" />`;
   }
 

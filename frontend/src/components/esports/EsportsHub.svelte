@@ -397,9 +397,15 @@
     return labels[region] || region;
   }
 
+  function getProxiedImageUrl(logo) {
+    if (!logo) return '';
+    const API_BASE = import.meta.env.PUBLIC_API_URL || '';
+    const path = logo.startsWith('/api/image') ? logo : `/api/image?url=${encodeURIComponent(logo)}`;
+    return path.startsWith('http') ? path : `${API_BASE}${path}`;
+  }
+
   function getVlrTeamLogo(t) {
-    const teamLogoUrl = t.logo ? (t.logo.startsWith('/api/image') ? t.logo : `/api/image?url=${encodeURIComponent(t.logo)}`) : '';
-    return teamLogoUrl;
+    return getProxiedImageUrl(t.logo);
   }
 </script>
 
@@ -762,7 +768,7 @@
                 <div style="font-size:10px; color:var(--muted); text-transform:uppercase;">{w.region}</div>
                 <div style="display:flex; align-items:center; gap:6px; margin-left:auto;">
                   {#if w.logo}
-                    <img src={w.logo.startsWith('/api/image') ? w.logo : `/api/image?url=${encodeURIComponent(w.logo)}`} style="width:20px;height:20px;object-fit:contain;" alt="" />
+                    <img src={getProxiedImageUrl(w.logo)} style="width:20px;height:20px;object-fit:contain;" alt="" />
                   {/if}
                   <span style="font-weight:700; color:{w.color || '#fff'}">{w.team}</span>
                 </div>

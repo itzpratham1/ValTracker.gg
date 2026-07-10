@@ -10,6 +10,8 @@
   import { loadAllMatches } from '../../lib/indexeddb';
   import { getLobbyRankInfo } from '../../lib/processMatches';
 
+  const API_BASE = import.meta.env.PUBLIC_API_URL || '';
+
   export let match = {};
   export let idx = 0;
   export let rawMatch = null;
@@ -64,7 +66,7 @@
     detailError = null;
 
     try {
-      const res = await fetch(`/api/v2/match/${m.matchId}`);
+      const res = await fetch(`${API_BASE}/api/v2/match/${m.matchId}`);
       if (res.ok) {
         const data = await res.json();
         if (data?.data) {
@@ -113,7 +115,7 @@
     try {
       let matchData = rawMatch;
       if (!matchData && m.matchId) {
-        const res = await fetch(`/api/v2/match/${m.matchId}`);
+        const res = await fetch(`${API_BASE}/api/v2/match/${m.matchId}`);
         if (res.ok) {
           const data = await res.json();
           if (data?.data) matchData = data.data;
@@ -126,7 +128,7 @@
       const hasDetails = matchData.rounds && matchData.rounds.length > 0 && matchData.rounds[0].player_stats && matchData.rounds[0].player_stats.length > 0 && matchData.rounds[0].bomb_planted != null && meEarly?.ability_casts != null;
 
       if (!hasDetails && matchId) {
-        const res = await fetch(`/api/v2/match/${matchId}`);
+        const res = await fetch(`${API_BASE}/api/v2/match/${matchId}`);
         if (res.ok) {
           const detailRes = await res.json();
           if (detailRes && detailRes.data) matchData = detailRes.data;
