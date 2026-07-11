@@ -849,6 +849,7 @@ def proxy_api(subpath):
                 upsert_player(puuid, name, tag, region)
 
         if puuid and live_matches_data and isinstance(live_matches_data.get("data"), list):
+            payloads_to_insert = []
             for m in live_matches_data["data"]:
                 if not m: continue
                 match_id = m.get("metadata", {}).get("matchid") or m.get("metadata", {}).get("match_id")
@@ -904,7 +905,22 @@ def proxy_api(subpath):
                         "rounds_summary": rounds_str,
                         "stripped_raw_match": stripped_raw_match
                     }
-                    supabase_request("POST", "matches_cache", data=match_payload, headers={"Prefer": "resolution=merge-duplicates"})
+                    payloads_to_insert.append(match_payload)
+            
+            if payloads_to_insert:
+                print(f"[MATCH INTERCEPT] Upserting {len(payloads_to_insert)} matches concurrently to Supabase...")
+                with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+                    futures = [
+                        executor.submit(
+                            supabase_request,
+                            "POST",
+                            "matches_cache",
+                            data=payload,
+                            headers={"Prefer": "resolution=merge-duplicates"}
+                        )
+                        for payload in payloads_to_insert
+                    ]
+                    concurrent.futures.wait(futures)
 
         db_matches = []
         if puuid:
