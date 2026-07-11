@@ -1,7 +1,7 @@
 import { defineConfig } from 'astro/config';
 import svelte from '@astrojs/svelte';
 import sitemap from '@astrojs/sitemap';
-import node from '@astrojs/node';
+import vercel from '@astrojs/vercel';
 
 export default defineConfig({
   integrations: [
@@ -27,9 +27,7 @@ export default defineConfig({
     })
   ],
   output: 'server',
-  adapter: node({
-    mode: 'standalone'
-  }),
+  adapter: vercel(),
   site: 'https://valtracker.live',
   server: {
     port: 4321,
