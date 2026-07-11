@@ -1,0 +1,36 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AppShell from '../components/tracker/AppShell.svelte';
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "ValTracker - Valorant Stats Tracker",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Web",
+  "url": "https://valtracker.live/app",
+  "description": "Track your Valorant competitive match history, weapon accuracy, agent performance, and maps. AI-powered coaching included.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "featureList": [
+    "Match history tracking",
+    "Weapon accuracy stats",
+    "Agent performance analytics",
+    "Map win rates",
+    "RR rank graph",
+    "AI coaching tips",
+    "Performance diagnostics"
+  ]
+};
+---
+
+<Layout
+  title="ValTracker — Valorant Stats Tracker"
+  description="ValTracker is a premium, real-time stats tracker for Valorant. Analyse your competitive match history, weapon accuracy, maps, and agent performance."
+  structuredData={structuredData}
+>
+  <AppShell client:only="svelte" initialView="tracker" />
+</Layout>
