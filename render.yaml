@@ -1,19 +1,4 @@
 services:
-  # ── Astro Frontend (Static + SSR for /share/[id]) ──
-  - type: web
-    name: valtracker-frontend
-    runtime: node
-    plan: free
-    buildCommand: cd frontend && npm install && npm run build
-    startCommand: cd frontend && node dist/server/entry.mjs
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: PUBLIC_API_URL
-        sync: false
-        value: https://valtracker-api.onrender.com
-    healthCheckPath: /
-
   # ── Flask API Backend ──
   - type: web
     name: valtracker-api
