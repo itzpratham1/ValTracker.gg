@@ -6737,6 +6737,13 @@ select option {
   .active-pill-name {
     max-width: 130px !important;
   }
+  .sb-rank-txt {
+    display: none !important;
+  }
+  .load-more-btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
 }
 @media (max-width: 600px) {
   .hero-right {
