@@ -956,7 +956,7 @@ def proxy_api(subpath):
                             map_name = meta.get("map", {}).get("name", "Unknown")
                             started_at_str = meta.get("started_at")
                             clean_date = started_at_str.replace("Z", "+00:00")
-                            game_start = int(datetime.datetime.fromisoformat(clean_date).timestamp())
+                            game_start = int(datetime.fromisoformat(clean_date).timestamp())
                             char_name = stats.get("character", {}).get("name", "Unknown")
                             kills = stats.get("kills", 0)
                             deaths = stats.get("deaths", 0)

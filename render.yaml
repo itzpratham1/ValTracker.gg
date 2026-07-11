@@ -16,5 +16,5 @@ services:
       - key: ADMIN_SECRET
         generateValue: true
       - key: CORS_ALLOWED_ORIGINS
-        value: https://valtracker-frontend.onrender.com,https://valtracker.gg,https://valtracker.live
+        value: https://val-tracker-gg.vercel.app,https://valtracker.gg,https://valtracker.live
     healthCheckPath: /api/health
