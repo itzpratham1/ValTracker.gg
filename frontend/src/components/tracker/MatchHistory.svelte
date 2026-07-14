@@ -1,5 +1,6 @@
 <script>
   import { onMount } from 'svelte';
+  import { slide } from 'svelte/transition';
   import MatchPanel from './MatchPanel.svelte';
   import { player } from '../../lib/appStore';
   import { getGrade } from '../../lib/processMatches';
@@ -186,7 +187,7 @@
           </div>
 
           {#if openIdx === idx}
-            <div class="match-panel open">
+            <div class="match-panel open" transition:slide={{ duration: 300 }}>
               <MatchPanel
                 match={m}
                 {idx}

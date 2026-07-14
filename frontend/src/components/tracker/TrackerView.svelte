@@ -68,6 +68,7 @@
   let exportProfileOpen = false;
   let bookmarksOpen = false;
   let activeSection = 'sec-combat';
+  let activeAiTab = 'valbot';
 
   // Session management
   let sessionActive = false;
@@ -113,7 +114,7 @@
   function setupScrollTracker() {
     const SECTION_IDS = [
       'sec-combat', 'sec-performance', 'sec-trend', 'sec-agents', 'sec-maps',
-      'sec-weapons', 'sec-matches', 'sec-ai', 'sec-deep', 'sec-lab'
+      'sec-weapons', 'sec-matches', 'sec-ai-tools'
     ];
     let ticking = false;
     const OFFSET = 180;
@@ -363,45 +364,55 @@
       onShareMatch={(m) => selectedShareMatch = m}
     />
 
-    <!-- Q10: AI Performance Analysis -->
-    <div class="section-label" id="sec-ai">
-      <span class="sl-text">AI Performance Analysis</span>
-      <span class="sl-line"></span>
+    <!-- Q10: AI Tools -->
+    <div class="section-label ai-premium-label" id="sec-ai-tools">
+      <span class="sl-text ai-premium-text">AI Diagnostic Suite</span>
+      <span class="sl-badge">Exclusive</span>
+      <span class="sl-line ai-premium-line"></span>
       <span class="sl-num">10</span>
     </div>
-    <ValBotCoach
-      matches={actFilteredMatches}
-      playerName={playerState.name}
-      playerTag={playerState.tag}
-      {rankName}
-    />
 
-    <!-- Q11: Deep Game Analysis -->
-    <div class="section-label" id="sec-deep">
-      <span class="sl-text">Deep Game Analysis</span>
-      <span class="sl-line"></span>
-      <span class="sl-num">11</span>
-    </div>
-    <DeepAnalysis
-      matches={actFilteredMatches}
-      playerName={playerState.name}
-      playerTag={playerState.tag}
-      {mmrHistory}
-    />
+    <div class="ai-premium-wrapper">
+      <div class="ai-tools-container">
+        <div class="ai-tools-nav">
+          <button class="ai-nav-tab" class:active={activeAiTab === 'valbot'} on:click={() => activeAiTab = 'valbot'}>
+            <span class="tab-icon">🤖</span> ValBot AI
+          </button>
+          <button class="ai-nav-tab" class:active={activeAiTab === 'deep'} on:click={() => activeAiTab = 'deep'}>
+            <span class="tab-icon">🔬</span> Deep Analysis
+          </button>
+          <button class="ai-nav-tab" class:active={activeAiTab === 'lab'} on:click={() => activeAiTab = 'lab'}>
+            <span class="tab-icon">🧪</span> Perf Lab
+          </button>
+        </div>
 
-    <!-- Q12: Performance Lab -->
-    <div class="section-label" id="sec-lab">
-      <span class="sl-text">Performance Lab</span>
-      <span class="sl-line"></span>
-      <span class="sl-num">12</span>
+        <div class="ai-tools-content">
+          {#if activeAiTab === 'valbot'}
+            <ValBotCoach
+              matches={actFilteredMatches}
+              playerName={playerState.name}
+              playerTag={playerState.tag}
+              {rankName}
+            />
+          {:else if activeAiTab === 'deep'}
+            <DeepAnalysis
+              matches={actFilteredMatches}
+              playerName={playerState.name}
+              playerTag={playerState.tag}
+              {mmrHistory}
+            />
+          {:else if activeAiTab === 'lab'}
+            <PerformanceLab
+              playerName={playerState.name}
+              playerTag={playerState.tag}
+              currentMode={playerState.mode || 'competitive'}
+              {mmrHistory}
+              {rankName}
+            />
+          {/if}
+        </div>
+      </div>
     </div>
-    <PerformanceLab
-      playerName={playerState.name}
-      playerTag={playerState.tag}
-      currentMode={playerState.mode || 'competitive'}
-      {mmrHistory}
-      {rankName}
-    />
   </main>
 
   <Footer />

@@ -296,6 +296,36 @@ window.addEventListener('scroll', () => {
     { el: document.getElementById('counter-free'),     target: 100, suffix: '%' }
   ];
 
+  // Fetch dynamic stats from the API if possible
+  fetch('/api/landing-stats')
+    .then(res => {
+      if (!res.ok) throw new Error('API response error');
+      return res.json();
+    })
+    .then(data => {
+      if (data && typeof data.matches_analysed === 'number') {
+        const matchesCounter = counters.find(c => c.el && c.el.id === 'counter-matches');
+        if (matchesCounter) {
+          matchesCounter.target = data.matches_analysed;
+        }
+      }
+      if (data && typeof data.features_count === 'number') {
+        const featuresCounter = counters.find(c => c.el && c.el.id === 'counter-features');
+        if (featuresCounter) {
+          featuresCounter.target = data.features_count;
+        }
+      }
+      if (data && typeof data.free_forever === 'number') {
+        const freeCounter = counters.find(c => c.el && c.el.id === 'counter-free');
+        if (freeCounter) {
+          freeCounter.target = data.free_forever;
+        }
+      }
+    })
+    .catch(err => {
+      console.warn('[ValTracker] Failed to fetch dynamic landing stats, using defaults:', err);
+    });
+
   function easeOutQuart(t) { return 1 - Math.pow(1 - t, 4); }
 
   function animateCounter(counter) {
@@ -312,13 +342,15 @@ window.addEventListener('scroll', () => {
   }
 
   const statsBar = document.getElementById('stats-bar');
-  const obs = new IntersectionObserver(([entry]) => {
-    if (entry.isIntersecting) {
-      counters.forEach(c => animateCounter(c));
-      obs.unobserve(statsBar);
-    }
-  }, { threshold: 0.4 });
-  obs.observe(statsBar);
+  if (statsBar) {
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        counters.forEach(c => animateCounter(c));
+        obs.unobserve(statsBar);
+      }
+    }, { threshold: 0.4 });
+    obs.observe(statsBar);
+  }
 })();
 
 /* ── Lightbox Image Zoom (Interactive Zoom & Pan System) ── */

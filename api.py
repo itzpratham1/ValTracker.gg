@@ -492,6 +492,30 @@ def health_check():
     return jsonify({"status": "ok", "service": "valtracker-api"})
 
 
+@app.route("/api/landing-stats")
+@rate_limit(requests_per_minute=60)
+def get_landing_stats():
+    total_matches = 530
+    try:
+        if SUPABASE_URL and SUPABASE_KEY:
+            headers = {"Prefer": "count=exact"}
+            params = {"select": "match_id", "limit": 1}
+            r = supabase_request("GET", "matches_cache", params=params, headers=headers)
+            if r and r.status_code in (200, 206):
+                content_range = r.headers.get("Content-Range")
+                if content_range:
+                    db_count = int(content_range.split('/')[-1])
+                    total_matches = max(total_matches, db_count)
+    except Exception as e:
+        print(f"[LANDING STATS ERROR] Failed to fetch matches count: {e}")
+
+    return jsonify({
+        "matches_analysed": total_matches,
+        "features_count": 6,
+        "free_forever": 100
+    })
+
+
 @app.route("/api/feedback", methods=["POST"])
 @rate_limit(requests_per_minute=20)
 def submit_feedback():

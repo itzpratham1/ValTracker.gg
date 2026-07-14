@@ -7214,3 +7214,271 @@ body::after {
   }
 }
 
+/* ==========================================================================
+   VISUAL & ANIMATION OPTIMIZATIONS
+   ========================================================================== */
+
+/* ── STAGGERED ENTRANCE ANIMATIONS ── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tracker-layout .card,
+.tracker-layout .agent-bento,
+.tracker-layout .map-card-bento,
+.tracker-layout .impact-bento,
+.tracker-layout .match-row,
+.tracker-layout .ai-card,
+.tracker-layout .deep-card {
+  opacity: 0;
+  animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.tracker-layout .card:nth-child(1), .tracker-layout .agent-bento:nth-child(1), .tracker-layout .match-row:nth-child(1) { animation-delay: 30ms; }
+.tracker-layout .card:nth-child(2), .tracker-layout .agent-bento:nth-child(2), .tracker-layout .match-row:nth-child(2) { animation-delay: 60ms; }
+.tracker-layout .card:nth-child(3), .tracker-layout .agent-bento:nth-child(3), .tracker-layout .match-row:nth-child(3) { animation-delay: 90ms; }
+.tracker-layout .card:nth-child(4), .tracker-layout .agent-bento:nth-child(4), .tracker-layout .match-row:nth-child(4) { animation-delay: 120ms; }
+.tracker-layout .card:nth-child(5), .tracker-layout .agent-bento:nth-child(5), .tracker-layout .match-row:nth-child(5) { animation-delay: 150ms; }
+.tracker-layout .card:nth-child(6), .tracker-layout .agent-bento:nth-child(6), .tracker-layout .match-row:nth-child(6) { animation-delay: 180ms; }
+.tracker-layout .card:nth-child(7), .tracker-layout .agent-bento:nth-child(7), .tracker-layout .match-row:nth-child(7) { animation-delay: 210ms; }
+.tracker-layout .card:nth-child(8), .tracker-layout .agent-bento:nth-child(8), .tracker-layout .match-row:nth-child(8) { animation-delay: 240ms; }
+.tracker-layout .card:nth-child(9), .tracker-layout .agent-bento:nth-child(9), .tracker-layout .match-row:nth-child(9) { animation-delay: 270ms; }
+.tracker-layout .card:nth-child(10), .tracker-layout .agent-bento:nth-child(10), .tracker-layout .match-row:nth-child(10) { animation-delay: 300ms; }
+
+/* ── INTERACTIVE NEON GLOW HOVERS ── */
+.card, .agent-bento, .map-card-bento, .impact-bento, .match-row, .deep-card {
+  transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.2s ease, opacity 0.2s ease !important;
+}
+
+.card:hover, .agent-bento:hover, .map-card-bento:hover, .impact-bento:hover, .match-row:hover, .deep-card:hover {
+  transform: translateY(-4px) scale(1.008) !important;
+  border-color: rgba(250, 68, 84, 0.45) !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), 0 0 20px rgba(250, 68, 84, 0.2), inset 0 0 0 1px rgba(250, 68, 84, 0.15) !important;
+}
+
+/* ── PROGRESS BAR ANIMATION ON MOUNT ── */
+@keyframes growWidth {
+  from { width: 0%; }
+}
+.wr-fill, .sb-kd-fill {
+  animation: growWidth 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ── STICKY ACTIVE INDICATOR GLOW ── */
+.tracker-nav-item {
+  position: relative;
+  transition: all 0.2s ease;
+}
+.tracker-nav-item.active {
+  border-bottom: 2px solid var(--accent) !important;
+  box-shadow: 0 4px 15px rgba(250, 68, 84, 0.25) !important;
+  text-shadow: 0 0 8px rgba(250, 68, 84, 0.5);
+}
+
+/* ── LANDING PAGE CTA PULSING GLOW ── */
+.btn-red, .btn-hero {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.btn-red:hover, .btn-hero:hover {
+  transform: translateY(-2px) scale(1.03) !important;
+  box-shadow: 0 0 28px rgba(250, 68, 84, 0.55), 0 0 50px rgba(250, 68, 84, 0.25) !important;
+}
+
+/* ── REDUCE MOTION COMPATIBILITY ── */
+@media (prefers-reduced-motion: reduce) {
+  .tracker-layout .card,
+  .tracker-layout .agent-bento,
+  .tracker-layout .map-card-bento,
+  .tracker-layout .impact-bento,
+  .tracker-layout .match-row,
+  .tracker-layout .ai-card,
+  .tracker-layout .deep-card {
+    opacity: 1 !important;
+    animation: none !important;
+  }
+  .wr-fill, .sb-kd-fill {
+    animation: none !important;
+  }
+}
+
+/* ── AI TOOLS SECTION UNIFIED TABS ── */
+.ai-tools-container {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.ai-premium-label {
+  margin-top: 40px !important;
+  padding-bottom: 12px !important;
+}
+
+.ai-premium-text {
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  letter-spacing: 2px !important;
+  background: linear-gradient(135deg, var(--accent) 0%, #ff6b7b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 25px rgba(250, 68, 84, 0.25);
+}
+
+.sl-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--accent);
+  background: rgba(250, 68, 84, 0.12);
+  border: 1px solid var(--accentborder);
+  padding: 3px 10px;
+  border-radius: 20px;
+  box-shadow: 0 0 12px rgba(250, 68, 84, 0.25);
+  animation: badgePulse 2s infinite ease-in-out;
+  margin-left: 4px;
+  display: inline-block;
+}
+
+@keyframes badgePulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 12px rgba(250, 68, 84, 0.25), inset 0 0 0 rgba(250, 68, 84, 0);
+  }
+  50% {
+    transform: scale(1.04);
+    box-shadow: 0 0 20px rgba(250, 68, 84, 0.5), inset 0 0 6px rgba(250, 68, 84, 0.25);
+    border-color: rgba(250, 68, 84, 0.45);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 12px rgba(250, 68, 84, 0.25), inset 0 0 0 rgba(250, 68, 84, 0);
+  }
+}
+
+.ai-premium-line {
+  background: linear-gradient(90deg, var(--accentborder) 0%, var(--border) 40%, transparent 100%) !important;
+}
+
+.ai-premium-wrapper {
+  grid-column: span 12;
+  position: relative;
+  border-radius: var(--radius);
+  padding: 24px;
+  border: 1px solid rgba(250, 68, 84, 0.14);
+  box-shadow: 
+    0 16px 48px rgba(0, 0, 0, 0.5),
+    0 0 35px rgba(250, 68, 84, 0.04),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+  background: 
+    radial-gradient(circle at 8% 8%, rgba(147, 51, 234, 0.09) 0%, transparent 40%),
+    radial-gradient(circle at 92% 92%, rgba(250, 68, 84, 0.07) 0%, transparent 45%),
+    rgba(10, 10, 14, 0.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.ai-premium-wrapper:hover {
+  border-color: rgba(250, 68, 84, 0.25);
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    0 0 45px rgba(250, 68, 84, 0.07),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+.ai-tools-nav {
+  display: flex;
+  gap: 8px;
+  padding: 5px;
+  background: rgba(11, 11, 15, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 30px;
+  max-width: max-content;
+  align-self: flex-start;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.ai-nav-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--muted);
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 1px solid transparent;
+  background: transparent;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.ai-nav-tab:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.ai-nav-tab.active {
+  color: var(--accent);
+  background: var(--accentdim);
+  border-color: var(--accentborder);
+  box-shadow: 0 0 15px rgba(250, 68, 84, 0.12);
+  font-weight: 700;
+}
+
+.ai-tools-content {
+  width: 100%;
+}
+
+/* Translucent panel integration inside the exclusive wrapper */
+.ai-premium-wrapper .ai-card,
+.ai-premium-wrapper .deep-wrap,
+.ai-premium-wrapper .plab-wrap {
+  border-radius: var(--radius-sm) !important;
+  box-shadow: none !important;
+}
+
+.ai-premium-wrapper .ai-card {
+  background: rgba(18, 18, 24, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.03) !important;
+}
+
+.ai-premium-wrapper .deep-trigger-card,
+.ai-premium-wrapper .plab-trigger {
+  background: rgba(18, 18, 24, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.03) !important;
+  box-shadow: none !important;
+}
+
+@media (max-width: 600px) {
+  .ai-premium-wrapper {
+    padding: 16px;
+  }
+  .ai-tools-nav {
+    max-width: 100%;
+    width: 100%;
+    justify-content: space-around;
+    align-self: auto;
+  }
+  .ai-nav-tab {
+    padding: 8px 10px;
+    font-size: 11px;
+    gap: 4px;
+  }
+}
+
+
