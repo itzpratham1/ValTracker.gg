@@ -530,6 +530,16 @@ const structuredData = {
 
   <script is:inline src="/landing.js"></script>
   <script is:inline>
+    fetch('/api/landing-stats').then(r=>r.json()).then(d=>{
+      if(d&&d.matches_analysed){
+        var n=d.matches_analysed+'+';
+        document.querySelectorAll('.ticker-item').forEach(function(el){
+          if(el.textContent.includes('530+')) el.innerHTML=el.innerHTML.replace('530+',n);
+        });
+      }
+    }).catch(function(){});
+  </script>
+  <script is:inline>
     (function(){
       var toggle = document.getElementById('nav-mobile-toggle');
       var menu = document.getElementById('nav-mobile-menu');

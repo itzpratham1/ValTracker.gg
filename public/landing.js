@@ -296,6 +296,19 @@ window.addEventListener('scroll', () => {
     { el: document.getElementById('counter-free'),     target: 100, suffix: '%' }
   ];
 
+  /* Fetch real match count from API */
+  fetch('/api/landing-stats')
+    .then(r => r.json())
+    .then(data => {
+      if (data && data.matches_analysed) {
+        counters[0].target = data.matches_analysed;
+      }
+      if (data && data.features_count) {
+        counters[1].target = data.features_count;
+      }
+    })
+    .catch(() => {});
+
   function easeOutQuart(t) { return 1 - Math.pow(1 - t, 4); }
 
   function animateCounter(counter) {

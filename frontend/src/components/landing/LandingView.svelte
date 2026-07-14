@@ -5,6 +5,13 @@
   import LoadingCard from './LoadingCard.svelte';
   import { player, currentView } from '../../lib/appStore';
 
+  let matchesCached = 530;
+
+  fetch('/api/landing-stats')
+    .then(r => r.json())
+    .then(data => { if (data && data.matches_analysed) matchesCached = data.matches_analysed; })
+    .catch(() => {});
+
   function scrollToSearch(e) {
     if (e) e.preventDefault();
     const form = document.getElementById('landing-lookup-form');
@@ -78,7 +85,7 @@
   <!-- Ticker Bar -->
   <div class="landing-ticker">
     <div class="landing-ticker-track">
-      <span>530+ Matches Cached</span>
+      <span>{matchesCached}+ Matches Cached</span>
       <span>·</span>
       <span>Free Forever</span>
       <span>·</span>
@@ -95,7 +102,7 @@
       <span>Meta Comp Architect</span>
       <span>·</span>
       <!-- Duplicate for seamless loop -->
-      <span>530+ Matches Cached</span>
+      <span>{matchesCached}+ Matches Cached</span>
       <span>·</span>
       <span>Free Forever</span>
       <span>·</span>
