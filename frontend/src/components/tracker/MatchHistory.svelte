@@ -111,7 +111,7 @@
         {@const matchIsToday = isToday(m.gameStart)}
         {@const rr = mmrHistory[m.matchId]}
 
-        <div class="match-item visible">
+        <div class="match-item visible" style="animation-delay:{idx * 40}ms">
           <div
             class="match-row"
             class:open={openIdx === idx}

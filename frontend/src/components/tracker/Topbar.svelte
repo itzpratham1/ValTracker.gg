@@ -223,7 +223,7 @@
   }
 </script>
 
-<nav class="topbar" class:topbar-scrolled={scrolled}>
+<nav class="topbar">
   <!-- Row 1: Main Header (Logo & Navigation) -->
   <div class="topbar-main-row">
     <a href="/" class="topbar-logo" on:click|preventDefault={goHome}>

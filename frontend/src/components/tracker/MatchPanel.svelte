@@ -828,7 +828,7 @@
       </div>
       {#if aiLoading}
         <div class="match-ai-loading active">
-          <div class="plab-spinner"></div>
+          <div class="match-ai-spinner"></div>
           <span class="match-ai-loading-txt">{aiLoadingText}</span>
         </div>
       {/if}
