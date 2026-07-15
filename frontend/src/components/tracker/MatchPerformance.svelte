@@ -224,9 +224,9 @@
   <div class="no-detail">Your player not found in match data</div>
 {:else}
   <div class="panel-section" style="margin-top: 0;">
-    <div class="detail-profile" style="align-items: stretch;">
+    <div class="detail-profile">
       {#if card}
-        <img src={card} class="detail-card" alt="" style="object-fit: cover; height: auto; min-height: 160px;" on:error={(e) => e.target.style.display='none'}>
+        <img src={card} class="detail-card" alt="" style="object-fit: cover;" on:error={(e) => e.target.style.display='none'}>
       {/if}
       <div style="display: flex; flex-direction: column; gap: 14px; flex: 1;">
         <div class="detail-profile-stats" style="grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));">
@@ -259,7 +259,7 @@
           </div>
         </div>
 
-        <div style="display: flex; align-items: center; gap: 12px; border-top: 1px solid var(--border); padding-top: 12px; margin-top: auto;">
+        <div style="display: flex; align-items: center; gap: 12px; border-top: 1px solid var(--border); padding-top: 12px;">
           <span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 11px; text-transform: uppercase; color: var(--muted); letter-spacing: 1.5px; white-space: nowrap;">Multi-Kill Rounds:</span>
           <div class="ability-grid" style="display: flex; gap: 8px; flex: 1; flex-wrap: wrap;">
             <div class="ability-chip" style="padding: 4px 12px; display: flex; align-items: center; gap: 8px; margin: 0; min-height: unset; height: 26px; box-sizing: border-box;"><div class="ac-key" style="margin:0; font-size:9px; line-height: 1;">3 Kills</div><div class="ac-val" style="font-size:12px; line-height: 1;">{myMulti3k}</div></div>
