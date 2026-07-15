@@ -55,10 +55,13 @@ body {
   font-family: 'Exo 2', 'Inter', sans-serif;
   font-size: 14px;
   min-height: 100vh;
-  overflow-x: clip;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  width: 100%;
   overscroll-behavior: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  touch-action: manipulation;
 }
 
 /* ── GLOBAL SCROLLBARS ── */
@@ -7506,4 +7509,434 @@ body::after {
   }
 }
 
+/* ==========================================================================
+   FINAL MOBILE OPTIMIZATIONS (HIGH PRECEDENCE OVERRIDES)
+   ========================================================================== */
 
+@media (max-width: 768px) {
+  /* Force Accuracy & Roles cards to occupy full mobile width */
+  .tracker-layout .acc-card, 
+  .tracker-layout .roles-card {
+    grid-column: span 12 !important;
+  }
+}
+
+@media (max-width: 600px) {
+  /* Scope Hero details to column stack */
+  .tracker-layout .hero-right {
+    flex-direction: column !important;
+    gap: 12px !important;
+    width: 100% !important;
+    align-items: stretch !important;
+  }
+  .tracker-layout .hero-rank-block,
+  .tracker-layout .hero-streak-block {
+    width: 100% !important;
+    flex: none !important;
+  }
+  
+  /* Grid span overrides to resolve implicit column overflow bug */
+  .tracker-layout .span-2 {
+    grid-column: span 2 !important;
+  }
+  .tracker-layout .span-3,
+  .tracker-layout .span-4,
+  .tracker-layout .span-6,
+  .tracker-layout .span-7,
+  .tracker-layout .span-8,
+  .tracker-layout .span-12 {
+    grid-column: span 4 !important;
+  }
+
+  /* Accuracy & Roles cards span inside 4-column mobile grid */
+  .tracker-layout .acc-card, 
+  .tracker-layout .roles-card {
+    grid-column: span 4 !important;
+  }
+
+  /* Match History Rows Layout Optimization */
+  .tracker-layout .match-row {
+    grid-template-columns: 50px 1.2fr auto auto 38px 24px !important;
+    gap: 6px !important;
+    padding: 8px 8px !important;
+  }
+  .tracker-layout .mr-map-thumb {
+    display: none !important;
+  }
+  .tracker-layout .mr-score, 
+  .tracker-layout .mr-rr {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  /* Lobby Rank Bar Wrap */
+  .tracker-layout .lobby-team-ranks {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+  .tracker-layout .lobby-rank-divider {
+    display: none !important;
+  }
+
+  /* AI Coaching Panels */
+  .tracker-layout .ai-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .tracker-layout .ai-sections-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .tracker-layout .ai-tip-block.full {
+    grid-column: span 1 !important;
+  }
+
+  /* Performance Lab */
+  .tracker-layout .plab-grid,
+  .tracker-layout .plab-grid.g3,
+  .tracker-layout .plab-grid.g2,
+  .tracker-layout .plab-grid.g6 {
+    grid-template-columns: 1fr !important;
+  }
+  .tracker-layout .plab-card.span2,
+  .tracker-layout .plab-card.span3,
+  .tracker-layout .plab-card.span4 {
+    grid-column: span 1 !important;
+  }
+
+  /* Hide center episode title in Lookup topbar to prevent clash */
+  .hud-top-bar .hud-center {
+    display: none !important;
+  }
+}
+
+
+
+
+/* ==========================================================================
+   ENHANCED MOBILE OPTIMIZATIONS
+   ========================================================================== */
+
+/* ── 360px: Very narrow phones ── */
+@media (max-width: 360px) {
+  .agent-bento { grid-column: span 2 !important; }
+  .agent-stats-row { grid-template-columns: repeat(3, 1fr) !important; gap: 4px !important; }
+  .agent-stats-row .as-label { font-size: 7px !important; }
+  .agent-stats-row .as-val { font-size: 12px !important; }
+  .map-card-bento { grid-column: span 2 !important; }
+}
+
+/* ── 400px: Ultra-small phones ── */
+@media (max-width: 400px) {
+  .match-duels-summary { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
+/* ── 480px: Small phones ── */
+@media (max-width: 480px) {
+  .loading-card { height: 320px !important; }
+  .loading-spinner { width: 64px !important; height: 64px !important; }
+  .loading-title { font-size: 18px !important; }
+  .loading-subtitle { font-size: 12px !important; }
+  .loading-bar { height: 4px !important; }
+  .loading-tip-container { padding: 10px !important; }
+  .loading-tip-text { font-size: 11px !important; }
+  .dc-btn-row { flex-direction: column !important; }
+  .panel-stat-row { grid-template-columns: repeat(3, 1fr) !important; gap: 6px !important; }
+  .ps-item { min-height: 52px !important; padding: 6px 4px !important; }
+  .ps-item .psv { font-size: 15px !important; }
+  .ps-item .psl { font-size: 8px !important; }
+}
+
+/* ── 600px: Primary mobile breakpoint ── */
+@media (max-width: 600px) {
+  /* ── LANDING PAGE HERO ── */
+  .hero {
+    min-height: 90dvh !important;
+    padding: 80px 20px 60px !important;
+  }
+  .hero-content { max-width: 100% !important; }
+  .hero-headline { font-size: clamp(2.2rem, 10vw, 3.5rem) !important; }
+  .hero-sub { font-size: clamp(13px, 3.5vw, 15px) !important; max-width: 100% !important; }
+  .hero-mockup-wrap { margin-top: 40px !important; }
+  .hero-browser-frame { border-radius: 8px !important; }
+  .browser-titlebar { padding: 8px 12px !important; }
+  .browser-dot { width: 8px !important; height: 8px !important; }
+  .browser-url-bar { height: 22px !important; font-size: 9px !important; padding: 0 8px !important; }
+  .browser-tabs { padding: 0 8px !important; }
+  .browser-tab { padding: 6px 10px !important; font-size: 10px !important; }
+  .btn-hero { padding: 14px 28px !important; font-size: 15px !important; }
+  .hero-eyebrow { font-size: 10px !important; padding: 4px 12px !important; }
+  .hero-mockup-wrap { margin-top: 40px !important; }
+  .dash-stats-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 6px !important; }
+  .dash-stat-card { padding: 8px !important; }
+  .dash-stat-val { font-size: 16px !important; }
+  .dash-stat-label { font-size: 8px !important; }
+  .dash-match-row { padding: 6px 8px !important; gap: 6px !important; }
+  .hero-glow { width: 300px !important; height: 200px !important; }
+  .hero-glow-2 { width: 200px !important; height: 200px !important; }
+  .glow-orb { display: none !important; }
+  #hero-canvas { display: none !important; }
+  .hero-grid { background-size: 40px 40px !important; }
+  .landing-corner { width: 40px !important; height: 40px !important; }
+  .landing-corner.tl, .landing-corner.bl { left: 12px !important; }
+  .landing-corner.tr, .landing-corner.br { right: 12px !important; }
+  .landing-corner.tl, .landing-corner.tr { top: 12px !important; }
+  .landing-corner.bl, .landing-corner.br { bottom: 12px !important; }
+}
+
+/* ── 768px: Tablet breakpoint ── */
+@media (max-width: 768px) {
+  .detail-profile { flex-direction: column !important; }
+  .detail-profile .card { width: 100% !important; height: 120px !important; }
+  .detail-profile .stat-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .h2h-inputs { flex-direction: column !important; }
+  .h2h-duel-header { flex-direction: column !important; align-items: stretch !important; }
+  .h2h-bento-grid { grid-template-columns: 1fr !important; }
+  .h2h-verdict-card { flex-direction: column !important; }
+  .h2h-circle-row { flex-direction: column !important; }
+  .h2h-kda-row { grid-template-columns: 1fr !important; }
+  .tracker-layout .main { padding: 0 12px 40px !important; gap: 10px !important; }
+  .tracker-layout .span-3,
+  .tracker-layout .span-4,
+  .tracker-layout .span-6,
+  .tracker-layout .span-7,
+  .tracker-layout .span-8 { grid-column: span 12 !important; }
+  .tracker-layout .span-2 { grid-column: span 6 !important; }
+  .tracker-layout .agent-bento,
+  .tracker-layout .map-card-bento,
+  .tracker-layout .impact-bento { grid-column: span 6 !important; }
+  .tracker-layout .pro-compositions-grid { grid-template-columns: 1fr !important; }
+  .tracker-layout .hero-title { font-size: 32px !important; }
+  .custom-select-trigger { width: 100% !important; }
+  .custom-options-menu { left: 0 !important; right: 0 !important; width: 100% !important; }
+  .acc-card, .roles-card { grid-column: span 12 !important; }
+}
+
+/* ── 800px: Large mobile / small tablet ── */
+@media (max-width: 800px) {
+  .landing-columns-wrap { flex-direction: column !important; gap: 16px !important; }
+  .esp-overview-grid { grid-template-columns: 1fr !important; }
+  .panel-match-meta { flex-direction: column !important; }
+  .panel-meta-left { width: 100% !important; }
+  .panel-stat-row { width: 100% !important; margin-top: 12px !important; }
+  .panel-header-row { display: grid !important; grid-template-columns: auto 1fr !important; gap: 8px !important; }
+  .panel-header-row .panel-grade-badge { grid-column: 1 !important; grid-row: 1 / 3 !important; }
+  .panel-header-row .panel-match-meta { grid-column: 2 !important; }
+  .panel-header-row .panel-stat-row { grid-column: 1 / -1 !important; display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 6px !important; }
+  .stat-modal .table-wrap,
+  .match-panel .table-wrap { overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; }
+  .stat-modal .table-wrap table,
+  .match-panel .table-wrap table { max-width: 100% !important; }
+  .stat-modal .table-wrap th,
+  .stat-modal .table-wrap td,
+  .match-panel .table-wrap th,
+  .match-panel .table-wrap td { font-size: 11px !important; padding: 4px 6px !important; }
+  .main table, .card table { display: block !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; max-width: 100% !important; }
+  body.modal-open { overflow: hidden !important; position: fixed !important; width: 100% !important; top: var(--scroll-y, 0) !important; }
+}
+
+/* ── 800px: Touch targets ── */
+@media (max-width: 800px) {
+  .esp-btn, .search-rec-chip, .esports-pill, .stat-modal-close,
+  .landing-input, .landing-input-tag, .region-select, .filter-item,
+  .fetch-btn, .feedback-trigger, .topbar-tab, .browser-tab,
+  .nav-btn, .dropdown-trigger, .ai-nav-tab, .load-more-btn,
+  .player-input, .player-input-tag, .topbar-search-submit-btn,
+  .active-pill-btn, .mobile-filter-toggle, .btn-hero, .btn-red,
+  .njt-cta-btn, .final-cta-btn, .lightbox-close, .lightbox-controls button {
+    min-height: 44px !important;
+  }
+}
+
+/* ── 900px: Esports teams mobile ── */
+@media (max-width: 900px) {
+  .esp-teams-layout { flex-direction: column !important; }
+  .esp-sidebar-team-list { display: flex !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; gap: 8px !important; padding: 8px 0 !important; flex-wrap: nowrap !important; }
+  .esp-sidebar-team-list .esp-team-btn { flex-shrink: 0 !important; }
+}
+
+/* ── 960px: Tablet grid ── */
+@media (max-width: 960px) {
+  .main { grid-template-columns: repeat(6, 1fr) !important; padding: 0 16px 40px !important; }
+  .span-2 { grid-column: span 3 !important; }
+  .span-3, .span-4 { grid-column: span 3 !important; }
+  .span-6, .span-7, .span-8, .span-12 { grid-column: span 6 !important; }
+  .section-label { grid-column: span 6 !important; }
+  .agent-bento { grid-column: span 3 !important; }
+  .map-card-bento { grid-column: span 3 !important; }
+  .impact-bento { grid-column: span 2 !important; }
+  .tracker-layout .hero { padding: 20px 16px !important; }
+  .tracker-layout .hero-content { flex-direction: column !important; align-items: stretch !important; gap: 20px !important; }
+  .tracker-layout .hero-left { width: 100% !important; }
+  .tracker-layout .hero-right { justify-content: flex-start !important; }
+  .live-teams { grid-template-columns: 1fr !important; }
+  .acc-card, .roles-card { grid-column: span 6 !important; }
+  .weapons-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .deep-insight-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .deep-insight-grid.cols4 { grid-template-columns: repeat(2, 1fr) !important; }
+  .deep-card.span3 { grid-column: span 2 !important; }
+  .plab-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .plab-grid.g6 { grid-template-columns: repeat(3, 1fr) !important; }
+  .plab-card.span3, .plab-card.span4 { grid-column: span 2 !important; }
+  .weapons-showcase-container { grid-template-columns: 1fr !important; }
+}
+
+/* ── 992px: Small desktop ── */
+@media (max-width: 992px) {
+  .tracker-layout .hero { flex-direction: column !important; }
+  .tracker-layout .hero-right { flex-direction: row !important; gap: 12px !important; }
+  .tracker-layout .hero-rank-block,
+  .tracker-layout .hero-streak-block { flex: 1 !important; }
+  .coach-grid, .store-grid, .schedule-grid { grid-template-columns: 1fr !important; }
+}
+
+/* ── 1000px: Overlay studio ── */
+@media (max-width: 1000px) {
+  .overlay-studio-grid { grid-template-columns: 1fr !important; }
+}
+
+/* ── Desktop sticky scroll-hide (801px+) ── */
+@media (min-width: 801px) {
+  .topbar { position: sticky !important; top: 0; z-index: 1000; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); will-change: transform; }
+  .tracker-nav { position: sticky !important; top: calc(var(--topbar-height, 108px) - 1.5px); z-index: 999; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); will-change: transform; }
+  body.scrolled-down .topbar { transform: translateY(-100%); }
+  body.scrolled-down .tracker-nav { transform: translateY(calc(-1 * var(--topbar-height, 108px) - 1.5px)); }
+  body.scrolled-up .topbar { transform: translateY(0); }
+  body.scrolled-up .tracker-nav { transform: translateY(0); }
+  #schedule-col-upcoming, #schedule-col-results { display: block !important; }
+  body.modal-open { overflow: hidden !important; }
+}
+
+/* ── Mobile sticky behavior (max 800px) ── */
+@media (max-width: 800px) {
+  .topbar { position: relative !important; box-shadow: none !important; }
+  .tracker-nav { position: sticky !important; top: 0 !important; z-index: 9999 !important; }
+  .active-pill-name { max-width: 130px !important; }
+  .sb-rank-txt { display: none !important; }
+  .load-more-btn { width: 100% !important; }
+}
+
+/* ── 600px: Hero mobile stack ── */
+@media (max-width: 600px) {
+  .tracker-layout .hero-right { flex-direction: column !important; }
+  .tracker-layout .hero-rank-block,
+  .tracker-layout .hero-streak-block { width: 100% !important; }
+  .tracker-layout .hero-title .dim { display: inline-block !important; margin-left: 4px !important; }
+  .landing-corner { width: 30px !important; height: 30px !important; }
+  .landing-corner.tl, .landing-corner.bl { left: 12px !important; }
+  .landing-corner.tr, .landing-corner.br { right: 12px !important; }
+  .landing-corner.tl, .landing-corner.tr { top: 12px !important; }
+  .landing-corner.bl, .landing-corner.br { bottom: 12px !important; }
+  .secondary-weapon-row { grid-template-columns: 1fr !important; }
+  .secondary-weapon-row .weapon-accuracy-bars { display: none !important; }
+  .vct-winners-grid { grid-template-columns: 1fr !important; gap: 8px !important; }
+  .match-duels-summary { grid-template-columns: repeat(3, 1fr) !important; }
+  .active-pill-name { max-width: 85px !important; }
+  .filter-summary-text { display: none !important; }
+  .top-weapon-info-wrap { flex-direction: column !important; align-items: center !important; }
+  .heatmap-card { width: 100% !important; }
+  .mr-acs-wrap, .mr-grade-wrap { display: none !important; }
+  .ai-premium-wrapper { padding: 16px !important; }
+  .ai-tools-nav { width: 100% !important; justify-content: space-around !important; }
+  .ai-nav-tab { padding: 8px 10px !important; font-size: 11px !important; }
+  .landing-input-tag { width: 80px !important; text-align: center !important; }
+  .panel-stat-row { grid-template-columns: repeat(3, 1fr) !important; gap: 8px !important; }
+}
+
+/* ── 400px: Match duels ultra-narrow ── */
+@media (max-width: 400px) {
+  .match-duels-summary { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
+/* ── 480px: Ultra-small panel stats ── */
+@media (max-width: 480px) {
+  .panel-stat-row { grid-template-columns: repeat(3, 1fr) !important; gap: 6px !important; }
+  .ps-item { min-height: 52px !important; padding: 6px 4px !important; }
+  .ps-item .psv { font-size: 15px !important; }
+  .ps-item .psl { font-size: 8px !important; }
+}
+
+/* ── Accessibility: prefers-reduced-motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .card, .agent-bento, .map-card-bento, .impact-bento, .match-row, .match-panel,
+  .hero-rank-block, .ai-card, .deep-trigger-card, .deep-card, .live-banner,
+  .njt-card, .bento-card, .step-item, .stat-counter, .ticker-item {
+    opacity: 1 !important; animation: none !important;
+  }
+  .loading-progress-fill { animation: none !important; }
+  .wr-fill { transition: none !important; }
+}
+
+/* ── Final 600px: Comprehensive mobile overrides ── */
+@media (max-width: 600px) {
+  .tracker-layout .hero-right { flex-direction: column !important; gap: 12px !important; width: 100% !important; align-items: stretch !important; }
+  .tracker-layout .hero-rank-block,
+  .tracker-layout .hero-streak-block { width: 100% !important; flex: none !important; }
+  .tracker-layout .span-2 { grid-column: span 2 !important; }
+  .tracker-layout .span-3,
+  .tracker-layout .span-4,
+  .tracker-layout .span-6,
+  .tracker-layout .span-7,
+  .tracker-layout .span-8,
+  .tracker-layout .span-12 { grid-column: span 4 !important; }
+  .tracker-layout .acc-card,
+  .tracker-layout .roles-card { grid-column: span 4 !important; }
+  .tracker-layout .match-row { grid-template-columns: 50px 1.2fr auto auto 38px 24px !important; gap: 6px !important; padding: 8px 8px !important; }
+  .tracker-layout .mr-map-thumb { display: none !important; }
+  .tracker-layout .mr-score,
+  .tracker-layout .mr-rr { display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important; }
+  .tracker-layout .lobby-team-ranks { flex-wrap: wrap !important; gap: 8px !important; }
+  .tracker-layout .lobby-rank-divider { display: none !important; }
+  .tracker-layout .ai-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .tracker-layout .ai-sections-grid { grid-template-columns: 1fr !important; }
+  .tracker-layout .ai-tip-block.full { grid-column: span 1 !important; }
+  .tracker-layout .plab-grid,
+  .tracker-layout .plab-grid.g3,
+  .tracker-layout .plab-grid.g2,
+  .tracker-layout .plab-grid.g6 { grid-template-columns: 1fr !important; }
+  .tracker-layout .plab-card.span2,
+  .tracker-layout .plab-card.span3,
+  .tracker-layout .plab-card.span4 { grid-column: span 1 !important; }
+  .hud-top-bar .hud-center { display: none !important; }
+}
+
+/* ── ULTIMATE MOBILE GUARD: Force 1-column grid, prevent horizontal scroll ── */
+@media (max-width: 600px) {
+  html, body {
+    overflow-x: hidden !important;
+    width: 100% !important;
+  }
+  .tracker-nav-left {
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap !important;
+  }
+  .tracker-nav-item { flex-shrink: 0 !important; }
+  .topbar-main-row { flex-wrap: wrap !important; gap: 12px !important; }
+  .topbar-main-row .player-search-wrap { width: 100% !important; order: 3; margin-top: 4px; }
+  .topbar-tabs { flex-wrap: wrap !important; justify-content: center !important; }
+  .topbar-sub-row { flex-wrap: wrap !important; gap: 12px !important; }
+  .topbar-sub-left { width: 100% !important; justify-content: space-between !important; }
+  .topbar-sub-row .topbar-right { flex-wrap: wrap !important; width: 100% !important; gap: 8px !important; }
+  .topbar-filter-capsule { width: 100% !important; display: flex !important; }
+  .topbar-filter-capsule .filter-item { flex: 1 !important; }
+  .topbar-sub-row .fetch-btn { width: 100% !important; }
+  .tracker-layout .main { grid-template-columns: 1fr !important; display: grid !important; }
+  .tracker-layout .span-2,
+  .tracker-layout .span-3,
+  .tracker-layout .span-4,
+  .tracker-layout .span-6,
+  .tracker-layout .span-7,
+  .tracker-layout .span-8,
+  .tracker-layout .span-12,
+  .tracker-layout .acc-card,
+  .tracker-layout .roles-card,
+  .tracker-layout .card,
+  .tracker-layout .agent-bento,
+  .tracker-layout .map-card-bento,
+  .tracker-layout .impact-bento {
+    width: 100% !important;
+    grid-column: 1 / -1 !important;
+  }
+}
