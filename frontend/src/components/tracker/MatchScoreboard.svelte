@@ -109,8 +109,11 @@
         killEvents.forEach(k => {
           allRoundKills.push({
             time: k.kill_time_in_round ?? k.time_in_round ?? 0,
-            killer: k.killer_puuid || k.killer,
-            victim: k.victim_puuid || k.victim
+            killerPuuid: k.killer_puuid || k.killer,
+            killerName: k.killer_display_name || '',
+            victimPuuid: k.victim_puuid || k.victim,
+            victimName: k.victim_display_name || '',
+            assistants: k.assistants || []
           });
         });
       });
@@ -118,20 +121,27 @@
       // Sort kills by time to identify First Blood and First Death
       allRoundKills.sort((a, b) => a.time - b.time);
       
-      let fbKiller = null;
-      let fbVictim = null;
+      let fbKillerPuuid = null;
+      let fbKillerName = null;
+      let fbVictimPuuid = null;
+      let fbVictimName = null;
       if (allRoundKills.length > 0) {
-        fbKiller = allRoundKills[0].killer;
-        fbVictim = allRoundKills[0].victim;
+        const firstKill = allRoundKills[0];
+        fbKillerPuuid = firstKill.killerPuuid;
+        fbKillerName = firstKill.killerName;
+        fbVictimPuuid = firstKill.victimPuuid;
+        fbVictimName = firstKill.victimName;
         
-        const killerPlayer = players.find(p => 
-          (p.puuid && fbKiller && p.puuid === fbKiller) || 
-          (p.name && fbKiller && p.name.toLowerCase() === fbKiller.toLowerCase())
-        );
-        const victimPlayer = players.find(p => 
-          (p.puuid && fbVictim && p.puuid === fbVictim) || 
-          (p.name && fbVictim && p.name.toLowerCase() === fbVictim.toLowerCase())
-        );
+        const killerPlayer = players.find(p => {
+          const pNameTag = (p.name && p.tag) ? `${p.name}#${p.tag}` : p.name || '';
+          return (p.puuid && fbKillerPuuid && p.puuid === fbKillerPuuid) || 
+                 (pNameTag && fbKillerName && pNameTag.toLowerCase() === fbKillerName.toLowerCase());
+        });
+        const victimPlayer = players.find(p => {
+          const pNameTag = (p.name && p.tag) ? `${p.name}#${p.tag}` : p.name || '';
+          return (p.puuid && fbVictimPuuid && p.puuid === fbVictimPuuid) || 
+                 (pNameTag && fbVictimName && pNameTag.toLowerCase() === fbVictimName.toLowerCase());
+        });
         
         if (killerPlayer) {
           const kId = killerPlayer.puuid || killerPlayer.name || '';
@@ -154,38 +164,63 @@
         if (!pStats) return;
         
         const rKills = typeof ps.kills === 'number' ? ps.kills : (ps.kills?.length || ps.kill_events?.length || 0);
-        const rDeaths = typeof ps.deaths === 'number' ? ps.deaths : (ps.deaths?.length || (ps.died ? 1 : 0));
-        const rAssists = typeof ps.assists === 'number' ? ps.assists : (ps.assists?.length || 0);
         
         // Multi-kills
         if (rKills === 3) pStats.multi3k++;
         else if (rKills === 4) pStats.multi4k++;
         else if (rKills >= 5) pStats.multi5k++;
         
+        const nameTag = (playerObj.name && playerObj.tag) ? `${playerObj.name}#${playerObj.tag}` : playerObj.name || '';
+        const pPuuid = playerObj.puuid || '';
+
         // KAST conditions
-        const gotKill = rKills > 0;
-        const gotAssist = rAssists > 0;
-        const survived = rDeaths === 0;
+        // K: Kill
+        const gotKill = rKills > 0 || allRoundKills.some(k => 
+          (pPuuid && k.killerPuuid === pPuuid) || 
+          (nameTag && k.killerName && k.killerName.toLowerCase() === nameTag.toLowerCase())
+        );
+
+        // A: Assist
+        const gotAssist = allRoundKills.some(k => 
+          k.assistants && k.assistants.some(ast => 
+            (pPuuid && ast.assistant_puuid === pPuuid) || 
+            (nameTag && ast.assistant_display_name && ast.assistant_display_name.toLowerCase() === nameTag.toLowerCase())
+          )
+        );
+
+        // S: Survive
+        const playerDied = allRoundKills.some(k => 
+          (pPuuid && k.victimPuuid === pPuuid) || 
+          (nameTag && k.victimName && k.victimName.toLowerCase() === nameTag.toLowerCase())
+        );
+        const survived = !playerDied;
         
+        // T: Traded
         let traded = false;
-        if (!survived && fbVictim) {
+        if (playerDied) {
           const myDeath = allRoundKills.find(k => 
-            (playerObj.puuid && k.victim === playerObj.puuid) || 
-            (playerObj.name && k.victim && playerObj.name.toLowerCase() === k.victim.toLowerCase())
+            (pPuuid && k.victimPuuid === pPuuid) || 
+            (nameTag && k.victimName && k.victimName.toLowerCase() === nameTag.toLowerCase())
           );
           if (myDeath) {
-            const killerPuuid = myDeath.killer;
+            const killerPuuid = myDeath.killerPuuid;
+            const killerName = myDeath.killerName;
             const myDeathTime = myDeath.time;
             const isMs = allRoundKills.some(k => k.time > 300);
             const threshold = isMs ? 4000 : 4;
             
             const teammateKill = allRoundKills.find(k => 
-              k.victim === killerPuuid && 
+              ((killerPuuid && k.victimPuuid === killerPuuid) || 
+               (killerName && k.victimName && k.victimName.toLowerCase() === killerName.toLowerCase())) &&
               k.time > myDeathTime && 
               (k.time - myDeathTime) <= threshold
             );
             if (teammateKill) {
-              traded = true;
+              const traderPuuid = teammateKill.killerPuuid;
+              const traderName = teammateKill.killerName;
+              if ((pPuuid && traderPuuid !== pPuuid) || (nameTag && traderName && traderName.toLowerCase() !== nameTag.toLowerCase())) {
+                traded = true;
+              }
             }
           }
         }
