@@ -223,65 +223,51 @@
 {#if !me}
   <div class="no-detail">Your player not found in match data</div>
 {:else}
-  <div class="panel-section">
-    <div class="panel-section-title">Player Profile</div>
-    <div class="detail-profile">
+  <div class="panel-section" style="margin-top: 0;">
+    <div class="detail-profile" style="align-items: stretch;">
       {#if card}
-        <img src={card} class="detail-card" alt="" on:error={(e) => e.target.style.display='none'}>
+        <img src={card} class="detail-card" alt="" style="object-fit: cover; height: auto; min-height: 160px;" on:error={(e) => e.target.style.display='none'}>
       {/if}
-      <div class="detail-profile-stats">
-        <div class="dp-stat"><div class="dpv">LVL {me.level || '—'}</div><div class="dpl">Account Level</div></div>
-        <div class="dp-stat"><div class="dpv">{dmgMade}</div><div class="dpl">Dmg Dealt</div></div>
-        <div class="dp-stat"><div class="dpv">{dmgRcvd}</div><div class="dpl">Dmg Received</div></div>
-        <div class="dp-stat"><div class="dpv">{dmgMade && dmgRcvd ? (dmgMade / dmgRcvd).toFixed(2) : '—'}</div><div class="dpl">Dmg Ratio</div></div>
-      </div>
-    </div>
-  </div>
+      <div style="display: flex; flex-direction: column; gap: 14px; flex: 1;">
+        <div class="detail-profile-stats" style="grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));">
+          <div class="dp-stat"><div class="dpv">LVL {me.level || '—'}</div><div class="dpl">Account Level</div></div>
+          <div class="dp-stat"><div class="dpv">{dmgMade}</div><div class="dpl">Dmg Dealt</div></div>
+          <div class="dp-stat"><div class="dpv">{dmgRcvd}</div><div class="dpl">Dmg Received</div></div>
+          <div class="dp-stat"><div class="dpv">{dmgMade && dmgRcvd ? (dmgMade / dmgRcvd).toFixed(2) : '—'}</div><div class="dpl">Dmg Ratio</div></div>
+          <div class="dp-stat"><div class="dpv">{myAcs}</div><div class="dpl">ACS (Combat Score)</div></div>
+          <div class="dp-stat">
+            <div class="dpv" style="color: {myKdDiff > 0 ? 'var(--win)' : myKdDiff < 0 ? 'var(--loss)' : 'var(--muted)'}; font-weight: bold;">
+              {myKdDiff > 0 ? '+' : ''}{myKdDiff}
+            </div>
+            <div class="dpl">KD Difference</div>
+          </div>
+          <div class="dp-stat"><div class="dpv">{myKast}%</div><div class="dpl">KAST %</div></div>
+          <div class="dp-stat"><div class="dpv">{myAdr}</div><div class="dpl">ADR (Avg Damage)</div></div>
+          <div class="dp-stat">
+            <div class="dpv" style="color: {myDmgDelta > 0 ? 'var(--win)' : myDmgDelta < 0 ? 'var(--loss)' : 'var(--muted)'};">
+              {myDmgDelta > 0 ? '+' : ''}{myDmgDelta}
+            </div>
+            <div class="dpl">Damage Delta/Rd</div>
+          </div>
+          <div class="dp-stat">
+            <div class="dpv" style="display:flex; gap:6px; justify-content: center;">
+              <span style="color:var(--win); font-weight: bold;">{myFk}</span>
+              <span style="color:var(--muted);">/</span>
+              <span style="color:var(--loss);">{myFd}</span>
+            </div>
+            <div class="dpl">First Kills / Deaths</div>
+          </div>
+        </div>
 
-  <div class="panel-section">
-    <div class="panel-section-title">Advanced Match Stats</div>
-    <div class="detail-profile-stats" style="grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));">
-      <div class="dp-stat">
-        <div class="dpv">{myAcs}</div>
-        <div class="dpl">ACS (Combat Score)</div>
-      </div>
-      <div class="dp-stat">
-        <div class="dpv" style="color: {myKdDiff > 0 ? 'var(--win)' : myKdDiff < 0 ? 'var(--loss)' : 'var(--muted)'}; font-weight: bold;">
-          {myKdDiff > 0 ? '+' : ''}{myKdDiff}
+        <div style="display: flex; align-items: center; gap: 12px; border-top: 1px solid var(--border); padding-top: 12px; margin-top: auto;">
+          <span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 11px; text-transform: uppercase; color: var(--muted); letter-spacing: 1.5px; white-space: nowrap;">Multi-Kill Rounds:</span>
+          <div class="ability-grid" style="display: flex; gap: 8px; flex: 1; flex-wrap: wrap;">
+            <div class="ability-chip" style="padding: 4px 12px; display: flex; align-items: center; gap: 8px; margin: 0; min-height: unset; height: 26px; box-sizing: border-box;"><div class="ac-key" style="margin:0; font-size:9px; line-height: 1;">3 Kills</div><div class="ac-val" style="font-size:12px; line-height: 1;">{myMulti3k}</div></div>
+            <div class="ability-chip" style="padding: 4px 12px; display: flex; align-items: center; gap: 8px; margin: 0; min-height: unset; height: 26px; box-sizing: border-box;"><div class="ac-key" style="margin:0; font-size:9px; line-height: 1;">4 Kills</div><div class="ac-val" style="font-size:12px; line-height: 1;">{myMulti4k}</div></div>
+            <div class="ability-chip ult" style="padding: 4px 12px; display: flex; align-items: center; gap: 8px; margin: 0; min-height: unset; height: 26px; box-sizing: border-box;"><div class="ac-key" style="margin:0; font-size:9px; line-height: 1;">5 Kills (Ace)</div><div class="ac-val" style="font-size:12px; line-height: 1;">{myMulti5k}</div></div>
+          </div>
         </div>
-        <div class="dpl">KD Difference</div>
       </div>
-      <div class="dp-stat">
-        <div class="dpv">{myKast}%</div>
-        <div class="dpl">KAST %</div>
-      </div>
-      <div class="dp-stat">
-        <div class="dpv">{myAdr}</div>
-        <div class="dpl">ADR (Avg Damage)</div>
-      </div>
-      <div class="dp-stat">
-        <div class="dpv" style="color: {myDmgDelta > 0 ? 'var(--win)' : myDmgDelta < 0 ? 'var(--loss)' : 'var(--muted)'};">
-          {myDmgDelta > 0 ? '+' : ''}{myDmgDelta}
-        </div>
-        <div class="dpl">Damage Delta/Rd</div>
-      </div>
-      <div class="dp-stat">
-        <div class="dpv" style="display:flex; gap:6px;">
-          <span style="color:var(--win); font-weight: bold;">{myFk}</span>
-          <span style="color:var(--muted);">/</span>
-          <span style="color:var(--loss);">{myFd}</span>
-        </div>
-        <div class="dpl">First Kills / Deaths</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="panel-section">
-    <div class="panel-section-title">Multi-Kill Rounds</div>
-    <div class="ability-grid" style="grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));">
-      <div class="ability-chip"><div class="ac-key">3 Kills</div><div class="ac-val">{myMulti3k}</div></div>
-      <div class="ability-chip"><div class="ac-key">4 Kills</div><div class="ac-val">{myMulti4k}</div></div>
-      <div class="ability-chip ult"><div class="ac-key">5 Kills (Ace)</div><div class="ac-val">{myMulti5k}</div></div>
     </div>
   </div>
 
