@@ -7,7 +7,8 @@
 
   let matchesCached = 530;
 
-  fetch('/api/landing-stats')
+  const API_BASE = import.meta.env.PUBLIC_API_URL || '';
+  fetch(API_BASE + '/api/landing-stats')
     .then(r => r.json())
     .then(data => { if (data && data.matches_analysed) matchesCached = data.matches_analysed; })
     .catch(() => {});

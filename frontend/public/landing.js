@@ -297,7 +297,8 @@ window.addEventListener('scroll', () => {
   ];
 
   // Fetch dynamic stats from the API if possible
-  fetch('/api/landing-stats')
+  const apiBase = window.PUBLIC_API_URL || '';
+  fetch(apiBase + '/api/landing-stats')
     .then(res => {
       if (!res.ok) throw new Error('API response error');
       return res.json();

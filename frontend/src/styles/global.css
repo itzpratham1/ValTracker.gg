@@ -6584,6 +6584,12 @@ select option {
 }
 
 /* LOAD MORE BUTTON */
+.load-more-container {
+  grid-column: span 12;
+  display: flex;
+  justify-content: center;
+  padding: 24px 0;
+}
 .load-more-btn {
   font-family: 'Barlow Condensed', sans-serif;
   font-weight: 800;
@@ -6621,12 +6627,6 @@ select option {
   color: #000;
 }
 
-.load-more-container {
-  grid-column: span 12;
-  display: flex;
-  justify-content: center;
-  padding: 24px 0;
-}
 
 /* ── TOURNAMENT BRACKET & SWISS STAGE CUSTOM STYLES ── */
 .bracket-scroll-container {
