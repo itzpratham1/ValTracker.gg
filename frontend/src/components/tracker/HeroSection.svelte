@@ -6,7 +6,6 @@
   export let mmrData = null;
   export let accountData = null;
   export let matches = [];
-  export let stats = null;
 
   $: rankName = mmrData?.current?.tier?.name || 'UNRANKED';
   $: rankImg = getRankImgUrl(rankName);
@@ -122,135 +121,73 @@
 
 <div class="hero">
   <div id="player-card-bg" style="background-image: url('{cardUrl || ''}'); opacity: {cardUrl ? 0.26 : 0};"></div>
-  <div class="hero-content" style="flex-direction: column; align-items: stretch; gap: 24px;">
-    <div class="hero-main-row">
-      <div class="hero-left">
-        <div class="hero-avatar-wrap">
-          {#if smallCardUrl}
-            <img class="player-avatar-img" src={smallCardUrl} alt={playerName}>
-          {:else}
-            <div class="hero-avatar-fallback">👤</div>
-          {/if}
-        </div>
-        <div class="hero-player-details">
-          <div class="hero-eyebrow" id="hero-eyebrow">{modeLabel} Tracker</div>
-          <div class="hero-title" id="hero-title">
-            {escapeHtml(splitName.base)}{#if splitName.suffix}<span class="dim">{escapeHtml(splitName.suffix)}</span>{/if}
-          </div>
-          <div class="hero-sub" id="hero-sub">
-            <span class="hero-tag" id="player-tag-display">#{escapeHtml(playerTag)}</span>
-            <span class="hero-level-badge-new" id="player-level">LVL {accountLevel}</span>
-          </div>
-        </div>
+  <div class="hero-content">
+    <div class="hero-left">
+      <div class="hero-avatar-wrap">
+        {#if smallCardUrl}
+          <img class="player-avatar-img" src={smallCardUrl} alt={playerName}>
+        {:else}
+          <div class="hero-avatar-fallback">👤</div>
+        {/if}
       </div>
-
-      <div class="hero-right">
-        {#if isRanked}
-          <div class="hero-rank-block">
-            <div id="rank-icon">
-              {#if rankImg}
-                <img class="hero-rank-img" src={rankImg} alt={rankName}>
-              {:else}
-                <div style="width:56px;height:56px;background:var(--surface2);border-radius:8px;"></div>
-              {/if}
-            </div>
-            <div class="hero-rank-info">
-              <div class="hero-rank-name" id="rank-display">{rankName}</div>
-              <div class="hero-rank-rr">
-                <span id="peak-icon">
-                  {#if peakImg}
-                    <img style="width:16px;height:16px;object-fit:contain;" src={peakImg} alt={peakName}>
-                  {/if}
-                </span>
-                <span id="rank-rr-txt">{currentRR} RR · Peak: {peakName}</span>
-              </div>
-              {#if rankPrediction && isRanked}
-                <div class="hero-rank-prediction" id="rank-prediction">
-                  {@html rankPrediction.text}
-                </div>
-              {/if}
-            </div>
-          </div>
-        {/if}
-
-        {#if streak.count >= 2}
-          <div class="hero-streak-block" id="streak-block">
-            <div class="streak-icon" id="streak-icon">
-              {#if streak.type === 'win'}
-                {streak.count >= 5 ? '🔥' : '✅'}
-              {:else}
-                {streak.count >= 5 ? '💀' : '❌'}
-              {/if}
-            </div>
-            <div class="streak-info">
-              <div class="streak-label">Current Streak</div>
-              <div class="streak-val" id="streak-val">
-                {streak.count}{streak.type === 'win' ? 'W' : 'L'} Streak
-              </div>
-            </div>
-          </div>
-        {/if}
+      <div class="hero-player-details">
+        <div class="hero-eyebrow" id="hero-eyebrow">{modeLabel} Tracker</div>
+        <div class="hero-title" id="hero-title">
+          {escapeHtml(splitName.base)}{#if splitName.suffix}<span class="dim">{escapeHtml(splitName.suffix)}</span>{/if}
+        </div>
+        <div class="hero-sub" id="hero-sub">
+          <span class="hero-tag" id="player-tag-display">#{escapeHtml(playerTag)}</span>
+          <span class="hero-level-badge-new" id="player-level">LVL {accountLevel}</span>
+        </div>
       </div>
     </div>
 
-    {#if stats}
-      <div class="hero-stats-container">
-        <!-- KAST Card -->
-        <div class="card visible">
-          <div class="card-accent-line"></div>
-          <div class="card-label">KAST</div>
-          <div class="card-val">{stats.kast}%</div>
-          <div class="card-sub">Rounds</div>
+    <div class="hero-right">
+      {#if isRanked}
+        <div class="hero-rank-block">
+          <div id="rank-icon">
+            {#if rankImg}
+              <img class="hero-rank-img" src={rankImg} alt={rankName}>
+            {:else}
+              <div style="width:56px;height:56px;background:var(--surface2);border-radius:8px;"></div>
+            {/if}
+          </div>
+          <div class="hero-rank-info">
+            <div class="hero-rank-name" id="rank-display">{rankName}</div>
+            <div class="hero-rank-rr">
+              <span id="peak-icon">
+                {#if peakImg}
+                  <img style="width:16px;height:16px;object-fit:contain;" src={peakImg} alt={peakName}>
+                {/if}
+              </span>
+              <span id="rank-rr-txt">{currentRR} RR · Peak: {peakName}</span>
+            </div>
+            {#if rankPrediction && isRanked}
+              <div class="hero-rank-prediction" id="rank-prediction">
+                {@html rankPrediction.text}
+              </div>
+            {/if}
+          </div>
         </div>
+      {/if}
 
-        <!-- DDΔ/Round Card -->
-        <div class="card visible">
-          <div class="card-accent-line"></div>
-          <div class="card-label">DDΔ/Round</div>
-          <div class="card-val">{stats.damageDeltaPerRound > 0 ? '+' : ''}{stats.damageDeltaPerRound}</div>
-          <div class="card-sub">Damage Delta</div>
+      {#if streak.count >= 2}
+        <div class="hero-streak-block" id="streak-block">
+          <div class="streak-icon" id="streak-icon">
+            {#if streak.type === 'win'}
+              {streak.count >= 5 ? '🔥' : '✅'}
+            {:else}
+              {streak.count >= 5 ? '💀' : '❌'}
+            {/if}
+          </div>
+          <div class="streak-info">
+            <div class="streak-label">Current Streak</div>
+            <div class="streak-val" id="streak-val">
+              {streak.count}{streak.type === 'win' ? 'W' : 'L'} Streak
+            </div>
+          </div>
         </div>
-
-        <!-- KAD Ratio Card -->
-        <div class="card visible">
-          <div class="card-accent-line"></div>
-          <div class="card-label">KAD Ratio</div>
-          <div class="card-val">{stats.kadRatio}</div>
-          <div class="card-sub">Combat</div>
-        </div>
-
-        <!-- Kills/Round Card -->
-        <div class="card visible">
-          <div class="card-accent-line"></div>
-          <div class="card-label">Kills/Round</div>
-          <div class="card-val">{stats.killsPerRound}</div>
-          <div class="card-sub">Avg Kills</div>
-        </div>
-
-        <!-- First Bloods Card -->
-        <div class="card visible">
-          <div class="card-accent-line"></div>
-          <div class="card-label">First Bloods</div>
-          <div class="card-val">{stats.firstBloods}</div>
-          <div class="card-sub">Opening Kills</div>
-        </div>
-
-        <!-- Flawless Rounds Card -->
-        <div class="card visible">
-          <div class="card-accent-line"></div>
-          <div class="card-label">Flawless</div>
-          <div class="card-val">{stats.flawlessRounds}</div>
-          <div class="card-sub">Perfect Rounds</div>
-        </div>
-
-        <!-- Aces Card -->
-        <div class="card visible">
-          <div class="card-accent-line"></div>
-          <div class="card-label">Aces</div>
-          <div class="card-val">{stats.aces}</div>
-          <div class="card-sub">5-Kill Rounds</div>
-        </div>
-      </div>
-    {/if}
+      {/if}
+    </div>
   </div>
 </div>

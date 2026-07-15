@@ -223,7 +223,7 @@
   />
 
   {#if $currentView === 'tracker'}
-  <HeroSection {mmrData} {accountData} matches={actFilteredMatches} {stats} />
+  <HeroSection {mmrData} {accountData} matches={actFilteredMatches} />
 
   <TrackerNav
     {activeSection}

@@ -6873,60 +6873,7 @@ body::after {
   letter-spacing: 0.5px;
 }
 
-/* ── HERO STATS PANEL ── */
-.tracker-layout .hero-main-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  gap: 30px;
-}
 
-.tracker-layout .hero-stats-container {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 12px;
-  width: 100%;
-  margin-top: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  padding-top: 20px;
-}
-
-.tracker-layout .hero-stats-container .card {
-  padding: 16px;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 100px;
-}
-
-.tracker-layout .hero-stats-container .card-val {
-  font-size: 26px !important;
-  font-weight: 800;
-  margin: 4px 0;
-  line-height: 1.2;
-}
-
-@media (max-width: 1200px) {
-  .tracker-layout .hero-stats-container {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-@media (max-width: 900px) {
-  .tracker-layout .hero-main-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 20px;
-  }
-}
-
-@media (max-width: 768px) {
-  .tracker-layout .hero-stats-container {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
 
 /* Map splash opacity/filter — !important needed because base .map-splash (line 924) has conflicting filter */
 .map-splash {
