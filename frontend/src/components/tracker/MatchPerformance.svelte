@@ -261,18 +261,18 @@
 
         <div style="display: flex; align-items: center; gap: 12px; border-top: 1px solid var(--border); padding-top: 12px;">
           <span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 11px; text-transform: uppercase; color: var(--muted); letter-spacing: 1.5px; white-space: nowrap;">Multi-Kill Rounds:</span>
-          <div class="ability-grid" style="display: flex; gap: 8px; flex: 1; flex-wrap: wrap; margin: 0;">
-            <div class="ability-chip" style="flex-direction: row; align-items: center; gap: 8px; padding: 4px 12px; min-width: unset; min-height: unset; margin: 0; box-sizing: border-box;">
-              <div class="ac-key" style="margin: 0; font-size: 9px; line-height: 1;">3 Kills</div>
-              <div class="ac-val" style="font-size: 11px; line-height: 1; font-weight: bold;">{myMulti3k}</div>
+          <div style="display: flex; gap: 8px; flex: 1; flex-wrap: wrap;">
+            <div class="dp-stat" style="flex: 1; min-width: 80px; padding: 8px 12px;">
+              <div class="dpv">{myMulti3k}</div>
+              <div class="dpl">3 Kills</div>
             </div>
-            <div class="ability-chip" style="flex-direction: row; align-items: center; gap: 8px; padding: 4px 12px; min-width: unset; min-height: unset; margin: 0; box-sizing: border-box;">
-              <div class="ac-key" style="margin: 0; font-size: 9px; line-height: 1;">4 Kills</div>
-              <div class="ac-val" style="font-size: 11px; line-height: 1; font-weight: bold;">{myMulti4k}</div>
+            <div class="dp-stat" style="flex: 1; min-width: 80px; padding: 8px 12px;">
+              <div class="dpv">{myMulti4k}</div>
+              <div class="dpl">4 Kills</div>
             </div>
-            <div class="ability-chip ult" style="flex-direction: row; align-items: center; gap: 8px; padding: 4px 12px; min-width: unset; min-height: unset; margin: 0; box-sizing: border-box;">
-              <div class="ac-key" style="margin: 0; font-size: 9px; line-height: 1;">5 Kills (Ace)</div>
-              <div class="ac-val" style="font-size: 11px; line-height: 1; font-weight: bold;">{myMulti5k}</div>
+            <div class="dp-stat" style="flex: 1; min-width: 80px; padding: 8px 12px; border-color: var(--accentborder); background: var(--accentdim);">
+              <div class="dpv" style="color: var(--accent) !important;">{myMulti5k}</div>
+              <div class="dpl" style="color: var(--accent) !important;">5 Kills (Ace)</div>
             </div>
           </div>
         </div>
