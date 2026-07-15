@@ -7972,21 +7972,33 @@ body::after {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 14px 18px;
+  background: rgba(var(--accent-rgb, 255, 255, 255), 0.02);
+  border: 1px solid rgba(var(--accent-rgb, 255, 255, 255), 0.05);
   border-radius: 8px;
-  transition: var(--transition);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+.tracker-layout .combat-stat-item::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 3px;
+  background: var(--accent-color, var(--text));
+  opacity: 0.7;
 }
 .tracker-layout .combat-stat-item:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.08);
-  transform: translateY(-1px);
+  background: rgba(var(--accent-rgb, 255, 255, 255), 0.06);
+  border-color: rgba(var(--accent-rgb, 255, 255, 255), 0.15);
+  box-shadow: 0 4px 20px rgba(var(--accent-rgb, 0, 0, 0), 0.3), 
+              inset 0 0 12px rgba(var(--accent-rgb, 255, 255, 255), 0.04);
+  transform: translateY(-2px);
 }
 .tracker-layout .stat-meta {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 .tracker-layout .stat-dot {
   width: 6px;
@@ -7995,15 +8007,19 @@ body::after {
 }
 .tracker-layout .stat-title {
   font-family: 'Inter', sans-serif;
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: 600;
   color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 .tracker-layout .stat-value {
   font-family: 'Rajdhani', sans-serif;
-  font-size: 18px;
+  font-size: 24px;
   font-weight: 700;
-  color: var(--text);
+  color: var(--accent-color, var(--text));
+  text-shadow: 0 0 10px rgba(var(--accent-rgb, 255, 255, 255), 0.18);
+  line-height: 1;
 }
 
 @media (max-width: 900px) {

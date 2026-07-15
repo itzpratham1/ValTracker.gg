@@ -20,6 +20,8 @@
   // Secondary stats
   $: kast = stats?.kast != null ? stats.kast + '%' : '—%';
   $: damageDeltaPerRound = stats?.damageDeltaPerRound != null ? (stats.damageDeltaPerRound > 0 ? '+' : '') + stats.damageDeltaPerRound : '—';
+  $: ddColor = stats?.damageDeltaPerRound >= 0 ? '#3ecf8e' : '#ff5757';
+  $: ddRgb = stats?.damageDeltaPerRound >= 0 ? '62,207,142' : '255,87,87';
   $: kadRatio = stats?.kadRatio?.toFixed(2) ?? '—';
   $: killsPerRound = stats?.killsPerRound?.toFixed(2) ?? '—';
   $: firstBloods = stats?.firstBloods ?? '—';
@@ -186,57 +188,57 @@
       
       <div class="combat-stats-list">
         <!-- KAST Card -->
-        <div class="combat-stat-item">
+        <div class="combat-stat-item" style="--accent-color:#e8ff47; --accent-rgb:232,255,71;">
           <div class="stat-meta">
-            <span class="stat-dot" style="background:#e8ff47; box-shadow: 0 0 8px #e8ff47;"></span>
+            <span class="stat-dot" style="background:var(--accent-color); box-shadow: 0 0 8px var(--accent-color);"></span>
             <span class="stat-title">KAST %</span>
           </div>
           <span class="stat-value">{kast}</span>
         </div>
         <!-- DDΔ/Round Card -->
-        <div class="combat-stat-item">
+        <div class="combat-stat-item" style="--accent-color:{ddColor}; --accent-rgb:{ddRgb};">
           <div class="stat-meta">
-            <span class="stat-dot" style="background:#3ecf8e; box-shadow: 0 0 8px #3ecf8e;"></span>
+            <span class="stat-dot" style="background:var(--accent-color); box-shadow: 0 0 8px var(--accent-color);"></span>
             <span class="stat-title">DDΔ/Round</span>
           </div>
           <span class="stat-value">{damageDeltaPerRound}</span>
         </div>
         <!-- KAD Ratio Card -->
-        <div class="combat-stat-item">
+        <div class="combat-stat-item" style="--accent-color:#60a5fa; --accent-rgb:96,165,250;">
           <div class="stat-meta">
-            <span class="stat-dot" style="background:#60a5fa; box-shadow: 0 0 8px #60a5fa;"></span>
+            <span class="stat-dot" style="background:var(--accent-color); box-shadow: 0 0 8px var(--accent-color);"></span>
             <span class="stat-title">KAD Ratio</span>
           </div>
           <span class="stat-value">{kadRatio}</span>
         </div>
         <!-- Kills/Round Card -->
-        <div class="combat-stat-item">
+        <div class="combat-stat-item" style="--accent-color:#a78bfa; --accent-rgb:167,139,250;">
           <div class="stat-meta">
-            <span class="stat-dot" style="background:#a78bfa; box-shadow: 0 0 8px #a78bfa;"></span>
+            <span class="stat-dot" style="background:var(--accent-color); box-shadow: 0 0 8px var(--accent-color);"></span>
             <span class="stat-title">Kills/Round</span>
           </div>
           <span class="stat-value">{killsPerRound}</span>
         </div>
         <!-- First Bloods Card -->
-        <div class="combat-stat-item">
+        <div class="combat-stat-item" style="--accent-color:#fb923c; --accent-rgb:251,146,60;">
           <div class="stat-meta">
-            <span class="stat-dot" style="background:#fb923c; box-shadow: 0 0 8px #fb923c;"></span>
+            <span class="stat-dot" style="background:var(--accent-color); box-shadow: 0 0 8px var(--accent-color);"></span>
             <span class="stat-title">First Bloods</span>
           </div>
           <span class="stat-value">{firstBloods}</span>
         </div>
         <!-- Flawless Rounds Card -->
-        <div class="combat-stat-item">
+        <div class="combat-stat-item" style="--accent-color:#06b6d4; --accent-rgb:6,182,212;">
           <div class="stat-meta">
-            <span class="stat-dot" style="background:#f43f5e; box-shadow: 0 0 8px #f43f5e;"></span>
+            <span class="stat-dot" style="background:var(--accent-color); box-shadow: 0 0 8px var(--accent-color);"></span>
             <span class="stat-title">Flawless Rounds</span>
           </div>
           <span class="stat-value">{flawlessRounds}</span>
         </div>
         <!-- Aces Card -->
-        <div class="combat-stat-item">
+        <div class="combat-stat-item" style="--accent-color:#f43f5e; --accent-rgb:244,63,94;">
           <div class="stat-meta">
-            <span class="stat-dot" style="background:#22c55e; box-shadow: 0 0 8px #22c55e;"></span>
+            <span class="stat-dot" style="background:var(--accent-color); box-shadow: 0 0 8px var(--accent-color);"></span>
             <span class="stat-title">Aces</span>
           </div>
           <span class="stat-value">{aces}</span>
