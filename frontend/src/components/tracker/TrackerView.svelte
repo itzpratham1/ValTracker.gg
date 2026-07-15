@@ -6,6 +6,7 @@
   import StatCards from './StatCards.svelte';
   import MatchHistory from './MatchHistory.svelte';
   import RrGraph from './RrGraph.svelte';
+  import PerformanceCalendar from './PerformanceCalendar.svelte';
   import PerfTrend from './PerfTrend.svelte';
   import AgentCards from './AgentCards.svelte';
   import MapCards from './MapCards.svelte';
@@ -280,6 +281,13 @@
       history={stats?.rrHistory || []}
       currentRR={((Math.max(0, (mmrData?.current?.tier?.id || 0) - 3)) * 100) + (mmrData?.current?.rr ?? 0)}
       {mmrHistory}
+    />
+
+    <PerformanceCalendar
+      allMatches={actFilteredMatches}
+      {mmrHistory}
+      playerName={playerState.name}
+      playerTag={playerState.tag}
     />
 
     <!-- Q3: Performance Trend -->

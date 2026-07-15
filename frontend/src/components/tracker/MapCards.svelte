@@ -116,14 +116,18 @@
               {#each top3 as agent}
                 <div class="map-top-agent-item">
                   <img src={getAgentIconUrl(agent.name)} alt={agent.name} loading="lazy">
-                  <span>{agent.name} {agent.wr}%</span>
+                  <span class="ata-name">{agent.name}</span>
+                  <span class="ata-wr {wrCls(agent.wr)}">{agent.wr}%</span>
                 </div>
               {/each}
             </div>
           {/if}
           {#if rrDelta !== null}
-            <div class="map-rr-delta {rrDelta >= 0 ? 'pos' : 'neg'}">
-              {rrDelta >= 0 ? '+' : ''}{rrDelta} RR avg
+            <div class="map-rr-mini">
+              <span class="map-rr-mini-lbl">RR DELTA</span>
+              <span class="map-rr-mini-val {rrDelta >= 0 ? 'pos' : 'neg'}">
+                {rrDelta >= 0 ? '↑' : '↓'} {rrDelta >= 0 ? '+' : ''}{rrDelta}
+              </span>
             </div>
           {/if}
           {#if top3.length > 0}
