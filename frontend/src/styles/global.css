@@ -6873,6 +6873,101 @@ body::after {
   letter-spacing: 0.5px;
 }
 
+/* ── HERO STATS PANEL ── */
+.tracker-layout .hero-main-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 30px;
+}
+
+.tracker-layout .hero-stats-container {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  width: 100%;
+  margin-top: 8px;
+}
+
+.tracker-layout .hero-stat-card {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0 4px 16px;
+  position: relative;
+}
+
+.tracker-layout .hero-stat-card.has-border::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 3px;
+  background: var(--text);
+  opacity: 0.8;
+  border-radius: 1px;
+}
+
+.tracker-layout .hero-stat-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.tracker-layout .hero-stat-val {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.1;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.tracker-layout .hero-stat-pct {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
+  letter-spacing: 0.3px;
+}
+
+.tracker-layout .hero-stat-pct.top {
+  color: #3ecf8e !important;
+  text-shadow: 0 0 8px rgba(62, 207, 142, 0.2);
+}
+
+.tracker-layout .hero-stat-pct.bottom {
+  color: #ff5757 !important;
+  text-shadow: 0 0 8px rgba(255, 87, 87, 0.2);
+}
+
+@media (max-width: 900px) {
+  .tracker-layout .hero-main-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .tracker-layout .hero-stats-container {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .tracker-layout .hero-stats-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding-top: 16px;
+  }
+}
+
 /* Map splash opacity/filter — !important needed because base .map-splash (line 924) has conflicting filter */
 .map-splash {
   opacity: 0.8 !important;

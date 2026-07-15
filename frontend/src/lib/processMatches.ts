@@ -182,6 +182,13 @@ export function processMatches(
   }
 
   let tK = 0, tD = 0, tA = 0, tS = 0, tHS = 0, tShots = 0, wins = 0, losses = 0, counted = 0;
+  let totalKastRounds = 0;
+  let totalRoundsPlayed = 0;
+  let totalDamageMade = 0;
+  let totalDamageReceived = 0;
+  let totalFirstBloods = 0;
+  let totalFlawlessRounds = 0;
+  let totalAces = 0;
   const agentMap: Record<string, AgentStats> = {};
   const mapData: Record<string, MapStats> = {};
   const rrHistory: { won: boolean; kills: number; matchId: string }[] = [];
@@ -192,6 +199,9 @@ export function processMatches(
     const me = findMe(match, playerName, playerTag);
     if (!me) continue;
     counted++;
+
+    if (typeof me.damage_made === 'number') totalDamageMade += me.damage_made;
+    if (typeof me.damage_received === 'number') totalDamageReceived += me.damage_received;
 
     const s = me.stats || {};
     const k = s.kills || 0, d = s.deaths || 0, a = s.assists || 0, sc = s.score || 0;
@@ -226,8 +236,8 @@ export function processMatches(
 
     const rawGameStart = match.metadata?.game_start || match.metadata?.gameStart || null;
     const gameStart = rawGameStart ? rawGameStart * 1000 : null;
-    const totalRoundsPlayed = (typeof myR === 'number' && typeof oppR === 'number') ? (myR + oppR) : (match.rounds?.length || 1);
-    const matchACS = Math.round(sc / Math.max(1, totalRoundsPlayed));
+    const matchRoundsPlayed = (typeof myR === 'number' && typeof oppR === 'number') ? (myR + oppR) : (match.rounds?.length || 1);
+    const matchACS = Math.round(sc / Math.max(1, matchRoundsPlayed));
 
     const allP = getPlayerList(match);
     const lobbyRank = getLobbyRankInfo(allP, myTeamId);
@@ -248,6 +258,89 @@ export function processMatches(
       if (!Array.isArray(ps)) ps = Object.values(ps);
       const myPs = ps.find((p: any) => (p.player_puuid || p.subject || p.puuid) === me.puuid);
       if (!myPs) continue;
+
+      totalRoundsPlayed++;
+
+      // KAST, FB, Flawless, Aces check
+      let allRoundKills: any[] = [];
+      ps.forEach((playerRound: any) => {
+        const killEvents = playerRound.kill_events || playerRound.killEvents || [];
+        killEvents.forEach((k: any) => {
+          allRoundKills.push({
+            time: k.kill_time_in_round ?? k.time_in_round ?? 0,
+            killerPuuid: k.killer_puuid || k.killer,
+            killerName: k.killer_display_name || '',
+            victimPuuid: k.victim_puuid || k.victim,
+            victimName: k.victim_display_name || '',
+            assistants: k.assistants || []
+          });
+        });
+      });
+
+      // Sort kills by time
+      allRoundKills.sort((a, b) => a.time - b.time);
+
+      const rKills = myPs.kill_events || [];
+      const gotKill = rKills.length > 0;
+      const gotAssist = allRoundKills.some(k => 
+        k.assistants && k.assistants.some((ast: any) => 
+          (ast.assistant_puuid || ast.puuid || ast.assistant_subject || ast.assistant) === me.puuid
+        )
+      );
+      const playerDied = allRoundKills.some(k => k.victimPuuid === me.puuid);
+      const survived = !playerDied;
+
+      let traded = false;
+      if (playerDied) {
+        const myDeath = allRoundKills.find(k => k.victimPuuid === me.puuid);
+        if (myDeath) {
+          const killerPuuid = myDeath.killerPuuid;
+          const myDeathTime = myDeath.time;
+          const isMs = allRoundKills.some(k => k.time > 300);
+          const threshold = isMs ? 4000 : 4;
+
+          const teammateKill = allRoundKills.find(k => 
+            k.victimPuuid === killerPuuid &&
+            k.time > myDeathTime &&
+            (k.time - myDeathTime) <= threshold
+          );
+          if (teammateKill) {
+            const traderPuuid = teammateKill.killerPuuid;
+            if (traderPuuid !== me.puuid) {
+              traded = true;
+            }
+          }
+        }
+      }
+
+      if (gotKill || gotAssist || survived || traded) {
+        totalKastRounds++;
+      }
+
+      // First Bloods
+      if (allRoundKills.length > 0) {
+        const firstKill = allRoundKills[0];
+        if (firstKill.killerPuuid === me.puuid) {
+          totalFirstBloods++;
+        }
+      }
+
+      // Flawless
+      const winningTeam = (r.winning_team || r.winningTeam || '').toLowerCase();
+      if (winningTeam === myTeamId) {
+        const teammates = allP.filter((p: any) => (p.team || '').toLowerCase() === myTeamId);
+        const teammatePuuids = teammates.map((t: any) => t.puuid || t.subject || t.id);
+        const teammateDied = allRoundKills.some(k => teammatePuuids.includes(k.victimPuuid));
+        if (!teammateDied) {
+          totalFlawlessRounds++;
+        }
+      }
+
+      // Aces
+      if (rKills.length >= 5) {
+        totalAces++;
+      }
+
       const kills = Array.isArray(myPs.kill_events) ? myPs.kill_events : [];
       for (const kill of kills) {
         const raw = kill.damage_weapon_name || kill.finishing_damage?.damage_item || kill.damage_weapon_id || '';
@@ -298,7 +391,17 @@ export function processMatches(
     mapData,
     rrHistory,
     recentMatches,
-    precomputedWeapons
+    precomputedWeapons,
+    kast: totalRoundsPlayed ? Math.round((totalKastRounds / totalRoundsPlayed) * 100) : 70,
+    damageDeltaPerRound: totalRoundsPlayed ? Math.round((totalDamageMade - totalDamageReceived) / totalRoundsPlayed) : 0,
+    firstBloods: totalFirstBloods,
+    flawlessRounds: totalFlawlessRounds,
+    aces: totalAces,
+    kadRatio: tD ? +((tK + tA) / tD).toFixed(2) : +(tK + tA).toFixed(2),
+    killsPerRound: totalRoundsPlayed ? +(tK / totalRoundsPlayed).toFixed(2) : +(tK / (counted * 20)).toFixed(2),
+    totalKills: tK,
+    totalDeaths: tD,
+    totalAssists: tA
   };
 }
 
