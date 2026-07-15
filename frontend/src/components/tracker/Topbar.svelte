@@ -256,8 +256,8 @@
     </div>
   </div>
   
-  <!-- Row 2: Sub Header (Search Controls & Filters) -->
-  {#if subRowVisible}
+  <!-- Row 2: Sub Header (Search Controls & Filters) — tracker view only -->
+  {#if subRowVisible && $currentView === 'tracker'}
     <div class="topbar-sub-row">
       <div class="topbar-sub-left">
         <div class="player-active-pill">
