@@ -31,10 +31,13 @@
     const snapshot = { ts: Date.now(), weapons: {} };
     Object.entries(weaponData).forEach(([wpn, v]) => {
       if (v.kills >= 1) {
+        const total = (v.headshots || 0) + (v.bodyshots || 0) + (v.legshots || 0);
         snapshot.weapons[wpn] = {
           kills: v.kills,
-          hs: v.hs,
-          hsPct: v.kills ? Math.round(v.hs / v.kills * 100) : 0
+          headshots: v.headshots || 0,
+          bodyshots: v.bodyshots || 0,
+          legshots: v.legshots || 0,
+          hsPct: total ? Math.round((v.headshots || 0) / total * 100) : 0
         };
       }
     });
@@ -72,12 +75,13 @@
   }
 
   function getHsPct(v) {
-    return v.kills ? Math.round(v.hs / v.kills * 100) : 0;
+    const total = (v.headshots || 0) + (v.bodyshots || 0) + (v.legshots || 0);
+    return total ? Math.round((v.headshots || 0) / total * 100) : 0;
   }
 
   function getHsPctColor(pct) {
-    if (pct >= 30) return 'var(--win)';
-    if (pct >= 20) return 'var(--accent)';
+    if (pct >= 25) return 'var(--win)';
+    if (pct >= 15) return 'var(--accent)';
     return 'var(--loss)';
   }
 
@@ -196,7 +200,7 @@
                         </span>
                       {/if}
                     </span>
-                    <span class="top-weapon-lbl">HS Kill %</span>
+                    <span class="top-weapon-lbl">HS%</span>
                   </div>
                 </div>
               </div>
@@ -276,7 +280,7 @@
                 </div>
                 <div class="sec-weapon-stat">
                   <span class="sec-weapon-val" style="color:{hsCol}">{hsPct}%</span>
-                  <span class="sec-weapon-lbl">HS Kill %</span>
+                  <span class="sec-weapon-lbl">HS%</span>
                 </div>
               </div>
               <div class="sec-weapon-acc-bars">
@@ -346,7 +350,7 @@
       <span class="asterisk">*</span>
       <div>
         Riot Games' match API only exposes weapon data in individual final kill events.
-        <strong>HS Kill %</strong> represents the percentage of your kills that were finished with a headshot, which typically ranges from 40-70% depending on weapon type, and is distinct from overall bullet hit accuracy.
+        <strong>HS%</strong> is the percentage of kills that were headshots with this weapon, typically 40-70% depending on weapon type.
         <strong>Trend arrows</strong> compare your current HS% with your previous tracked session &#8212; stored locally in your browser and never sent to any server.
       </div>
     </div>

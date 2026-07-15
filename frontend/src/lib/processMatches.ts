@@ -113,8 +113,10 @@ export interface MapStats {
 
 export interface WeaponStats {
   kills: number;
-  hs: number;
-  matchHistory: { gameStart: number; kills: number; hs: number; hsPct: number }[];
+  headshots: number;
+  bodyshots: number;
+  legshots: number;
+  matchHistory: { gameStart: number; kills: number; headshots: number; bodyshots: number; legshots: number; hsPct: number }[];
 }
 
 export interface LobbyRankInfo {
@@ -253,18 +255,27 @@ export function processMatches(
         let wpn = cachedWpn ? cachedWpn.name : raw.replace(/^[^/]*\//, '').replace(/TX_Hud_/i, '').replace(/_/g, ' ').trim();
         if (/^[0-9a-f]{8}-/.test(wpn)) wpn = 'Ability';
         if (!wpn || wpn.length < 2) continue;
-        if (!precomputedWeapons[wpn]) precomputedWeapons[wpn] = { kills: 0, hs: 0, matchHistory: [] };
+        if (!precomputedWeapons[wpn]) precomputedWeapons[wpn] = { kills: 0, headshots: 0, bodyshots: 0, legshots: 0, matchHistory: [] };
         precomputedWeapons[wpn].kills++;
-        let isHS = typeof kill.headshot === 'boolean' ? kill.headshot : kill.finishing_damage?.is_headshot;
-        if (!isHS && myPs.damage_events) {
+        let h = 0, b = 0, l = 0;
+        if (myPs.damage_events) {
           const dE = myPs.damage_events.find((de: any) => de.receiver_puuid === (kill.victim_puuid || kill.victim));
-          if (dE && dE.headshots > 0) isHS = true;
+          if (dE) { h = dE.headshots || 0; b = dE.bodyshots || 0; l = dE.legshots || 0; }
         }
-        if (isHS) precomputedWeapons[wpn].hs++;
+        precomputedWeapons[wpn].headshots += h;
+        precomputedWeapons[wpn].bodyshots += b;
+        precomputedWeapons[wpn].legshots += l;
         const last = precomputedWeapons[wpn].matchHistory;
         const existing = last.length && last[last.length - 1].gameStart === gameStart ? last[last.length - 1] : null;
-        if (existing) { existing.kills++; if (isHS) existing.hs++; existing.hsPct = existing.kills ? Math.round((existing.hs / existing.kills) * 100) : 0; }
-        else { last.push({ gameStart, kills: 1, hs: isHS ? 1 : 0, hsPct: isHS ? 100 : 0 }); }
+        if (existing) {
+          existing.kills++;
+          existing.headshots += h; existing.bodyshots += b; existing.legshots += l;
+          const tot = existing.headshots + existing.bodyshots + existing.legshots;
+          existing.hsPct = tot ? Math.round((existing.headshots / tot) * 100) : 0;
+        } else {
+          const tot = h + b + l;
+          last.push({ gameStart, kills: 1, headshots: h, bodyshots: b, legshots: l, hsPct: tot ? Math.round((h / tot) * 100) : 0 });
+        }
       }
     }
   }

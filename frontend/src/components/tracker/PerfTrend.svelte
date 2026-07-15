@@ -135,7 +135,7 @@
 <div class="card span-12 visible" id="perf-trend-card" style="min-height:200px;">
   <div class="card-accent-line"></div>
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
-    <div class="card-label" style="margin:0;">KD / ACS / HS% — Last 20 Matches</div>
+    <div class="card-label" style="margin:0;">KD / ACS / HS%</div>
     <div style="display:flex;gap:8px;">
       <div style="display:flex;align-items:center;gap:5px;"><div style="width:10px;height:2px;background:#e8ff47;border-radius:1px;"></div><span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;">K/D</span></div>
       <div style="display:flex;align-items:center;gap:5px;"><div style="width:10px;height:2px;background:#3ecf8e;border-radius:1px;"></div><span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;">ACS/100</span></div>
