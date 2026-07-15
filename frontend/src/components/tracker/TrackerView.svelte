@@ -307,7 +307,13 @@
       <span class="sl-line"></span>
       <span class="sl-num">05</span>
     </div>
-    <MapCards mapData={stats?.mapData || {}} />
+    <MapCards
+      mapData={stats?.mapData || {}}
+      {mmrHistory}
+      allMatches={actFilteredMatches}
+      playerName={playerState.name}
+      playerTag={playerState.tag}
+    />
 
     <!-- Q6: Clutch & Impact -->
     <div class="section-label" id="sec-clutch">
