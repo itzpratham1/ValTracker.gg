@@ -218,7 +218,7 @@
   class="card role-identity-card visible"
   style="--ric-color:{result.primary.color};--ric-glow:{result.primary.glowColor};--ric-border:{result.primary.borderColor};"
 >
-  <div class="card-accent-line" style="background:{result.primary.color};"></div>
+  <div class="card-accent-line" style="background: var(--accent) !important;"></div>
 
   <div class="ric-inner">
     <!-- LEFT: Archetype Identity -->
@@ -294,6 +294,6 @@
   </div>
 
   <!-- Animated glow border overlay -->
-  <div class="ric-glow-border" style="--ric-glow:{result.primary.glowColor};"></div>
+  <div class="ric-glow-border"></div>
 </div>
 {/if}

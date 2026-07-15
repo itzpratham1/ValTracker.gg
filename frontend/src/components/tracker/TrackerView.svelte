@@ -284,6 +284,14 @@
       {mmrHistory}
     />
 
+    <!-- Q3: Performance Trend -->
+    <div class="section-label" id="sec-trend">
+      <span class="sl-text">Performance Trend</span>
+      <span class="sl-line"></span>
+      <span class="sl-num">03</span>
+    </div>
+    <PerfTrend matches={stats?.recentMatches || []} />
+
     <div class="perf-row span-12">
       <PerformanceCalendar
         allMatches={actFilteredMatches}
@@ -297,14 +305,6 @@
         playerTag={playerState.tag}
       />
     </div>
-
-    <!-- Q3: Performance Trend -->
-    <div class="section-label" id="sec-trend">
-      <span class="sl-text">Performance Trend</span>
-      <span class="sl-line"></span>
-      <span class="sl-num">03</span>
-    </div>
-    <PerfTrend matches={stats?.recentMatches || []} />
 
     <!-- Q4: Agent Roster -->
     <div class="section-label" id="sec-agents">
