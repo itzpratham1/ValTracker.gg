@@ -350,7 +350,7 @@
       <span class="asterisk">*</span>
       <div>
         Riot Games' match API only exposes weapon data in individual final kill events.
-        <strong>HS%</strong> is the percentage of kills that were headshots with this weapon, typically 40-70% depending on weapon type.
+        <strong>HS%</strong> is headshot accuracy: headshots hit divided by total shots landed with this weapon (head + body + legs). Typical range is 15&#8211;30%.
         <strong>Trend arrows</strong> compare your current HS% with your previous tracked session &#8212; stored locally in your browser and never sent to any server.
       </div>
     </div>

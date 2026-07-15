@@ -214,6 +214,7 @@
 <Toast />
 
 <div class="tracker-layout">
+  {#if $currentView === 'tracker'}
   <Topbar
     {currentAgentName}
     onFetchStats={onFetchStats}
@@ -221,8 +222,6 @@
     onOpenLeaderboard={() => leaderboardOpen = true}
     onOpenFeedback={() => feedbackOpen = true}
   />
-
-  {#if $currentView === 'tracker'}
   <HeroSection {mmrData} {accountData} matches={actFilteredMatches} />
 
   <TrackerNav
