@@ -118,48 +118,6 @@
       return { type: 'negative', text: 'Trend is negative. Focus on improvement to rank up!' };
     }
   }
-
-  function getWinsPercentile(wins) {
-    const topPct = Math.max(1.0, Math.min(99.0, 100 * Math.exp(-0.065 * wins)));
-    return `Top ${topPct.toFixed(1)}%`;
-  }
-
-  function getKastPercentile(kast) {
-    const diff = kast - 71.5;
-    if (diff >= 0) {
-      const topPct = Math.max(1.0, Math.min(49.9, 50 - diff * 3.5));
-      return `Top ${topPct.toFixed(1)}%`;
-    } else {
-      const botPct = Math.max(1.0, Math.min(49.9, 50 + diff * 6.5));
-      return `Bottom ${botPct.toFixed(1)}%`;
-    }
-  }
-
-  function getDdPercentile(dd) {
-    if (dd >= 0) {
-      const topPct = Math.max(1.0, Math.min(49.9, 50 - dd * 0.8));
-      return `Top ${topPct.toFixed(1)}%`;
-    } else {
-      const botPct = Math.max(1.0, Math.min(49.9, 50 + dd * 1.9));
-      return `Bottom ${botPct.toFixed(1)}%`;
-    }
-  }
-
-  function getKillsPercentile(kills) {
-    const topPct = Math.max(1.0, Math.min(99.0, 100 * Math.exp(-0.00195 * kills)));
-    return `Top ${topPct.toFixed(1)}%`;
-  }
-
-  function getAcsPercentile(acs) {
-    const diff = acs - 215;
-    if (diff >= 0) {
-      const topPct = Math.max(1.0, Math.min(49.9, 50 - diff * 0.6));
-      return `Top ${topPct.toFixed(1)}%`;
-    } else {
-      const botPct = Math.max(1.0, Math.min(49.9, 50 + diff * 1.25));
-      return `Bottom ${botPct.toFixed(1)}%`;
-    }
-  }
 </script>
 
 <div class="hero">
@@ -237,69 +195,60 @@
 
     {#if stats}
       <div class="hero-stats-container">
-        <!-- Row 1 -->
-        <div class="hero-stat-card has-border">
-          <div class="hero-stat-label">Wins</div>
-          <div class="hero-stat-val">{stats.wins}</div>
-          <div class="hero-stat-pct top">{getWinsPercentile(stats.wins)}</div>
-        </div>
-        <div class="hero-stat-card has-border">
-          <div class="hero-stat-label">KAST</div>
-          <div class="hero-stat-val">{stats.kast}%</div>
-          <div class="hero-stat-pct {stats.kast >= 71.5 ? 'top' : 'bottom'}">
-            {getKastPercentile(stats.kast)}
-          </div>
-        </div>
-        <div class="hero-stat-card has-border">
-          <div class="hero-stat-label">DDΔ/Round</div>
-          <div class="hero-stat-val">{stats.damageDeltaPerRound > 0 ? '+' : ''}{stats.damageDeltaPerRound}</div>
-          <div class="hero-stat-pct {stats.damageDeltaPerRound >= 0 ? 'top' : 'bottom'}">
-            {getDdPercentile(stats.damageDeltaPerRound)}
-          </div>
-        </div>
-        <div class="hero-stat-card has-border">
-          <div class="hero-stat-label">Kills</div>
-          <div class="hero-stat-val">{stats.totalKills}</div>
-          <div class="hero-stat-pct top">{getKillsPercentile(stats.totalKills)}</div>
-        </div>
-        <div class="hero-stat-card">
-          <div class="hero-stat-label">Deaths</div>
-          <div class="hero-stat-val">{stats.totalDeaths}</div>
-          <div class="hero-stat-pct" style="visibility:hidden;">-</div>
-        </div>
-        <div class="hero-stat-card">
-          <div class="hero-stat-label">Assists</div>
-          <div class="hero-stat-val">{stats.totalAssists}</div>
-          <div class="hero-stat-pct" style="visibility:hidden;">-</div>
+        <!-- KAST Card -->
+        <div class="card visible">
+          <div class="card-accent-line"></div>
+          <div class="card-label">KAST</div>
+          <div class="card-val">{stats.kast}%</div>
+          <div class="card-sub">Rounds</div>
         </div>
 
-        <!-- Row 2 -->
-        <div class="hero-stat-card has-border">
-          <div class="hero-stat-label">ACS</div>
-          <div class="hero-stat-val">{stats.avgACS}</div>
-          <div class="hero-stat-pct {stats.avgACS >= 215 ? 'top' : 'bottom'}">
-            {getAcsPercentile(stats.avgACS)}
-          </div>
+        <!-- DDΔ/Round Card -->
+        <div class="card visible">
+          <div class="card-accent-line"></div>
+          <div class="card-label">DDΔ/Round</div>
+          <div class="card-val">{stats.damageDeltaPerRound > 0 ? '+' : ''}{stats.damageDeltaPerRound}</div>
+          <div class="card-sub">Damage Delta</div>
         </div>
-        <div class="hero-stat-card">
-          <div class="hero-stat-label">KAD Ratio</div>
-          <div class="hero-stat-val">{stats.kadRatio}</div>
+
+        <!-- KAD Ratio Card -->
+        <div class="card visible">
+          <div class="card-accent-line"></div>
+          <div class="card-label">KAD Ratio</div>
+          <div class="card-val">{stats.kadRatio}</div>
+          <div class="card-sub">Combat</div>
         </div>
-        <div class="hero-stat-card">
-          <div class="hero-stat-label">Kills/Round</div>
-          <div class="hero-stat-val">{stats.killsPerRound}</div>
+
+        <!-- Kills/Round Card -->
+        <div class="card visible">
+          <div class="card-accent-line"></div>
+          <div class="card-label">Kills/Round</div>
+          <div class="card-val">{stats.killsPerRound}</div>
+          <div class="card-sub">Avg Kills</div>
         </div>
-        <div class="hero-stat-card">
-          <div class="hero-stat-label">First Bloods</div>
-          <div class="hero-stat-val">{stats.firstBloods}</div>
+
+        <!-- First Bloods Card -->
+        <div class="card visible">
+          <div class="card-accent-line"></div>
+          <div class="card-label">First Bloods</div>
+          <div class="card-val">{stats.firstBloods}</div>
+          <div class="card-sub">Opening Kills</div>
         </div>
-        <div class="hero-stat-card">
-          <div class="hero-stat-label">Flawless Rounds</div>
-          <div class="hero-stat-val">{stats.flawlessRounds}</div>
+
+        <!-- Flawless Rounds Card -->
+        <div class="card visible">
+          <div class="card-accent-line"></div>
+          <div class="card-label">Flawless</div>
+          <div class="card-val">{stats.flawlessRounds}</div>
+          <div class="card-sub">Perfect Rounds</div>
         </div>
-        <div class="hero-stat-card">
-          <div class="hero-stat-label">Aces</div>
-          <div class="hero-stat-val">{stats.aces}</div>
+
+        <!-- Aces Card -->
+        <div class="card visible">
+          <div class="card-accent-line"></div>
+          <div class="card-label">Aces</div>
+          <div class="card-val">{stats.aces}</div>
+          <div class="card-sub">5-Kill Rounds</div>
         </div>
       </div>
     {/if}
