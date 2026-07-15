@@ -8318,3 +8318,356 @@ body::after {
     height: 11px;
   }
 }
+
+/* ---- PERF ROW: Calendar + RIC side by side ---- */
+.perf-row {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+  width: 100%;
+}
+
+.perf-row > * {
+  min-width: 0;
+  margin: 0 !important;
+}
+
+/* Calendar: shrinks to fit its grid content, no stretching */
+.perf-row .perf-calendar-card {
+  flex: 0 0 auto;
+  width: fit-content;
+  max-width: 440px;
+}
+
+/* RIC: takes all remaining space */
+.perf-row .role-identity-card {
+  flex: 1;
+}
+
+@media (max-width: 1000px) {
+  .perf-row {
+    flex-direction: column;
+  }
+  .perf-row .perf-calendar-card {
+    flex: none;
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* ============================================================
+   ROLE IDENTITY CARD — RoleIdentityCard.svelte
+   ============================================================ */
+
+.role-identity-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+  background: rgba(11, 11, 15, 0.95) !important;
+  border-color: var(--ric-border, var(--border)) !important;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+  min-height: 180px;
+}
+
+.role-identity-card:hover {
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4), 0 0 32px var(--ric-glow, rgba(250, 68, 84, 0.2)) !important;
+  transform: translateY(-2px);
+}
+
+.ric-glow-border {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px var(--ric-glow, rgba(250, 68, 84, 0.15));
+  animation: ricGlowPulse 3s ease-in-out infinite;
+  z-index: 0;
+}
+
+@keyframes ricGlowPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.ric-inner {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  padding: 20px 22px;
+  position: relative;
+  z-index: 1;
+  flex-wrap: wrap;
+}
+
+/* ---- LEFT SIDE ---- */
+.ric-left {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  flex: 1;
+  min-width: 0;
+}
+
+.ric-emoji {
+  font-size: 64px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.role-identity-card:hover .ric-emoji {
+  transform: scale(1.1) rotate(-3deg);
+}
+
+.ric-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ric-label {
+  font: 10px 'DM Mono', monospace;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 2px;
+}
+
+.ric-archetype-name {
+  font: 700 28px 'Barlow Condensed', sans-serif;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  text-shadow: 0 0 24px var(--ric-glow, rgba(250, 68, 84, 0.4));
+}
+
+.ric-tagline {
+  font: 500 12px 'DM Mono', monospace;
+  color: var(--muted);
+  margin-top: 2px;
+  font-style: italic;
+}
+
+.ric-description {
+  font: 400 12px 'Outfit', sans-serif;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-top: 6px;
+  max-width: 380px;
+  opacity: 0.8;
+}
+
+/* ---- BADGES ---- */
+.ric-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.ric-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font: 10px 'DM Mono', monospace;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.ric-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.ric-badge.best {
+  background: rgba(62, 207, 142, 0.1);
+  border: 1px solid rgba(62, 207, 142, 0.3);
+  color: #3ecf8e;
+}
+
+.ric-badge.secondary {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ric-badge.worst {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+/* ---- RIGHT SIDE ---- */
+.ric-right {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 180px;
+  flex-shrink: 0;
+  flex: 1;
+}
+
+.ric-section-title {
+  font: 10px 'DM Mono', monospace;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 2px;
+}
+
+/* ---- ROLE BARS ---- */
+.ric-role-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ric-role-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ric-role-bar-label {
+  font: 10px 'DM Mono', monospace;
+  color: var(--muted);
+  width: 68px;
+  flex-shrink: 0;
+}
+
+.ric-role-bar-track {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.ric-role-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ric-role-bar-pct {
+  font: 10px 'DM Mono', monospace;
+  color: var(--muted);
+  width: 28px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* ---- STAT CHIPS ---- */
+.ric-stat-row {
+  display: flex;
+  gap: 12px;
+}
+
+.ric-stat-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  gap: 2px;
+  flex: 1;
+}
+
+.ric-stat-val {
+  font: 700 16px 'Barlow Condensed', sans-serif;
+  color: var(--txt);
+  line-height: 1;
+}
+
+.ric-stat-lbl {
+  font: 9px 'DM Mono', monospace;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ---- ARCHETYPE SCORE BARS ---- */
+.ric-score-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ric-scores {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.ric-score-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ric-score-emoji {
+  font-size: 12px;
+  flex-shrink: 0;
+  width: 18px;
+  text-align: center;
+}
+
+.ric-score-bar-track {
+  flex: 1;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.ric-score-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ric-score-num {
+  font: 700 10px 'DM Mono', monospace;
+  width: 22px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 900px) {
+  .ric-inner {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .ric-right {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .ric-archetype-name {
+    font-size: 22px;
+  }
+
+  .ric-emoji {
+    font-size: 48px;
+  }
+}
+
+@media (max-width: 600px) {
+  .ric-left {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .ric-description {
+    display: none;
+  }
+}

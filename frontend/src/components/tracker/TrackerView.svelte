@@ -6,6 +6,7 @@
   import StatCards from './StatCards.svelte';
   import MatchHistory from './MatchHistory.svelte';
   import RrGraph from './RrGraph.svelte';
+  import RoleIdentityCard from './RoleIdentityCard.svelte';
   import PerformanceCalendar from './PerformanceCalendar.svelte';
   import PerfTrend from './PerfTrend.svelte';
   import AgentCards from './AgentCards.svelte';
@@ -283,12 +284,19 @@
       {mmrHistory}
     />
 
-    <PerformanceCalendar
-      allMatches={actFilteredMatches}
-      {mmrHistory}
-      playerName={playerState.name}
-      playerTag={playerState.tag}
-    />
+    <div class="perf-row span-12">
+      <PerformanceCalendar
+        allMatches={actFilteredMatches}
+        {mmrHistory}
+        playerName={playerState.name}
+        playerTag={playerState.tag}
+      />
+      <RoleIdentityCard
+        matches={actFilteredMatches}
+        playerName={playerState.name}
+        playerTag={playerState.tag}
+      />
+    </div>
 
     <!-- Q3: Performance Trend -->
     <div class="section-label" id="sec-trend">

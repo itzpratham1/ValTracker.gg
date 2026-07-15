@@ -116,7 +116,7 @@
   const LEGEND_RED   = ['#3d1a1e', '#8a2028', '#c0272f'];
 </script>
 
-<div class="card perf-calendar-card span-12 visible">
+<div class="card perf-calendar-card visible">
   <div class="card-accent-line"></div>
 
   <div class="perf-cal-header">

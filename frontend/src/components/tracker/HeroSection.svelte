@@ -1,6 +1,6 @@
 <script>
   import { player } from '../../lib/appStore';
-  import { getRankImgUrl, getRankFromRR, ACTS_TIMELINE } from '../../lib/constants';
+  import { getRankImgUrl, getRankFromRR } from '../../lib/constants';
   import { escapeHtml } from '../../lib/utils';
 
   export let mmrData = null;
@@ -12,7 +12,6 @@
   $: currentRR = mmrData?.current?.rr ?? 0;
   $: peakName = mmrData?.peak?.tier?.name || '—';
   $: peakImg = getRankImgUrl(peakName);
-  $: tierId = mmrData?.current?.tier?.id ?? 0;
   $: playerName = $player.name || '—';
   $: playerTag = $player.tag || '';
   $: modeLabel = { competitive:'Competitive', unrated:'Unrated', deathmatch:'Deathmatch', teamdeathmatch:'Team Deathmatch', swiftplay:'Swiftplay', spikerush:'Spike Rush' }[$player.mode] || $player.mode;
@@ -25,7 +24,6 @@
   $: isRanked = $player.mode === 'competitive';
 
   $: streak = computeStreak(matches);
-  $: rankPrediction = computeRankPrediction(matches, currentRR);
 
   function computeStreak(allMatches) {
     if (!allMatches || !allMatches.length) return { count: 0, type: null };
@@ -59,63 +57,6 @@
       base: match ? match[1] : name,
       suffix: match ? match[2] : ''
     };
-  }
-
-  function computeRankPrediction(allMatches, rr) {
-    if (!allMatches || allMatches.length === 0 || rr === undefined || rr === null) return null;
-
-    let rrGains = 0, rrLosses = 0;
-    let gainCount = 0, lossCount = 0;
-
-    allMatches.slice(0, 10).forEach(m => {
-      const p = m.players?.all_players?.find(pl =>
-        pl.name?.toLowerCase() === $player.name?.toLowerCase() &&
-        pl.tag?.toLowerCase() === $player.tag?.toLowerCase()
-      ) || m.players?.[0];
-      if (!p) return;
-      const myTeam = (p.team || '').toLowerCase();
-      const won = m.teams?.[myTeam]?.has_won || false;
-      const myRounds = m.teams?.[myTeam]?.rounds_won || 0;
-      const otherTeam = myTeam === 'red' ? 'blue' : 'red';
-      const otherRounds = m.teams?.[otherTeam]?.rounds_won || 0;
-      const scoreDiff = myRounds - otherRounds;
-
-      if (won) {
-        const gain = scoreDiff >= 13 ? 25 : scoreDiff >= 10 ? 22 : scoreDiff >= 7 ? 20 : 18;
-        rrGains += gain;
-        gainCount++;
-      } else {
-        const loss = Math.abs(scoreDiff) >= 13 ? 20 : Math.abs(scoreDiff) >= 10 ? 18 : Math.abs(scoreDiff) >= 7 ? 16 : 14;
-        rrLosses += loss;
-        lossCount++;
-      }
-    });
-
-    const avgGain = gainCount > 0 ? rrGains / gainCount : 18;
-    const avgLoss = lossCount > 0 ? rrLosses / lossCount : 15;
-
-    const totalWins = allMatches.filter(m => {
-      const me = m.players?.all_players?.find(pl =>
-        pl.name?.toLowerCase() === $player.name?.toLowerCase() &&
-        pl.tag?.toLowerCase() === $player.tag?.toLowerCase()
-      ) || m.players?.[0];
-      if (!me) return false;
-      const myTeam = (me.team || '').toLowerCase();
-      return m.teams?.[myTeam]?.has_won || false;
-    }).length;
-
-    const wr = allMatches.length > 5 ? (totalWins / allMatches.length) : 0.5;
-    const netGainPerMatch = (wr * avgGain) - ((1 - wr) * avgLoss);
-
-    if (netGainPerMatch > 2.5) {
-      const rrNeeded = 100 - (rr % 100);
-      const matchesNeeded = Math.ceil(rrNeeded / netGainPerMatch);
-      return { type: 'positive', text: `At your current pace, you'll hit the Next Rank in ~${matchesNeeded} games.` };
-    } else if (netGainPerMatch > 0) {
-      return { type: 'slow', text: 'You are climbing very slowly. Improve your win rate to rank up faster!' };
-    } else {
-      return { type: 'negative', text: 'Trend is negative. Focus on improvement to rank up!' };
-    }
   }
 </script>
 
@@ -162,11 +103,6 @@
               </span>
               <span id="rank-rr-txt">{currentRR} RR · Peak: {peakName}</span>
             </div>
-            {#if rankPrediction && isRanked}
-              <div class="hero-rank-prediction" id="rank-prediction">
-                {@html rankPrediction.text}
-              </div>
-            {/if}
           </div>
         </div>
       {/if}
