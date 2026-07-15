@@ -54,6 +54,110 @@
   $: card = me?.assets?.card?.large || me?.assets?.card?.wide || '';
   $: ecoRounds = parsedRounds.filter(r => findMyPs(r._ps)?.economy);
 
+  $: totalRounds = parsedRounds.length || match?.metadata?.rounds_played || 24;
+  
+  // Calculate current player's advanced stats
+  $: myKdDiff = me ? (matchStats.kills || 0) - (matchStats.deaths || 0) : 0;
+  $: myAcs = me ? (totalRounds ? Math.round((matchStats.score || 0) / totalRounds) : 0) : 0;
+  $: myAdr = me ? (totalRounds ? Math.round(dmgMade / totalRounds) : 0) : 0;
+  $: myDmgDelta = me ? (totalRounds ? Math.round((dmgMade - dmgRcvd) / totalRounds) : 0) : 0;
+
+  // Compute round-based stats: KAST, FK, FD, Multi-kills
+  let myKast = 0;
+  let myFk = 0;
+  let myFd = 0;
+  let myMulti3k = 0;
+  let myMulti4k = 0;
+  let myMulti5k = 0;
+
+  $: {
+    if (me && parsedRounds.length > 0) {
+      let kastRounds = 0;
+      let fk = 0;
+      let fd = 0;
+      let m3k = 0;
+      let m4k = 0;
+      let m5k = 0;
+
+      parsedRounds.forEach(r => {
+        // First, check for First Blood (FB) / First Death (FD)
+        let allRoundKills = [];
+        const psList = r._ps || [];
+        
+        psList.forEach(ps => {
+          const killEvents = ps.kill_events || ps.killEvents || [];
+          killEvents.forEach(k => {
+            allRoundKills.push({
+              time: k.kill_time_in_round ?? k.time_in_round ?? 0,
+              killer: k.killer_puuid || k.killer,
+              victim: k.victim_puuid || k.victim
+            });
+          });
+        });
+        
+        allRoundKills.sort((a, b) => a.time - b.time);
+        
+        let fbKiller = null;
+        let fbVictim = null;
+        if (allRoundKills.length > 0) {
+          fbKiller = allRoundKills[0].killer;
+          fbVictim = allRoundKills[0].victim;
+          
+          if (myPuuids.includes(fbKiller)) fk++;
+          if (myPuuids.includes(fbVictim)) fd++;
+        }
+        
+        // Next, find current player's stats in this round
+        const myPs = findMyPs(r._ps);
+        if (myPs) {
+          const rKills = typeof myPs.kills === 'number' ? myPs.kills : (myPs.kills?.length || myPs.kill_events?.length || 0);
+          const rDeaths = typeof myPs.deaths === 'number' ? myPs.deaths : (myPs.deaths?.length || (myPs.died ? 1 : 0));
+          const rAssists = typeof myPs.assists === 'number' ? myPs.assists : (myPs.assists?.length || 0);
+          
+          if (rKills === 3) m3k++;
+          else if (rKills === 4) m4k++;
+          else if (rKills >= 5) m5k++;
+          
+          // KAST calculation
+          const gotKill = rKills > 0;
+          const gotAssist = rAssists > 0;
+          const survived = rDeaths === 0;
+          
+          let traded = false;
+          if (!survived && fbVictim) {
+            const myDeath = allRoundKills.find(k => myPuuids.includes(k.victim));
+            if (myDeath) {
+              const killerPuuid = myDeath.killer;
+              const myDeathTime = myDeath.time;
+              const isMs = allRoundKills.some(k => k.time > 300);
+              const threshold = isMs ? 4000 : 4;
+              
+              const teammateKill = allRoundKills.find(k => 
+                k.victim === killerPuuid && 
+                k.time > myDeathTime && 
+                (k.time - myDeathTime) <= threshold
+              );
+              if (teammateKill) {
+                traded = true;
+              }
+            }
+          }
+          
+          if (gotKill || gotAssist || survived || traded) {
+            kastRounds++;
+          }
+        }
+      });
+
+      myKast = totalRounds ? Math.round((kastRounds / totalRounds) * 100) : 0;
+      myFk = fk;
+      myFd = fd;
+      myMulti3k = m3k;
+      myMulti4k = m4k;
+      myMulti5k = m5k;
+    }
+  }
+
   function computeBuyType(eco) {
     if (!eco) return 'ECO';
     const weapon = (typeof eco.weapon === 'object' && eco.weapon?.name) ? eco.weapon.name : (eco.weapon || '');
@@ -91,6 +195,53 @@
         <div class="dp-stat"><div class="dpv">{dmgRcvd}</div><div class="dpl">Dmg Received</div></div>
         <div class="dp-stat"><div class="dpv">{dmgMade && dmgRcvd ? (dmgMade / dmgRcvd).toFixed(2) : '—'}</div><div class="dpl">Dmg Ratio</div></div>
       </div>
+    </div>
+  </div>
+
+  <div class="panel-section">
+    <div class="panel-section-title">Advanced Match Stats</div>
+    <div class="detail-profile-stats" style="grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));">
+      <div class="dp-stat">
+        <div class="dpv">{myAcs}</div>
+        <div class="dpl">ACS (Combat Score)</div>
+      </div>
+      <div class="dp-stat">
+        <div class="dpv" style="color: {myKdDiff > 0 ? 'var(--win)' : myKdDiff < 0 ? 'var(--loss)' : 'var(--muted)'}; font-weight: bold;">
+          {myKdDiff > 0 ? '+' : ''}{myKdDiff}
+        </div>
+        <div class="dpl">KD Difference</div>
+      </div>
+      <div class="dp-stat">
+        <div class="dpv">{myKast}%</div>
+        <div class="dpl">KAST %</div>
+      </div>
+      <div class="dp-stat">
+        <div class="dpv">{myAdr}</div>
+        <div class="dpl">ADR (Avg Damage)</div>
+      </div>
+      <div class="dp-stat">
+        <div class="dpv" style="color: {myDmgDelta > 0 ? 'var(--win)' : myDmgDelta < 0 ? 'var(--loss)' : 'var(--muted)'};">
+          {myDmgDelta > 0 ? '+' : ''}{myDmgDelta}
+        </div>
+        <div class="dpl">Damage Delta/Rd</div>
+      </div>
+      <div class="dp-stat">
+        <div class="dpv" style="display:flex; gap:6px;">
+          <span style="color:var(--win); font-weight: bold;">{myFk}</span>
+          <span style="color:var(--muted);">/</span>
+          <span style="color:var(--loss);">{myFd}</span>
+        </div>
+        <div class="dpl">First Kills / Deaths</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel-section">
+    <div class="panel-section-title">Multi-Kill Rounds</div>
+    <div class="ability-grid" style="grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));">
+      <div class="ability-chip"><div class="ac-key">3 Kills</div><div class="ac-val">{myMulti3k}</div></div>
+      <div class="ability-chip"><div class="ac-key">4 Kills</div><div class="ac-val">{myMulti4k}</div></div>
+      <div class="ability-chip ult"><div class="ac-key">5 Kills (Ace)</div><div class="ac-val">{myMulti5k}</div></div>
     </div>
   </div>
 

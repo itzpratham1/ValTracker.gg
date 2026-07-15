@@ -72,6 +72,144 @@
   $: lobbyInfo = getLobbyRankInfo(allPlayers, myTeamId);
   $: totalRounds = match?.rounds?.length || match?.metadata?.rounds_played || 24;
 
+  function computeAdvancedStats(matchData, roundsCount) {
+    const statsMap = {};
+    if (!matchData) return statsMap;
+    
+    const players = getPlayerList(matchData);
+    
+    // Initialize stats for each player
+    players.forEach(p => {
+      const pId = p.puuid || p.name || '';
+      statsMap[pId] = {
+        kdDiff: (p.stats?.kills || 0) - (p.stats?.deaths || 0),
+        adr: roundsCount ? Math.round((p.damage_made || 0) / roundsCount) : 0,
+        dd: roundsCount ? Math.round(((p.damage_made || 0) - (p.damage_received || 0)) / roundsCount) : 0,
+        kastRounds: 0,
+        kast: 0,
+        firstKills: 0,
+        firstDeaths: 0,
+        multi3k: 0,
+        multi4k: 0,
+        multi5k: 0
+      };
+    });
+    
+    const rounds = matchData.rounds || [];
+    rounds.forEach((r, ri) => {
+      let allRoundKills = [];
+      let playerStats = r.player_stats || r.playerStats || [];
+      if (typeof playerStats === 'string') {
+        try { playerStats = JSON.parse(playerStats); } catch (e) { playerStats = []; }
+      }
+      if (!Array.isArray(playerStats)) playerStats = Object.values(playerStats);
+      
+      playerStats.forEach(ps => {
+        const killEvents = ps.kill_events || ps.killEvents || [];
+        killEvents.forEach(k => {
+          allRoundKills.push({
+            time: k.kill_time_in_round ?? k.time_in_round ?? 0,
+            killer: k.killer_puuid || k.killer,
+            victim: k.victim_puuid || k.victim
+          });
+        });
+      });
+      
+      // Sort kills by time to identify First Blood and First Death
+      allRoundKills.sort((a, b) => a.time - b.time);
+      
+      let fbKiller = null;
+      let fbVictim = null;
+      if (allRoundKills.length > 0) {
+        fbKiller = allRoundKills[0].killer;
+        fbVictim = allRoundKills[0].victim;
+        
+        const killerPlayer = players.find(p => 
+          (p.puuid && fbKiller && p.puuid === fbKiller) || 
+          (p.name && fbKiller && p.name.toLowerCase() === fbKiller.toLowerCase())
+        );
+        const victimPlayer = players.find(p => 
+          (p.puuid && fbVictim && p.puuid === fbVictim) || 
+          (p.name && fbVictim && p.name.toLowerCase() === fbVictim.toLowerCase())
+        );
+        
+        if (killerPlayer) {
+          const kId = killerPlayer.puuid || killerPlayer.name || '';
+          if (statsMap[kId]) statsMap[kId].firstKills++;
+        }
+        if (victimPlayer) {
+          const vId = victimPlayer.puuid || victimPlayer.name || '';
+          if (statsMap[vId]) statsMap[vId].firstDeaths++;
+        }
+      }
+      
+      // Compute KAST and Multi-kills per player for this round
+      playerStats.forEach(ps => {
+        const puuid = ps.player_puuid || ps.subject || ps.puuid || ps.player_id;
+        const playerObj = players.find(p => p.puuid === puuid || p.name === puuid);
+        if (!playerObj) return;
+        const pId = playerObj.puuid || playerObj.name || '';
+        
+        const pStats = statsMap[pId];
+        if (!pStats) return;
+        
+        const rKills = typeof ps.kills === 'number' ? ps.kills : (ps.kills?.length || ps.kill_events?.length || 0);
+        const rDeaths = typeof ps.deaths === 'number' ? ps.deaths : (ps.deaths?.length || (ps.died ? 1 : 0));
+        const rAssists = typeof ps.assists === 'number' ? ps.assists : (ps.assists?.length || 0);
+        
+        // Multi-kills
+        if (rKills === 3) pStats.multi3k++;
+        else if (rKills === 4) pStats.multi4k++;
+        else if (rKills >= 5) pStats.multi5k++;
+        
+        // KAST conditions
+        const gotKill = rKills > 0;
+        const gotAssist = rAssists > 0;
+        const survived = rDeaths === 0;
+        
+        let traded = false;
+        if (!survived && fbVictim) {
+          const myDeath = allRoundKills.find(k => 
+            (playerObj.puuid && k.victim === playerObj.puuid) || 
+            (playerObj.name && k.victim && playerObj.name.toLowerCase() === k.victim.toLowerCase())
+          );
+          if (myDeath) {
+            const killerPuuid = myDeath.killer;
+            const myDeathTime = myDeath.time;
+            const isMs = allRoundKills.some(k => k.time > 300);
+            const threshold = isMs ? 4000 : 4;
+            
+            const teammateKill = allRoundKills.find(k => 
+              k.victim === killerPuuid && 
+              k.time > myDeathTime && 
+              (k.time - myDeathTime) <= threshold
+            );
+            if (teammateKill) {
+              traded = true;
+            }
+          }
+        }
+        
+        if (gotKill || gotAssist || survived || traded) {
+          pStats.kastRounds++;
+        }
+      });
+    });
+    
+    // Calculate final KAST percentage
+    players.forEach(p => {
+      const pId = p.puuid || p.name || '';
+      const pStats = statsMap[pId];
+      if (pStats && roundsCount) {
+        pStats.kast = Math.round((pStats.kastRounds / roundsCount) * 100);
+      }
+    });
+    
+    return statsMap;
+  }
+
+  $: advancedStats = computeAdvancedStats(match, totalRounds);
+
   function isMe(player) {
     return player.name?.toLowerCase() === playerName.toLowerCase();
   }
@@ -111,21 +249,28 @@
       </div>
     {/if}
 
-    <table class="scoreboard">
+    <table class="scoreboard" style="min-width: 800px;">
       <thead>
         <tr>
           <th>PLAYER</th>
           <th>RANK</th>
+          <th>ACS</th>
+          <th>K/D</th>
           <th>K</th>
           <th>D</th>
           <th>A</th>
-          <th>K/D</th>
-          <th>ACS</th>
+          <th title="Kill Difference (Kills - Deaths)">+/-</th>
+          <th title="Average Damage per Round">ADR</th>
+          <th title="Average Damage Delta per Round">DD</th>
+          <th title="Killed/Assisted/Survived/Traded %">KAST</th>
           <th>HS%</th>
+          <th title="First Kills">FK</th>
+          <th title="First Deaths">FD</th>
+          <th title="Multi-Kill Rounds (3K / 4K / 5K)">MK</th>
         </tr>
       </thead>
       <tbody>
-        <tr><td colspan="8" class="team-label allied">YOUR TEAM</td></tr>
+        <tr><td colspan="15" class="team-label allied">YOUR TEAM</td></tr>
         {#each allied as p}
           {@const s = p.stats || {}}
           {@const k = s.kills || 0}
@@ -144,6 +289,15 @@
           {@const rankName = p.currenttier_patched || ''}
           {@const rankImg = rankName && rankName !== 'Unranked' ? getRankImgUrl(rankName) : ''}
           {@const rankColor = rankName ? getRankColor(rankName) : 'var(--muted)'}
+          {@const pId = p.puuid || p.name || ''}
+          {@const adv = advancedStats[pId] || {}}
+          {@const kdDiff = adv.kdDiff ?? (k - d)}
+          {@const adr = adv.adr ?? 0}
+          {@const dd = adv.dd ?? 0}
+          {@const kast = adv.kast ?? 0}
+          {@const fk = adv.firstKills ?? 0}
+          {@const fd = adv.firstDeaths ?? 0}
+          {@const mk = `${adv.multi3k || 0}/${adv.multi4k || 0}/${adv.multi5k || 0}`}
           <tr class:me={isMe(p)} class:match-mvp-row={isMatchMVP} class:team-mvp-row={isTeamMVP}>
             <td>
               <div style="display:flex;align-items:center;gap:7px;">
@@ -171,19 +325,30 @@
                 <span class="sb-rank-txt" style="color:{rankColor}">{escapeHtml(rankName || '—')}</span>
               </div>
             </td>
-            <td><b>{k}</b></td>
-            <td>{d}</td>
-            <td>{a}</td>
+            <td>{playerAcs}</td>
             <td>
               <div>{playerKd}</div>
               <div class="sb-kd-bar"><div class="sb-kd-fill" style="width:{kdPct}%"></div></div>
             </td>
-            <td>{playerAcs}</td>
+            <td><b>{k}</b></td>
+            <td>{d}</td>
+            <td>{a}</td>
+            <td style="color:{kdDiff > 0 ? 'var(--win)' : kdDiff < 0 ? 'var(--loss)' : 'var(--muted)'}; font-weight:bold;">
+              {kdDiff > 0 ? '+' : ''}{kdDiff}
+            </td>
+            <td>{adr}</td>
+            <td style="color:{dd > 0 ? 'var(--win)' : dd < 0 ? 'var(--loss)' : 'var(--muted)'};">
+              {dd > 0 ? '+' : ''}{dd}
+            </td>
+            <td>{kast}%</td>
             <td>{hsPct}%</td>
+            <td style="color:var(--win); font-weight:bold;">{fk}</td>
+            <td style="color:var(--loss);">{fd}</td>
+            <td style="font-size:11px; font-family:'DM Mono',monospace; color:var(--muted);">{mk}</td>
           </tr>
         {/each}
 
-        <tr><td colspan="8" class="team-label enemy">ENEMY TEAM</td></tr>
+        <tr><td colspan="15" class="team-label enemy">ENEMY TEAM</td></tr>
         {#each enemy as p}
           {@const s = p.stats || {}}
           {@const k = s.kills || 0}
@@ -200,6 +365,15 @@
           {@const rankName = p.currenttier_patched || ''}
           {@const rankImg = rankName && rankName !== 'Unranked' ? getRankImgUrl(rankName) : ''}
           {@const rankColor = rankName ? getRankColor(rankName) : 'var(--muted)'}
+          {@const pId = p.puuid || p.name || ''}
+          {@const adv = advancedStats[pId] || {}}
+          {@const kdDiff = adv.kdDiff ?? (k - d)}
+          {@const adr = adv.adr ?? 0}
+          {@const dd = adv.dd ?? 0}
+          {@const kast = adv.kast ?? 0}
+          {@const fk = adv.firstKills ?? 0}
+          {@const fd = adv.firstDeaths ?? 0}
+          {@const mk = `${adv.multi3k || 0}/${adv.multi4k || 0}/${adv.multi5k || 0}`}
           <tr>
             <td>
               <div style="display:flex;align-items:center;gap:7px;">
@@ -220,15 +394,26 @@
                 <span class="sb-rank-txt" style="color:{rankColor}">{escapeHtml(rankName || '—')}</span>
               </div>
             </td>
-            <td><b>{k}</b></td>
-            <td>{d}</td>
-            <td>{a}</td>
+            <td>{playerAcs}</td>
             <td>
               <div>{playerKd}</div>
               <div class="sb-kd-bar"><div class="sb-kd-fill" style="width:{kdPct}%"></div></div>
             </td>
-            <td>{playerAcs}</td>
+            <td><b>{k}</b></td>
+            <td>{d}</td>
+            <td>{a}</td>
+            <td style="color:{kdDiff > 0 ? 'var(--win)' : kdDiff < 0 ? 'var(--loss)' : 'var(--muted)'}; font-weight:bold;">
+              {kdDiff > 0 ? '+' : ''}{kdDiff}
+            </td>
+            <td>{adr}</td>
+            <td style="color:{dd > 0 ? 'var(--win)' : dd < 0 ? 'var(--loss)' : 'var(--muted)'};">
+              {dd > 0 ? '+' : ''}{dd}
+            </td>
+            <td>{kast}%</td>
             <td>{hsPct}%</td>
+            <td style="color:var(--win); font-weight:bold;">{fk}</td>
+            <td style="color:var(--loss);">{fd}</td>
+            <td style="font-size:11px; font-family:'DM Mono',monospace; color:var(--muted);">{mk}</td>
           </tr>
         {/each}
       </tbody>
