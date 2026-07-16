@@ -19,8 +19,9 @@
     { id: 'sec-agents', icon: '👤', label: 'Agents', number: '04' },
     { id: 'sec-maps', icon: '🗺️', label: 'Maps', number: '05' },
     { id: 'sec-weapons', icon: '🔫', label: 'Weapons', number: '06' },
-    { id: 'sec-matches', icon: '🎮', label: 'Matches', number: '07' },
-    { id: 'sec-ai-tools', icon: '🤖', label: 'AI Tools', number: '08' },
+    { id: 'sec-teammates', icon: '👥', label: 'Teammates', number: '07' },
+    { id: 'sec-matches', icon: '🎮', label: 'Matches', number: '08' },
+    { id: 'sec-ai-tools', icon: '🤖', label: 'AI Tools', number: '09' },
   ];
 
   function smoothScrollTo(sectionId, event) {

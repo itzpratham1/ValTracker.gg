@@ -61,7 +61,48 @@
     return { matchMVP, teamMVP };
   }
 
+  function getParties(players) {
+    const partiesMap = {};
+    if (!Array.isArray(players)) return {};
+    
+    players.forEach(p => {
+      if (p.party_id) {
+        if (!partiesMap[p.party_id]) {
+          partiesMap[p.party_id] = [];
+        }
+        partiesMap[p.party_id].push(p);
+      }
+    });
+
+    const multiPlayerParties = {};
+    let partyIndex = 0;
+    const colors = [
+      '#FF4655', // Red
+      '#00F0B5', // Teal/Cyan
+      '#FFB000', // Gold/Yellow
+      '#8C52FF', // Purple
+      '#FF57B2', // Pink
+      '#3B82F6', // Blue
+      '#10B981', // Emerald
+      '#F59E0B'  // Amber
+    ];
+
+    Object.keys(partiesMap).forEach(partyId => {
+      if (partiesMap[partyId].length >= 2) {
+        multiPlayerParties[partyId] = {
+          players: partiesMap[partyId],
+          letter: String.fromCharCode(65 + partyIndex), // A, B, C...
+          color: colors[partyIndex % colors.length]
+        };
+        partyIndex++;
+      }
+    });
+
+    return multiPlayerParties;
+  }
+
   $: allPlayers = getPlayerList(match);
+  $: parties = getParties(allPlayers);
   $: allied = allPlayers
     .filter(p => (p.team || '').toLowerCase() === myTeamId)
     .sort((a, b) => (b.stats?.score || 0) - (a.stats?.score || 0));
@@ -335,6 +376,9 @@
           {@const mk = `${adv.multi3k || 0}/${adv.multi4k || 0}/${adv.multi5k || 0}`}
           <tr class:me={isMe(p)} class:match-mvp-row={isMatchMVP} class:team-mvp-row={isTeamMVP}>
             <td>
+              {#if p.party_id && parties[p.party_id]}
+                <div class="sb-party-line" style="--party-color: {parties[p.party_id].color}" title="Queued together in party"></div>
+              {/if}
               <div style="display:flex;align-items:center;gap:7px;">
                 {#if agentIcon}
                   <img src={agentIcon} alt={p.character} style="width:26px;height:26px;object-fit:contain;border-radius:3px;background:var(--surface2);" on:error={(e) => e.target.style.display='none'}>
@@ -411,12 +455,17 @@
           {@const mk = `${adv.multi3k || 0}/${adv.multi4k || 0}/${adv.multi5k || 0}`}
           <tr>
             <td>
+              {#if p.party_id && parties[p.party_id]}
+                <div class="sb-party-line" style="--party-color: {parties[p.party_id].color}" title="Queued together in party"></div>
+              {/if}
               <div style="display:flex;align-items:center;gap:7px;">
                 {#if agentIcon}
                   <img src={agentIcon} alt={p.character} style="width:26px;height:26px;object-fit:contain;border-radius:3px;background:var(--surface2);" on:error={(e) => e.target.style.display='none'}>
                 {/if}
                 <div>
-                  <div class="sb-name">{escapeHtml(p.name || '—')}</div>
+                  <div class="sb-name">
+                    {escapeHtml(p.name || '—')}
+                  </div>
                   <div class="sb-agent">{escapeHtml((p.character || '—').toUpperCase())}</div>
                 </div>
               </div>

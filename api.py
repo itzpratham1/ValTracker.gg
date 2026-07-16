@@ -268,6 +268,7 @@ def compress_match_json(match_data):
             "character": p.get("character") or p.get("agent", {}).get("name"),
             "currenttier": p.get("currenttier"),
             "currenttier_patched": p.get("currenttier_patched") or p.get("currenttierpatched"),
+            "party_id": p.get("party_id") or p.get("partyId") or "",
             "stats": stats,
             "ability_casts": p.get("ability_casts"),
             "damage_made": p.get("damage_made"),

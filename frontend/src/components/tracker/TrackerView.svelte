@@ -5,6 +5,7 @@
   import HeroSection from './HeroSection.svelte';
   import StatCards from './StatCards.svelte';
   import MatchHistory from './MatchHistory.svelte';
+  import Teammates from './Teammates.svelte';
   import RrGraph from './RrGraph.svelte';
   import RoleIdentityCard from './RoleIdentityCard.svelte';
   import PerformanceCalendar from './PerformanceCalendar.svelte';
@@ -116,7 +117,7 @@
   function setupScrollTracker() {
     const SECTION_IDS = [
       'sec-combat', 'sec-performance', 'sec-trend', 'sec-agents', 'sec-maps',
-      'sec-weapons', 'sec-matches', 'sec-ai-tools'
+      'sec-weapons', 'sec-teammates', 'sec-matches', 'sec-ai-tools'
     ];
     let ticking = false;
     const OFFSET = 180;
@@ -370,11 +371,33 @@
       mode={playerState.mode}
     />
 
-    <!-- Q9: Recent Matches -->
+    <!-- Q9: Teammates -->
+    <div class="section-label" id="sec-teammates">
+      <span class="sl-text">Teammates</span>
+      <span class="sl-line"></span>
+      <span class="sl-num">09</span>
+    </div>
+    <Teammates
+      matches={actFilteredMatches}
+      playerName={playerState.name}
+      playerTag={playerState.tag}
+      on:viewProfile={(e) => {
+        const { name, tag } = e.detail;
+        setPlayer({ name, tag, region: playerState.region, mode: playerState.mode, loaded: false, fetching: true });
+        
+        const params = new URLSearchParams(window.location.search);
+        params.set('name', name);
+        params.set('tag', tag);
+        window.history.pushState({}, '', `${window.location.pathname}?${params.toString()}`);
+        onFetchStats();
+      }}
+    />
+
+    <!-- Q10: Recent Matches -->
     <div class="section-label" id="sec-matches">
       <span class="sl-text">Recent Matches</span>
       <span class="sl-line"></span>
-      <span class="sl-num">09</span>
+      <span class="sl-num">10</span>
     </div>
     <MatchHistory
       recentMatches={stats?.recentMatches || []}
@@ -386,12 +409,12 @@
       onShareMatch={(m) => selectedShareMatch = m}
     />
 
-    <!-- Q10: AI Tools -->
+    <!-- Q11: AI Tools -->
     <div class="section-label ai-premium-label" id="sec-ai-tools">
       <span class="sl-text ai-premium-text">AI Diagnostic Suite</span>
       <span class="sl-badge">Exclusive</span>
       <span class="sl-line ai-premium-line"></span>
-      <span class="sl-num">10</span>
+      <span class="sl-num">11</span>
     </div>
 
     <div class="ai-premium-wrapper">

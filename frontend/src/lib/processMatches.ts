@@ -181,7 +181,7 @@ export function processMatches(
     }
   }
 
-  let tK = 0, tD = 0, tA = 0, tS = 0, tHS = 0, tShots = 0, wins = 0, losses = 0, counted = 0;
+  let tK = 0, tD = 0, tA = 0, tS = 0, tHS = 0, tShots = 0, wins = 0, losses = 0, counted = 0, totalACS = 0;
   let totalKastRounds = 0;
   let totalRoundsPlayed = 0;
   let totalDamageMade = 0;
@@ -238,6 +238,7 @@ export function processMatches(
     const gameStart = rawGameStart ? rawGameStart * 1000 : null;
     const matchRoundsPlayed = (typeof myR === 'number' && typeof oppR === 'number') ? (myR + oppR) : (match.rounds?.length || 1);
     const matchACS = Math.round(sc / Math.max(1, matchRoundsPlayed));
+    totalACS += matchACS;
 
     const allP = getPlayerList(match);
     const lobbyRank = getLobbyRankInfo(allP, myTeamId);
@@ -382,7 +383,7 @@ export function processMatches(
     avgKills: +(tK / n).toFixed(1),
     avgDeaths: +(tD / n).toFixed(1),
     avgAssists: +(tA / n).toFixed(1),
-    avgACS: Math.round(tS / n / 100),
+    avgACS: Math.round(totalACS / n),
     hsRate: tShots ? Math.round((tHS / tShots) * 100) : 0,
     winRate: total ? Math.round((wins / total) * 100) : 0,
     wins,

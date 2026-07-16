@@ -17,7 +17,7 @@
     kills:  { label: 'Kills',     color: '#3ecf8e', fn: m => m.kills,                               fmt: v => v,            good: v => v >= 15  },
     deaths: { label: 'Deaths',    color: '#ff5757', fn: m => m.deaths,                              fmt: v => v,            good: v => v <= 12  },
     assists:{ label: 'Assists',   color: '#60a5fa', fn: m => m.assists,                             fmt: v => v,            good: v => v >= 4   },
-    acs:    { label: 'ACS',       color: '#a78bfa', fn: m => Math.round((m.score||0)/100),          fmt: v => v,            good: v => v >= 200 },
+    acs:    { label: 'ACS',       color: '#a78bfa', fn: m => m.acs || Math.round((m.score||0)/100),  fmt: v => v,            good: v => v >= 200 },
     hs:     { label: 'HS %',      color: '#fb923c', fn: m => m.shots ? Math.round((m.hs/m.shots)*100) : 0, fmt: v => v+'%', good: v => v >= 20  },
   };
 
