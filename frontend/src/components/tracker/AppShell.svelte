@@ -152,6 +152,11 @@
     console.log('[AppShell] fetchStats starting for', p.name, '#', p.tag, 'region:', p.region, 'mode:', p.mode);
     startFetch();
 
+    if (typeof window !== 'undefined') {
+      document.body.classList.remove('scrolled-down', 'scrolled-up');
+      window.scrollTo({ top: 0 });
+    }
+
     const enc = encodeURIComponent(p.name);
     const encTag = encodeURIComponent(p.tag);
     const isRanked = p.mode === 'competitive';

@@ -18,6 +18,7 @@
 
   let utilitiesOpen = false;
   let copied = false;
+  let topbarEl;
 
   function copyProfileLink() {
     navigator.clipboard?.writeText(window.location.href).then(() => {
@@ -97,9 +98,25 @@
   onMount(() => {
     window.addEventListener('scroll', handleScroll, { passive: true });
     document.addEventListener('click', closeDropdowns);
+
+    let resizeObserver;
+    if (topbarEl && typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver((entries) => {
+        for (let entry of entries) {
+          const rectHeight = entry.target.getBoundingClientRect().height;
+          document.documentElement.style.setProperty('--topbar-height', `${rectHeight}px`);
+        }
+      });
+      resizeObserver.observe(topbarEl);
+    }
+
     return () => {
       window.removeEventListener('scroll', handleScroll);
       document.removeEventListener('click', closeDropdowns);
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
+      document.body.classList.remove('scrolled-down', 'scrolled-up');
     };
   });
 
@@ -111,15 +128,21 @@
     const y = window.scrollY;
     scrolled = y > 20;
 
-    if ($currentView === 'tracker' && $player.loaded && y > 150) {
-      const diff = y - lastScrollY;
-      if (diff > 15) {
-        document.body.classList.add('scrolled-down');
-        document.body.classList.remove('scrolled-up');
-      } else if (diff < -15) {
-        document.body.classList.add('scrolled-up');
-        document.body.classList.remove('scrolled-down');
+    if ($currentView === 'tracker' && $player.loaded) {
+      if (y > 150) {
+        const diff = y - lastScrollY;
+        if (diff > 15) {
+          document.body.classList.add('scrolled-down');
+          document.body.classList.remove('scrolled-up');
+        } else if (diff < -15) {
+          document.body.classList.add('scrolled-up');
+          document.body.classList.remove('scrolled-down');
+        }
+      } else {
+        document.body.classList.remove('scrolled-down', 'scrolled-up');
       }
+    } else {
+      document.body.classList.remove('scrolled-down', 'scrolled-up');
     }
     lastScrollY = y;
   }
@@ -223,7 +246,7 @@
   }
 </script>
 
-<nav class="topbar">
+<nav class="topbar" bind:this={topbarEl}>
   <!-- Row 1: Main Header (Logo & Navigation) -->
   <div class="topbar-main-row">
     <a href="/" class="topbar-logo" on:click|preventDefault={goHome}>
