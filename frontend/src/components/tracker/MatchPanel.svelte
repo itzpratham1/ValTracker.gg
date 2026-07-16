@@ -58,6 +58,9 @@
     if (tab !== 'scoreboard' && tab !== 'ai' && !detailLoaded) {
       loadFullDetail();
     }
+    if (tab === 'ai') {
+      runAnalysis();
+    }
   }
 
   async function loadFullDetail() {
@@ -822,9 +825,6 @@
     <div class="match-ai-wrap" style="margin-top:0;">
       <div class="match-ai-header">
         <div class="match-ai-title">ValBot Match Analysis</div>
-        <button class="match-ai-btn" on:click={runAnalysis} disabled={aiLoading}>
-          {aiLoading ? '⏳ Analysing...' : aiCache ? '🔄 Re-analyse' : 'Analyse This Match'}
-        </button>
       </div>
       {#if aiLoading}
         <div class="match-ai-loading active">

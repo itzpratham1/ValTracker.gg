@@ -13,6 +13,12 @@
     onSelect(player.name, player.tag, player.region, player.mode);
   }
 
+  function handleDelete(e, name, tag) {
+    e.stopPropagation();
+    playSound('error');
+    recentSearches.remove(name, tag);
+  }
+
   function handleClear() {
     playSound('error');
     recentSearches.clear();
@@ -36,10 +42,13 @@
       <div class="rs-empty">No recent searches yet.</div>
     {:else}
       {#each $recentSearches as player (player.name + player.tag)}
-        <button 
+        <div 
           class="rs-item" 
+          role="button" 
+          tabindex="0"
           on:mouseenter={playHover} 
           on:click={() => handleSelect(player)}
+          on:keydown={(e) => e.key === 'Enter' && handleSelect(player)}
         >
           {#if player.rankImg}
             <img src={player.rankImg} alt="" class="rs-rank-img">
@@ -51,7 +60,8 @@
             <span class="rs-player-tag">#{escapeHtml(player.tag)}</span>
           </div>
           <span class="rs-region">{escapeHtml(player.region)}</span>
-        </button>
+          <button class="rs-delete" on:mouseenter={playHover} on:click={(e) => handleDelete(e, player.name, player.tag)} title="Remove">✕</button>
+        </div>
       {/each}
     {/if}
   </div>
@@ -200,5 +210,28 @@
     border-radius: 2px;
     flex-shrink: 0;
     background: rgba(255, 255, 255, 0.02);
+  }
+
+  .rs-delete {
+    background: none;
+    border: none;
+    color: var(--muted2, #5b5b66);
+    font-size: 9px;
+    cursor: pointer;
+    padding: 2px 5px;
+    border-radius: 3px;
+    transition: all 0.2s;
+    opacity: 0;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .rs-item:hover .rs-delete {
+    opacity: 1;
+  }
+
+  .rs-delete:hover {
+    color: #fa4454;
+    background: rgba(250, 68, 84, 0.1);
   }
 </style>

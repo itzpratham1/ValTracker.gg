@@ -138,6 +138,16 @@ function createRecentStore() {
         return updated;
       });
     },
+    remove(name: string, tag: string) {
+      update(recent => {
+        const updated = recent.filter(
+          r => !(r.name.toLowerCase() === name.toLowerCase() &&
+                 r.tag.toLowerCase() === tag.toLowerCase())
+        );
+        saveToStorage(RECENT_KEY, updated);
+        return updated;
+      });
+    },
     clear() {
       set([]);
       saveToStorage(RECENT_KEY, []);
