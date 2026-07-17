@@ -532,20 +532,157 @@ const structuredData = {
   <script define:vars={{ publicApiUrl: import.meta.env.PUBLIC_API_URL || '' }}>
     window.PUBLIC_API_URL = publicApiUrl;
   </script>
-  <script is:inline src="/landing.js"></script>
+
+  <!-- ── Navbar scroll effect (inline to guarantee execution) ── -->
+  <script is:inline>
+    (function() {
+      var nav = document.getElementById('main-nav');
+      var ticking = false;
+      if (nav) {
+        window.addEventListener('scroll', function() {
+          if (!ticking) {
+            requestAnimationFrame(function() {
+              nav.classList.toggle('scrolled', window.scrollY > 20);
+              ticking = false;
+            });
+            ticking = true;
+          }
+        }, { passive: true });
+      }
+    })();
+  </script>
+
+  <!-- ── Parallax scroll effects (inline) ── -->
+  <script is:inline>
+    (function() {
+      var heroGrid = document.querySelector('.hero-grid');
+      var heroGlow = document.querySelector('.hero-glow');
+      var heroGlow2 = document.querySelector('.hero-glow-2');
+      var heroContent = document.querySelector('.hero-content');
+      var heroMockup = document.querySelector('.hero-mockup-wrap');
+      var ticking = false;
+      window.addEventListener('scroll', function() {
+        if (!ticking) {
+          requestAnimationFrame(function() {
+            var scrollY = window.scrollY;
+            if (scrollY < window.innerHeight * 1.5) {
+              if (heroGrid) heroGrid.style.transform = 'perspective(600px) rotateX(20deg) translateY(' + (scrollY * 0.15) + 'px)';
+              if (heroGlow) heroGlow.style.transform = 'translate(-50%, calc(-50% + ' + (scrollY * 0.25) + 'px))';
+              if (heroGlow2) heroGlow2.style.transform = 'translateY(' + (scrollY * -0.1) + 'px)';
+              if (heroContent) heroContent.style.transform = 'translateY(' + (scrollY * 0.08) + 'px)';
+              if (heroMockup) heroMockup.style.transform = 'translateY(' + (scrollY * -0.05) + 'px)';
+            }
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }, { passive: true });
+      /* Mouse move parallax for background glow */
+      var heroBg = document.querySelector('.hero-bg');
+      if (heroBg && window.innerWidth > 1024 && window.matchMedia('(hover: hover)').matches) {
+        window.addEventListener('mousemove', function(e) {
+          var x = (e.clientX / window.innerWidth - 0.5) * 35;
+          var y = (e.clientY / window.innerHeight - 0.5) * 35;
+          heroBg.style.setProperty('--mouse-x', x + 'px');
+          heroBg.style.setProperty('--mouse-y', y + 'px');
+        });
+      }
+    })();
+  </script>
+
+  <!-- ── Scroll reveal (IntersectionObserver — inline for reliability) ── -->
+  <script is:inline>
+    (function() {
+      var allEls = document.querySelectorAll('.bento-card, .reveal, .step-item');
+      if (allEls.length) {
+        var obs = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              var el = entry.target;
+              if (el.classList.contains('bento-card')) {
+                var cards = document.querySelectorAll('.bento-card');
+                var idx = Array.prototype.indexOf.call(cards, el);
+                setTimeout(function() { el.classList.add('visible'); }, idx * 80);
+              } else if (el.classList.contains('step-item')) {
+                var steps = document.querySelectorAll('.step-item');
+                var idx = Array.prototype.indexOf.call(steps, el);
+                setTimeout(function() { el.classList.add('visible'); }, idx * 150);
+              } else {
+                el.classList.add('visible');
+              }
+              obs.unobserve(el);
+            }
+          });
+        }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+        allEls.forEach(function(el) { obs.observe(el); });
+      }
+    })();
+  </script>
+
+  <!-- ── Counter animation (inline) ── -->
+  <script is:inline>
+    (function() {
+      var counters = [
+        { el: document.getElementById('counter-matches'), target: 530, suffix: '+' },
+        { el: document.getElementById('counter-features'), target: 12, suffix: '+' },
+        { el: document.getElementById('counter-free'), target: 100, suffix: '%' }
+      ];
+      var apiBase = window.PUBLIC_API_URL || '';
+      fetch(apiBase + '/api/landing-stats')
+        .then(function(r) { if (r.ok) return r.json(); throw new Error(); })
+        .then(function(data) {
+          if (data && typeof data.matches_analysed === 'number') {
+            var c = counters.find(function(c) { return c.el && c.el.id === 'counter-matches'; });
+            if (c) c.target = data.matches_analysed;
+          }
+          if (data && typeof data.features_count === 'number') {
+            var c = counters.find(function(c) { return c.el && c.el.id === 'counter-features'; });
+            if (c) c.target = data.features_count;
+          }
+        })
+        .catch(function() {});
+      function easeOutQuart(t) { return 1 - Math.pow(1 - t, 4); }
+      function animateCounter(counter) {
+        if (!counter.el) return;
+        var duration = 1800;
+        var start = performance.now();
+        function step(now) {
+          var elapsed = now - start;
+          var progress = Math.min(elapsed / duration, 1);
+          counter.el.textContent = Math.round(easeOutQuart(progress) * counter.target) + counter.suffix;
+          if (progress < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+      var statsBar = document.getElementById('stats-bar');
+      if (statsBar) {
+        var obs = new IntersectionObserver(function(entry) {
+          if (entry[0].isIntersecting) {
+            counters.forEach(function(c) { animateCounter(c); });
+            obs.unobserve(statsBar);
+          }
+        }, { threshold: 0.4 });
+        obs.observe(statsBar);
+      }
+    })();
+  </script>
+
+  <!-- ── Ticker live stats (inline) ── -->
   <script is:inline>
     (function() {
       var apiBase = window.PUBLIC_API_URL || '';
-      fetch(apiBase + '/api/landing-stats').then(r=>r.json()).then(d=>{
-        if(d&&d.matches_analysed){
-          var n=d.matches_analysed+'+';
-          document.querySelectorAll('.ticker-item').forEach(function(el){
-            if(el.textContent.includes('530+')) el.innerHTML=el.innerHTML.replace('530+',n);
+      fetch(apiBase + '/api/landing-stats').then(function(r) { return r.json(); }).then(function(d) {
+        if (d && d.matches_analysed) {
+          var n = d.matches_analysed + '+';
+          document.querySelectorAll('.ticker-item').forEach(function(el) {
+            if (el.textContent.indexOf('530+') !== -1) el.innerHTML = el.innerHTML.replace('530+', n);
           });
         }
-      }).catch(function(){});
+      }).catch(function() {});
     })();
   </script>
+
+  <!-- ── Mobile nav menu (inline) ── -->
   <script is:inline>
     (function(){
       var toggle = document.getElementById('nav-mobile-toggle');
@@ -584,6 +721,9 @@ const structuredData = {
       }
     })();
   </script>
+
+  <!-- ── Non-critical effects (particles, tilt, lightbox) loaded async ── -->
+  <script is:inline src="/landing.js" defer></script>
 </Layout>
 
 

@@ -1,18 +1,3 @@
-/* ── Navbar scroll effect ── */
-const nav = document.getElementById('main-nav');
-let ticking = false;
-window.addEventListener('scroll', () => {
-  if (!ticking) {
-    requestAnimationFrame(() => {
-      nav.classList.toggle('scrolled', window.scrollY > 20);
-      ticking = false;
-    });
-    ticking = true;
-  }
-}, { passive: true });
-
-
-
 /* ── Hero Canvas Particles — interactive, connected, mouse-reactive ── */
 (function initParticles() {
   const canvas = document.getElementById('hero-canvas');
@@ -145,52 +130,6 @@ window.addEventListener('scroll', () => {
   visObs.observe(canvas);
 })();
 
-/* ── Parallax scroll effects ── */
-(function initParallax() {
-  const heroGrid = document.querySelector('.hero-grid');
-  const heroGlow = document.querySelector('.hero-glow');
-  const heroGlow2 = document.querySelector('.hero-glow-2');
-  const heroContent = document.querySelector('.hero-content');
-  const heroMockup = document.querySelector('.hero-mockup-wrap');
-  const obsMockup = document.querySelector('.obs-mockup');
-  const heroBg = document.querySelector('.hero-bg');
-  let ticking = false;
-
-  window.addEventListener('scroll', () => {
-    if (!ticking) {
-      requestAnimationFrame(() => {
-        const scrollY = window.scrollY;
-        if (scrollY < window.innerHeight * 1.5) {
-          if (heroGrid) heroGrid.style.transform = `perspective(600px) rotateX(20deg) translateY(${scrollY * 0.15}px)`;
-          if (heroGlow) heroGlow.style.transform = `translate(-50%, calc(-50% + ${scrollY * 0.25}px))`;
-          if (heroGlow2) heroGlow2.style.transform = `translateY(${scrollY * -0.1}px)`;
-          if (heroContent) heroContent.style.transform = `translateY(${scrollY * 0.08}px)`;
-          if (heroMockup) heroMockup.style.transform = `translateY(${scrollY * -0.05}px)`;
-        }
-        if (obsMockup) {
-          const rect = obsMockup.getBoundingClientRect();
-          if (rect.top < window.innerHeight && rect.bottom > 0) {
-            const progress = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
-            obsMockup.style.transform = `translateY(${(progress - 0.5) * -30}px)`;
-          }
-        }
-        ticking = false;
-      });
-      ticking = true;
-    }
-  }, { passive: true });
-
-  /* Mouse move parallax for background glow */
-  if (heroBg && window.innerWidth > 1024 && window.matchMedia('(hover: hover)').matches) {
-    window.addEventListener('mousemove', (e) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 35;
-      const y = (e.clientY / window.innerHeight - 0.5) * 35;
-      heroBg.style.setProperty('--mouse-x', `${x}px`);
-      heroBg.style.setProperty('--mouse-y', `${y}px`);
-    });
-  }
-})();
-
 /* ── 3D Tilt on bento cards (classy, smooth & subtle — disabled on mobile/touchscreen) ── */
 (function initTiltCards() {
   const cards = document.querySelectorAll('.bento-card');
@@ -262,97 +201,6 @@ window.addEventListener('scroll', () => {
 })();
 
 
-
-/* ── Unified scroll reveal (single observer for all) ── */
-(function initScrollReveal() {
-  const allEls = document.querySelectorAll('.bento-card, .reveal, .step-item');
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const el = entry.target;
-        if (el.classList.contains('bento-card')) {
-          const cards = document.querySelectorAll('.bento-card');
-          const idx = Array.from(cards).indexOf(el);
-          setTimeout(() => el.classList.add('visible'), idx * 80);
-        } else if (el.classList.contains('step-item')) {
-          const steps = document.querySelectorAll('.step-item');
-          const idx = Array.from(steps).indexOf(el);
-          setTimeout(() => el.classList.add('visible'), idx * 150);
-        } else {
-          el.classList.add('visible');
-        }
-        obs.unobserve(el);
-      }
-    });
-  }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
-  allEls.forEach(el => obs.observe(el));
-})();
-
-/* ── Counter animation ── */
-(function initCounters() {
-  const counters = [
-    { el: document.getElementById('counter-matches'),  target: 530, suffix: '+' },
-    { el: document.getElementById('counter-features'), target: 12,  suffix: '+' },
-    { el: document.getElementById('counter-free'),     target: 100, suffix: '%' }
-  ];
-
-  // Fetch dynamic stats from the API if possible
-  const apiBase = window.PUBLIC_API_URL || '';
-  fetch(apiBase + '/api/landing-stats')
-    .then(res => {
-      if (!res.ok) throw new Error('API response error');
-      return res.json();
-    })
-    .then(data => {
-      if (data && typeof data.matches_analysed === 'number') {
-        const matchesCounter = counters.find(c => c.el && c.el.id === 'counter-matches');
-        if (matchesCounter) {
-          matchesCounter.target = data.matches_analysed;
-        }
-      }
-      if (data && typeof data.features_count === 'number') {
-        const featuresCounter = counters.find(c => c.el && c.el.id === 'counter-features');
-        if (featuresCounter) {
-          featuresCounter.target = data.features_count;
-        }
-      }
-      if (data && typeof data.free_forever === 'number') {
-        const freeCounter = counters.find(c => c.el && c.el.id === 'counter-free');
-        if (freeCounter) {
-          freeCounter.target = data.free_forever;
-        }
-      }
-    })
-    .catch(err => {
-      console.warn('[ValTracker] Failed to fetch dynamic landing stats, using defaults:', err);
-    });
-
-  function easeOutQuart(t) { return 1 - Math.pow(1 - t, 4); }
-
-  function animateCounter(counter) {
-    if (!counter.el) return;
-    const duration = 1800;
-    const start = performance.now();
-    function step(now) {
-      const elapsed = now - start;
-      const progress = Math.min(elapsed / duration, 1);
-      counter.el.textContent = Math.round(easeOutQuart(progress) * counter.target) + counter.suffix;
-      if (progress < 1) requestAnimationFrame(step);
-    }
-    requestAnimationFrame(step);
-  }
-
-  const statsBar = document.getElementById('stats-bar');
-  if (statsBar) {
-    const obs = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        counters.forEach(c => animateCounter(c));
-        obs.unobserve(statsBar);
-      }
-    }, { threshold: 0.4 });
-    obs.observe(statsBar);
-  }
-})();
 
 /* ── Lightbox Image Zoom (Interactive Zoom & Pan System) ── */
 (function initLightbox() {

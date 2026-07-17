@@ -1028,8 +1028,6 @@ h1.hero-headline span.accent-line {
 .section {
   padding: 100px 48px;
   position: relative;
-  content-visibility: auto;
-  contain-intrinsic-size: 0 800px;
 }
 
 .section-inner {
@@ -1441,8 +1439,6 @@ h3.bento-title {
   background: var(--bg-secondary);
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
-  content-visibility: auto;
-  contain-intrinsic-size: 0 300px;
 }
 
 .stats-bar-inner {
@@ -1571,8 +1567,6 @@ h3.step-title {
 ════════════════════════════════════════ */
 .final-cta-section {
   padding: 100px 48px;
-  content-visibility: auto;
-  contain-intrinsic-size: 0 600px;
 }
 
 .final-cta-card {
@@ -1634,8 +1628,6 @@ footer {
   background: #0a0a0d;
   border-top: 1px solid var(--border);
   padding: 48px 48px 32px;
-  content-visibility: auto;
-  contain-intrinsic-size: 0 400px;
 }
 
 .footer-main {
