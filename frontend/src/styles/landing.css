@@ -1105,17 +1105,14 @@ h2.section-title {
   overflow: hidden;
   cursor: default;
   opacity: 0;
-  transition: border-color 0.25s, box-shadow 0.25s, transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transform: translateY(32px);
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
   transform-style: preserve-3d;
 }
 
-@keyframes bentoIn {
-  from { opacity: 0; transform: translateY(32px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); }
-  to   { opacity: 1; transform: translateY(0) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale3d(var(--scale, 1), var(--scale, 1), var(--scale, 1)); }
-}
-
 .bento-card.visible {
-  animation: bentoIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .bento-card:hover {
@@ -1513,15 +1510,12 @@ h3.bento-title {
   z-index: 1;
   opacity: 0;
   transform: translateY(20px);
-}
-
-@keyframes stepIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
+  transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
 .step-item.visible {
-  animation: stepIn 0.5s ease forwards;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .step-num-wrap {
@@ -1737,15 +1731,12 @@ footer {
 .reveal {
   opacity: 0;
   transform: translateY(24px);
-}
-
-@keyframes revealIn {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
+  transition: opacity 0.55s ease, transform 0.55s ease;
 }
 
 .reveal.visible {
-  animation: revealIn 0.55s ease forwards;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* ════════════════════════════════════════
