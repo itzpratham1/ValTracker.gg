@@ -590,33 +590,77 @@ const structuredData = {
     })();
   </script>
 
-  <!-- ── Scroll reveal (IntersectionObserver — inline for reliability) ── -->
+  <!-- ── Scroll reveal (Web Animations API — bypasses CSS cascade entirely) ── -->
   <script is:inline>
     (function() {
+      var mm = window.matchMedia('(prefers-reduced-motion: reduce)');
+      var isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+      if (mm.matches || isTouch) return;
+
       requestAnimationFrame(function() {
-        var allEls = document.querySelectorAll('.bento-card, .reveal, .step-item');
-        if (allEls.length) {
-          var obs = new IntersectionObserver(function(entries) {
-            entries.forEach(function(entry) {
-              if (entry.isIntersecting) {
-                var el = entry.target;
-                if (el.classList.contains('bento-card')) {
-                  var cards = document.querySelectorAll('.bento-card');
-                  var idx = Array.prototype.indexOf.call(cards, el);
-                  setTimeout(function() { el.classList.add('visible'); }, idx * 80);
-                } else if (el.classList.contains('step-item')) {
-                  var steps = document.querySelectorAll('.step-item');
-                  var idx = Array.prototype.indexOf.call(steps, el);
-                  setTimeout(function() { el.classList.add('visible'); }, idx * 150);
-                } else {
-                  el.classList.add('visible');
-                }
-                obs.unobserve(el);
-              }
-            });
-          }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
-          allEls.forEach(function(el) { obs.observe(el); });
+        var cards = document.querySelectorAll('.bento-card');
+        var reveals = document.querySelectorAll('.reveal');
+        var steps = document.querySelectorAll('.step-item');
+
+        var allEls = [];
+        cards.forEach(function(e) { allEls.push(e); });
+        reveals.forEach(function(e) { allEls.push(e); });
+        steps.forEach(function(e) { allEls.push(e); });
+        if (!allEls.length) return;
+
+        function getOpts(el, list, stagger) {
+          var idx = Array.prototype.indexOf.call(list, el);
+          return { delay: idx * stagger, duration: 550, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fill: 'forwards' };
         }
+
+        function setInitial(el) {
+          if (el.classList.contains('bento-card')) {
+            el.style.setProperty('opacity', '0', 'important');
+            el.style.setProperty('transform', 'translateY(32px)', 'important');
+          } else if (el.classList.contains('step-item')) {
+            el.style.setProperty('opacity', '0', 'important');
+            el.style.setProperty('transform', 'translateY(20px)', 'important');
+          } else {
+            el.style.setProperty('opacity', '0', 'important');
+            el.style.setProperty('transform', 'translateY(24px)', 'important');
+          }
+        }
+        allEls.forEach(setInitial);
+
+        requestAnimationFrame(function() {
+          if ('IntersectionObserver' in window) {
+            var obs = new IntersectionObserver(function(entries) {
+              entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                  var el = entry.target;
+                  if (el.classList.contains('bento-card')) {
+                    el.animate([
+                      { opacity: 0, transform: 'translateY(32px)' },
+                      { opacity: 1, transform: 'translateY(0px)' }
+                    ], getOpts(el, cards, 80));
+                  } else if (el.classList.contains('step-item')) {
+                    el.animate([
+                      { opacity: 0, transform: 'translateY(20px)' },
+                      { opacity: 1, transform: 'translateY(0px)' }
+                    ], getOpts(el, steps, 150));
+                  } else {
+                    el.animate([
+                      { opacity: 0, transform: 'translateY(24px)' },
+                      { opacity: 1, transform: 'translateY(0px)' }
+                    ], { duration: 550, easing: 'ease', fill: 'forwards' });
+                  }
+                  obs.unobserve(el);
+                }
+              });
+            }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+            allEls.forEach(function(el) { obs.observe(el); });
+          } else {
+            allEls.forEach(function(el) {
+              el.style.setProperty('opacity', '1', 'important');
+              el.style.setProperty('transform', 'none', 'important');
+            });
+          }
+        });
       });
     })();
   </script>
