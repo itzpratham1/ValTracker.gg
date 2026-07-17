@@ -593,29 +593,31 @@ const structuredData = {
   <!-- ── Scroll reveal (IntersectionObserver — inline for reliability) ── -->
   <script is:inline>
     (function() {
-      var allEls = document.querySelectorAll('.bento-card, .reveal, .step-item');
-      if (allEls.length) {
-        var obs = new IntersectionObserver(function(entries) {
-          entries.forEach(function(entry) {
-            if (entry.isIntersecting) {
-              var el = entry.target;
-              if (el.classList.contains('bento-card')) {
-                var cards = document.querySelectorAll('.bento-card');
-                var idx = Array.prototype.indexOf.call(cards, el);
-                setTimeout(function() { el.classList.add('visible'); }, idx * 80);
-              } else if (el.classList.contains('step-item')) {
-                var steps = document.querySelectorAll('.step-item');
-                var idx = Array.prototype.indexOf.call(steps, el);
-                setTimeout(function() { el.classList.add('visible'); }, idx * 150);
-              } else {
-                el.classList.add('visible');
+      requestAnimationFrame(function() {
+        var allEls = document.querySelectorAll('.bento-card, .reveal, .step-item');
+        if (allEls.length) {
+          var obs = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+              if (entry.isIntersecting) {
+                var el = entry.target;
+                if (el.classList.contains('bento-card')) {
+                  var cards = document.querySelectorAll('.bento-card');
+                  var idx = Array.prototype.indexOf.call(cards, el);
+                  setTimeout(function() { el.classList.add('visible'); }, idx * 80);
+                } else if (el.classList.contains('step-item')) {
+                  var steps = document.querySelectorAll('.step-item');
+                  var idx = Array.prototype.indexOf.call(steps, el);
+                  setTimeout(function() { el.classList.add('visible'); }, idx * 150);
+                } else {
+                  el.classList.add('visible');
+                }
+                obs.unobserve(el);
               }
-              obs.unobserve(el);
-            }
-          });
-        }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
-        allEls.forEach(function(el) { obs.observe(el); });
-      }
+            });
+          }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+          allEls.forEach(function(el) { obs.observe(el); });
+        }
+      });
     })();
   </script>
 

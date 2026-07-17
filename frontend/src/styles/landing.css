@@ -1104,17 +1104,18 @@ h2.section-title {
   position: relative;
   overflow: hidden;
   cursor: default;
-  transition: border-color 0.25s, box-shadow 0.25s, transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
   opacity: 0;
-  transform: translateY(24px) rotateX(0deg) rotateY(0deg);
+  transition: border-color 0.25s, box-shadow 0.25s, transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
   transform-style: preserve-3d;
-  will-change: transform;
+}
+
+@keyframes bentoIn {
+  from { opacity: 0; transform: translateY(32px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); }
+  to   { opacity: 1; transform: translateY(0) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale3d(var(--scale, 1), var(--scale, 1), var(--scale, 1)); }
 }
 
 .bento-card.visible {
-  opacity: 1;
-  transform: translateY(0) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale3d(var(--scale, 1), var(--scale, 1), var(--scale, 1));
-  transition: border-color 0.25s, box-shadow 0.25s, transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.5s ease;
+  animation: bentoIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .bento-card:hover {
@@ -1512,12 +1513,15 @@ h3.bento-title {
   z-index: 1;
   opacity: 0;
   transform: translateY(20px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+@keyframes stepIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .step-item.visible {
-  opacity: 1;
-  transform: translateY(0);
+  animation: stepIn 0.5s ease forwards;
 }
 
 .step-num-wrap {
@@ -1733,11 +1737,15 @@ footer {
 .reveal {
   opacity: 0;
   transform: translateY(24px);
-  transition: opacity 0.55s ease, transform 0.55s ease;
 }
+
+@keyframes revealIn {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 .reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
+  animation: revealIn 0.55s ease forwards;
 }
 
 /* ════════════════════════════════════════
@@ -1837,8 +1845,10 @@ body.nav-menu-open {
   .hero-bg { transform: none !important; transition: none; }
   .hero-browser-frame { animation: none; }
   .btn-hero { animation: none; }
-  .bento-card, .bento-card.visible { transform: none !important; }
+  .bento-card, .bento-card.visible { opacity: 1 !important; transform: none !important; animation: none !important; }
   .bento-card::before { display: none; }
+  .reveal, .reveal.visible { opacity: 1 !important; transform: none !important; animation: none !important; }
+  .step-item, .step-item.visible { opacity: 1 !important; transform: none !important; animation: none !important; }
 }
 @media (prefers-reduced-motion: reduce) {
   .hero-grid { animation: none; }
@@ -1849,14 +1859,16 @@ body.nav-menu-open {
   .hero-bg { transform: none !important; transition: none; }
   #hero-canvas { display: none; }
   .ticker-track { animation: none; }
-  .bento-card, .bento-card.visible { transform: none !important; }
+  .bento-card, .bento-card.visible { opacity: 1 !important; transform: none !important; animation: none !important; }
+  .reveal, .reveal.visible { opacity: 1 !important; transform: none !important; animation: none !important; }
+  .step-item, .step-item.visible { opacity: 1 !important; transform: none !important; animation: none !important; }
 }
 
 /* ════════════════════════════════════════
    MOBILE RESPONSIVE
 ════════════════════════════════════════ */
 @media (max-width: 1024px) {
-  .bento-card, .bento-card.visible {
+  .bento-card.visible {
     transform: translateY(0) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1) !important;
   }
   .bento-card.span-12 { grid-column: span 12; }

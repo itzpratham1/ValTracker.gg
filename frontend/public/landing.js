@@ -367,9 +367,9 @@
 /* ── Reduce motion support ── */
 if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
   document.querySelectorAll('.bento-card, .reveal, .step-item, .njt-card, .njt-table-container, .njt-cta').forEach(el => {
-    el.style.transition = 'none';
     el.style.opacity = '1';
     el.style.transform = 'none';
+    el.style.animation = 'none';
     el.classList.add('visible');
   });
   const canvas = document.getElementById('hero-canvas');
