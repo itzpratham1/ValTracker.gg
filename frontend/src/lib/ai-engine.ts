@@ -71,8 +71,8 @@ export interface AIStats {
 }
 
 export function buildStatsForAI(matches: any[], playerName: string, playerTag: string): AIStats {
-  let tK = 0, tD = 0, tA = 0, tS = 0, tHS = 0, tShots = 0, wins = 0, losses = 0, n = 0;
-  const agentMap: Record<string, { matches: number; wins: number; kills: number; deaths: number; score: number }> = {};
+  let tK = 0, tD = 0, tA = 0, tS = 0, tHS = 0, tShots = 0, wins = 0, losses = 0, n = 0, tRounds = 0;
+  const agentMap: Record<string, { matches: number; wins: number; kills: number; deaths: number; score: number; rounds: number }> = {};
   const mapData: Record<string, { matches: number; wins: number; kills: number; deaths: number; score: number }> = {};
   const lobbyRanks: number[] = [];
   const sideWins = { att: 0, def: 0, attTotal: 0, defTotal: 0 };
@@ -94,10 +94,14 @@ export function buildStatsForAI(matches: any[], playerName: string, playerTag: s
     if (won) wins++; else losses++;
     perMatchKD.push(d ? k / d : k);
 
+    const oppId = myTeamId === 'red' ? 'blue' : 'red';
+    const matchRoundsPlayed = (match.teams?.[myTeamId]?.rounds_won || 0) + (match.teams?.[oppId]?.rounds_won || 0) || match.rounds?.length || 1;
+    tRounds += matchRoundsPlayed;
+
     const agentName = me.character || 'Unknown';
-    if (!agentMap[agentName]) agentMap[agentName] = { matches: 0, wins: 0, kills: 0, deaths: 0, score: 0 };
+    if (!agentMap[agentName]) agentMap[agentName] = { matches: 0, wins: 0, kills: 0, deaths: 0, score: 0, rounds: 0 };
     const ag = agentMap[agentName];
-    ag.matches++; if (won) ag.wins++; ag.kills += k; ag.deaths += d; ag.score += sc;
+    ag.matches++; if (won) ag.wins++; ag.kills += k; ag.deaths += d; ag.score += sc; ag.rounds += matchRoundsPlayed;
 
     const mapName = match.metadata?.map || 'Unknown';
     if (!mapData[mapName]) mapData[mapName] = { matches: 0, wins: 0, kills: 0, deaths: 0, score: 0 };
@@ -126,7 +130,7 @@ export function buildStatsForAI(matches: any[], playerName: string, playerTag: s
   const kd = tD ? (tK / tD) : tK;
   const wr = n ? Math.round((wins / (wins + losses)) * 100) : 0;
   const hsPct = tShots ? Math.round((tHS / tShots) * 100) : 0;
-  const avgACS = n ? Math.round(tS / n / 100) : 0;
+  const avgACS = tRounds ? Math.round(tS / tRounds) : 0;
   const avgKills = (tK / n).toFixed(1);
   const avgDeaths = (tD / n).toFixed(1);
   const avgAssists = (tA / n).toFixed(1);
@@ -186,7 +190,7 @@ export function buildStatsForAI(matches: any[], playerName: string, playerTag: s
       matches: s.matches,
       wr: Math.round((s.wins / s.matches) * 100),
       kd: s.deaths ? (s.kills / s.deaths).toFixed(2) : String(s.kills),
-      acs: Math.round(s.score / s.matches / 100)
+      acs: Math.round(s.score / Math.max(1, s.rounds))
     }));
 
   const bestMap = Object.entries(mapData).filter(([, m]) => m.matches >= 2)

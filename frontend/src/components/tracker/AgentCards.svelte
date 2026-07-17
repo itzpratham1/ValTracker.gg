@@ -50,7 +50,7 @@
   }
 
   function getACS(s) {
-    return Math.round(s.score / s.matches / 100);
+    return Math.round(s.score / Math.max(1, s.rounds || (s.matches * 24)));
   }
 </script>
 

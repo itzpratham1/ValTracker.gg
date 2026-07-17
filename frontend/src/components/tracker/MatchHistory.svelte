@@ -103,7 +103,8 @@
 
       {#each group.matches as { m, idx }}
         {@const wl = m.won ? 'win' : 'loss'}
-        {@const acs = m.acs != null ? m.acs : Math.round(m.score / 100)}
+        {@const totalRounds = String(m.rounds || '1-1').split('-').reduce((a, b) => Number(a) + Number(b), 0)}
+        {@const acs = m.acs != null ? m.acs : Math.round(m.score / Math.max(1, totalRounds))}
         {@const grade = getGrade(m.kills, m.deaths, m.assists, acs, m.won)}
         {@const kd = m.deaths ? (m.kills / m.deaths).toFixed(2) : m.kills.toFixed(2)}
         {@const agentIcon = getAgentIconUrl(m.agentName)}

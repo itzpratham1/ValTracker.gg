@@ -94,6 +94,7 @@ export interface AgentStats {
   deaths: number;
   assists: number;
   score: number;
+  rounds: number;
 }
 
 export interface MapAgentStats {
@@ -108,6 +109,7 @@ export interface MapStats {
   kills: number;
   deaths: number;
   score: number;
+  rounds: number;
   agents: Record<string, MapAgentStats>;
 }
 
@@ -212,31 +214,31 @@ export function processMatches(
     const won = detectWon(match, me);
     if (won) wins++; else losses++;
 
-    const agentName = me.character || me.agent?.name || 'Unknown';
-    if (!agentMap[agentName]) agentMap[agentName] = { matches: 0, wins: 0, kills: 0, deaths: 0, assists: 0, score: 0 };
-    const ag = agentMap[agentName];
-    ag.matches++; if (won) ag.wins++; ag.kills += k; ag.deaths += d; ag.assists += a; ag.score += sc;
-
-    const mapName = match.metadata?.map || 'Unknown';
-    if (!mapData[mapName]) mapData[mapName] = { matches: 0, wins: 0, kills: 0, deaths: 0, score: 0, agents: {} };
-    const mp = mapData[mapName];
-    mp.matches++; if (won) mp.wins++; mp.kills += k; mp.deaths += d; mp.score += sc;
-    if (!mp.agents[agentName]) mp.agents[agentName] = { matches: 0, wins: 0, kd: 0 };
-    const ma = mp.agents[agentName];
-    ma.matches++; if (won) ma.wins++; ma.kd += d ? (k / d) : k;
-
     const myTeamId = (me.team || '').toLowerCase();
     const myTeam = match.teams?.[myTeamId] || null;
     const oppId = myTeamId === 'red' ? 'blue' : 'red';
     const oppTeam = match.teams?.[oppId] || null;
     const myR = myTeam?.rounds_won ?? '?';
     const oppR = oppTeam?.rounds_won ?? '?';
+    const matchRoundsPlayed = (typeof myR === 'number' && typeof oppR === 'number') ? (myR + oppR) : (match.rounds?.length || 1);
+
+    const agentName = me.character || me.agent?.name || 'Unknown';
+    if (!agentMap[agentName]) agentMap[agentName] = { matches: 0, wins: 0, kills: 0, deaths: 0, assists: 0, score: 0, rounds: 0 };
+    const ag = agentMap[agentName];
+    ag.matches++; if (won) ag.wins++; ag.kills += k; ag.deaths += d; ag.assists += a; ag.score += sc; ag.rounds += matchRoundsPlayed;
+
+    const mapName = match.metadata?.map || 'Unknown';
+    if (!mapData[mapName]) mapData[mapName] = { matches: 0, wins: 0, kills: 0, deaths: 0, score: 0, rounds: 0, agents: {} };
+    const mp = mapData[mapName];
+    mp.matches++; if (won) mp.wins++; mp.kills += k; mp.deaths += d; mp.score += sc; mp.rounds += matchRoundsPlayed;
+    if (!mp.agents[agentName]) mp.agents[agentName] = { matches: 0, wins: 0, kd: 0 };
+    const ma = mp.agents[agentName];
+    ma.matches++; if (won) ma.wins++; ma.kd += d ? (k / d) : k;
 
     rrHistory.push({ won, kills: k, matchId: match.metadata?.matchid || match.metadata?.match_id });
 
     const rawGameStart = match.metadata?.game_start || match.metadata?.gameStart || null;
     const gameStart = rawGameStart ? rawGameStart * 1000 : null;
-    const matchRoundsPlayed = (typeof myR === 'number' && typeof oppR === 'number') ? (myR + oppR) : (match.rounds?.length || 1);
     const matchACS = Math.round(sc / Math.max(1, matchRoundsPlayed));
     totalACS += matchACS;
 

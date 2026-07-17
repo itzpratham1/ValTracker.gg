@@ -54,7 +54,10 @@
   function getMVPs(matchData, teamId) {
     const all = getPlayerList(matchData);
     if (!all.length) return { matchMVP: null, teamMVP: null };
-    const getACS = p => Math.round((p.stats?.score || 0) / 100);
+    const totalRounds = (matchData.rounds || []).length || Math.max(1,
+      Object.values(matchData.teams || {}).reduce((s, t) => s + (t.rounds_won || 0), 0)
+    );
+    const getACS = p => Math.round((p.stats?.score || 0) / totalRounds);
     const matchMVP = all.reduce((best, p) => getACS(p) > getACS(best) ? p : best, all[0]);
     const allied = all.filter(p => (p.team || '').toLowerCase() === teamId);
     const teamMVP = allied.length ? allied.reduce((best, p) => getACS(p) > getACS(best) ? p : best, allied[0]) : null;
@@ -358,7 +361,7 @@
           {@const hsPct = shots ? Math.round((hs / shots) * 100) : 0}
           {@const playerKd = d ? (k / d).toFixed(2) : k.toFixed(2)}
           {@const kdPct = Math.min(parseFloat(playerKd) / 3 * 100, 100)}
-          {@const playerAcs = totalRounds ? Math.round(sc / totalRounds) : Math.round(sc / 100)}
+          {@const playerAcs = totalRounds ? Math.round(sc / totalRounds) : Math.round(sc / Math.max(1, totalRounds || 1))}
           {@const isMatchMVP = mvpInfo.matchMVP && p.name === mvpInfo.matchMVP.name && p.tag === mvpInfo.matchMVP.tag}
           {@const isTeamMVP = mvpInfo.teamMVP && p.name === mvpInfo.teamMVP.name && p.tag === mvpInfo.teamMVP.tag && !isMatchMVP}
           {@const agentIcon = getAgentIconUrl(p.character || p.agent?.name || '')}
@@ -439,7 +442,7 @@
           {@const hsPct = shots ? Math.round((hs / shots) * 100) : 0}
           {@const playerKd = d ? (k / d).toFixed(2) : k.toFixed(2)}
           {@const kdPct = Math.min(parseFloat(playerKd) / 3 * 100, 100)}
-          {@const playerAcs = totalRounds ? Math.round(sc / totalRounds) : Math.round(sc / 100)}
+          {@const playerAcs = totalRounds ? Math.round(sc / totalRounds) : Math.round(sc / Math.max(1, totalRounds || 1))}
           {@const agentIcon = getAgentIconUrl(p.character || p.agent?.name || '')}
           {@const rankName = p.currenttier_patched || ''}
           {@const rankImg = rankName && rankName !== 'Unranked' ? getRankImgUrl(rankName) : ''}

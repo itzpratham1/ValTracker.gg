@@ -85,7 +85,7 @@
       const myRoundsWon = myTeam.rounds_won ?? 0;
       const oppRoundsWon = oppTeam.rounds_won ?? 0;
       const totalRounds = myRoundsWon + oppRoundsWon;
-      const acs = Math.round(sc / 100);
+      const acs = Math.round(sc / Math.max(1, totalRounds));
       const hsPct = shots ? Math.round((hs / shots) * 100) : 0;
 
       // Attack/Defence estimation
@@ -110,7 +110,7 @@
 
       data.push({ k, d, a, sc, hs, shots, acs, hsPct, won, agent, map, matchId, rr, role,
         atkKills, defKills, atkRoundsPlayed, defRoundsPlayed, atkWins, defWins,
-        myRoundsWon, oppRoundsWon, gameStart, myTeamId });
+        myRoundsWon, oppRoundsWon, totalRounds, gameStart, myTeamId });
     }
 
     if (!data.length) return '<div>Not enough data</div>';
@@ -122,9 +122,9 @@
     html += chapter('🗺️', 'Map Performance Deep Dive');
     const mapStats = {};
     for (const d of data) {
-      if (!mapStats[d.map]) mapStats[d.map] = { m: 0, w: 0, k: 0, de: 0, sc: 0, hs: 0, sh: 0, atkK: 0, defK: 0, atkW: 0, defW: 0, atkR: 0, defR: 0, rr: 0, hasRR: false };
+      if (!mapStats[d.map]) mapStats[d.map] = { m: 0, w: 0, k: 0, de: 0, sc: 0, hs: 0, sh: 0, atkK: 0, defK: 0, atkW: 0, defW: 0, atkR: 0, defR: 0, r: 0, rr: 0, hasRR: false };
       const ms = mapStats[d.map];
-      ms.m++; if (d.won) ms.w++; ms.k += d.k; ms.de += d.d; ms.sc += d.sc;
+      ms.m++; if (d.won) ms.w++; ms.k += d.k; ms.de += d.d; ms.sc += d.sc; ms.r += d.totalRounds;
       ms.hs += d.hs; ms.sh += d.shots; ms.atkK += d.atkKills; ms.defK += d.defKills;
       ms.atkW += d.atkWins; ms.defW += d.defWins; ms.atkR += d.atkRoundsPlayed; ms.defR += d.defRoundsPlayed;
       if (d.rr !== undefined && d.rr !== null) { ms.rr += d.rr; ms.hasRR = true; }
@@ -137,7 +137,7 @@
     for (const [mapName, ms] of mapRows) {
       const wr = Math.round((ms.w / ms.m) * 100);
       const kd = ms.de ? (ms.k / ms.de).toFixed(2) : ms.k;
-      const acs = Math.round(ms.sc / ms.m / 100);
+      const acs = Math.round(ms.sc / Math.max(1, ms.r));
       const hsPct = ms.sh ? Math.round((ms.hs / ms.sh) * 100) : 0;
       const atkWR = ms.atkR ? Math.round((ms.atkW / ms.atkR) * 100) : null;
       const defWR = ms.defR ? Math.round((ms.defW / ms.defR) * 100) : null;
@@ -195,9 +195,9 @@
     const agentMapMatrix = {};
     for (const d of data) {
       const key = `${d.agent}|${d.map}`;
-      if (!agentMapMatrix[key]) agentMapMatrix[key] = { agent: d.agent, map: d.map, m: 0, w: 0, k: 0, de: 0, sc: 0, role: d.role };
+      if (!agentMapMatrix[key]) agentMapMatrix[key] = { agent: d.agent, map: d.map, m: 0, w: 0, k: 0, de: 0, sc: 0, r: 0, role: d.role };
       const e = agentMapMatrix[key];
-      e.m++; if (d.won) e.w++; e.k += d.k; e.de += d.d; e.sc += d.sc;
+      e.m++; if (d.won) e.w++; e.k += d.k; e.de += d.d; e.sc += d.sc; e.r += d.totalRounds;
     }
 
     const mismatches = [], goodFits = [];
@@ -205,7 +205,7 @@
       if (e.m < 2) continue;
       const wr = Math.round((e.w / e.m) * 100);
       const kd = e.de ? (e.k / e.de).toFixed(2) : e.k;
-      const acs = Math.round(e.sc / e.m / 100);
+      const acs = Math.round(e.sc / Math.max(1, e.r));
       if (wr <= 35) mismatches.push({ agent: e.agent, map: e.map, m: e.m, w: e.w, k: e.k, de: e.de, sc: e.sc, role: e.role, wr, kd, acs });
       else if (wr >= 65) goodFits.push({ agent: e.agent, map: e.map, m: e.m, w: e.w, k: e.k, de: e.de, sc: e.sc, role: e.role, wr, kd, acs });
     }

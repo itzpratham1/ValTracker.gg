@@ -106,7 +106,8 @@
     const pl = allPlayers || [];
     const plist = rawMatch ? getPlayerList(rawMatch) : pl;
 
-    acs = m.acs || Math.round((m.score || 0) / 100);
+    const totalRoundsFromScore = String(m.rounds || '1-1').split('-').reduce((a, b) => Number(a) + Number(b), 0);
+    acs = m.acs || Math.round((m.score || 0) / Math.max(1, totalRoundsFromScore));
     hsPct = m.shots ? Math.round((m.hs / m.shots) * 100) : 0;
     kd = m.deaths ? (m.kills / m.deaths).toFixed(2) : m.kills.toFixed(2);
 
@@ -149,7 +150,8 @@
     outcome = m.won ? 'VICTORY' : 'DEFEAT';
 
     // MVP detection
-    const getACS = p => Math.round((p.stats?.score || 0) / 100);
+    const totalRounds = (rawMatch?.rounds || []).length || 1;
+    const getACS = p => Math.round((p.stats?.score || 0) / totalRounds);
     const matchMVPPlayer = plist.length ? plist.reduce((b, p) => getACS(p) > getACS(b) ? p : b, plist[0]) : null;
     const alliedPlayers = plist.filter(p => (p.team || '').toLowerCase() === m.myTeamId);
     const teamMVPPlayer = alliedPlayers.length ? alliedPlayers.reduce((b, p) => getACS(p) > getACS(b) ? p : b, alliedPlayers[0]) : null;

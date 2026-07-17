@@ -125,7 +125,7 @@
     {#each maps as [name, m], i}
       {@const wr = Math.round((m.wins / m.matches) * 100)}
       {@const kd = m.deaths ? (m.kills / m.deaths).toFixed(2) : m.kills.toFixed(2)}
-      {@const acs = Math.round(m.score / m.matches)}
+      {@const acs = Math.round(m.score / Math.max(1, m.rounds || (m.matches * 24)))}
       {@const top3 = getTop3Agents(m.agents)}
       {@const rrDelta = getMapRRDelta(name)}
       {@const mapImg = getMapImg(name)}

@@ -92,7 +92,7 @@
       const map = match.metadata?.map || 'Unknown';
       const matchId = match.metadata?.matchid || match.metadata?.match_id || '';
       const gameStart = match.metadata?.game_start || null;
-      const acs = totalRounds ? Math.round(sc / totalRounds) : Math.round(sc/100);
+      const acs = Math.round(sc / Math.max(1, totalRounds));
       const hsPct = shots ? Math.round((hs/shots)*100) : 0;
       const kd = d ? k/d : k;
       const rr = mmrHistory[matchId];
