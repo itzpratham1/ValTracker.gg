@@ -220,7 +220,6 @@
     const legs = s.legshots || 0;
     const totalShots = hs + body_s + legs;
     const hsPctVal = totalShots ? Math.round((hs / totalShots) * 100) : 0;
-    const acsVal = Math.round(score / Math.max(1, totalRounds));
     const kdVal = deaths ? (kills / deaths) : kills;
     const myTeam = matchData.teams?.[myTeamId];
     const won = myTeam?.has_won || false;
@@ -231,6 +230,7 @@
     const oppId = myTeamId === 'red' ? 'blue' : 'red';
     const oppRounds = matchData.teams?.[oppId]?.rounds_won ?? 0;
     const totalRounds = myRounds + oppRounds;
+    const acsVal = Math.round(score / Math.max(1, totalRounds));
 
     const dmgDealt = me.damage_made || 0;
     const dmgReceived = me.damage_received || 0;
