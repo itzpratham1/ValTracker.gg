@@ -292,7 +292,7 @@ window.addEventListener('scroll', () => {
 (function initCounters() {
   const counters = [
     { el: document.getElementById('counter-matches'),  target: 530, suffix: '+' },
-    { el: document.getElementById('counter-features'), target: 6,   suffix: '' },
+    { el: document.getElementById('counter-features'), target: 12,  suffix: '+' },
     { el: document.getElementById('counter-free'),     target: 100, suffix: '%' }
   ];
 

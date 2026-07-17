@@ -34,6 +34,9 @@ export default defineConfig({
     host: true
   },
   vite: {
+    optimizeDeps: {
+      include: ['chart.js']
+    },
     build: {
       cssMinify: true
     },

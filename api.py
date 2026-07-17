@@ -512,7 +512,7 @@ def get_landing_stats():
 
     return jsonify({
         "matches_analysed": total_matches,
-        "features_count": 6,
+        "features_count": 12,
         "free_forever": 100
     })
 
