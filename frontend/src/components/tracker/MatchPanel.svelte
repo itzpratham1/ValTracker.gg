@@ -34,7 +34,8 @@
   let detailLoaded = false;
 
   $: m = match || {};
-  $: acs = m.acs != null ? m.acs : (m.score != null ? Math.round(m.score / 100) : 0);
+  $: totalRoundsFromScore = m.rounds ? String(m.rounds).split('-').reduce((a, b) => Number(a) + Number(b), 0) : 0;
+  $: acs = m.acs != null ? m.acs : (m.score != null ? Math.round(m.score / Math.max(1, totalRoundsFromScore)) : 0);
   $: hsPct = m.hs && m.shots ? Math.round((m.hs / m.shots) * 100) : 0;
   $: grade = getGrade(m.kills || 0, m.deaths || 0, m.assists || 0, acs, m.won);
   $: kd = m.deaths ? ((m.kills || 0) / m.deaths).toFixed(2) : (m.kills || 0).toFixed(2);
@@ -219,7 +220,7 @@
     const legs = s.legshots || 0;
     const totalShots = hs + body_s + legs;
     const hsPctVal = totalShots ? Math.round((hs / totalShots) * 100) : 0;
-    const acsVal = Math.round(score / 100);
+    const acsVal = Math.round(score / Math.max(1, totalRounds));
     const kdVal = deaths ? (kills / deaths) : kills;
     const myTeam = matchData.teams?.[myTeamId];
     const won = myTeam?.has_won || false;
@@ -469,7 +470,7 @@
 
     const allied = allPlayers.filter(p => (p.team || '').toLowerCase() === myTeamId);
     const teamAvgACS = allied.length
-      ? Math.round(allied.reduce((s, p) => s + (p.stats?.score || 0), 0) / allied.length / 100)
+      ? Math.round(allied.reduce((s, p) => s + Math.round((p.stats?.score || 0) / Math.max(1, totalRounds)), 0) / allied.length)
       : 0;
     const myRankInTeam = [...allied]
       .sort((a, b) => (b.stats?.score || 0) - (a.stats?.score || 0))
@@ -727,7 +728,10 @@
   function getMvpInfo() {
     if (!rawMatch) return { isMatchMVP: false, isTeamMVP: false };
     const allPlayers = getPlayerList(rawMatch);
-    const getACS = p => Math.round((p.stats?.score || 0) / 100);
+    const totalRounds = (rawMatch.rounds || []).length || Math.max(1,
+      Object.values(rawMatch.teams || {}).reduce((s, t) => s + (t.rounds_won || 0), 0)
+    );
+    const getACS = p => Math.round((p.stats?.score || 0) / totalRounds);
     const matchMVPPlayer = allPlayers.length
       ? allPlayers.reduce((b, p) => getACS(p) > getACS(b) ? p : b, allPlayers[0])
       : null;
