@@ -593,29 +593,45 @@ const structuredData = {
   <!-- ── Scroll reveal (IntersectionObserver + CSS transitions) ── -->
   <script is:inline>
     (function() {
+      console.log('[ValTracker Scroll] script running');
       requestAnimationFrame(function() {
         var allEls = document.querySelectorAll('.bento-card, .reveal, .step-item');
+        console.log('[ValTracker Scroll] found elements:', allEls.length);
+        allEls.forEach(function(el) {
+          var rect = el.getBoundingClientRect();
+          console.log('[ValTracker Scroll] element', el.className, 'initial rect top:', rect.top, 'bottom:', rect.bottom, 'visible:', el.classList.contains('visible'));
+        });
         if (allEls.length) {
+          if (!('IntersectionObserver' in window)) {
+            console.log('[ValTracker Scroll] IntersectionObserver not supported, showing all');
+            allEls.forEach(function(el) { el.classList.add('visible'); });
+            return;
+          }
           var obs = new IntersectionObserver(function(entries) {
+            console.log('[ValTracker Scroll] IntersectionObserver fired, entries:', entries.length);
             entries.forEach(function(entry) {
+              console.log('[ValTracker Scroll] entry isIntersecting:', entry.isIntersecting, 'target:', entry.target.className, 'ratio:', entry.intersectionRatio);
               if (entry.isIntersecting) {
                 var el = entry.target;
                 if (el.classList.contains('bento-card')) {
                   var cards = document.querySelectorAll('.bento-card');
                   var idx = Array.prototype.indexOf.call(cards, el);
-                  setTimeout(function() { el.classList.add('visible'); }, idx * 80);
+                  console.log('[ValTracker Scroll] staggering bento-card', idx, 'delay:', idx * 80);
+                  setTimeout(function() { el.classList.add('visible'); console.log('[ValTracker Scroll] added visible to bento-card', idx); }, idx * 80);
                 } else if (el.classList.contains('step-item')) {
                   var steps = document.querySelectorAll('.step-item');
                   var idx = Array.prototype.indexOf.call(steps, el);
                   setTimeout(function() { el.classList.add('visible'); }, idx * 150);
                 } else {
                   el.classList.add('visible');
+                  console.log('[ValTracker Scroll] added visible to reveal');
                 }
                 obs.unobserve(el);
               }
             });
           }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
           allEls.forEach(function(el) { obs.observe(el); });
+          console.log('[ValTracker Scroll] observing', allEls.length, 'elements');
         }
       });
     })();
