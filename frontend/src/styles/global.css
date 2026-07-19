@@ -2470,12 +2470,13 @@ body::before {
   background: rgba(26, 26, 29, 0.6);
   border: 1px solid var(--border);
   border-radius: 30px;
-  padding: 2px 12px;
+  padding: 2px 4px;
   gap: 0;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.03), 0 4px 15px rgba(0,0,0,0.25);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  max-width: 370px;
 }
 .topbar-filter-capsule:focus-within,
 .topbar-filter-capsule:hover {
@@ -2488,7 +2489,11 @@ body::before {
   align-items: center;
   position: relative;
   padding: 0;
+  min-width: 0;
 }
+.topbar-filter-capsule .filter-item:nth-child(1) { flex: 0.6; }
+.topbar-filter-capsule .filter-item:nth-child(3) { flex: 1; }
+.topbar-filter-capsule .filter-item:nth-child(5) { flex: 1; }
 .filter-icon {
   font-size: 11px;
   opacity: 0.65;
@@ -2496,7 +2501,7 @@ body::before {
   display: flex;
   align-items: center;
   position: absolute;
-  left: 10px;
+  left: 6px;
   top: 50%;
   transform: translateY(-50%);
   pointer-events: none;
@@ -2512,9 +2517,9 @@ body::before {
 }
 .filter-divider {
   width: 1px;
-  height: 16px;
+  height: 14px;
   background: rgba(255,255,255,0.08);
-  margin: 0 4px;
+  margin: 0 2px;
 }
 .topbar-filter-capsule select {
   font-family: 'DM Mono', monospace;
@@ -2525,7 +2530,7 @@ body::before {
   border: none;
   outline: none;
   cursor: pointer;
-  padding: 6px 22px 6px 26px;
+  padding: 6px 16px 6px 26px;
   appearance: none;
   -webkit-appearance: none;
   transition: color 0.2s ease;
