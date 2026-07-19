@@ -416,6 +416,12 @@ def prune_image_cache():
         for k in sorted_keys[:len(image_cache) - IMAGE_CACHE_MAX]:
             image_cache.pop(k, None)
 
+@app.errorhandler(500)
+def handle_500(e):
+    import traceback
+    traceback.print_exc()
+    return jsonify({"status": 500, "error": str(e), "data": []}), 500
+
 @app.before_request
 def before_request_cleanup():
     global _last_prune_time
@@ -877,7 +883,7 @@ def proxy_api(subpath):
             payloads_to_insert = []
             for m in live_matches_data["data"]:
                 if not m: continue
-                match_id = m.get("metadata", {}).get("matchid") or m.get("metadata", {}).get("match_id")
+                match_id = (m.get("metadata") or {}).get("matchid") or (m.get("metadata") or {}).get("match_id")
                 if not match_id: continue
                 me = None
                 players = m.get("players", {})
@@ -891,8 +897,9 @@ def proxy_api(subpath):
                         me = p
                         break
                 if me:
-                    map_name = m.get("metadata", {}).get("map", "Unknown")
-                    game_start = m.get("metadata", {}).get("game_start") or m.get("metadata", {}).get("gameStart") or int(time.time())
+                    meta = m.get("metadata") or {}
+                    map_name = meta.get("map", "Unknown")
+                    game_start = meta.get("game_start") or meta.get("gameStart") or int(time.time())
                     agent_name = me.get("character") or me.get("agent", {}).get("name", "Unknown")
                     kills = me.get("stats", {}).get("kills", 0)
                     deaths = me.get("stats", {}).get("deaths", 0)
@@ -911,7 +918,7 @@ def proxy_api(subpath):
                         won = my_rounds > opp_rounds
                     rounds_str = f"{my_team_info.get('rounds_won', 0) or my_team_info.get('roundsWon', 0)}-{opp_team_info.get('rounds_won', 0) or opp_team_info.get('roundsWon', 0)}"
                     stripped_raw_match = compress_match_json(m)
-                    actual_m_mode = normalize_mode(m.get("metadata", {}).get("mode", ""))
+                    actual_m_mode = normalize_mode(meta.get("mode", "") or meta.get("queue", ""))
                     if not actual_m_mode:
                         actual_m_mode = mode
                     match_payload = {
@@ -1075,11 +1082,11 @@ def proxy_api(subpath):
         if live_matches_data and isinstance(live_matches_data.get("data"), list):
             filtered_live = [
                 lm for lm in live_matches_data["data"]
-                if lm and normalize_mode(lm.get("metadata", {}).get("mode", "")) == mode
+                if lm and normalize_mode((lm.get("metadata") or {}).get("mode", "") or (lm.get("metadata") or {}).get("queue", "")) == mode
             ]
             live_matches_data["data"] = filtered_live
             for lm in filtered_live:
-                m_id = lm.get("metadata", {}).get("matchid") or lm.get("metadata", {}).get("match_id")
+                m_id = (lm.get("metadata") or {}).get("matchid") or (lm.get("metadata") or {}).get("match_id")
                 if m_id:
                     merged_map[m_id] = compress_match_json(lm)
                     

@@ -174,6 +174,7 @@
       ]);
 
       console.log('[AppShell] API responses:', { mmr: mmrRes?.status, match: matchRes?.status, account: accountRes?.status, hist: mmrHistRes?.status });
+      console.log('[AppShell] matchRes.ok:', matchRes?.ok, 'status:', matchRes?.status);
 
       const mmrResData = mmrRes?.ok ? await mmrRes.json() : null;
       let matchResData = matchRes?.ok ? await matchRes.json() : null;

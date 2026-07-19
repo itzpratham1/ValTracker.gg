@@ -183,7 +183,7 @@ export function processMatches(
     }
   }
 
-  let tK = 0, tD = 0, tA = 0, tS = 0, tHS = 0, tShots = 0, wins = 0, losses = 0, counted = 0, totalACS = 0;
+  let tK = 0, tD = 0, tA = 0, tS = 0, tHS = 0, tShots = 0, wins = 0, losses = 0, counted = 0, totalACS = 0, acsCount = 0;
   let totalKastRounds = 0;
   let totalRoundsPlayed = 0;
   let totalDamageMade = 0;
@@ -214,23 +214,26 @@ export function processMatches(
     const won = detectWon(match, me);
     if (won) wins++; else losses++;
 
+    const matchMode = ((match.metadata?.mode || match.metadata?.queue || '') + '').toLowerCase().replace(/[\s-_]/g, '');
+    const noRoundsMode = matchMode === 'deathmatch' || matchMode === 'teamdeathmatch';
     const myTeamId = (me.team || '').toLowerCase();
     const myTeam = match.teams?.[myTeamId] || null;
     const oppId = myTeamId === 'red' ? 'blue' : 'red';
     const oppTeam = match.teams?.[oppId] || null;
     const myR = myTeam?.rounds_won ?? '?';
     const oppR = oppTeam?.rounds_won ?? '?';
-    const matchRoundsPlayed = (typeof myR === 'number' && typeof oppR === 'number') ? (myR + oppR) : (match.rounds?.length || 1);
+    const hasRounds = !noRoundsMode && typeof myR === 'number' && typeof oppR === 'number';
+    const matchRoundsPlayed = hasRounds ? (myR + oppR) : (match.rounds?.length || 0);
 
     const agentName = me.character || me.agent?.name || 'Unknown';
     if (!agentMap[agentName]) agentMap[agentName] = { matches: 0, wins: 0, kills: 0, deaths: 0, assists: 0, score: 0, rounds: 0 };
     const ag = agentMap[agentName];
-    ag.matches++; if (won) ag.wins++; ag.kills += k; ag.deaths += d; ag.assists += a; ag.score += sc; ag.rounds += matchRoundsPlayed;
+    ag.matches++; if (won) ag.wins++; ag.kills += k; ag.deaths += d; ag.assists += a; ag.score += sc; if (hasRounds) ag.rounds += matchRoundsPlayed;
 
     const mapName = match.metadata?.map || 'Unknown';
     if (!mapData[mapName]) mapData[mapName] = { matches: 0, wins: 0, kills: 0, deaths: 0, score: 0, rounds: 0, agents: {} };
     const mp = mapData[mapName];
-    mp.matches++; if (won) mp.wins++; mp.kills += k; mp.deaths += d; mp.score += sc; mp.rounds += matchRoundsPlayed;
+    mp.matches++; if (won) mp.wins++; mp.kills += k; mp.deaths += d; mp.score += sc; if (hasRounds) mp.rounds += matchRoundsPlayed;
     if (!mp.agents[agentName]) mp.agents[agentName] = { matches: 0, wins: 0, kd: 0 };
     const ma = mp.agents[agentName];
     ma.matches++; if (won) ma.wins++; ma.kd += d ? (k / d) : k;
@@ -239,8 +242,9 @@ export function processMatches(
 
     const rawGameStart = match.metadata?.game_start || match.metadata?.gameStart || null;
     const gameStart = rawGameStart ? rawGameStart * 1000 : null;
-    const matchACS = Math.round(sc / Math.max(1, matchRoundsPlayed));
-    totalACS += matchACS;
+    const hasRoundsData = match.rounds?.length > 0;
+    const matchACS = hasRounds && hasRoundsData ? Math.round(sc / Math.max(1, matchRoundsPlayed)) : 0;
+    if (hasRounds && hasRoundsData) { totalACS += matchACS; acsCount++; }
 
     const allP = getPlayerList(match);
     const lobbyRank = getLobbyRankInfo(allP, myTeamId);
@@ -385,7 +389,7 @@ export function processMatches(
     avgKills: +(tK / n).toFixed(1),
     avgDeaths: +(tD / n).toFixed(1),
     avgAssists: +(tA / n).toFixed(1),
-    avgACS: Math.round(totalACS / n),
+    avgACS: acsCount ? Math.round(totalACS / acsCount) : 0,
     hsRate: tShots ? Math.round((tHS / tShots) * 100) : 0,
     winRate: total ? Math.round((wins / total) * 100) : 0,
     wins,

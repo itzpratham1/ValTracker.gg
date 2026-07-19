@@ -355,7 +355,7 @@
                 <circle cx="18.5" cy="12" r="1" fill="currentColor"></circle>
               </svg>
             </span>
-            <select class="region-select" value={$player.mode} on:change={(e) => handleFilterChange('mode', e.target.value)}>
+            <select class="region-select" value={$player.mode} on:change={(e) => { setPlayer({ mode: e.target.value }); onFetchStats(); }}>
               {#each MODES as m}
                 <option value={m.value}>{m.label}</option>
               {/each}
