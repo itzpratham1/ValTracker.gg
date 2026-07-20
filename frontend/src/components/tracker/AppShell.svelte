@@ -140,6 +140,18 @@
     return fetch(`${API_BASE}${url}`, { ...opts, signal: controller.signal }).finally(() => clearTimeout(timer));
   }
 
+  async function fetchWithRetry(url, opts = {}, timeoutMs = 30000, retries = 2) {
+    for (let i = 0; i <= retries; i++) {
+      try {
+        return await fetchWithTimeout(url, opts, timeoutMs);
+      } catch (e) {
+        if (i === retries) throw e;
+        console.warn(`[AppShell] Fetch attempt ${i + 1} failed, retrying...`, e.message);
+        await new Promise(r => setTimeout(r, 3000 * (i + 1)));
+      }
+    }
+  }
+
   async function fetchStats(explicitPlayer = null) {
     let p;
     player.subscribe(v => p = v)();
@@ -166,11 +178,11 @@
       console.log('[AppShell] Fetching API data...');
       const [mmrRes, matchRes, accountRes, mmrHistRes] = await Promise.all([
         isRanked
-          ? fetchWithTimeout(`/api/v3/mmr/${p.region}/pc/${enc}/${encTag}?_nocache=${nc}`)
+          ? fetchWithRetry(`/api/v3/mmr/${p.region}/pc/${enc}/${encTag}?_nocache=${nc}`)
           : Promise.resolve(null),
-        fetchWithTimeout(`/api/v3/matches/${p.region}/${enc}/${encTag}?mode=${p.mode}&size=20&_nocache=${nc}`),
-        fetchWithTimeout(`/api/v1/account/${enc}/${encTag}?_nocache=${nc}`),
-        fetchWithTimeout(`/api/v1/stored-mmr-history/${p.region}/${enc}/${encTag}?_nocache=${nc}`)
+        fetchWithRetry(`/api/v3/matches/${p.region}/${enc}/${encTag}?mode=${p.mode}&size=20&_nocache=${nc}`),
+        fetchWithRetry(`/api/v1/account/${enc}/${encTag}?_nocache=${nc}`),
+        fetchWithRetry(`/api/v1/stored-mmr-history/${p.region}/${enc}/${encTag}?_nocache=${nc}`)
       ]);
 
       console.log('[AppShell] API responses:', { mmr: mmrRes?.status, match: matchRes?.status, account: accountRes?.status, hist: mmrHistRes?.status });
