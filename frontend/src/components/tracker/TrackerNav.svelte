@@ -36,10 +36,18 @@
 
 <svelte:window on:click={closeTools} />
 
-<div class="tracker-nav" id="tracker-nav">
+<div class="tracker-nav" id="tracker-nav" role="navigation" aria-label="Section navigation">
   <div class="tracker-nav-left">
     {#each SECTIONS as section}
-      <a class="tracker-nav-item" class:active={activeSection === section.id} on:click={(e) => smoothScrollTo(section.id, e)}>
+      <a
+        class="tracker-nav-item"
+        class:active={activeSection === section.id}
+        href="#{section.id}"
+        tabindex="0"
+        aria-current={activeSection === section.id ? 'page' : undefined}
+        on:click={(e) => smoothScrollTo(section.id, e)}
+        on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') smoothScrollTo(section.id, e); }}
+      >
         <span class="nav-icon">{section.icon}</span> {section.label}
       </a>
     {/each}

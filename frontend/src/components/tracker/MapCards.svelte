@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from 'svelte';
   import { getAgentIconUrl, getMapImg } from '../../lib/assets';
 
   export let mapData = {};
@@ -89,11 +90,51 @@
   $: strongestWR = strongestMap ? Math.round((strongestMap[1].wins / strongestMap[1].matches) * 100) : 0;
   $: weakestWR = weakestMap ? Math.round((weakestMap[1].wins / weakestMap[1].matches) * 100) : 0;
   $: weakestTop3 = weakestMap ? getTop3Agents(weakestMap[1].agents) : [];
+
+  // Local observer — guaranteed to run after map card DOM exists
+  let mapObserver;
+  function observeMapCards() {
+    if (typeof IntersectionObserver === 'undefined') return;
+    if (mapObserver) mapObserver.disconnect();
+    mapObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            mapObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.06, rootMargin: '0px 0px -20px 0px' }
+    );
+    document.querySelectorAll('.map-card-bento.reveal-on-scroll').forEach(el => mapObserver.observe(el));
+  }
+
+  onMount(() => {
+    setTimeout(observeMapCards, 60);
+    return () => { if (mapObserver) mapObserver.disconnect(); };
+  });
+
+  // Re-observe when mapData arrives after initial mount
+  $: if (maps.length > 0) {
+    setTimeout(observeMapCards, 80);
+  }
 </script>
 
 {#if maps.length === 0}
-  <div class="card span-12 placeholder-card">
-    <div class="placeholder-txt">No map data available for this mode</div>
+  <div class="empty-state">
+    <div class="empty-state-icon">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+        <line x1="9" y1="3" x2="9" y2="18"/>
+        <line x1="15" y1="6" x2="15" y2="21"/>
+      </svg>
+    </div>
+    <div class="empty-state-title">No Map Data Yet</div>
+    <div class="empty-state-sub">
+      Play some matches to unlock per-map stats, win rates,
+      and AI-powered map insights.
+    </div>
   </div>
 {:else}
   {#if strongestMap && weakestMap && strongestMap[0] !== weakestMap[0]}
@@ -130,7 +171,7 @@
       {@const rrDelta = getMapRRDelta(name)}
       {@const mapImg = getMapImg(name)}
       {@const insight = getMapInsight(name, m, top3, rrDelta)}
-      <div class="map-card-bento visible" style="animation-delay:{i * 60}ms">
+      <div class="map-card-bento reveal-on-scroll stagger-{i}" style="transition-delay:{i * 60}ms">
         <!-- Map splash banner -->
         {#if mapImg}
           <div class="map-splash-wrap">

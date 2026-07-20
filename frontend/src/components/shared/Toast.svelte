@@ -3,22 +3,36 @@
 
   let message = '';
   let visible = false;
+  let type = 'default'; // 'default' | 'copy' | 'success' | 'error'
   let timeout;
 
-  export function show(msg) {
+  const ICONS = {
+    copy:    '📋',
+    success: '✓',
+    error:   '✕',
+    default: ''
+  };
+
+  export function show(msg, toastType = 'default') {
     message = msg;
+    type = toastType;
     visible = true;
     clearTimeout(timeout);
     timeout = setTimeout(() => { visible = false; }, 2500);
   }
 
   onMount(() => {
-    window.showToast = show;
+    window.showToast = (msg, t) => show(msg, t);
     return () => { clearTimeout(timeout); };
   });
 </script>
 
-<div class="toast" class:show={visible}>{message}</div>
+<div class="toast toast-{type}" class:show={visible}>
+  {#if ICONS[type]}
+    <span class="toast-icon">{ICONS[type]}</span>
+  {/if}
+  {message}
+</div>
 
 <style>
   .toast {
@@ -40,6 +54,11 @@
     pointer-events: none;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 320px;
+    white-space: nowrap;
   }
   .toast.show {
     opacity: 1;

@@ -1044,7 +1044,7 @@ def proxy_api(subpath):
                                         "rounds_won": t_scores.get("blue", 0)
                                     }
                                 },
-                                "rounds": [{"winning_team": "red" if t_scores.get("red", 0) > t_scores.get("blue", 0) else "blue"}]
+                                "rounds": []
                             }
                             lifetime_matches.append(c_match)
                             if puuid:

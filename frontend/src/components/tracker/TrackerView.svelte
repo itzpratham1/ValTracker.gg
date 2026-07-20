@@ -205,12 +205,77 @@
     }
   }
 
+  // ── Reveal-on-scroll IntersectionObserver (section labels only) ──
+  // Card-level components own their own observers (AgentCards, MapCards, MatchHistory)
+  let revealObserver;
+  function setupRevealObserver() {
+    if (typeof IntersectionObserver === 'undefined') return;
+    if (revealObserver) revealObserver.disconnect();
+    revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.05, rootMargin: '0px 0px -30px 0px' }
+    );
+    // Target section labels + any remaining .reveal-on-scroll not yet seen
+    document.querySelectorAll('.reveal-on-scroll:not(.in-view)').forEach(el => revealObserver.observe(el));
+  }
+
+  // ── Keyboard navigation ──
+  const SECTION_IDS = [
+    'sec-combat', 'sec-performance', 'sec-trend', 'sec-agents', 'sec-maps',
+    'sec-weapons', 'sec-teammates', 'sec-matches', 'sec-ai-tools'
+  ];
+
+  function handleKeydown(e) {
+    // Arrow key section navigation
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+      // Only when no input is focused
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      const idx = SECTION_IDS.indexOf(activeSection);
+      if (e.key === 'ArrowRight' && idx < SECTION_IDS.length - 1) {
+        e.preventDefault();
+        scrollToSection(SECTION_IDS[idx + 1]);
+      } else if (e.key === 'ArrowLeft' && idx > 0) {
+        e.preventDefault();
+        scrollToSection(SECTION_IDS[idx - 1]);
+      }
+    }
+    // Escape closes open modals
+    if (e.key === 'Escape') {
+      if (h2hOpen)           h2hOpen = false;
+      if (leaderboardOpen)   leaderboardOpen = false;
+      if (feedbackOpen)      feedbackOpen = false;
+      if (statModalOpen)     statModalOpen = false;
+      if (profileShareOpen)  profileShareOpen = false;
+      if (exportProfileOpen) exportProfileOpen = false;
+      if (bookmarksOpen)     bookmarksOpen = false;
+      if (sessionSummaryOpen) sessionSummaryOpen = false;
+      if (selectedShareMatch) selectedShareMatch = null;
+    }
+  }
+
+  // Re-run observer when stats data arrives (section labels may have rendered)
+  $: if (stats) {
+    setTimeout(setupRevealObserver, 150);
+  }
+
   onMount(() => {
     setupScrollTracker();
+    setTimeout(setupRevealObserver, 120);
+    window.addEventListener('keydown', handleKeydown);
   });
 
   onDestroy(() => {
     if (cleanupScroll) cleanupScroll();
+    if (revealObserver) revealObserver.disconnect();
+    window.removeEventListener('keydown', handleKeydown);
   });
 </script>
 
@@ -245,7 +310,7 @@
 
   <main class="main">
     <!-- Q1: Combat -->
-    <div class="section-label" id="sec-combat">
+    <div class="section-label reveal-on-scroll" id="sec-combat">
       <span class="sl-text">Combat</span>
       <span class="sl-line"></span>
       <span class="sl-num">01</span>
@@ -253,12 +318,12 @@
     <StatCards {stats} onStatClick={openStatModal} />
 
     <!-- Q2: Performance (Win Rate + RR Progression) -->
-    <div class="section-label" id="sec-performance">
+    <div class="section-label reveal-on-scroll" id="sec-performance">
       <span class="sl-text">Performance</span>
       <span class="sl-line"></span>
       <span class="sl-num">02</span>
     </div>
-    <div class="card wr-card span-4 visible">
+    <div class="card wr-card span-4 visible reveal-on-scroll stagger-1">
       <div class="card-accent-line"></div>
       <div class="card-label">Win Rate</div>
       <div class="wr-big">{winRate}%</div>
@@ -286,7 +351,7 @@
     />
 
     <!-- Q3: Performance Trend -->
-    <div class="section-label" id="sec-trend">
+    <div class="section-label reveal-on-scroll" id="sec-trend">
       <span class="sl-text">Performance Trend</span>
       <span class="sl-line"></span>
       <span class="sl-num">03</span>
@@ -308,7 +373,7 @@
     </div>
 
     <!-- Q4: Agent Roster -->
-    <div class="section-label" id="sec-agents">
+    <div class="section-label reveal-on-scroll" id="sec-agents">
       <span class="sl-text">Agent Roster</span>
       <span class="sl-line"></span>
       <span class="sl-num">04</span>
@@ -319,7 +384,7 @@
     />
 
     <!-- Q5: Map Performance -->
-    <div class="section-label" id="sec-maps">
+    <div class="section-label reveal-on-scroll" id="sec-maps">
       <span class="sl-text">Map Performance</span>
       <span class="sl-line"></span>
       <span class="sl-num">05</span>
@@ -333,7 +398,7 @@
     />
 
     <!-- Q6: Clutch & Impact -->
-    <div class="section-label" id="sec-clutch">
+    <div class="section-label reveal-on-scroll" id="sec-clutch">
       <span class="sl-text">Clutch & Impact</span>
       <span class="sl-line"></span>
       <span class="sl-num">06</span>
@@ -347,7 +412,7 @@
     />
 
     <!-- Q7: Accuracy & Roles -->
-    <div class="section-label" id="sec-accuracy">
+    <div class="section-label reveal-on-scroll" id="sec-accuracy">
       <span class="sl-text">Accuracy & Roles</span>
       <span class="sl-line"></span>
       <span class="sl-num">07</span>
@@ -359,7 +424,7 @@
     />
 
     <!-- Q8: Top Weapons -->
-    <div class="section-label" id="sec-weapons">
+    <div class="section-label reveal-on-scroll" id="sec-weapons">
       <span class="sl-text">Top Weapons</span>
       <span class="sl-line"></span>
       <span class="sl-num">08</span>
@@ -372,7 +437,7 @@
     />
 
     <!-- Q9: Teammates -->
-    <div class="section-label" id="sec-teammates">
+    <div class="section-label reveal-on-scroll" id="sec-teammates">
       <span class="sl-text">Teammates</span>
       <span class="sl-line"></span>
       <span class="sl-num">09</span>
@@ -394,7 +459,7 @@
     />
 
     <!-- Q10: Recent Matches -->
-    <div class="section-label" id="sec-matches">
+    <div class="section-label reveal-on-scroll" id="sec-matches">
       <span class="sl-text">Recent Matches</span>
       <span class="sl-line"></span>
       <span class="sl-num">10</span>
@@ -410,7 +475,7 @@
     />
 
     <!-- Q11: AI Tools -->
-    <div class="section-label ai-premium-label" id="sec-ai-tools">
+    <div class="section-label ai-premium-label reveal-on-scroll" id="sec-ai-tools">
       <span class="sl-text ai-premium-text">AI Diagnostic Suite</span>
       <span class="sl-badge">Exclusive</span>
       <span class="sl-line ai-premium-line"></span>

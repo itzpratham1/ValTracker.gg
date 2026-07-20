@@ -175,7 +175,8 @@
           const score = s.score || 0;
           const hs = s.headshots || 0;
           const shots = (s.headshots || 0) + (s.bodyshots || 0) + (s.legshots || 0);
-          const rCount = Math.max(1, md.rounds?.length || 24);
+          const teamRounds = (md.teams?.red?.rounds_won || 0) + (md.teams?.blue?.rounds_won || 0);
+          const rCount = Math.max(1, teamRounds || md.rounds?.length || 24);
           sumACS += Math.round(score / rCount);
           sumHS += hs;
           sumShots += shots;

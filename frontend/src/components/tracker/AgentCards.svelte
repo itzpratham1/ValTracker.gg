@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from 'svelte';
   import { AGENT_ROLES, AGENT_UUIDS } from '../../lib/constants';
 
   export let agentMap = {};
@@ -52,11 +53,54 @@
   function getACS(s) {
     return Math.round(s.score / Math.max(1, s.rounds || (s.matches * 24)));
   }
+
+  // Each card component owns its own observer — guaranteed to fire AFTER
+  // data-dependent elements are in the DOM
+  let observer;
+  function observeCards() {
+    if (typeof IntersectionObserver === 'undefined') return;
+    if (observer) observer.disconnect();
+    observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.08, rootMargin: '0px 0px -20px 0px' }
+    );
+    document.querySelectorAll('.agent-bento.reveal-on-scroll').forEach(el => observer.observe(el));
+  }
+
+  onMount(() => {
+    // Small tick to ensure Svelte has flushed the DOM
+    setTimeout(observeCards, 60);
+    return () => { if (observer) observer.disconnect(); };
+  });
+
+  // Re-observe when agentMap data changes (data loaded after mount)
+  $: if (sorted.length > 0) {
+    setTimeout(observeCards, 80);
+  }
 </script>
 
 {#if sorted.length === 0}
-  <div class="card span-12 placeholder-card">
-    <div class="placeholder-txt">No agent data available for this mode</div>
+  <div class="empty-state">
+    <div class="empty-state-icon">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"/>
+        <path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
+        <line x1="12" y1="2" x2="12" y2="4"/>
+        <line x1="12" y1="16" x2="12" y2="18"/>
+      </svg>
+    </div>
+    <div class="empty-state-title">No Agent Data</div>
+    <div class="empty-state-sub">
+      No agent stats found for this mode and act filter.<br>
+      Try switching to Competitive or a different act.
+    </div>
   </div>
 {:else}
   <div style="display:contents;">
@@ -66,7 +110,7 @@
       {@const role = getRole(name)}
       {@const img = getAgentIcon(name)}
       {@const trend = getAgentTrend(name, allMatches)}
-      <div class="agent-bento visible" style="animation-delay:{i * 60}ms">
+      <div class="agent-bento reveal-on-scroll stagger-{i}">
         <div class="agent-wr-chip {wrCls}">{wr}%</div>
         {#if img}
           <img class="agent-portrait" src={img} alt={name}>

@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from 'svelte';
   import SearchForm from './SearchForm.svelte';
   import Bookmarks from './Bookmarks.svelte';
   import RecentSearches from './RecentSearches.svelte';
@@ -35,6 +36,24 @@
     });
     window.history.pushState({}, '', `/app#${tabId}`);
   }
+
+  onMount(() => {
+    if (typeof IntersectionObserver === 'undefined') return;
+    const cards = document.querySelectorAll('.landing-bento-card.reveal-on-scroll');
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.06, rootMargin: '0px 0px -30px 0px' }
+    );
+    cards.forEach(el => observer.observe(el));
+    return () => observer.disconnect();
+  });
 </script>
 
 <main class="landing-main">
@@ -132,52 +151,84 @@
       <h2 class="landing-section-title">Everything You Need To Rank Up</h2>
 
       <div class="landing-bento-grid">
-        <div class="landing-bento-card span-12 landing-bento-large">
+        <div class="landing-bento-card span-12 landing-bento-large reveal-on-scroll stagger-0">
           <span class="landing-card-tag">Core Feature</span>
           <div class="landing-card-img-frame">
             <img src="/stats_tracker_card.webp" alt="Stats Dashboard" loading="lazy">
           </div>
+          <div class="landing-card-hover-panel">
+            <div class="landing-card-hover-title">📊 Full Stats Dashboard</div>
+            <div class="landing-card-hover-desc">K/D, ACS, win rates, agent breakdowns, map health and more — all in one place.</div>
+          </div>
         </div>
-        <div class="landing-bento-card span-4 landing-bento-red-glow">
+        <div class="landing-bento-card span-4 landing-bento-red-glow reveal-on-scroll stagger-1">
           <span class="landing-card-tag landing-card-tag-red">AI Powered</span>
           <div class="landing-card-img-frame">
             <img src="/Val_bot_analysis.webp" alt="ValBot AI Coach" loading="lazy">
           </div>
+          <div class="landing-card-hover-panel">
+            <div class="landing-card-hover-title">🤖 ValBot AI Coach</div>
+            <div class="landing-card-hover-desc">GPT-powered analysis of your last 20 matches — precise, brutal, actionable feedback.</div>
+          </div>
         </div>
-        <div class="landing-bento-card span-4">
+        <div class="landing-bento-card span-4 reveal-on-scroll stagger-2">
           <span class="landing-card-tag">Deep Analysis</span>
           <div class="landing-card-img-frame">
             <img src="/deep_analysis.gif" alt="Self-Analysis Diagnostics" loading="lazy">
           </div>
+          <div class="landing-card-hover-panel">
+            <div class="landing-card-hover-title">🔬 Deep Analysis</div>
+            <div class="landing-card-hover-desc">Self-analysis diagnostics — identify your biggest leaks and how to fix them fast.</div>
+          </div>
         </div>
-        <div class="landing-bento-card span-4">
+        <div class="landing-bento-card span-4 reveal-on-scroll stagger-3">
           <span class="landing-card-tag">Performance Lab</span>
           <div class="landing-card-img-frame">
             <img src="/perf_lab.gif" alt="Performance Diagnostics" loading="lazy">
           </div>
+          <div class="landing-card-hover-panel">
+            <div class="landing-card-hover-title">🧪 Performance Lab</div>
+            <div class="landing-card-hover-desc">Multi-dimensional performance radar: clutch, accuracy, consistency, and impact scores.</div>
+          </div>
         </div>
-        <div class="landing-bento-card span-4">
+        <div class="landing-bento-card span-4 reveal-on-scroll stagger-4">
           <span class="landing-card-tag">Unique</span>
           <div class="landing-card-img-frame landing-contain-fit">
             <img src="/obs_overlay.webp" alt="OBS Stream Overlay" loading="lazy">
           </div>
+          <div class="landing-card-hover-panel">
+            <div class="landing-card-hover-title">🎥 OBS Stream Overlay</div>
+            <div class="landing-card-hover-desc">Live rank, RR delta, and session stats directly in your stream — no plugins needed.</div>
+          </div>
         </div>
-        <div class="landing-bento-card span-4">
+        <div class="landing-bento-card span-4 reveal-on-scroll stagger-5">
           <span class="landing-card-tag">Strategy</span>
           <div class="landing-card-img-frame">
             <img src="/meta_comp.webp" alt="Meta Comp Architect" loading="lazy">
           </div>
+          <div class="landing-card-hover-panel">
+            <div class="landing-card-hover-title">♟ Meta Comp Architect</div>
+            <div class="landing-card-hover-desc">Build optimal team comps by map using current-patch tier data and your agent pool.</div>
+          </div>
         </div>
-        <div class="landing-bento-card span-4">
+        <div class="landing-bento-card span-4 reveal-on-scroll stagger-6">
           <span class="landing-card-tag">Browse</span>
           <div class="landing-card-img-frame">
             <img src="/skin_store.webp" alt="Skins Store" loading="lazy">
           </div>
+          <div class="landing-card-hover-panel">
+            <div class="landing-card-hover-title">🛍 Skins Store</div>
+            <div class="landing-card-hover-desc">Browse the entire Valorant skin catalog, bundles, and current shop offers.</div>
+          </div>
         </div>
-        <div class="landing-bento-card span-12 landing-bento-large">
+        <div class="landing-bento-card span-12 landing-bento-large reveal-on-scroll stagger-7">
           <span class="landing-card-tag landing-card-tag-red">Live</span>
           <div class="landing-card-img-frame">
             <img src="/VCT_Esports.webp" alt="VCT Esports Hub" loading="lazy">
+          </div>
+          <div class="landing-card-hover-panel">
+            <div class="landing-card-hover-title">🏆 VCT Esports Hub</div>
+            <div class="landing-card-hover-desc">Live scores, bracket tracking, and team profiles for every VCT event worldwide.</div>
           </div>
         </div>
       </div>
