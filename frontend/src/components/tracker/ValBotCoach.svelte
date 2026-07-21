@@ -1,5 +1,7 @@
 <script>
+  import { tick } from 'svelte';
   import { buildStatsForAI, analyseStats } from '../../lib/ai-engine';
+  import { animateAllNumbersInContainer } from '../../lib/aiStreamer';
 
   export let matches = [];
   export let playerName = '';
@@ -10,6 +12,7 @@
   let error = '';
   let result = null;
   let aiStats = null;
+  let coachResultsEl = null;
 
   async function runAnalysis() {
     if (!matches.length) {
@@ -25,16 +28,20 @@
     let mi = 0;
     const iv = setInterval(() => { mi = (mi + 1) % msgs.length; }, 900);
 
-    await new Promise(r => setTimeout(r, 1800));
+    await new Promise(r => setTimeout(r, 1500));
 
     try {
       aiStats = buildStatsForAI(matches, playerName, playerTag);
       result = analyseStats(aiStats, rankName);
       clearInterval(iv);
+      loading = false;
+      await tick();
+      if (coachResultsEl) {
+        animateAllNumbersInContainer(coachResultsEl);
+      }
     } catch (e) {
       error = 'Analysis failed: ' + e.message;
       clearInterval(iv);
-    } finally {
       loading = false;
     }
   }
@@ -83,7 +90,7 @@
         <div class="ai-placeholder-txt">Fetch your stats first, then hit "Analyse My Performance" to get personalised coaching tips based on your actual match data.</div>
       </div>
     {:else}
-      <div class="ai-results active">
+      <div class="ai-results active" bind:this={coachResultsEl}>
         <div class="ai-summary-banner">{@html result.summary}</div>
 
         {#if aiStats}

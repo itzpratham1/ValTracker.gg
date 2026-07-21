@@ -1,5 +1,7 @@
 <script>
+  import { tick } from 'svelte';
   import { AGENT_ROLES, getRankFromRR } from '../../lib/constants';
+  import { streamHtmlReactive, animateAllNumbersInContainer } from '../../lib/aiStreamer';
 
   export let matches = [];
   export let playerName = '';
@@ -8,6 +10,13 @@
 
   let loading = false;
   let resultHtml = '';
+  let deepBodyEl = null;
+  let streamController = null;
+  let isStreaming = false;
+
+  function skipStream() {
+    if (streamController) streamController.skip();
+  }
 
   function findMe(match) {
     const all = match.players?.all_players || match.players || [];
@@ -53,12 +62,27 @@
     await new Promise(r => setTimeout(r, 800));
 
     try {
-      resultHtml = buildDeepAnalysis(matches);
+      const html = buildDeepAnalysis(matches);
+      loading = false;
+      clearInterval(iv);
+      await tick();
+
+      isStreaming = true;
+      streamController = streamHtmlReactive(html, (currentChunk) => {
+        resultHtml = currentChunk;
+      }, {
+        speed: 6,
+        chunkSize: 10,
+        onComplete: () => {
+          isStreaming = false;
+          resultHtml = html;
+          if (deepBodyEl) animateAllNumbersInContainer(deepBodyEl);
+        }
+      });
     } catch (e) {
       resultHtml = `<div style="color:var(--loss);padding:16px">Analysis error: ${e.message}</div>`;
-    } finally {
-      clearInterval(iv);
       loading = false;
+      clearInterval(iv);
     }
   }
 
@@ -319,9 +343,13 @@
       <div class="deep-trigger-title">🔬 Deep Self-Analysis</div>
       <div class="deep-trigger-sub">MAP WEAKNESS · ATTACK VS DEFENCE · AGENT-MAP FIT · IMPROVEMENT TREND · PRIORITIES</div>
     </div>
-    <button class="deep-run-btn" on:click={runDeepAnalysis} disabled={loading}>
-      {loading ? 'Analysing...' : '🔬 Run Analysis'}
-    </button>
+    {#if isStreaming}
+      <button class="ai-skip-btn" on:click={skipStream}>⏩ Fast-Forward</button>
+    {:else}
+      <button class="deep-run-btn" on:click={runDeepAnalysis} disabled={loading}>
+        {loading ? 'Analysing...' : '🔬 Run Analysis'}
+      </button>
+    {/if}
   </div>
 
   {#if loading}
@@ -331,9 +359,21 @@
     </div>
   {/if}
 
-  {#if resultHtml}
-    <div class="deep-results active">{@html resultHtml}</div>
+  {#if isStreaming}
+    <div class="ai-stream-hud-bar" style="margin-top:16px;">
+      <div class="ai-hud-status-group">
+        <div class="ai-hud-pulse-dot"></div>
+        <div class="ai-hud-title">VALINTEL DEEP NEURAL DIAGNOSTICS</div>
+      </div>
+      <div class="ai-hud-subtitle">STREAMING PROFILE BLUEPRINT...</div>
+    </div>
   {/if}
+
+  <div class="deep-results active" bind:this={deepBodyEl} style:display={loading ? 'none' : 'block'}>
+    {#if resultHtml}
+      {@html resultHtml}
+    {/if}
+  </div>
 </div>
 
 <style>

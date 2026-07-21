@@ -1,5 +1,6 @@
 <script>
-    import { onMount } from 'svelte';
+    import { onMount, tick } from 'svelte';
+  import { streamHtmlReactive, animateAllNumbersInContainer } from '../../lib/aiStreamer';
   import MatchScoreboard from './MatchScoreboard.svelte';
   import MatchPerformance from './MatchPerformance.svelte';
   import MatchDuels from './MatchDuels.svelte';
@@ -47,6 +48,13 @@
   let aiResults = '';
   let aiLoadingText = 'ANALYSING MATCH...';
   let aiCache = null;
+  let aiBodyEl = null;
+  let streamController = null;
+  let isStreaming = false;
+
+  function skipStream() {
+    if (streamController) streamController.skip();
+  }
 
   onMount(() => {
     if (!rawMatch) {
@@ -89,9 +97,7 @@
     }
   }
 
-  function normalizePlayerName(str) {
-    return (str || '').toLowerCase().replace(/\s+/g, '');
-  }
+  const normalizePlayerName = (n) => (n || '').toLowerCase().replace(/[\u200e\u200f\u200b\u200c\u200d\ufeff]/g, '').trim();
 
   function findMe(matchData) {
     const all = getPlayerList(matchData);
@@ -105,6 +111,9 @@
   async function runAnalysis() {
     if (aiCache) {
       aiResults = aiCache;
+      aiLoading = false;
+      await tick();
+      if (aiBodyEl) animateAllNumbersInContainer(aiBodyEl);
       return;
     }
 
@@ -146,13 +155,28 @@
 
       const html = buildMatchAnalysis(matchData, allStoredMatches);
       aiCache = html;
-      aiResults = html;
+      aiLoading = false;
+      clearInterval(iv);
+      await tick();
+
+      isStreaming = true;
+      streamController = streamHtmlReactive(html, (currentChunk) => {
+        aiResults = currentChunk;
+      }, {
+        speed: 6,
+        chunkSize: 8,
+        onComplete: () => {
+          isStreaming = false;
+          aiResults = html;
+          if (aiBodyEl) animateAllNumbersInContainer(aiBodyEl);
+        }
+      });
+
       if (window.showToast) window.showToast('Match analysis complete');
     } catch (e) {
       aiResults = `<div class="no-detail" style="color:var(--loss);padding:16px;">Analysis error: ${escapeHtml(e.message)}</div>`;
-    } finally {
-      clearInterval(iv);
       aiLoading = false;
+      clearInterval(iv);
     }
   }
 
@@ -905,7 +929,10 @@
   <div class="panel-tab-content" class:active={activeTab === 'ai'}>
     <div class="match-ai-wrap" style="margin-top:0;">
       <div class="match-ai-header">
-        <div class="match-ai-title">ValBot Match Analysis</div>
+        <div class="match-ai-title">⚡ ValBot Match Analysis</div>
+        {#if isStreaming}
+          <button class="ai-skip-btn" on:click={skipStream}>⏩ Fast-Forward</button>
+        {/if}
       </div>
       {#if aiLoading}
         <div class="match-ai-loading active">
@@ -913,9 +940,20 @@
           <span class="match-ai-loading-txt">{aiLoadingText}</span>
         </div>
       {/if}
-      {#if aiResults && !aiLoading}
-        <div class="match-ai-body active">{@html aiResults}</div>
+      {#if isStreaming}
+        <div class="ai-stream-hud-bar">
+          <div class="ai-hud-status-group">
+            <div class="ai-hud-pulse-dot"></div>
+            <div class="ai-hud-title">REALTIME NEURAL TELEMETRY</div>
+          </div>
+          <div class="ai-hud-subtitle">STREAMING MATCH INSIGHTS...</div>
+        </div>
       {/if}
+      <div class="match-ai-body active" bind:this={aiBodyEl} style:display={aiLoading ? 'none' : 'block'}>
+        {#if aiResults}
+          {@html aiResults}
+        {/if}
+      </div>
     </div>
   </div>
 </div>

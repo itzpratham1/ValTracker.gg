@@ -9,6 +9,7 @@
   import ProComps from './ProComps.svelte';
   import AgentSelectorModal from './AgentSelectorModal.svelte';
   import { createShareCard } from '../../lib/api';
+  import { animateAllNumbersInContainer } from '../../lib/aiStreamer';
 
   const API_BASE = import.meta.env.PUBLIC_API_URL || '';
 
@@ -21,6 +22,7 @@
   let savedComps = [];
   let selectorOpen = false;
   let selectedPatch = 'latest';
+  let draftPanelEl = null;
 
   let exportOpen = false;
   let exportLoading = false;
@@ -75,8 +77,12 @@
     runEvaluation();
   }
 
-  function runEvaluation() {
+  async function runEvaluation() {
     evaluation = evaluateDraft(draftSlots, selectedMap);
+    await tick();
+    if (draftPanelEl) {
+      animateAllNumbersInContainer(draftPanelEl);
+    }
   }
 
   function handleBuildAroundMe() {
@@ -484,7 +490,7 @@
         <div class="sl-line"></div>
       </div>
 
-      <div class="card coach-verdict-card">
+      <div class="card coach-verdict-card" bind:this={draftPanelEl}>
         {#if evaluation}
           <!-- Score Meter + Verdict -->
           <div class="coach-verdict-header">
