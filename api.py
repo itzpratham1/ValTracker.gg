@@ -9,6 +9,7 @@ import base64
 import urllib3
 import urllib.parse
 import concurrent.futures
+import threading
 import gzip
 import io
 import re
@@ -105,13 +106,13 @@ def supabase_request(method, table, data=None, params=None, headers=None):
         
     try:
         if method.upper() == "GET":
-            r = requests.get(url, headers=default_headers, params=params, timeout=4)
+            r = requests.get(url, headers=default_headers, params=params, timeout=8)
         elif method.upper() == "POST":
-            r = requests.post(url, headers=default_headers, json=data, timeout=4)
+            r = requests.post(url, headers=default_headers, json=data, timeout=8)
         elif method.upper() == "PATCH":
-            r = requests.patch(url, headers=default_headers, json=data, params=params, timeout=4)
+            r = requests.patch(url, headers=default_headers, json=data, params=params, timeout=8)
         elif method.upper() == "DELETE":
-            r = requests.delete(url, headers=default_headers, params=params, timeout=4)
+            r = requests.delete(url, headers=default_headers, params=params, timeout=8)
         else:
             return None
         return r
@@ -494,6 +495,10 @@ AGENT_UUID_MAP = {
 #  API ROUTES ONLY — No HTML serving
 # ──────────────────────────────────────────────────
 
+@app.route("/")
+def root_health():
+    return jsonify({"status": "ok", "service": "valtracker-api", "endpoint": "root"})
+
 @app.route("/api/health")
 def health_check():
     return jsonify({"status": "ok", "service": "valtracker-api"})
@@ -778,6 +783,152 @@ def search_players():
     return jsonify([])
 
 
+def _warm_cache_background(data):
+    """Background thread: upsert live matches + fetch lifetime matches for cache warming.
+    Runs after the response is sent so it never blocks the request."""
+    puuid = data.get("puuid")
+    name = data.get("name")
+    tag = data.get("tag")
+    mode = data.get("mode")
+    subpath = data.get("subpath", "")
+    live_matches_data = data.get("live_matches_data")
+    db_empty = data.get("db_matches_empty", True)
+    if not puuid or not live_matches_data or not isinstance(live_matches_data.get("data"), list):
+        return
+    try:
+        payloads_to_insert = []
+        for m in live_matches_data["data"]:
+            if not m: continue
+            match_id = (m.get("metadata") or {}).get("matchid") or (m.get("metadata") or {}).get("match_id")
+            if not match_id: continue
+            me = None
+            players = m.get("players", {})
+            raw_players = []
+            if isinstance(players, dict):
+                raw_players = players.get("all_players", []) or players.get("allPlayers", [])
+            elif isinstance(players, list):
+                raw_players = players
+            for p in raw_players:
+                if p.get("puuid") == puuid or (p.get("name", "").lower() == name.lower() and p.get("tag", "").lower() == tag.lower()):
+                    me = p
+                    break
+            if me:
+                meta = m.get("metadata") or {}
+                map_name = meta.get("map", "Unknown")
+                game_start = meta.get("game_start") or meta.get("gameStart") or int(time.time())
+                agent_name = me.get("character") or me.get("agent", {}).get("name", "Unknown")
+                kills = me.get("stats", {}).get("kills", 0)
+                deaths = me.get("stats", {}).get("deaths", 0)
+                assists = me.get("stats", {}).get("assists", 0)
+                score = me.get("stats", {}).get("score", 0)
+                team = me.get("team", "Red")
+                my_team_color = team.lower()
+                opp_team_color = "blue" if my_team_color == "red" else "red"
+                raw_teams = m.get("teams", {}) or {}
+                my_team_info = raw_teams.get(my_team_color) or {}
+                opp_team_info = raw_teams.get(opp_team_color) or {}
+                won = my_team_info.get("has_won") or my_team_info.get("hasWon") or False
+                if won is None:
+                    my_rounds = my_team_info.get("rounds_won") or my_team_info.get("roundsWon") or 0
+                    opp_rounds = opp_team_info.get("rounds_won") or opp_team_info.get("roundsWon") or 0
+                    won = my_rounds > opp_rounds
+                rounds_str = f"{my_team_info.get('rounds_won', 0) or my_team_info.get('roundsWon', 0)}-{opp_team_info.get('rounds_won', 0) or opp_team_info.get('roundsWon', 0)}"
+                stripped_raw_match = compress_match_json(m)
+                actual_m_mode = normalize_mode(meta.get("mode", "") or meta.get("queue", ""))
+                if not actual_m_mode:
+                    actual_m_mode = mode
+                match_payload = {
+                    "puuid": puuid, "match_id": match_id, "mode": actual_m_mode,
+                    "map_name": map_name, "game_start": game_start, "agent_name": agent_name,
+                    "kills": kills, "deaths": deaths, "assists": assists, "score": score,
+                    "won": won, "team": team, "rounds_summary": rounds_str,
+                    "stripped_raw_match": stripped_raw_match
+                }
+                payloads_to_insert.append(match_payload)
+        if payloads_to_insert:
+            print(f"[BACKGROUND CACHE] Upserting {len(payloads_to_insert)} matches concurrently to Supabase...")
+            with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+                futures = [
+                    executor.submit(supabase_request, "POST", "matches_cache", data=payload,
+                                    headers={"Prefer": "resolution=merge-duplicates"})
+                    for payload in payloads_to_insert
+                ]
+                concurrent.futures.wait(futures)
+        if db_empty:
+            try:
+                print(f"[BACKGROUND CACHE] DB was empty. Fetching lifetime matches for {name}#{tag} (mode: {mode})...")
+                subpath_parts = subpath.split('/')
+                region_lt = subpath_parts[2] if len(subpath_parts) >= 3 else "ap"
+                lifetime_url = f"https://api.henrikdev.xyz/valorant/v1/lifetime/matches/{region_lt}/{urllib.parse.quote(name)}/{urllib.parse.quote(tag)}"
+                lifetime_params = {"mode": mode, "size": 50}
+                headers_lt = {"Authorization": API_KEY, "Content-Type": "application/json"}
+                r_lt = requests.get(lifetime_url, headers=headers_lt, params=lifetime_params, timeout=10)
+                if r_lt.status_code == 200:
+                    lt_data = r_lt.json().get("data", [])
+                    for lm in lt_data:
+                        try:
+                            meta = lm.get("meta", {}) or {}
+                            stats = lm.get("stats", {}) or {}
+                            t_scores = lm.get("teams", {}) or {}
+                            m_id = meta.get("id")
+                            map_name = meta.get("map", {}).get("name", "Unknown")
+                            started_at_str = meta.get("started_at")
+                            clean_date = started_at_str.replace("Z", "+00:00")
+                            game_start = int(datetime.fromisoformat(clean_date).timestamp())
+                            char_name = stats.get("character", {}).get("name", "Unknown")
+                            kills = stats.get("kills", 0)
+                            deaths = stats.get("deaths", 0)
+                            assists = stats.get("assists", 0)
+                            score = stats.get("score", 0)
+                            my_team = stats.get("team", "Red")
+                            my_color = my_team.lower()
+                            opp_color = "blue" if my_color == "red" else "red"
+                            my_score = t_scores.get(my_color, 0)
+                            opp_score = t_scores.get(opp_color, 0)
+                            won = my_score > opp_score
+                            rounds_str = f"{my_score}-{opp_score}"
+                            if stats.get("puuid"):
+                                upsert_player(stats["puuid"], name, tag, region_lt)
+                            c_match = {
+                                "metadata": {
+                                    "map": map_name, "game_start": game_start, "matchid": m_id,
+                                    "mode": meta.get("mode"), "queue": meta.get("mode"),
+                                    "season": meta.get("season", {}).get("short"),
+                                    "rounds_played": my_score + opp_score
+                                },
+                                "players": {
+                                    "all_players": [{
+                                        "puuid": stats.get("puuid") or puuid, "name": name, "tag": tag,
+                                        "team": my_team, "character": char_name,
+                                        "currenttier": stats.get("tier", 0), "currenttier_patched": "",
+                                        "stats": {"score": score, "kills": kills, "deaths": deaths, "assists": assists,
+                                                  "headshots": stats.get("shots", {}).get("head", 0),
+                                                  "bodyshots": stats.get("shots", {}).get("body", 0),
+                                                  "legshots": stats.get("shots", {}).get("leg", 0)}
+                                    }]
+                                },
+                                "teams": {
+                                    "red": {"has_won": t_scores.get("red", 0) > t_scores.get("blue", 0), "rounds_won": t_scores.get("red", 0)},
+                                    "blue": {"has_won": t_scores.get("blue", 0) > t_scores.get("red", 0), "rounds_won": t_scores.get("blue", 0)}
+                                },
+                                "rounds": []
+                            }
+                            supabase_request("POST", "matches_cache", data={
+                                "puuid": puuid, "match_id": m_id, "mode": mode,
+                                "map_name": map_name, "game_start": game_start, "agent_name": char_name,
+                                "kills": kills, "deaths": deaths, "assists": assists, "score": score,
+                                "won": won, "team": my_team, "rounds_summary": rounds_str,
+                                "stripped_raw_match": c_match
+                            }, headers={"Prefer": "resolution=merge-duplicates"})
+                        except Exception as e_lm:
+                            print(f"[BACKGROUND LIFETIME ERROR] Failed to map lifetime match: {e_lm}")
+                    print(f"[BACKGROUND CACHE] Seeded {len(lt_data)} lifetime matches for {name}#{tag}")
+            except Exception as e_lt:
+                print(f"[BACKGROUND LIFETIME FETCH ERROR] {e_lt}")
+    except Exception as e:
+        print(f"[BACKGROUND CACHE ERROR] {e}")
+
+
 @app.route("/api/<path:subpath>", methods=["GET", "POST"])
 @rate_limit(requests_per_minute=120)
 def proxy_api(subpath):
@@ -879,81 +1030,6 @@ def proxy_api(subpath):
                 region = subpath.split("/")[2] if len(subpath.split("/")) >= 3 else "ap"
                 upsert_player(puuid, name, tag, region)
 
-        if puuid and live_matches_data and isinstance(live_matches_data.get("data"), list):
-            payloads_to_insert = []
-            for m in live_matches_data["data"]:
-                if not m: continue
-                match_id = (m.get("metadata") or {}).get("matchid") or (m.get("metadata") or {}).get("match_id")
-                if not match_id: continue
-                me = None
-                players = m.get("players", {})
-                raw_players = []
-                if isinstance(players, dict):
-                    raw_players = players.get("all_players", []) or players.get("allPlayers", [])
-                elif isinstance(players, list):
-                    raw_players = players
-                for p in raw_players:
-                    if p.get("puuid") == puuid or (p.get("name", "").lower() == name.lower() and p.get("tag", "").lower() == tag.lower()):
-                        me = p
-                        break
-                if me:
-                    meta = m.get("metadata") or {}
-                    map_name = meta.get("map", "Unknown")
-                    game_start = meta.get("game_start") or meta.get("gameStart") or int(time.time())
-                    agent_name = me.get("character") or me.get("agent", {}).get("name", "Unknown")
-                    kills = me.get("stats", {}).get("kills", 0)
-                    deaths = me.get("stats", {}).get("deaths", 0)
-                    assists = me.get("stats", {}).get("assists", 0)
-                    score = me.get("stats", {}).get("score", 0)
-                    team = me.get("team", "Red")
-                    my_team_color = team.lower()
-                    opp_team_color = "blue" if my_team_color == "red" else "red"
-                    raw_teams = m.get("teams", {}) or {}
-                    my_team_info = raw_teams.get(my_team_color) or {}
-                    opp_team_info = raw_teams.get(opp_team_color) or {}
-                    won = my_team_info.get("has_won") or my_team_info.get("hasWon") or False
-                    if won is None:
-                        my_rounds = my_team_info.get("rounds_won") or my_team_info.get("roundsWon") or 0
-                        opp_rounds = opp_team_info.get("rounds_won") or opp_team_info.get("roundsWon") or 0
-                        won = my_rounds > opp_rounds
-                    rounds_str = f"{my_team_info.get('rounds_won', 0) or my_team_info.get('roundsWon', 0)}-{opp_team_info.get('rounds_won', 0) or opp_team_info.get('roundsWon', 0)}"
-                    stripped_raw_match = compress_match_json(m)
-                    actual_m_mode = normalize_mode(meta.get("mode", "") or meta.get("queue", ""))
-                    if not actual_m_mode:
-                        actual_m_mode = mode
-                    match_payload = {
-                        "puuid": puuid,
-                        "match_id": match_id,
-                        "mode": actual_m_mode,
-                        "map_name": map_name,
-                        "game_start": game_start,
-                        "agent_name": agent_name,
-                        "kills": kills,
-                        "deaths": deaths,
-                        "assists": assists,
-                        "score": score,
-                        "won": won,
-                        "team": team,
-                        "rounds_summary": rounds_str,
-                        "stripped_raw_match": stripped_raw_match
-                    }
-                    payloads_to_insert.append(match_payload)
-            
-            if payloads_to_insert:
-                print(f"[MATCH INTERCEPT] Upserting {len(payloads_to_insert)} matches concurrently to Supabase...")
-                with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-                    futures = [
-                        executor.submit(
-                            supabase_request,
-                            "POST",
-                            "matches_cache",
-                            data=payload,
-                            headers={"Prefer": "resolution=merge-duplicates"}
-                        )
-                        for payload in payloads_to_insert
-                    ]
-                    concurrent.futures.wait(futures)
-
         db_matches = []
         if puuid:
             params_db = {
@@ -967,114 +1043,18 @@ def proxy_api(subpath):
                 rows = r_db.json()
                 db_matches = [row["stripped_raw_match"] for row in rows if "stripped_raw_match" in row]
 
-        lifetime_matches = []
-        if len(db_matches) == 0:
-            try:
-                print(f"[MATCH INTERCEPT] DB cache is empty. Fetching lifetime matches for {name}#{tag} (mode: {mode})...")
-                subpath_parts = subpath.split('/')
-                region_lt = subpath_parts[2] if len(subpath_parts) >= 3 else "ap"
-                lifetime_url = f"https://api.henrikdev.xyz/valorant/v1/lifetime/matches/{region_lt}/{urllib.parse.quote(name)}/{urllib.parse.quote(tag)}"
-                lifetime_params = {"mode": mode, "size": 50}
-                headers_lt = {"Authorization": API_KEY, "Content-Type": "application/json"}
-                r_lt = requests.get(lifetime_url, headers=headers_lt, params=lifetime_params, timeout=6)
-                if r_lt.status_code == 200:
-                    lt_data = r_lt.json().get("data", [])
-                    for lm in lt_data:
-                        try:
-                            meta = lm.get("meta", {}) or {}
-                            stats = lm.get("stats", {}) or {}
-                            t_scores = lm.get("teams", {}) or {}
-                            m_id = meta.get("id")
-                            map_name = meta.get("map", {}).get("name", "Unknown")
-                            started_at_str = meta.get("started_at")
-                            clean_date = started_at_str.replace("Z", "+00:00")
-                            game_start = int(datetime.fromisoformat(clean_date).timestamp())
-                            char_name = stats.get("character", {}).get("name", "Unknown")
-                            kills = stats.get("kills", 0)
-                            deaths = stats.get("deaths", 0)
-                            assists = stats.get("assists", 0)
-                            score = stats.get("score", 0)
-                            my_team = stats.get("team", "Red")
-                            my_color = my_team.lower()
-                            opp_color = "blue" if my_color == "red" else "red"
-                            my_score = t_scores.get(my_color, 0)
-                            opp_score = t_scores.get(opp_color, 0)
-                            won = my_score > opp_score
-                            rounds_str = f"{my_score}-{opp_score}"
-                            if not puuid and stats.get("puuid"):
-                                puuid = stats.get("puuid")
-                                upsert_player(puuid, name, tag, region_lt)
-                            c_match = {
-                                "metadata": {
-                                    "map": map_name,
-                                    "game_start": game_start,
-                                    "matchid": m_id,
-                                    "mode": meta.get("mode"),
-                                    "queue": meta.get("mode"),
-                                    "season": meta.get("season", {}).get("short"),
-                                    "rounds_played": my_score + opp_score
-                                },
-                                "players": {
-                                    "all_players": [{
-                                        "puuid": stats.get("puuid") or puuid,
-                                        "name": name,
-                                        "tag": tag,
-                                        "team": my_team,
-                                        "character": char_name,
-                                        "currenttier": stats.get("tier", 0),
-                                        "currenttier_patched": "",
-                                        "stats": {
-                                            "score": score,
-                                            "kills": kills,
-                                            "deaths": deaths,
-                                            "assists": assists,
-                                            "headshots": stats.get("shots", {}).get("head", 0),
-                                            "bodyshots": stats.get("shots", {}).get("body", 0),
-                                            "legshots": stats.get("shots", {}).get("leg", 0)
-                                        }
-                                    }]
-                                },
-                                "teams": {
-                                    "red": {
-                                        "has_won": t_scores.get("red", 0) > t_scores.get("blue", 0),
-                                        "rounds_won": t_scores.get("red", 0)
-                                    },
-                                    "blue": {
-                                        "has_won": t_scores.get("blue", 0) > t_scores.get("red", 0),
-                                        "rounds_won": t_scores.get("blue", 0)
-                                    }
-                                },
-                                "rounds": []
-                            }
-                            lifetime_matches.append(c_match)
-                            if puuid:
-                                match_payload = {
-                                    "puuid": puuid,
-                                    "match_id": m_id,
-                                    "mode": mode,
-                                    "map_name": map_name,
-                                    "game_start": game_start,
-                                    "agent_name": char_name,
-                                    "kills": kills,
-                                    "deaths": deaths,
-                                    "assists": assists,
-                                    "score": score,
-                                    "won": won,
-                                    "team": my_team,
-                                    "rounds_summary": rounds_str,
-                                    "stripped_raw_match": c_match
-                                }
-                                supabase_request("POST", "matches_cache", data=match_payload, headers={"Prefer": "resolution=merge-duplicates"})
-                        except Exception as e_lm:
-                            print(f"[LIFETIME MAP ERROR] Failed to map lifetime match: {e_lm}")
-            except Exception as e_lt_fetch:
-                print(f"[LIFETIME FETCH ERROR] Failed to fetch lifetime matches: {e_lt_fetch}")
+        _cache_background_data = {
+            "puuid": puuid,
+            "name": name,
+            "tag": tag,
+            "mode": mode,
+            "subpath": subpath,
+            "live_matches_data": live_matches_data,
+            "db_matches_empty": len(db_matches) == 0
+        }
+        threading.Thread(target=_warm_cache_background, args=(_cache_background_data,), daemon=True).start()
 
         merged_map = {}
-        for lm in lifetime_matches:
-            m_id = lm.get("metadata", {}).get("matchid") or lm.get("metadata", {}).get("match_id")
-            if m_id:
-                merged_map[m_id] = lm
         for dm in db_matches:
             m_id = dm.get("metadata", {}).get("matchid") or dm.get("metadata", {}).get("match_id")
             if m_id:

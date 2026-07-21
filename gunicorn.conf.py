@@ -10,9 +10,9 @@ worker_class = "sync"
 # Bind to PORT env var (Render injects this automatically)
 bind = f"0.0.0.0:{os.environ.get('PORT', '5000')}"
 
-# Kill workers that hang for more than 20 seconds (e.g. slow VLR scrapes)
+# Kill workers that hang for more than 30 seconds (e.g. slow VLR scrapes)
 # With 1 worker, a hang means the entire site is down
-timeout = 20
+timeout = 30
 
 # Keep connections alive for 5 seconds (reduces TCP handshake overhead)
 keepalive = 5
