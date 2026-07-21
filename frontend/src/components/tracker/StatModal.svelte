@@ -21,15 +21,16 @@
     hs:     { label: 'HS %',      color: '#fb923c', fn: m => m.shots ? Math.round((m.hs/m.shots)*100) : 0, fmt: v => v+'%', good: v => v >= 20  },
   };
 
+  $: orderedMatches = matches.slice().reverse();
   $: cfg = STAT_CONFIG[statKey] || STAT_CONFIG.kd;
-  $: values = matches.map(m => cfg.fn(m));
+  $: values = orderedMatches.map(m => cfg.fn(m));
   $: avg = values.length ? values.reduce((s,v)=>s+v,0) / values.length : 0;
   $: max = values.length ? Math.max(...values) : 0;
   $: min = values.length ? Math.min(...values) : 0;
   $: last5avg = values.length ? values.slice(-5).reduce((s,v)=>s+v,0) / Math.min(5, values.length) : 0;
   $: trend = last5avg > avg ? '▲ Improving' : last5avg < avg - (avg*0.05) ? '▼ Declining' : '→ Stable';
   $: trendCol = last5avg > avg ? 'var(--win)' : last5avg < avg - (avg*0.05) ? 'var(--loss)' : 'var(--muted)';
-  $: labels = matches.map((m, i) => {
+  $: labels = orderedMatches.map((m, i) => {
     const ag = (m.agentName||'').substring(0,3).toUpperCase();
     return `#${i+1} ${ag}`;
   });
@@ -92,12 +93,12 @@
             padding: 10,
             callbacks: {
               title: (items) => {
-                const m = matches[items[0].dataIndex];
+                const m = orderedMatches[items[0].dataIndex];
                 return `${m.agentName} on ${m.map} · ${m.won?'WIN':'LOSS'}`;
               },
               label: (item) => {
                 if (item.datasetIndex === 1) return `Avg: ${cfg.fmt(item.raw)}`;
-                const m = matches[item.dataIndex];
+                const m = orderedMatches[item.dataIndex];
                 return `${cfg.label}: ${cfg.fmt(item.raw)}  |  K/D/A: ${m.kills}/${m.deaths}/${m.assists}`;
               }
             }
