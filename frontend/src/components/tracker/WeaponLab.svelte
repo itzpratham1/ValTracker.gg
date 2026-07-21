@@ -110,10 +110,11 @@
     return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible"><polyline points="${pts.join(' ')}" fill="none" stroke="${col}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/><circle cx="${lx}" cy="${ly}" r="2.5" fill="${col}"/></svg>`;
   }
 
-  function getHeatmapSvg(hsPct, height = 115) {
-    const hs = Math.min(Math.round(hsPct * 0.7) + 5, 55);
-    const lg = Math.max(Math.round((100 - hs) * 0.08), 3);
-    const bd = 100 - hs - lg;
+  function getHeatmapSvg(hsPct, height = 115, v = null) {
+    const values = getHeatmapValues(v, hsPct);
+    const hs = values.head;
+    const bd = values.body;
+    const lg = values.legs;
     const hsOpacity = Math.max(0.12, hs / 60);
     const bdOpacity = Math.max(0.12, bd / 100);
     const lgOpacity = Math.max(0.06, lg / 20);
@@ -142,11 +143,20 @@
     return sorted.slice(-10).map(h => h.hsPct);
   }
 
-  function getHeatmapValues(hsPct) {
-    const hs = Math.min(Math.round(hsPct * 0.7) + 5, 55);
-    const lg = Math.max(Math.round((100 - hs) * 0.08), 3);
-    const bd = 100 - hs - lg;
-    return { head: hs, body: bd, legs: lg };
+  function getHeatmapValues(v, fallbackHsPct = 0) {
+    if (v && typeof v === 'object') {
+      const total = (v.headshots || 0) + (v.bodyshots || 0) + (v.legshots || 0);
+      if (total > 0) {
+        const head = Math.round((v.headshots || 0) / total * 100);
+        const legs = Math.round((v.legshots || 0) / total * 100);
+        const body = Math.max(0, 100 - head - legs);
+        return { head, body, legs };
+      }
+    }
+    const head = fallbackHsPct;
+    const legs = 5;
+    const body = Math.max(0, 100 - head - legs);
+    return { head, body, legs };
   }
 </script>
 
@@ -168,7 +178,7 @@
         {@const trend = getWeaponTrend(wpn, hsPct)}
         {@const topMatchPoints = getMatchHistoryPoints(v)}
         {@const topSparkSVG = buildSparklineSVG(topMatchPoints, 120, 32)}
-        {@const heat = getHeatmapValues(hsPct)}
+        {@const heat = getHeatmapValues(v, hsPct)}
         <div class="top-weapon-showcase" style="display: flex; flex-direction: column; justify-content: space-between;">
           <div class="top-weapon-badge">&#128293; Top Arsenal</div>
           <div class="top-weapon-img-wrap" style="text-align: center; margin-bottom: 8px;">
@@ -228,7 +238,7 @@
             <div class="wpn-heatmap-card" style="width: 125px; flex-shrink: 0; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 10px 8px; display: flex; align-items: center; justify-content: center; position: relative;">
               <div style="display: flex; gap: 8px; align-items: center; width: 100%; justify-content: center;">
                 <div style="position: relative;">
-                  {@html getHeatmapSvg(hsPct, 105)}
+                  {@html getHeatmapSvg(hsPct, 105, v)}
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 5px; font-family:'DM Mono', monospace; font-size: 8px; min-width: 45px; text-align: left;">
                   <div style="display: flex; flex-direction: column;">
@@ -260,7 +270,7 @@
             {@const trend = getWeaponTrend(wpn, hsPct)}
             {@const secMatchPoints = getMatchHistoryPoints(v)}
             {@const secSparkSVG = buildSparklineSVG(secMatchPoints, 120, 24)}
-            {@const heat = getHeatmapValues(hsPct)}
+            {@const heat = getHeatmapValues(v, hsPct)}
             
             <div class="secondary-weapon-row wpn-tooltip-trigger">
               <div class="sec-weapon-img-wrap">
@@ -299,7 +309,7 @@
               <!-- Hover tooltip card -->
               <div class="wpn-tooltip-card" style="width: 150px; gap: 8px;">
                 <div style="font-family:'Barlow Condensed', sans-serif; font-size:10px; font-weight:800; text-transform:uppercase; color:var(--accent); letter-spacing:0.5px; border-bottom: 1px solid rgba(255,255,255,0.06); width: 100%; text-align: center; padding-bottom: 3px; margin-bottom: 2px;">Target Heatmap</div>
-                {@html getHeatmapSvg(hsPct, 64)}
+                {@html getHeatmapSvg(hsPct, 64, v)}
                 <div style="display:flex; justify-content:space-between; width:100%; font-family:'DM Mono',monospace; font-size:8px; color:#fff; padding-bottom: 4px; box-sizing:border-box;">
                   <span style="color:#ff4655">H:{heat.head}%</span>
                   <span style="color:rgba(255,70,85,0.75)">B:{heat.body}%</span>
