@@ -26,7 +26,17 @@ export function getMuted(): boolean {
   return isMuted;
 }
 
-export function playSound(type: 'hover' | 'click' | 'submit' | 'error' | 'success'): void {
+export function triggerHaptic(pattern: number | number[] = 10): void {
+  if (typeof window !== 'undefined' && 'navigator' in window && 'vibrate' in navigator) {
+    try {
+      navigator.vibrate(pattern);
+    } catch {
+      // Ignore permission or window focus errors
+    }
+  }
+}
+
+export function playSound(type: 'hover' | 'click' | 'submit' | 'error' | 'success' | 'lock_in' | 'tab_switch' | 'cancel' | 'split_snap'): void {
   if (isMuted) return;
   const ctx = getAudioContext();
   if (!ctx) return;
@@ -52,6 +62,7 @@ export function playSound(type: 'hover' | 'click' | 'submit' | 'error' | 'succes
     gain.gain.linearRampToValueAtTime(0.0001, now + 0.04);
     osc.start(now);
     osc.stop(now + 0.04);
+    triggerHaptic(4);
   } else if (type === 'click') {
     // Crisp high double blip
     osc.type = 'triangle';
@@ -61,15 +72,60 @@ export function playSound(type: 'hover' | 'click' | 'submit' | 'error' | 'succes
     gain.gain.linearRampToValueAtTime(0.0001, now + 0.06);
     osc.start(now);
     osc.stop(now + 0.06);
-  } else if (type === 'submit') {
-    // Quick high frequency riser
+    triggerHaptic(8);
+  } else if (type === 'tab_switch') {
+    // Tactical segment pill click
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(700, now);
-    osc.frequency.exponentialRampToValueAtTime(2400, now + 0.12);
-    gain.gain.setValueAtTime(0.025, now);
-    gain.gain.linearRampToValueAtTime(0.0001, now + 0.12);
+    osc.frequency.setValueAtTime(1100, now);
+    osc.frequency.exponentialRampToValueAtTime(600, now + 0.05);
+    gain.gain.setValueAtTime(0.04, now);
+    gain.gain.linearRampToValueAtTime(0.0001, now + 0.05);
     osc.start(now);
-    osc.stop(now + 0.12);
+    osc.stop(now + 0.05);
+    triggerHaptic(10);
+  } else if (type === 'submit' || type === 'lock_in') {
+    // Deep Valorant Lock-In sub bass + riser
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(180, now);
+    osc.frequency.exponentialRampToValueAtTime(70, now + 0.25);
+    gain.gain.setValueAtTime(0.08, now);
+    gain.gain.linearRampToValueAtTime(0.0001, now + 0.25);
+    osc.start(now);
+    osc.stop(now + 0.25);
+
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.connect(gain2);
+    gain2.connect(ctx.destination);
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(700, now);
+    osc2.frequency.exponentialRampToValueAtTime(2400, now + 0.15);
+    gain2.gain.setValueAtTime(0.03, now);
+    gain2.gain.linearRampToValueAtTime(0.0001, now + 0.15);
+    osc2.start(now);
+    osc2.stop(now + 0.15);
+
+    triggerHaptic([20, 30, 40]);
+  } else if (type === 'split_snap') {
+    // Crisp double snap on auto-split
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(1600, now);
+    osc.frequency.exponentialRampToValueAtTime(2200, now + 0.03);
+    gain.gain.setValueAtTime(0.05, now);
+    gain.gain.linearRampToValueAtTime(0.0001, now + 0.04);
+    osc.start(now);
+    osc.stop(now + 0.04);
+    triggerHaptic([12, 12]);
+  } else if (type === 'cancel') {
+    // Downward cyber chirp
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(1200, now);
+    osc.frequency.linearRampToValueAtTime(300, now + 0.15);
+    gain.gain.setValueAtTime(0.04, now);
+    gain.gain.linearRampToValueAtTime(0.0001, now + 0.15);
+    osc.start(now);
+    osc.stop(now + 0.15);
+    triggerHaptic(15);
   } else if (type === 'success') {
     // Happy tactical chime
     osc.type = 'sine';
@@ -79,6 +135,7 @@ export function playSound(type: 'hover' | 'click' | 'submit' | 'error' | 'succes
     gain.gain.linearRampToValueAtTime(0.0001, now + 0.18);
     osc.start(now);
     osc.stop(now + 0.18);
+    triggerHaptic([15, 15]);
   } else if (type === 'error') {
     // Low double warning buzz
     osc.type = 'sawtooth';
@@ -88,5 +145,7 @@ export function playSound(type: 'hover' | 'click' | 'submit' | 'error' | 'succes
     gain.gain.linearRampToValueAtTime(0.0001, now + 0.22);
     osc.start(now);
     osc.stop(now + 0.22);
+    triggerHaptic([30, 40, 30]);
   }
 }
+

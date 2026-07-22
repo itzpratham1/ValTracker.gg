@@ -58,6 +58,12 @@
     };
   });
 
+  function handleCancelFetch() {
+    endFetch($player.name, $player.tag);
+    setPlayer({ name: '', tag: '', fetching: false, loaded: false });
+    window.location.href = '/login';
+  }
+
   function handlePopState() {
     checkUrlParams();
   }
@@ -300,6 +306,7 @@
       region={$player.region}
       mode={$player.mode}
       visible={true}
+      onCancel={handleCancelFetch}
     />
   </div>
 {:else if !redirecting}

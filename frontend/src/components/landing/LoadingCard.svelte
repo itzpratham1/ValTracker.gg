@@ -1,18 +1,24 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
   import { escapeHtml } from '../../lib/utils';
+  import { playSound } from '../../lib/audio';
 
   export let playerName = '';
   export let playerTag = '';
   export let region = '';
   export let mode = '';
   export let visible = false;
+  export let onCancel = null;
 
   let progress = 5;
   let tipIndex = 0;
   let tipVisible = true;
   let progressInterval;
   let tipInterval;
+  let timerInterval;
+
+  let startTime = Date.now();
+  let elapsedSeconds = '0.0';
 
   const VALORANT_LORE = [
     { tag: 'VALORANT LORE', text: 'Omen was once a human known as Viper\'s close companion before his transformation.' },
@@ -82,12 +88,20 @@
   onDestroy(() => {
     clearInterval(progressInterval);
     clearInterval(tipInterval);
+    clearInterval(timerInterval);
   });
 
   function startLoading() {
     progress = 5;
     tipIndex = Math.floor(Math.random() * allTips.length);
     tipVisible = true;
+
+    startTime = Date.now();
+    elapsedSeconds = '0.0';
+
+    timerInterval = setInterval(() => {
+      elapsedSeconds = ((Date.now() - startTime) / 1000).toFixed(1);
+    }, 100);
 
     progressInterval = setInterval(() => {
       if (progress < 40) progress += Math.random() * 7 + 4;
@@ -107,10 +121,28 @@
   function stopLoading() {
     clearInterval(progressInterval);
     clearInterval(tipInterval);
+    clearInterval(timerInterval);
     progress = 100;
   }
 
+  function handleCancel() {
+    playSound('cancel');
+    if (typeof onCancel === 'function') {
+      onCancel();
+    } else {
+      window.location.href = '/login';
+    }
+  }
+
   $: currentTip = allTips[tipIndex] || allTips[0];
+
+  $: stepText = progress < 30 
+    ? 'CONNECTING TO RIOT GATEWAY...' 
+    : progress < 60 
+    ? 'COMPILING MATCH HISTORY & MMR...' 
+    : progress < 85 
+    ? 'ANALYZING HEADSHOT % & ACCURACY...' 
+    : 'GENERATING STATS & INSIGHTS...';
 </script>
 
 {#if visible}
@@ -125,13 +157,30 @@
       <div class="spinner-icon">⚡</div>
     </div>
 
-    <div class="loading-title">FETCHING PROFILE</div>
+    <div class="loading-title">{stepText}</div>
     <div class="loading-subtitle">
       SYNCING <span class="loading-player">{escapeHtml(playerName)}#{escapeHtml(playerTag)}</span> [{escapeHtml(region)} · {escapeHtml(mode)}]
     </div>
 
     <div class="loading-progress">
       <div class="loading-progress-fill" style="width: {Math.min(progress, 100)}%"></div>
+    </div>
+
+    <!-- Stopwatch Telemetry & Cancel Control -->
+    <div class="loading-controls-row">
+      <div class="loading-telemetry">
+        <span class="telemetry-pulse"></span>
+        <span class="telemetry-label">ELAPSED:</span>
+        <span class="telemetry-val">{elapsedSeconds}s</span>
+      </div>
+
+      <button type="button" class="loading-cancel-btn" on:click={handleCancel}>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+        <span>Cancel & Search Again</span>
+      </button>
     </div>
 
     <div class="loading-tip" class:tip-visible={tipVisible}>
@@ -332,6 +381,72 @@
     letter-spacing: 0.5px;
   }
 
+  /* Telemetry & Cancel Row */
+  .loading-controls-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    max-width: 340px;
+    margin-bottom: 20px;
+  }
+
+  .loading-telemetry {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+
+  .telemetry-pulse {
+    width: 6px;
+    height: 6px;
+    background-color: #10b981;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #10b981;
+    animation: pulseGlow 1.2s infinite alternate;
+  }
+
+  .telemetry-label {
+    color: #8b8b9a;
+  }
+
+  .telemetry-val {
+    color: #10b981;
+    font-weight: 700;
+  }
+
+  .loading-cancel-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(250, 68, 84, 0.06);
+    border: 1px solid rgba(250, 68, 84, 0.25);
+    color: #fa4454;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+  }
+
+  .loading-cancel-btn:hover {
+    background: rgba(250, 68, 84, 0.18);
+    border-color: rgba(250, 68, 84, 0.5);
+    box-shadow: 0 0 12px rgba(250, 68, 84, 0.2);
+    transform: translateY(-1px);
+  }
+
   @media (max-width: 480px) {
     .loading-card {
       min-height: 320px;
@@ -352,6 +467,10 @@
     }
     .loading-tip-text {
       font-size: 13px;
+    }
+    .loading-controls-row {
+      flex-direction: column;
+      gap: 8px;
     }
   }
 </style>

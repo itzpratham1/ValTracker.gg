@@ -59,7 +59,32 @@
     }
   }
 
-  function handleInput() {
+  function checkAutoSplit() {
+    let triggered = false;
+    if (name.includes('#')) {
+      const parts = name.split('#');
+      name = parts[0].trim();
+      tag = parts.slice(1).join('#').trim();
+      triggered = true;
+    } else if (tag.includes('#')) {
+      const parts = tag.split('#');
+      if (parts[0] && !name) {
+        name = parts[0].trim();
+      }
+      tag = parts.slice(1).join('#').trim() || parts[0].trim();
+      triggered = true;
+    }
+
+    if (triggered) {
+      playSound('split_snap');
+      if (window.showToast) {
+        window.showToast('Riot ID Auto-Split ✓');
+      }
+    }
+  }
+
+  function handleInput(e) {
+    checkAutoSplit();
     clearTimeout(debounceTimer);
     const query = `${name} ${tag}`.trim();
 
@@ -115,6 +140,7 @@
   }
 
   function handleSubmit() {
+    checkAutoSplit();
     const cleanName = name.trim();
     const cleanTag = tag.trim().replace(/^#/, '');
 
@@ -126,7 +152,7 @@
 
     error = '';
     showDropdown = false;
-    playSound('submit');
+    playSound('lock_in');
     onSearch(cleanName, cleanTag, region, mode);
   }
 
@@ -180,6 +206,7 @@
         bind:this={nameInput}
         bind:value={name}
         on:input={handleInput}
+        on:paste={() => setTimeout(checkAutoSplit, 50)}
         on:focus={handleFocus}
         on:mouseenter={playHover}
         on:keydown={handleKeydown}
@@ -194,6 +221,7 @@
         class="sf-input sf-input-tag"
         bind:value={tag}
         on:input={handleInput}
+        on:paste={() => setTimeout(checkAutoSplit, 50)}
         on:focus={handleFocus}
         on:mouseenter={playHover}
         on:keydown={handleKeydown}
@@ -753,6 +781,7 @@
     color: #fff;
   }
 
+  /* Tactical Segment Pills */
   .quick-profile-tag {
     color: #fa4454;
     font-size: 11px;
