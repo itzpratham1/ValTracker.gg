@@ -212,7 +212,12 @@
       const hist = {};
       if (mmrHistResData?.data?.length) {
         mmrHistResData.data.forEach(e => {
-          hist[e.match_id] = e.last_mmr_change;
+          const rrVal = e.last_mmr_change !== undefined && e.last_mmr_change !== null
+            ? e.last_mmr_change
+            : e.mmr_change_to_last_game;
+          if (e.match_id && rrVal !== undefined && rrVal !== null) {
+            hist[e.match_id] = rrVal;
+          }
         });
       }
       mmrHistory = hist;

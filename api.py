@@ -165,6 +165,16 @@ def is_player_fresh(cached_player, ttl_seconds=900):
         print(f"[CACHE TIMESTAMP ERROR] {e}")
         return False
 
+def is_cache_key_fresh(cached_player, cache_key_type, ttl_seconds=900):
+    if not cached_player:
+        return False
+    stats_cache = cached_player.get("stats_cache") or {}
+    timestamps = stats_cache.get("_timestamps") or {}
+    last_updated_ts = timestamps.get(cache_key_type)
+    if last_updated_ts is None:
+        return is_player_fresh(cached_player, ttl_seconds=ttl_seconds)
+    return (time.time() - last_updated_ts) < ttl_seconds
+
 def upsert_player(puuid, name, tag, region, level=None, card_id=None, current_tier=None, current_tier_patched=None, peak_tier_patched=None, rr=None, peak_tier=None, peak_rr=None, elo=None, cache_key=None, cache_val=None):
     if not SUPABASE_URL or not SUPABASE_KEY or not puuid:
         return
@@ -179,6 +189,9 @@ def upsert_player(puuid, name, tag, region, level=None, card_id=None, current_ti
     stats_cache = (existing.get("stats_cache") or {}) if existing else {}
     if cache_key and cache_val:
         stats_cache[cache_key] = cache_val
+        timestamps = stats_cache.get("_timestamps") or {}
+        timestamps[cache_key] = time.time()
+        stats_cache["_timestamps"] = timestamps
     payload = {
         "puuid": safe_puuid,
         "name": sanitize_postgrest_value(name),
@@ -953,13 +966,15 @@ def proxy_api(subpath):
             cache_key_type = "stored_mmr_history"
 
     if is_profile_route:
-        cached_player = get_cached_player(name, tag)
-        if cached_player and is_player_fresh(cached_player, ttl_seconds=900):
-            stats_cache = cached_player.get("stats_cache") or {}
-            cached_data = stats_cache.get(cache_key_type)
-            if cached_data:
-                print(f"[DB CACHE HIT] Serving {cache_key_type} for {name}#{tag} instantly from Supabase!")
-                return jsonify(cached_data)
+        bypass_cache = "true" in request.args.get("_nocache", "").lower() or len(request.args.get("_nocache", "")) > 0
+        if not bypass_cache:
+            cached_player = get_cached_player(name, tag)
+            if cached_player and is_cache_key_fresh(cached_player, cache_key_type, ttl_seconds=900):
+                stats_cache = cached_player.get("stats_cache") or {}
+                cached_data = stats_cache.get(cache_key_type)
+                if cached_data:
+                    print(f"[DB CACHE HIT] Serving {cache_key_type} for {name}#{tag} instantly from Supabase!")
+                    return jsonify(cached_data)
 
     is_matches_route = False
     if name and tag and request.method == "GET" and subpath.startswith("v3/matches/"):
