@@ -3877,7 +3877,7 @@ input:checked + .slider:before {
   margin-top: 2px;
 }
 /* ── INTERACTIVE TABLETS QUERY (MAX 960PX) ── */
-@media(max-width:960px){
+@media(min-width:601px) and (max-width:960px){
   .main{grid-template-columns:repeat(6,1fr);padding:0 16px 40px;}
   .span-2{grid-column:span 3;}
   .span-3,.span-4{grid-column:span 3;}
@@ -3950,27 +3950,27 @@ input:checked + .slider:before {
   .tracker-layout .hero-rank-block, .tracker-layout .hero-streak-block { width: 100% !important; min-width: unset; height: auto; padding: 12px 16px; justify-content: center; }
   .tracker-layout .hero-rank-name { font-size: 18px; }
 
-  /* Main grids mobile resets */
-  .main{grid-template-columns:repeat(4,1fr) !important;padding:0 12px 40px !important;gap:8px !important;}
-  .span-2,.span-3,.span-4,.span-6,.span-7,.span-8,.span-12{grid-column:span 4 !important;}
-  .section-label{grid-column:span 4 !important;}
+  /* Main grids mobile resets — 2-column clean layout */
+  .main { grid-template-columns: repeat(2, 1fr) !important; padding: 0 10px 40px !important; gap: 8px !important; display: grid !important; }
+  .span-2, .span-3, .span-4, .span-6, .span-7, .span-8, .span-12, .section-label, .perf-row { grid-column: 1 / -1 !important; width: 100% !important; }
 
-  /* Stat cards spans */
-  .card.span-2{grid-column:span 2 !important;}
-  .card-val{font-size:32px;}
+  /* Stat cards spans — 2 per row */
+  .stat-cards-wrapper { grid-column: 1 / -1 !important; display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; width: 100% !important; }
+  .stat-cards-wrapper .card, .card.span-2 { grid-column: span 1 !important; width: 100% !important; margin: 0 !important; }
+  .card-val { font-size: 24px !important; }
 
-  /* Win rate details */
-  .wr-big{font-size:48px;}
-  .card.wr-card.span-4{grid-column:span 4 !important;}
-  .card.graph-card.span-8{grid-column:span 4 !important;}
+  /* Win rate & graph cards */
+  .wr-big { font-size: 40px !important; }
+  .card.wr-card.span-4 { grid-column: 1 / -1 !important; }
+  .card.graph-card.span-8 { grid-column: 1 / -1 !important; }
 
-  /* Bento elements mobile spans */
-  .agent-bento{grid-column:span 2 !important;}
-  .agent-portrait{height:110px;}
-  .map-card-bento{grid-column:span 2 !important;}
-  .map-stats-mini{grid-template-columns:repeat(2,1fr);}
-  .impact-bento{grid-column:span 2 !important;}
-  .impact-val{font-size:26px;}
+  /* Bento elements mobile spans — 2 per row */
+  .agent-bento { grid-column: span 1 !important; width: 100% !important; }
+  .agent-portrait { height: 95px !important; }
+  .map-card-bento { grid-column: span 1 !important; width: 100% !important; }
+  .map-stats-mini { grid-template-columns: repeat(2, 1fr) !important; }
+  .impact-bento { grid-column: 1 / -1 !important; }
+  .impact-val { font-size: 24px !important; }
 
   /* Scorings row matches list collapse */
   .match-row{
@@ -8286,9 +8286,15 @@ body::after {
 /* ── 600px: Primary mobile breakpoint ── */
 @media (max-width: 600px) {
   /* ── LANDING PAGE HERO ── */
-  .hero {
+  :not(.tracker-layout) .hero {
     min-height: 90dvh !important;
     padding: 80px 20px 60px !important;
+  }
+  .tracker-layout .hero {
+    min-height: auto !important;
+    height: auto !important;
+    padding: 20px 14px 10px !important;
+    margin-bottom: 0 !important;
   }
   .hero-content { max-width: 100% !important; }
   .hero-headline { font-size: clamp(2.2rem, 10vw, 3.5rem) !important; }
@@ -8336,16 +8342,26 @@ body::after {
   .tracker-layout .span-4,
   .tracker-layout .span-6,
   .tracker-layout .span-7,
-  .tracker-layout .span-8 { grid-column: span 12 !important; }
-  .tracker-layout .span-2 { grid-column: span 6 !important; }
+  .tracker-layout .span-8,
+  .tracker-layout .span-12,
+  .tracker-layout .acc-card,
+  .tracker-layout .roles-card,
+  .tracker-layout .weapons-card,
+  .tracker-layout .deep-wrap,
+  .tracker-layout .plab-wrap,
+  .tracker-layout .perf-row,
+  .tracker-layout .section-label,
+  .tracker-layout .match-item,
+  .tracker-layout .filter-bar,
+  .tracker-layout .ai-section,
+  .tracker-layout .ai-premium-wrapper,
+  .tracker-layout .combat-bento-card,
+  .acc-card,
+  .roles-card { grid-column: 1 / -1 !important; width: 100% !important; }
+  .tracker-layout .span-2 { grid-column: 1 / -1 !important; }
   .tracker-layout .agent-bento,
   .tracker-layout .map-card-bento,
-  .tracker-layout .impact-bento { grid-column: span 6 !important; }
-  .tracker-layout .pro-compositions-grid { grid-template-columns: 1fr !important; }
-  .tracker-layout .hero-title { font-size: 32px !important; }
-  .custom-select-trigger { width: 100% !important; }
-  .custom-options-menu { left: 0 !important; right: 0 !important; width: 100% !important; }
-  .acc-card, .roles-card { grid-column: span 12 !important; }
+  .tracker-layout .impact-bento { grid-column: 1 / -1 !important; }
 }
 
 /* ── 800px: Large mobile / small tablet ── */
@@ -8392,7 +8408,7 @@ body::after {
 }
 
 /* ── 960px: Tablet grid ── */
-@media (max-width: 960px) {
+@media (min-width: 601px) and (max-width: 960px) {
   .main { grid-template-columns: repeat(6, 1fr) !important; padding: 0 16px 40px !important; }
   .span-2 { grid-column: span 3 !important; }
   .span-3, .span-4 { grid-column: span 3 !important; }
@@ -8454,9 +8470,45 @@ body::after {
 
 /* ── 600px: Hero mobile stack ── */
 @media (max-width: 600px) {
-  .tracker-layout .hero-right { flex-direction: column !important; }
+  .tracker-layout .hero {
+    padding: 20px 16px !important;
+    min-height: auto !important;
+  }
+  .tracker-layout .hero-content {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 16px !important;
+  }
+  .tracker-layout .hero-left {
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+    gap: 12px !important;
+  }
+  .tracker-layout .hero-player-details {
+    align-items: center !important;
+    width: 100% !important;
+  }
+  .tracker-layout .hero-eyebrow {
+    justify-content: center !important;
+  }
+  .tracker-layout .hero-eyebrow::before {
+    display: none !important;
+  }
+  .tracker-layout .hero-title {
+    font-size: clamp(24px, 7vw, 34px) !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  .tracker-layout .hero-sub {
+    justify-content: center !important;
+  }
+  .tracker-layout .hero-right { flex-direction: column !important; width: 100% !important; align-items: stretch !important; gap: 10px !important; }
   .tracker-layout .hero-rank-block,
-  .tracker-layout .hero-streak-block { width: 100% !important; }
+  .tracker-layout .hero-streak-block { width: 100% !important; justify-content: center !important; }
   .tracker-layout .hero-title .dim { display: inline-block !important; margin-left: 4px !important; }
   .landing-corner { width: 30px !important; height: 30px !important; }
   .landing-corner.tl, .landing-corner.bl { left: 12px !important; }
@@ -8508,15 +8560,15 @@ body::after {
   .tracker-layout .hero-right { flex-direction: column !important; gap: 12px !important; width: 100% !important; align-items: stretch !important; }
   .tracker-layout .hero-rank-block,
   .tracker-layout .hero-streak-block { width: 100% !important; flex: none !important; }
-  .tracker-layout .span-2 { grid-column: span 2 !important; }
+  .tracker-layout .span-2 { grid-column: span 1 !important; }
   .tracker-layout .span-3,
   .tracker-layout .span-4,
   .tracker-layout .span-6,
   .tracker-layout .span-7,
   .tracker-layout .span-8,
-  .tracker-layout .span-12 { grid-column: span 4 !important; }
+  .tracker-layout .span-12 { grid-column: 1 / -1 !important; }
   .tracker-layout .acc-card,
-  .tracker-layout .roles-card { grid-column: span 4 !important; }
+  .tracker-layout .roles-card { grid-column: 1 / -1 !important; }
   .tracker-layout .match-row { grid-template-columns: 50px 1.2fr auto auto 38px 24px !important; gap: 6px !important; padding: 8px 8px !important; }
   .tracker-layout .mr-map-thumb { display: none !important; }
   .tracker-layout .mr-score,
@@ -8536,30 +8588,102 @@ body::after {
   .hud-top-bar .hud-center { display: none !important; }
 }
 
-/* ── ULTIMATE MOBILE GUARD: Force 1-column grid, prevent horizontal scroll ── */
+/* ── ULTIMATE MOBILE GUARD: Clean mobile layout, 2-col stats, scrollable topbar & calendar ── */
 @media (max-width: 600px) {
   html, body {
     overflow-x: hidden !important;
     width: 100% !important;
+    max-width: 100vw !important;
   }
-  .tracker-nav-left {
-    overflow-x: auto !important;
-    white-space: nowrap !important;
-    -webkit-overflow-scrolling: touch;
-    flex-wrap: nowrap !important;
+  .tracker-layout {
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
   }
-  .tracker-nav-item { flex-shrink: 0 !important; }
-  .topbar-main-row { flex-wrap: wrap !important; gap: 12px !important; }
+  .tracker-nav {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+    padding: 8px 12px !important;
+  }
+  .tracker-nav-right {
+    width: 100% !important;
+    display: flex !important;
+    gap: 8px !important;
+  }
+  .tracker-nav-right .session-group,
+  .tracker-nav-right .nav-dropdown {
+    flex: 1 !important;
+    display: flex !important;
+  }
+  .tracker-nav-right .nav-btn {
+    width: 100% !important;
+    justify-content: center !important;
+    min-height: 40px !important;
+  }
+
+  .topbar-main-row { flex-wrap: wrap !important; gap: 10px !important; }
   .topbar-main-row .player-search-wrap { width: 100% !important; order: 3; margin-top: 4px; }
-  .topbar-tabs { flex-wrap: wrap !important; justify-content: center !important; }
-  .topbar-sub-row { flex-wrap: wrap !important; gap: 12px !important; }
+  .topbar-tabs {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    gap: 6px !important;
+    padding: 2px 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    justify-content: flex-start !important;
+  }
+  .topbar-tabs::-webkit-scrollbar { display: none !important; }
+  .topbar-tab {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    font-size: 11px !important;
+    padding: 6px 12px !important;
+  }
+
+  .topbar-sub-row { flex-wrap: wrap !important; gap: 10px !important; }
   .topbar-sub-left { width: 100% !important; justify-content: space-between !important; }
   .topbar-sub-row .topbar-right { flex-wrap: wrap !important; width: 100% !important; gap: 8px !important; }
   .topbar-filter-capsule { width: 100% !important; display: flex !important; }
   .topbar-filter-capsule .filter-item { flex: 1 !important; }
   .topbar-sub-row .fetch-btn { width: 100% !important; }
-  .tracker-layout .main { grid-template-columns: 1fr !important; display: grid !important; }
-  .tracker-layout .span-2,
+
+  .tracker-layout .main {
+    grid-template-columns: repeat(2, 1fr) !important;
+    display: grid !important;
+    padding: 0 10px 40px !important;
+    gap: 8px !important;
+  }
+  
+  /* 2-column grid for core 6 stat cards on mobile */
+  .stat-cards-wrapper {
+    grid-column: 1 / -1 !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .stat-cards-wrapper .card,
+  .tracker-layout .card.span-2 {
+    width: 100% !important;
+    grid-column: span 1 !important;
+    margin: 0 !important;
+    padding: 10px 10px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 2 per row on mobile for agent and map bentos */
+  .tracker-layout .agent-bento,
+  .tracker-layout .map-card-bento {
+    grid-column: span 1 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
   .tracker-layout .span-3,
   .tracker-layout .span-4,
   .tracker-layout .span-6,
@@ -8568,12 +8692,127 @@ body::after {
   .tracker-layout .span-12,
   .tracker-layout .acc-card,
   .tracker-layout .roles-card,
-  .tracker-layout .card,
-  .tracker-layout .agent-bento,
-  .tracker-layout .map-card-bento,
-  .tracker-layout .impact-bento {
+  .tracker-layout .weapons-card,
+  .tracker-layout .deep-wrap,
+  .tracker-layout .plab-wrap,
+  .tracker-layout .match-item,
+  .tracker-layout .filter-bar,
+  .tracker-layout .ai-section,
+  .tracker-layout .ai-premium-wrapper,
+  .tracker-layout .combat-bento-card,
+  .tracker-layout .card:not(.stat-cards-wrapper .card):not(.span-2),
+  .tracker-layout .impact-bento,
+  .tracker-layout .section-label,
+  .tracker-layout .perf-row {
     width: 100% !important;
     grid-column: 1 / -1 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Combat Bento / Radar Chart mobile fix */
+  .tracker-layout .combat-bento-card {
+    padding: 16px 12px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    width: 100% !important;
+  }
+  .tracker-layout .combat-bento-body {
+    flex-direction: column !important;
+    gap: 16px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .tracker-layout .radar-chart-container {
+    width: 100% !important;
+    height: 250px !important;
+    position: relative !important;
+    box-sizing: border-box !important;
+    padding: 4px !important;
+  }
+  .tracker-layout .combat-stats-list {
+    width: 100% !important;
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    box-sizing: border-box !important;
+  }
+  .tracker-layout .combat-stat-item {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 10px 14px !important;
+  }
+
+  /* Activity & RR Calendar mobile fix */
+  .perf-calendar-card {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    padding: 16px 12px !important;
+  }
+  .perf-cal-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+  .cal-legend {
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+  }
+  .cal-grid-wrap {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    padding-bottom: 6px !important;
+  }
+  .cal-grid-wrap::-webkit-scrollbar { display: none !important; }
+  .cal-summary {
+    flex-direction: column !important;
+    gap: 6px !important;
+    font-size: 9px !important;
+  }
+
+  /* Role Identity / Archetype Card mobile fix */
+  .role-identity-card {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+  .ric-inner {
+    flex-direction: column !important;
+    gap: 16px !important;
+    padding: 16px 12px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .ric-left, .ric-right {
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    flex: none !important;
+  }
+  .ric-left {
+    flex-direction: row !important;
+    gap: 12px !important;
+  }
+  .ric-emoji {
+    font-size: 44px !important;
+  }
+  .ric-archetype-name {
+    font-size: 22px !important;
+  }
+  .ric-description {
+    max-width: 100% !important;
+    font-size: 11px !important;
+  }
+  .ric-role-bar-row, .ric-score-item {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .ric-role-bar-track, .ric-score-bar-track {
+    flex: 1 !important;
+    min-width: 0 !important;
   }
 }
 

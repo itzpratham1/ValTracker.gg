@@ -55,6 +55,8 @@
     const ddVal = Math.min(100, Math.max(0, (((stats.damageDeltaPerRound || 0) + 50) / 100) * 100));
     const fbVal = Math.min(100, Math.max(0, ((stats.firstBloods || 0) / (stats.matchesCount || 20) / 5) * 100));
 
+    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 600;
+
     const ctx = canvasEl.getContext('2d');
     chartInstance = new Chart(ctx, {
       type: 'radar',
@@ -70,13 +72,16 @@
           pointBorderColor: '#ffffff',
           pointHoverBackgroundColor: '#ffffff',
           pointHoverBorderColor: '#fa4454',
-          pointRadius: 4,
+          pointRadius: isMobile ? 3 : 4,
           pointHoverRadius: 6
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        layout: {
+          padding: isMobile ? { top: 12, bottom: 12, left: 16, right: 16 } : 10
+        },
         scales: {
           r: {
             angleLines: {
@@ -89,7 +94,7 @@
               color: '#a0a0ab',
               font: {
                 family: "'Inter', sans-serif",
-                size: 10,
+                size: isMobile ? 8 : 10,
                 weight: '600'
               }
             },
@@ -135,46 +140,48 @@
 </script>
 
 {#if stats}
-  <!-- 6 core stats cards -->
-  <button class="card span-2 clickable visible" on:click={() => onStatClick('kd')}>
-    <div class="card-accent-line"></div>
-    <div class="card-label">K/D Ratio</div>
-    <div class="card-val">{kd}</div>
-    <div class="card-sub">Competitive</div>
-  </button>
-  <button class="card span-2 clickable visible" on:click={() => onStatClick('kills')}>
-    <div class="card-accent-line"></div>
-    <div class="card-label">Avg Kills</div>
-    <div class="card-val">{avgKills}</div>
-    <div class="card-sub">Per match</div>
-  </button>
-  <button class="card span-2 clickable visible" on:click={() => onStatClick('deaths')}>
-    <div class="card-accent-line"></div>
-    <div class="card-label">Avg Deaths</div>
-    <div class="card-val">{avgDeaths}</div>
-    <div class="card-sub">Per match</div>
-  </button>
-  <button class="card span-2 clickable visible" on:click={() => onStatClick('assists')}>
-    <div class="card-accent-line"></div>
-    <div class="card-label">Avg Assists</div>
-    <div class="card-val">{avgAssists}</div>
-    <div class="card-sub">Per match</div>
-  </button>
-  <button class="card span-2 clickable visible" on:click={() => onStatClick('acs')}>
-    <div class="card-accent-line"></div>
-    <div class="card-label">Avg ACS</div>
-    <div class="card-val">{avgACS}</div>
-    <div class="card-sub">Combat Score</div>
-  </button>
-  <button class="card span-2 clickable visible" on:click={() => onStatClick('hs')}>
-    <div class="card-accent-line"></div>
-    <div class="card-label">HS Rate</div>
-    <div class="card-val">{hsRate}</div>
-    <div class="card-sub">Headshots</div>
-  </button>
+  <!-- 6 core stats cards grid -->
+  <div class="stat-cards-wrapper">
+    <button class="card clickable visible" on:click={() => onStatClick('kd')}>
+      <div class="card-accent-line"></div>
+      <div class="card-label">K/D Ratio</div>
+      <div class="card-val">{kd}</div>
+      <div class="card-sub">Competitive</div>
+    </button>
+    <button class="card clickable visible" on:click={() => onStatClick('kills')}>
+      <div class="card-accent-line"></div>
+      <div class="card-label">Avg Kills</div>
+      <div class="card-val">{avgKills}</div>
+      <div class="card-sub">Per match</div>
+    </button>
+    <button class="card clickable visible" on:click={() => onStatClick('deaths')}>
+      <div class="card-accent-line"></div>
+      <div class="card-label">Avg Deaths</div>
+      <div class="card-val">{avgDeaths}</div>
+      <div class="card-sub">Per match</div>
+    </button>
+    <button class="card clickable visible" on:click={() => onStatClick('assists')}>
+      <div class="card-accent-line"></div>
+      <div class="card-label">Avg Assists</div>
+      <div class="card-val">{avgAssists}</div>
+      <div class="card-sub">Per match</div>
+    </button>
+    <button class="card clickable visible" on:click={() => onStatClick('acs')}>
+      <div class="card-accent-line"></div>
+      <div class="card-label">Avg ACS</div>
+      <div class="card-val">{avgACS}</div>
+      <div class="card-sub">Combat Score</div>
+    </button>
+    <button class="card clickable visible" on:click={() => onStatClick('hs')}>
+      <div class="card-accent-line"></div>
+      <div class="card-label">HS Rate</div>
+      <div class="card-val">{hsRate}</div>
+      <div class="card-sub">Headshots</div>
+    </button>
+  </div>
 
-  <!-- Large Combat Shape Analysis card spanning 12 columns -->
-  <div class="card span-12 visible combat-bento-card">
+  <!-- Large Combat Shape Analysis card spanning full width -->
+  <div class="card visible combat-bento-card">
     <div class="card-accent-line"></div>
     <div class="combat-bento-header">
       <div class="card-label">Combat Shape Analysis</div>
@@ -247,5 +254,60 @@
     </div>
   </div>
 {/if}
+
+<style>
+  .stat-cards-wrapper,
+  .combat-bento-card {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .stat-cards-wrapper {
+    display: grid !important;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 900px) {
+    .stat-cards-wrapper {
+      grid-template-columns: repeat(3, 1fr) !important;
+      gap: 10px !important;
+    }
+  }
+  @media (max-width: 600px) {
+    .stat-cards-wrapper {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 8px !important;
+    }
+    .stat-cards-wrapper .card {
+      width: 100% !important;
+      grid-column: span 1 !important;
+      min-width: 0 !important;
+      box-sizing: border-box !important;
+      padding: 12px 10px !important;
+      margin: 0 !important;
+    }
+    .stat-cards-wrapper .card-val {
+      font-size: 24px !important;
+      line-height: 1.1 !important;
+    }
+    .stat-cards-wrapper .card-label {
+      font-size: 10px !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+    }
+    .stat-cards-wrapper .card-sub {
+      font-size: 9px !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+    }
+    .combat-stats-list {
+      display: grid !important;
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 8px !important;
+    }
+  }
+</style>
 
 

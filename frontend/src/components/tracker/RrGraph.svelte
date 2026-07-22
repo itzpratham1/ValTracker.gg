@@ -123,10 +123,11 @@
             grid: { color: 'rgba(255,255,255,0.03)' },
             ticks: {
               color: '#4a4a52',
-              font: { family: 'DM Mono', size: 8 },
+              font: { family: 'DM Mono', size: isMobile ? 7 : 8 },
               callback: v => {
                 const r = getRankFromRR(v);
-                return r ? r.name : '';
+                if (!r) return '';
+                return isMobile ? r.name.split(' ')[0] : r.name;
               }
             },
             min: minRR,
@@ -146,9 +147,11 @@
             ctx.save();
             ctx.fillStyle = zone.color + '12';
             ctx.fillRect(chartArea.left, Math.max(yTop, chartArea.top), chartArea.width, Math.min(yBot, chartArea.bottom) - Math.max(yTop, chartArea.top));
-            ctx.fillStyle = zone.color + '66';
-            ctx.font = '8px DM Mono';
-            ctx.fillText(zone.label, chartArea.left + 6, Math.min(yBot, chartArea.bottom) - 4);
+            if (!isMobile) {
+              ctx.fillStyle = zone.color + '66';
+              ctx.font = '8px DM Mono';
+              ctx.fillText(zone.label, chartArea.left + 6, Math.min(yBot, chartArea.bottom) - 4);
+            }
             ctx.restore();
           });
         }

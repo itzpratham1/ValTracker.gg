@@ -108,7 +108,7 @@
 </script>
 
 {#if recentMatches.length > 0}
-  <div class="filter-bar" id="filter-bar" style="grid-column:span 12;">
+  <div class="filter-bar" id="filter-bar" style="grid-column:1 / -1;">
     <button class="filter-btn" class:active={filterResult === 'all'} on:click={() => filterResult = 'all'}>All</button>
     <button class="filter-btn" class:active={filterResult === 'win'} on:click={() => filterResult = 'win'}>Wins</button>
     <button class="filter-btn" class:active={filterResult === 'loss'} on:click={() => filterResult = 'loss'}>Losses</button>
