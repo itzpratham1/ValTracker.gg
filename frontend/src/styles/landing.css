@@ -1882,9 +1882,44 @@ body.nav-menu-open {
   .footer-socials { justify-content: center; }
 }
 
+/* Card link wrappers */
+a.bento-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+a.njt-card {
+  display: flex;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Table header whitespace fix */
+.njt-table th {
+  white-space: nowrap;
+}
+
 @media (hover: none) {
   .bento-card, .bento-card.visible {
     transform: translateY(0) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1) !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .bento-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  .bento-card,
+  .bento-card.span-12,
+  .bento-card.span-6,
+  .bento-card.span-4,
+  .bento-card.span-3 {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+  }
+  .bento-card.large-card .card-img-frame {
+    aspect-ratio: 16 / 9;
   }
 }
 
@@ -1903,15 +1938,12 @@ body.nav-menu-open {
   .section { padding: 70px 24px; }
   .hero { padding: 100px 24px 60px; }
 
-  .bento-card.span-12 { grid-column: span 12; }
-  .bento-card.span-4  { grid-column: span 12; }
-  .bento-card.span-3  { grid-column: span 12; }
-
   .steps-wrap {
     grid-template-columns: 1fr;
-    gap: 48px;
+    gap: 40px;
   }
-  .steps-wrap::before { display: none; }
+  .steps-wrap::before,
+  .steps-wrap::after { display: none; }
 
   .stats-bar { padding: 48px 24px; }
   .stats-bar-inner {
@@ -1929,6 +1961,23 @@ body.nav-menu-open {
   .dash-stats-grid {
     grid-template-columns: repeat(3, 1fr);
   }
+
+  .njt-table-container {
+    overflow-x: auto;
+    border-radius: 12px;
+    -webkit-overflow-scrolling: touch;
+    box-shadow: inset -10px 0 10px -10px rgba(0, 0, 0, 0.8);
+  }
+  .njt-table {
+    min-width: 520px;
+  }
+  .njt-table th, .njt-table td {
+    padding: 12px 10px;
+    font-size: 12px;
+  }
+  .njt-table th.highlight-col, .njt-table td.highlight-col {
+    background: rgba(250, 68, 84, 0.06);
+  }
 }
 
 @media (max-width: 600px) {
@@ -1942,7 +1991,7 @@ body.nav-menu-open {
   .nav-mobile-menu { top: 56px; }
 
   .hero { padding: 90px 18px 48px; min-height: auto; }
-  h1.hero-headline { font-size: clamp(2.2rem, 10vw, 3rem); margin-bottom: 20px; }
+  h1.hero-headline { font-size: clamp(2rem, 9.5vw, 2.8rem); margin-bottom: 20px; line-height: 1.05; }
   .hero-eyebrow { font-size: 10px; padding: 5px 12px; margin-bottom: 20px; }
   .hero-sub { font-size: 14px; margin-bottom: 28px; }
   .btn-hero { padding: 16px 24px; font-size: 16px; width: 100%; justify-content: center; min-height: 52px; }
@@ -1960,11 +2009,10 @@ body.nav-menu-open {
   h2.section-title { font-size: clamp(1.4rem, 6vw, 2rem); }
   .section-subtitle { font-size: 14px; }
 
-  .bento-grid { gap: 10px; }
-  .bento-card { padding: 20px; }
-  h3.bento-title { font-size: 16px; }
-  .bento-body { font-size: 12px; }
-  .card-img-frame { margin-top: 12px; }
+  .bento-card { padding: 20px; border-radius: 12px; }
+  h3.bento-title { font-size: 16px; line-height: 1.25; }
+  .bento-body { font-size: 12.5px; line-height: 1.5; }
+  .card-img-frame { margin-top: 14px; border-radius: 8px; }
   .card-tag { font-size: 8px; padding: 2px 8px; }
 
   .ticker-bar { padding: 8px 0; }
@@ -1998,7 +2046,6 @@ body.nav-menu-open {
   .njt-card-desc { font-size: 12px; }
   .njt-badge { top: 14px; right: 14px; font-size: 7px; padding: 3px 6px; }
   .njt-icon { font-size: 20px; margin-bottom: 12px; }
-  .njt-table th, .njt-table td { padding: 10px 12px; font-size: 12px; }
 
   .njt-section .section-eyebrow { font-size: 13px; padding: 8px 16px; letter-spacing: 3px; }
 
@@ -2047,7 +2094,7 @@ body.nav-menu-open {
   .nav-mobile-menu { top: 52px; }
 
   .hero { padding: 72px 12px 36px; }
-  h1.hero-headline { font-size: clamp(1.8rem, 12vw, 2.4rem); }
+  h1.hero-headline { font-size: clamp(1.8rem, 11vw, 2.4rem); }
   .hero-eyebrow { font-size: 9px; padding: 4px 10px; margin-bottom: 16px; }
   .hero-sub { font-size: 13px; margin-bottom: 22px; }
   .btn-hero { padding: 12px 20px; font-size: 14px; }
@@ -2057,10 +2104,9 @@ body.nav-menu-open {
 
   .section { padding: 48px 12px; }
   h2.section-title { font-size: clamp(1.2rem, 7vw, 1.6rem); }
-  .bento-card { padding: 16px; border-radius: 10px; }
-  .bento-grid { gap: 8px; }
-  h3.bento-title { font-size: 14px; }
-  .bento-body { font-size: 11px; }
+  .bento-card { padding: 18px 14px !important; border-radius: 10px; }
+  h3.bento-title { font-size: 15px; }
+  .bento-body { font-size: 12px; }
   .card-img-frame { border-radius: 6px; }
   .card-tag { font-size: 7px; padding: 2px 6px; letter-spacing: 1px; }
 
@@ -2086,8 +2132,8 @@ body.nav-menu-open {
   .njt-card { padding: 16px; }
   .njt-card-title { font-size: 14px; }
   .njt-card-desc { font-size: 12px; }
-  .njt-table { min-width: 100%; }
-  .njt-table th, .njt-table td { padding: 8px 10px; font-size: 11px; }
+  .njt-table { min-width: 460px; }
+  .njt-table th, .njt-table td { padding: 8px 8px; font-size: 11px; }
   .njt-section .section-eyebrow { font-size: 11px; padding: 6px 12px; }
 
   .dash-stats-grid { gap: 4px; }
