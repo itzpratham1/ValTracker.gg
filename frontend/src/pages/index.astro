@@ -555,6 +555,9 @@ const structuredData = {
   <!-- ── Parallax scroll effects (inline) ── -->
   <script is:inline>
     (function() {
+      if (window.innerWidth <= 1024 || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches)) {
+        return;
+      }
       var heroGrid = document.querySelector('.hero-grid');
       var heroGlow = document.querySelector('.hero-glow');
       var heroGlow2 = document.querySelector('.hero-glow-2');

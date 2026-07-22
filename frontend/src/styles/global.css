@@ -30,10 +30,11 @@
 html {
   scroll-behavior: smooth !important;
   background-color: #050508; /* Old site's html background */
-  overscroll-behavior: none;
+  overscroll-behavior-y: auto;
 }
 body {
   scroll-behavior: smooth !important;
+  touch-action: pan-y;
 }
 
 /* ── SMOOTH CUSTOM SCROLLBARS ── */

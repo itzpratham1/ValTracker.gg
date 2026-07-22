@@ -44,7 +44,9 @@ body {
   font-family: 'Exo 2', 'Inter', sans-serif;
   font-size: 14px;
   min-height: 100vh;
-  overflow-x: clip;
+  overflow-x: hidden;
+  overflow-y: auto;
+  touch-action: pan-y;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
