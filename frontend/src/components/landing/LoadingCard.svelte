@@ -159,7 +159,9 @@
 
     <div class="loading-title">{stepText}</div>
     <div class="loading-subtitle">
-      SYNCING <span class="loading-player">{escapeHtml(playerName)}#{escapeHtml(playerTag)}</span> [{escapeHtml(region)} · {escapeHtml(mode)}]
+      <span class="loading-sync-label">SYNCING</span>
+      <span class="loading-player">{playerName}#{playerTag}</span>
+      <span class="loading-meta-badge">[{region.toUpperCase()} · {mode.toUpperCase()}]</span>
     </div>
 
     <div class="loading-progress">
@@ -198,11 +200,14 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 32px 24px;
+    padding: 28px 20px;
     text-align: center;
-    min-height: 400px;
-    background: rgba(10, 10, 14, 0.45);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    min-height: auto;
+    width: 100%;
+    max-width: 420px;
+    box-sizing: border-box;
+    background: rgba(10, 10, 14, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--radius, 12px);
     position: relative;
     overflow: hidden;
@@ -229,10 +234,11 @@
   }
 
   .loading-spinner {
-    width: 80px;
-    height: 80px;
+    width: 72px;
+    height: 72px;
     position: relative;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
+    flex-shrink: 0;
   }
 
   .spinner-svg {
@@ -263,7 +269,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 24px;
+    font-size: 22px;
     color: var(--accent, #fa4454);
     animation: iconPulse 1.5s ease-in-out infinite;
   }
@@ -286,32 +292,55 @@
   .loading-title {
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 800;
-    font-size: 20px;
+    font-size: 19px;
     color: #fff;
     text-transform: uppercase;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     margin-bottom: 6px;
+    line-height: 1.25;
   }
 
   .loading-subtitle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4px 8px;
     font-family: 'DM Mono', monospace;
-    font-size: 10px;
+    font-size: 11px;
     color: var(--muted, #a0a0ab);
-    letter-spacing: 1.5px;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
+    line-height: 1.4;
+    word-break: break-word;
+  }
+
+  .loading-sync-label {
+    letter-spacing: 1px;
   }
 
   .loading-player {
     color: var(--accent, #fa4454);
     font-weight: 700;
+    word-break: break-word;
+  }
+
+  .loading-meta-badge {
+    color: #8b8b9a;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
   }
 
   .loading-progress {
     width: 100%;
-    max-width: 300px;
-    height: 8px;
+    max-width: 280px;
+    height: 6px;
     border-radius: 0;
-    margin: 0 auto 28px;
+    margin: 0 auto 20px;
     transform: skewX(-15deg);
     background: rgba(255, 255, 255, 0.05);
     box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.5);
@@ -333,18 +362,23 @@
   }
 
   .loading-tip {
-    background: rgba(5, 5, 8, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(5, 5, 8, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 8px;
-    padding: 16px 20px;
-    height: 142px;
+    padding: 14px 16px;
+    min-height: 85px;
+    height: auto;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: flex-start;
+    text-align: left;
     width: 100%;
-    max-width: 340px;
+    max-width: 360px;
+    box-sizing: border-box;
     transition: opacity 0.25s ease;
     opacity: 0;
+    margin-bottom: 12px;
   }
 
   .loading-tip.tip-visible {
@@ -355,28 +389,29 @@
     font-family: 'DM Mono', monospace;
     font-size: 8px;
     font-weight: 700;
-    color: var(--muted, #a0a0ab);
-    border: 1px solid rgba(255, 255, 255, 0.09);
-    padding: 2px 8px;
+    color: var(--accent, #fa4454);
+    background: rgba(250, 68, 84, 0.1);
+    border: 1px solid rgba(250, 68, 84, 0.25);
+    padding: 2px 7px;
     border-radius: 4px;
-    letter-spacing: 1.5px;
-    align-self: flex-start;
-    margin-bottom: 10px;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    display: inline-block;
   }
 
   .loading-tip-text {
     font-family: 'Inter', sans-serif;
-    font-size: 14.5px;
-    color: var(--text, #f4f4f7);
-    font-weight: 500;
-    line-height: 1.5;
+    font-size: 13px;
+    color: #e2e8f0;
+    font-weight: 400;
+    line-height: 1.45;
   }
 
   .loading-estimate {
     font-family: 'DM Mono', monospace;
     font-size: 9px;
     color: var(--muted2, #5b5b66);
-    margin-top: 18px;
+    margin-top: 4px;
     opacity: 0.75;
     letter-spacing: 0.5px;
   }
@@ -385,11 +420,12 @@
   .loading-controls-row {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px 12px;
     width: 100%;
-    max-width: 340px;
-    margin-bottom: 20px;
+    max-width: 360px;
+    margin-bottom: 16px;
   }
 
   .loading-telemetry {
@@ -449,27 +485,25 @@
 
   @media (max-width: 480px) {
     .loading-card {
-      min-height: 320px;
-      padding: 24px 12px;
+      padding: 20px 14px;
     }
     .loading-spinner {
-      width: 64px;
-      height: 64px;
-      margin-bottom: 16px;
+      width: 56px;
+      height: 56px;
+      margin-bottom: 12px;
     }
     .loading-title {
-      font-size: 17px;
-      letter-spacing: 2px;
+      font-size: 15px;
+      letter-spacing: 1px;
     }
     .loading-tip {
-      height: 120px;
-      padding: 12px 16px;
+      min-height: 75px;
+      padding: 12px 14px;
     }
     .loading-tip-text {
-      font-size: 13px;
+      font-size: 12px;
     }
     .loading-controls-row {
-      flex-direction: column;
       gap: 8px;
     }
   }

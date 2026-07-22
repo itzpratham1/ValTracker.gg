@@ -6934,7 +6934,8 @@ select option {
   justify-content: center;
   padding: 30px 20px;
   text-align: center;
-  height: 390px;
+  min-height: 380px;
+  height: auto;
   position: relative;
   overflow: hidden;
   background: rgba(10, 10, 14, 0.45);
@@ -7120,7 +7121,8 @@ select option {
   border-radius: 8px;
   padding: 16px 20px;
   width: 100%;
-  height: 142px; /* Stable height to prevent height transitions from shifting layout */
+  min-height: 90px;
+  height: auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -7169,32 +7171,34 @@ select option {
 /* Mobile Responsive Adjustments */
 @media (max-width: 480px) {
   #landing-loading-card {
-    height: 320px;
-    padding: 24px 12px;
+    height: auto;
+    min-height: auto;
+    padding: 20px 14px;
   }
   .loading-agent-spinner {
-    width: 64px;
-    height: 64px;
-    margin-bottom: 16px;
+    width: 60px;
+    height: 60px;
+    margin-bottom: 14px;
   }
   .spinner-center-icon {
     font-size: 16px;
   }
   .loading-title {
-    font-size: 17px;
-    letter-spacing: 2px;
+    font-size: 15px;
+    letter-spacing: 1px;
   }
   .loading-subtitle {
-    font-size: 9px;
-    letter-spacing: 1px;
-    margin-bottom: 18px;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
   }
   .loading-progress-bar {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
   }
   .loading-tip-container {
     padding: 12px 14px;
-    height: 115px;
+    height: auto;
+    min-height: 75px;
   }
   .loading-tip-text {
     font-size: 13px;
@@ -8265,12 +8269,12 @@ body::after {
 
 /* ── 480px: Small phones ── */
 @media (max-width: 480px) {
-  .loading-card { height: 320px !important; }
-  .loading-spinner { width: 64px !important; height: 64px !important; }
-  .loading-title { font-size: 18px !important; }
-  .loading-subtitle { font-size: 12px !important; }
+  .loading-card { height: auto !important; min-height: auto !important; padding: 20px 14px !important; }
+  .loading-spinner { width: 56px !important; height: 56px !important; margin-bottom: 14px !important; }
+  .loading-title { font-size: 15px !important; letter-spacing: 1px !important; }
+  .loading-subtitle { font-size: 10px !important; }
   .loading-bar { height: 4px !important; }
-  .loading-tip-container { padding: 10px !important; }
+  .loading-tip-container { padding: 10px !important; height: auto !important; min-height: 75px !important; }
   .loading-tip-text { font-size: 11px !important; }
   .dc-btn-row { flex-direction: column !important; }
   .panel-stat-row { grid-template-columns: repeat(3, 1fr) !important; gap: 6px !important; }

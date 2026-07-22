@@ -331,7 +331,10 @@
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    padding: 24px;
+    min-height: 100dvh;
+    padding: 24px 16px;
+    box-sizing: border-box;
+    width: 100%;
     background: #030304;
   }
   .appshell-loading-container :global(.loading-card) {
@@ -342,21 +345,40 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
   }
   .loading-logo {
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     border-radius: 10px;
     flex-shrink: 0;
   }
   .loading-brand-name {
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 900;
-    font-size: 32px;
+    font-size: 28px;
     color: #fff;
     text-transform: uppercase;
     letter-spacing: 2.5px;
     line-height: 1;
+  }
+
+  @media (max-width: 480px) {
+    .appshell-loading-container {
+      padding: 16px 12px;
+    }
+    .loading-brand {
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .loading-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+    }
+    .loading-brand-name {
+      font-size: 24px;
+      letter-spacing: 1.5px;
+    }
   }
 </style>
