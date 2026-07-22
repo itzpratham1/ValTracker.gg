@@ -328,7 +328,8 @@
       </div>
     {/if}
 
-    <table class="scoreboard" style="min-width: 800px;">
+  <div class="scoreboard-scroll-wrap" style="width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch;">
+    <table class="scoreboard" style="min-width: 600px; width: 100%;">
       <thead>
         <tr>
           <th>PLAYER</th>
@@ -338,14 +339,14 @@
           <th>K</th>
           <th>D</th>
           <th>A</th>
-          <th title="Kill Difference (Kills - Deaths)">+/-</th>
-          <th title="Average Damage per Round">ADR</th>
-          <th title="Average Damage Delta per Round">DD</th>
-          <th title="Killed/Assisted/Survived/Traded %">KAST</th>
+          <th class="hide-mobile" title="Kill Difference (Kills - Deaths)">+/-</th>
+          <th class="hide-mobile" title="Average Damage per Round">ADR</th>
+          <th class="hide-mobile" title="Average Damage Delta per Round">DD</th>
+          <th class="hide-mobile" title="Killed/Assisted/Survived/Traded %">KAST</th>
           <th>HS%</th>
-          <th title="First Kills">FK</th>
-          <th title="First Deaths">FD</th>
-          <th title="Multi-Kill Rounds (3K / 4K / 5K)">MK</th>
+          <th>FK</th>
+          <th>FD</th>
+          <th class="hide-mobile" title="Multi-Kill Rounds (3K / 4K / 5K)">MK</th>
         </tr>
       </thead>
       <tbody>
@@ -415,18 +416,18 @@
             <td><b>{k}</b></td>
             <td>{d}</td>
             <td>{a}</td>
-            <td style="color:{kdDiff > 0 ? 'var(--win)' : kdDiff < 0 ? 'var(--loss)' : 'var(--muted)'}; font-weight:bold;">
+            <td class="hide-mobile" style="color:{kdDiff > 0 ? 'var(--win)' : kdDiff < 0 ? 'var(--loss)' : 'var(--muted)'}; font-weight:bold;">
               {kdDiff > 0 ? '+' : ''}{kdDiff}
             </td>
-            <td>{adr}</td>
-            <td style="color:{dd > 0 ? 'var(--win)' : dd < 0 ? 'var(--loss)' : 'var(--muted)'};">
+            <td class="hide-mobile">{adr}</td>
+            <td class="hide-mobile" style="color:{dd > 0 ? 'var(--win)' : dd < 0 ? 'var(--loss)' : 'var(--muted)'};">
               {dd > 0 ? '+' : ''}{dd}
             </td>
-            <td>{kast}%</td>
+            <td class="hide-mobile">{kast}%</td>
             <td>{hsPct}%</td>
             <td style="color:var(--win); font-weight:bold;">{fk}</td>
             <td style="color:var(--loss);">{fd}</td>
-            <td style="font-size:11px; font-family:'DM Mono',monospace; color:var(--muted);">{mk}</td>
+            <td class="hide-mobile" style="font-size:11px; font-family:'DM Mono',monospace; color:var(--muted);">{mk}</td>
           </tr>
         {/each}
 
@@ -443,6 +444,8 @@
           {@const playerKd = d ? (k / d).toFixed(2) : k.toFixed(2)}
           {@const kdPct = Math.min(parseFloat(playerKd) / 3 * 100, 100)}
           {@const playerAcs = totalRounds ? Math.round(sc / totalRounds) : Math.round(sc / Math.max(1, totalRounds || 1))}
+          {@const isMatchMVP = mvpInfo.matchMVP && p.name === mvpInfo.matchMVP.name && p.tag === mvpInfo.matchMVP.tag}
+          {@const isTeamMVP = mvpInfo.teamMVP && p.name === mvpInfo.teamMVP.name && p.tag === mvpInfo.teamMVP.tag && !isMatchMVP}
           {@const agentIcon = getAgentIconUrl(p.character || p.agent?.name || '')}
           {@const rankName = p.currenttier_patched || ''}
           {@const rankImg = rankName && rankName !== 'Unranked' ? getRankImgUrl(rankName) : ''}
@@ -456,7 +459,7 @@
           {@const fk = adv.firstKills ?? 0}
           {@const fd = adv.firstDeaths ?? 0}
           {@const mk = `${adv.multi3k || 0}/${adv.multi4k || 0}/${adv.multi5k || 0}`}
-          <tr>
+          <tr class:me={isMe(p)} class:match-mvp-row={isMatchMVP} class:team-mvp-row={isTeamMVP}>
             <td>
               {#if p.party_id && parties[p.party_id]}
                 <div class="sb-party-line" style="--party-color: {parties[p.party_id].color}" title="Queued together in party"></div>
@@ -489,21 +492,22 @@
             <td><b>{k}</b></td>
             <td>{d}</td>
             <td>{a}</td>
-            <td style="color:{kdDiff > 0 ? 'var(--win)' : kdDiff < 0 ? 'var(--loss)' : 'var(--muted)'}; font-weight:bold;">
+            <td class="hide-mobile" style="color:{kdDiff > 0 ? 'var(--win)' : kdDiff < 0 ? 'var(--loss)' : 'var(--muted)'}; font-weight:bold;">
               {kdDiff > 0 ? '+' : ''}{kdDiff}
             </td>
-            <td>{adr}</td>
-            <td style="color:{dd > 0 ? 'var(--win)' : dd < 0 ? 'var(--loss)' : 'var(--muted)'};">
+            <td class="hide-mobile">{adr}</td>
+            <td class="hide-mobile" style="color:{dd > 0 ? 'var(--win)' : dd < 0 ? 'var(--loss)' : 'var(--muted)'};">
               {dd > 0 ? '+' : ''}{dd}
             </td>
-            <td>{kast}%</td>
+            <td class="hide-mobile">{kast}%</td>
             <td>{hsPct}%</td>
             <td style="color:var(--win); font-weight:bold;">{fk}</td>
             <td style="color:var(--loss);">{fd}</td>
-            <td style="font-size:11px; font-family:'DM Mono',monospace; color:var(--muted);">{mk}</td>
+            <td class="hide-mobile" style="font-size:11px; font-family:'DM Mono',monospace; color:var(--muted);">{mk}</td>
           </tr>
         {/each}
       </tbody>
     </table>
   </div>
+</div>
 {/if}

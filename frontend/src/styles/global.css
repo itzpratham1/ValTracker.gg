@@ -84,12 +84,10 @@ body {
   font-size: 14px;
   min-height: 100vh;
   min-height: 100dvh;
-  overflow-x: hidden;
+  overflow-x: clip;
   width: 100%;
-  overscroll-behavior: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  touch-action: manipulation;
 }
 
 /* ── GLOBAL SCROLLBARS ── */
@@ -3975,16 +3973,114 @@ input:checked + .slider:before {
 
   /* Scorings row matches list collapse */
   .match-row{
-    grid-template-columns:54px 1fr auto 32px;
-    gap:0;
+    grid-template-columns:54px 1fr auto 32px !important;
+    gap:8px !important;
   }
-  .mr-score,.mr-lobby,.mr-kda-sub,.mr-acs,.mr-acs-sub,.mr-grade,.mr-grade-sub,.mr-rr{display:none;}
-  .mr-kda{display:block;}
-  .mr-kda-main{font-size:14px;}
-  .mr-result{font-size:13px;padding:14px 0;}
-  .mr-agent-name{font-size:14px;}
-  .mr-map{font-size:10px;}
-  .mr-chevron{padding-right:10px;}
+  .mr-lobby,.mr-kda-sub,.mr-acs,.mr-acs-sub,.mr-grade,.mr-grade-sub{display:none !important;}
+  .mr-score{display:flex !important; font-size:15px !important; align-items:center !important;}
+  .mr-kda{display:block !important;}
+  .mr-kda-main{font-size:13px !important;}
+  .mr-rr{display:block !important;}
+  .mr-rr-val{font-size:14px !important;}
+  .mr-rr-lbl{display:none !important;}
+  .mr-result{font-size:13px !important;padding:14px 0 !important;}
+  .mr-agent-name{font-size:14px !important;}
+  .mr-map{font-size:10px !important;}
+  .mr-chevron{padding-right:10px !important;}
+  .hide-mobile { display: none !important; }
+
+  /* Phase 3 Analytics & Tables Mobile Reflow */
+  .table-responsive,
+  .plab-heatmap-wrap,
+  .plab-eco-wrap,
+  .scoreboard-scroll-wrap {
+    width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  .plab-grid.g6, .plab-grid.g4, .plab-grid.g3 {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+  .plab-card.span2, .plab-card.span3, .plab-card.span4 {
+    grid-column: span 2 !important;
+  }
+  .top-weapon-info-wrap {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+  .wpn-heatmap-card {
+    width: 100% !important;
+  }
+  .h2h-bento-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .h2h-stat-card.span-2 {
+    grid-column: span 1 !important;
+  }
+
+  /* Phase 4 Meta Comp & Esports Hub Mobile Reflow */
+  .coach-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .coach-team-slots {
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 8px !important;
+  }
+  .dc-slot-card {
+    flex: 0 0 64px !important;
+  }
+  .esports-subnav {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    white-space: nowrap !important;
+  }
+
+  /* Phase 5 Store & Modals Mobile Reflow */
+  .store-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .store-filters {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+  .store-filter-selects {
+    width: 100% !important;
+    flex-direction: column !important;
+  }
+  .store-select {
+    width: 100% !important;
+    font-size: 16px !important;
+    min-height: 44px !important;
+  }
+  .store-search-input {
+    font-size: 16px !important;
+    min-height: 44px !important;
+  }
+
+  .stat-modal-overlay,
+  .feedback-modal-overlay,
+  .bookmarks-modal-overlay,
+  .leaderboard-modal-overlay,
+  .export-modal-overlay,
+  .vct-modal-overlay,
+  .skin-modal-overlay {
+    padding: 12px !important;
+  }
+  .stat-modal,
+  .feedback-modal,
+  .bookmarks-modal,
+  .leaderboard-modal,
+  .export-modal-card,
+  .vct-modal,
+  .skin-modal {
+    max-width: 100% !important;
+    max-height: 88vh !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: 16px !important;
+  }
 
   /* Modals summaries scoreboard responsive */
   .panel-body{padding:12px;}
@@ -6036,10 +6132,12 @@ input:checked + .slider:before {
   .topbar-main-row .player-input {
     flex: 1 !important;
     width: 0 !important;
+    font-size: 16px !important;
   }
   .topbar-tabs {
     max-width: none !important;
     flex-grow: 1 !important;
+    -webkit-overflow-scrolling: touch;
   }
   .topbar-sub-row {
     flex-direction: column !important;
@@ -6087,6 +6185,7 @@ input:checked + .slider:before {
     display: flex !important;
     justify-content: space-between !important;
     position: relative !important;
+    min-height: 44px !important;
   }
   .topbar-sub-row .topbar-right .filter-divider {
     display: none !important;
@@ -6096,7 +6195,7 @@ input:checked + .slider:before {
     background: transparent !important;
     border: none !important;
     padding: 12px 24px 12px 32px !important;
-    font-size: 12px !important;
+    font-size: 16px !important;
     box-sizing: border-box !important;
     z-index: 1;
   }

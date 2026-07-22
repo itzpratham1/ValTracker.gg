@@ -2021,6 +2021,15 @@ body.nav-menu-open {
   .lightbox-controls button { width: 32px; height: 32px; font-size: 14px; }
   #zoom-reset-btn { padding: 0 12px; font-size: 10px; }
   .lightbox-instructions { font-size: 10px; }
+  .sf-input,
+  .sf-select,
+  .sf-input-tag {
+    font-size: 16px !important;
+    min-height: 44px !important;
+  }
+  .sf-btn {
+    min-height: 44px !important;
+  }
 }
 
 @media (max-width: 480px) {

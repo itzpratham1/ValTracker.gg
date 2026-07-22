@@ -30,7 +30,6 @@
 html {
   scroll-behavior: smooth;
   background-color: #050508;
-  overscroll-behavior: none;
 }
 * {
   margin: 0;
@@ -46,7 +45,6 @@ body {
   font-size: 14px;
   min-height: 100vh;
   overflow-x: clip;
-  overscroll-behavior: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

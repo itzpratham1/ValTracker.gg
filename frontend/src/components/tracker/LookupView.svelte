@@ -282,7 +282,7 @@
     min-height: 100vh;
     width: 100%;
     background-color: #050508;
-    overflow-x: hidden;
+    overflow-x: clip;
     display: flex;
     flex-direction: column;
     justify-content: center;
