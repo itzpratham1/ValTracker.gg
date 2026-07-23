@@ -4662,16 +4662,17 @@ input:checked + .slider:before {
   /* Overhauled Esports Match Cards & Teams are handled in index.html's high-precedence style block at max-width 800px */
   .esports-content { padding: 16px 14px 40px !important; }
 
-  /* Make topbar scroll off-screen on mobile to maximize viewport area */
+  /* Mobile sticky topbar navigation */
   .topbar {
-    position: relative !important;
-    box-shadow: none !important;
-  }
-
-  /* Mobile adjustments for unified tracker navigation - sticky at top: 0 */
-  .tracker-nav {
     position: sticky !important;
     top: 0 !important;
+    z-index: 1000 !important;
+  }
+
+  /* Mobile adjustments for unified tracker navigation - sticky below topbar */
+  .tracker-nav {
+    position: sticky !important;
+    top: calc(var(--topbar-height, 108px) - 1.5px) !important;
     z-index: 999 !important;
     flex-direction: column !important;
     align-items: stretch !important;
@@ -7915,13 +7916,14 @@ select option {
 }
 @media (max-width: 800px) {
   .topbar {
-    position: relative !important;
-    box-shadow: none !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1000 !important;
   }
   .tracker-nav {
     position: sticky !important;
-    top: 0 !important;
-    z-index: 9999 !important;
+    top: calc(var(--topbar-height, 108px) - 1.5px) !important;
+    z-index: 999 !important;
   }
   .active-pill-name {
     max-width: 130px !important;
@@ -9000,8 +9002,8 @@ body::after {
 
 /* ── Mobile sticky behavior (max 800px) ── */
 @media (max-width: 800px) {
-  .topbar { position: relative !important; box-shadow: none !important; }
-  .tracker-nav { position: sticky !important; top: 0 !important; z-index: 9999 !important; }
+  .topbar { position: sticky !important; top: 0 !important; z-index: 1000 !important; }
+  .tracker-nav { position: sticky !important; top: calc(var(--topbar-height, 108px) - 1.5px) !important; z-index: 999 !important; }
   .active-pill-name { max-width: 130px !important; }
   .sb-rank-txt { display: none !important; }
   .load-more-btn { width: 100% !important; }
