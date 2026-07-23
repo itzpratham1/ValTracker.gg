@@ -286,24 +286,24 @@
             <th class="sortable" on:click={() => handleSort('kd')}>
               K/D Ratio {sortKey === 'kd' ? (sortAsc ? '▲' : '▼') : ''}
             </th>
-            <th>Favorite Agent</th>
-            <th>Recent Matches</th>
-            <th>Action</th>
+            <th class="col-agent">Favorite Agent</th>
+            <th class="col-recent">Recent Matches</th>
+            <th class="col-action">Action</th>
           </tr>
         </thead>
         <tbody>
           {#if filteredTeammates.length > 0}
             {#each filteredTeammates as t}
-              <tr class="teammate-row">
+              <tr class="teammate-row" on:click={() => handleTeammateClick(t.name, t.tag)}>
                 <td class="align-left">
-                  <div class="teammate-identity" on:click={() => handleTeammateClick(t.name, t.tag)}>
+                  <div class="teammate-identity">
                     {#if getAgentIconUrl(t.favoriteAgent)}
                       <img src={getAgentIconUrl(t.favoriteAgent)} alt={t.favoriteAgent} class="table-agent-icon">
                     {:else}
                       <div class="table-placeholder-icon">👤</div>
                     {/if}
                     <div class="name-tag-cell">
-                      <span class="t-name">{t.name}</span>
+                      <span class="t-name" title="{t.name}#{t.tag}">{t.name}</span>
                       <span class="t-tag">#{t.tag}</span>
                     </div>
                   </div>
@@ -327,15 +327,15 @@
                     {t.kd}
                   </span>
                 </td>
-                <td>
-                  <div class="fav-agent-cell">
+                <td class="col-agent">
+                  <div class="fav-agent-cell" title={t.favoriteAgent}>
                     {#if getAgentIconUrl(t.favoriteAgent)}
                       <img src={getAgentIconUrl(t.favoriteAgent)} alt={t.favoriteAgent} class="agent-tiny-icon">
                     {/if}
                     <span class="agent-name-txt">{t.favoriteAgent}</span>
                   </div>
                 </td>
-                <td>
+                <td class="col-recent">
                   <div class="recent-dots-wrap">
                     {#each t.recentResults.slice(-5) as res}
                       <span class="dot-badge {res ? 'win' : 'loss'}" title={res ? 'Win' : 'Loss'}>
@@ -344,8 +344,8 @@
                     {/each}
                   </div>
                 </td>
-                <td>
-                  <button class="view-profile-btn" on:click={() => handleTeammateClick(t.name, t.tag)}>
+                <td class="col-action">
+                  <button class="view-profile-btn" on:click|stopPropagation={() => handleTeammateClick(t.name, t.tag)}>
                     View Profile
                   </button>
                 </td>

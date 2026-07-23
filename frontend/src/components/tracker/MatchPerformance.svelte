@@ -259,18 +259,18 @@
           </div>
         </div>
 
-        <div style="display: flex; align-items: center; gap: 12px; border-top: 1px solid var(--border); padding-top: 12px;">
+        <div style="display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--border); padding-top: 12px;">
           <span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 11px; text-transform: uppercase; color: var(--muted); letter-spacing: 1.5px; white-space: nowrap;">Multi-Kill Rounds:</span>
-          <div style="display: flex; gap: 8px; flex: 1; flex-wrap: wrap;">
-            <div class="dp-stat" style="flex: 1; min-width: 80px; padding: 8px 12px;">
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%;">
+            <div class="dp-stat" style="padding: 8px 6px;">
               <div class="dpv">{myMulti3k}</div>
               <div class="dpl">3 Kills</div>
             </div>
-            <div class="dp-stat" style="flex: 1; min-width: 80px; padding: 8px 12px;">
+            <div class="dp-stat" style="padding: 8px 6px;">
               <div class="dpv">{myMulti4k}</div>
               <div class="dpl">4 Kills</div>
             </div>
-            <div class="dp-stat" style="flex: 1; min-width: 80px; padding: 8px 12px; border-color: var(--accentborder); background: var(--accentdim);">
+            <div class="dp-stat" style="padding: 8px 6px; border-color: var(--accentborder); background: var(--accentdim);">
               <div class="dpv" style="color: var(--accent) !important;">{myMulti5k}</div>
               <div class="dpl" style="color: var(--accent) !important;">5 Kills (Ace)</div>
             </div>

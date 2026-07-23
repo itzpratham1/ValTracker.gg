@@ -251,7 +251,7 @@
   <div class="topbar-main-row">
     <a href="/" class="topbar-logo" on:click|preventDefault={goHome}>
       <img src="/logo.png" alt="" class="topbar-logo-icon">
-      <span>ValTracker</span>
+      VAL<span class="logo-accent">TRACKER</span>
     </a>
     
     <div class="topbar-tabs">
@@ -406,22 +406,36 @@
     align-items: center;
     gap: 8px;
     font-family: 'Rajdhani', sans-serif;
-    font-weight: 700;
+    font-weight: 800;
     font-size: 22px;
     letter-spacing: 3px;
-    color: var(--text);
+    color: #ffffff;
     text-transform: uppercase;
     text-decoration: none;
     flex-shrink: 0;
     white-space: nowrap;
+    transition: transform 0.2s ease, opacity 0.2s ease;
   }
-  .topbar-logo span { color: #fff; }
+  .topbar-logo:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+  .topbar-logo .logo-accent {
+    color: var(--accent, #fa4454);
+    font-weight: 800;
+  }
   .topbar-logo-icon {
-    height: 24px;
+    height: 26px;
     width: auto;
-    filter: drop-shadow(0 0 6px rgba(255, 70, 85, 0.6));
+    filter: drop-shadow(0 0 8px rgba(250, 68, 84, 0.6));
   }
   @media (max-width: 800px) {
-    .topbar-logo { font-size: 18px; letter-spacing: 2px; }
+    .topbar-logo {
+      font-size: 22px !important;
+      letter-spacing: 2.5px !important;
+    }
+    .topbar-logo-icon {
+      height: 24px !important;
+    }
   }
 </style>

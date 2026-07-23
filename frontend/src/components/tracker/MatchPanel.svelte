@@ -597,8 +597,8 @@
     const kdClass = kdVal >= 1.2 ? 'good' : kdVal >= 0.9 ? 'warn' : 'bad';
     const hsClass = hsPctVal >= 22 ? 'good' : hsPctVal >= 14 ? 'warn' : 'bad';
     const acsClass = acsVal >= teamAvgACS + 20 ? 'good' : acsVal >= teamAvgACS - 10 ? 'warn' : 'bad';
-    const perfLevel = kdVal >= 1.3 && acsVal >= teamAvgACS ? 'a <strong>strong individual performance</strong>' : kdVal >= 1.0 && acsVal >= teamAvgACS - 15 ? 'a <strong>solid performance</strong>' : 'a <strong>below-par performance</strong>';
-    const summary = `${won ? '✅ Victory' : '❌ Defeat'} · ${escapeHtml(agentName)} on ${escapeHtml(mapName)} — ${perfLevel} with ${kills}/${deaths}/${assists} and ${acsVal} ACS${lobbyInfo?.overall ? ` in a <strong>${escapeHtml(lobbyInfo.overall.name)}</strong> avg lobby` : ''}.`;
+    const perfLevel = kdVal >= 1.3 && acsVal >= teamAvgACS ? 'A <strong>strong individual performance</strong>' : kdVal >= 1.0 && acsVal >= teamAvgACS - 15 ? 'A <strong>solid performance</strong>' : 'A <strong>below-par performance</strong>';
+    const summary = `${perfLevel} with <strong>${kills}/${deaths}/${assists}</strong> and <strong>${acsVal} ACS</strong>${lobbyInfo?.overall ? ` in a <strong>${escapeHtml(lobbyInfo.overall.name)}</strong> avg lobby` : ''}.`;
 
     return `
       <div class="match-ai-tabs">
@@ -609,13 +609,15 @@
       <div id="match-ai-analysis-${idx}" style="display:block">
         <div class="match-ai-summary-v2">
           <div class="match-ai-summary-left">
-            <div class="match-ai-outcome-badge ${won ? 'win' : 'loss'}">${won ? '✅ Victory' : '❌ Defeat'}</div>
-            <div class="match-ai-summary-text">${summary}</div>
-          </div>
-          <div class="match-ai-summary-chips">
-            <span class="match-ai-chip agent-chip">${escapeHtml(agentName)}</span>
-            <span class="match-ai-chip map-chip">${escapeHtml(mapName)}</span>
-            <span class="match-ai-chip role-chip">${role || 'unknown'}</span>
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <div class="match-ai-outcome-badge ${won ? 'win' : 'loss'}">${won ? '✅ Victory' : '❌ Defeat'}</div>
+              <div class="match-ai-summary-chips">
+                <span class="match-ai-chip agent-chip">${escapeHtml(agentName)}</span>
+                <span class="match-ai-chip map-chip">${escapeHtml(mapName)}</span>
+                <span class="match-ai-chip role-chip">${role || 'unknown'}</span>
+              </div>
+            </div>
+            <div class="match-ai-summary-text" style="margin-top:4px;">${summary}</div>
           </div>
         </div>
 

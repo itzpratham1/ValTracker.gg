@@ -7,6 +7,13 @@
   export let playerTag = '';
   export let mode = 'competitive';
 
+  let activeExpandedWpn = null;
+
+  function toggleWeaponExpand(wpn) {
+    if (typeof window !== 'undefined' && window.innerWidth > 600) return;
+    activeExpandedWpn = activeExpandedWpn === wpn ? null : wpn;
+  }
+
   $: entries = Object.entries(precomputedWeapons)
     .filter(([, v]) => v.kills >= 1)
     .sort((a, b) => b[1].kills - a[1].kills);
@@ -107,7 +114,7 @@
     const lx = parseFloat(lp[0]), ly = parseFloat(lp[1]);
     const rising = points[points.length - 1] >= points[points.length - 2];
     const col = rising ? '#3ecf8e' : '#ff4d6d';
-    return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible"><polyline points="${pts.join(' ')}" fill="none" stroke="${col}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/><circle cx="${lx}" cy="${ly}" r="2.5" fill="${col}"/></svg>`;
+    return `<svg width="100%" height="${h}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible;"><polyline points="${pts.join(' ')}" fill="none" stroke="${col}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/><circle cx="${lx}" cy="${ly}" r="2.5" fill="${col}"/></svg>`;
   }
 
   function getHeatmapSvg(hsPct, height = 115, v = null) {
@@ -168,7 +175,7 @@
   <div class="card span-12 weapons-card visible" id="weapons-card">
     <div class="card-accent-line"></div>
     <div class="card-label">Weapon Performance — Based on stored match data</div>
-    <div class="weapons-showcase-container" style="margin-top: 12px;">
+    <div class="weapons-showcase-container">
       {#if topWeapon}
         {@const [wpn, v] = topWeapon}
         {@const hsPct = getHsPct(v)}
@@ -179,20 +186,20 @@
         {@const topMatchPoints = getMatchHistoryPoints(v)}
         {@const topSparkSVG = buildSparklineSVG(topMatchPoints, 120, 32)}
         {@const heat = getHeatmapValues(v, hsPct)}
-        <div class="top-weapon-showcase" style="display: flex; flex-direction: column; justify-content: space-between;">
+        <div class="top-weapon-showcase">
           <div class="top-weapon-badge">&#128293; Top Arsenal</div>
-          <div class="top-weapon-img-wrap" style="text-align: center; margin-bottom: 8px;">
+          <div class="top-weapon-img-wrap">
             {#if imgUrl}
               <img class="top-weapon-img" src={imgUrl} alt={wpn} on:error={(e) => { e.currentTarget.style.display='none'; e.currentTarget.nextElementSibling.style.display='block'; }}>
             {/if}
             <div class="weapon-img-fallback" style={imgUrl ? 'display:none;' : ''}>{wpn}</div>
           </div>
           <div class="top-weapon-info-wrap">
-            <div style="flex: 1.2; display: flex; flex-direction: column; justify-content: space-between; min-width: 0;">
-              <div class="top-weapon-details" style="padding: 0;">
-                <div class="top-weapon-name" style="margin: 0; line-height: 1;">{wpn}</div>
+            <div class="top-weapon-left-col">
+              <div class="top-weapon-details">
+                <div class="top-weapon-name">{wpn}</div>
                 <div class="top-weapon-type">{type}</div>
-                <div class="top-weapon-stats-grid" style="margin-top: 10px; margin-bottom: 10px;">
+                <div class="top-weapon-stats-grid">
                   <div class="top-weapon-stat">
                     <span class="top-weapon-val">{v.kills}</span>
                     <span class="top-weapon-lbl">Kills</span>
@@ -235,23 +242,23 @@
               {/if}
             </div>
             
-            <div class="wpn-heatmap-card" style="width: 125px; flex-shrink: 0; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 10px 8px; display: flex; align-items: center; justify-content: center; position: relative;">
-              <div style="display: flex; gap: 8px; align-items: center; width: 100%; justify-content: center;">
-                <div style="position: relative;">
+            <div class="wpn-heatmap-card">
+              <div class="wpn-heatmap-inner">
+                <div class="wpn-silhouette-wrap">
                   {@html getHeatmapSvg(hsPct, 105, v)}
                 </div>
-                <div style="display: flex; flex-direction: column; gap: 5px; font-family:'DM Mono', monospace; font-size: 8px; min-width: 45px; text-align: left;">
-                  <div style="display: flex; flex-direction: column;">
-                    <span style="color: #ff4655; font-weight: bold; letter-spacing: 0.5px;">HEAD</span>
-                    <span style="font-size: 10px; font-weight: 900; color: #fff;">{heat.head}%</span>
+                <div class="wpn-heatmap-stats">
+                  <div class="wpn-hm-stat-row">
+                    <span class="wpn-hm-lbl head">HEAD</span>
+                    <span class="wpn-hm-val">{heat.head}%</span>
                   </div>
-                  <div style="display: flex; flex-direction: column; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 3px;">
-                    <span style="color: rgba(255, 70, 85, 0.75); font-weight: bold; letter-spacing: 0.5px;">BODY</span>
-                    <span style="font-size: 10px; font-weight: 900; color: #fff;">{heat.body}%</span>
+                  <div class="wpn-hm-stat-row body-row">
+                    <span class="wpn-hm-lbl body">BODY</span>
+                    <span class="wpn-hm-val">{heat.body}%</span>
                   </div>
-                  <div style="display: flex; flex-direction: column; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 3px;">
-                    <span style="color: rgba(255, 70, 85, 0.45); font-weight: bold; letter-spacing: 0.5px;">LEGS</span>
-                    <span style="font-size: 10px; font-weight: 900; color: #fff;">{heat.legs}%</span>
+                  <div class="wpn-hm-stat-row legs-row">
+                    <span class="wpn-hm-lbl legs">LEGS</span>
+                    <span class="wpn-hm-val">{heat.legs}%</span>
                   </div>
                 </div>
               </div>
@@ -271,8 +278,15 @@
             {@const secMatchPoints = getMatchHistoryPoints(v)}
             {@const secSparkSVG = buildSparklineSVG(secMatchPoints, 120, 24)}
             {@const heat = getHeatmapValues(v, hsPct)}
+            {@const isExpanded = activeExpandedWpn === wpn}
             
-            <div class="secondary-weapon-row wpn-tooltip-trigger">
+            <div 
+              class="secondary-weapon-row wpn-tooltip-trigger {isExpanded ? 'is-expanded' : ''}"
+              on:click={() => toggleWeaponExpand(wpn)}
+              role="button"
+              tabindex="0"
+              on:keydown={(e) => (e.key === 'Enter' || e.key === ' ') && toggleWeaponExpand(wpn)}
+            >
               <div class="sec-weapon-img-wrap">
                 {#if imgUrl}
                   <img class="sec-weapon-img" src={imgUrl} alt={wpn} on:error={(e) => { e.currentTarget.style.display='none'; e.currentTarget.nextElementSibling.style.display='block'; }}>
@@ -288,7 +302,12 @@
                   <span class="sec-weapon-val">{v.kills}</span>
                   <span class="sec-weapon-lbl">Kills</span>
                 </div>
-                <div class="sec-weapon-stat">
+                <!-- Mini Accuracy Bar for mobile layout -->
+                <div class="sec-weapon-mini-bar-wrap" title="Accuracy: {hsPct}% Headshots">
+                  <div class="sec-weapon-mini-bar-fill" style="width:{hsPct}%; background:var(--win);"></div>
+                  <div class="sec-weapon-mini-bar-fill-rest" style="width:{100 - hsPct}%; background:rgba(255,255,255,0.1);"></div>
+                </div>
+                <div class="sec-weapon-stat text-right">
                   <span class="sec-weapon-val" style="color:{hsCol}">{hsPct}%</span>
                   <span class="sec-weapon-lbl">HS%</span>
                 </div>
@@ -306,39 +325,39 @@
                 </div>
               </div>
               
-              <!-- Hover tooltip card -->
-              <div class="wpn-tooltip-card" style="width: 150px; gap: 8px;">
-                <div style="font-family:'Barlow Condensed', sans-serif; font-size:10px; font-weight:800; text-transform:uppercase; color:var(--accent); letter-spacing:0.5px; border-bottom: 1px solid rgba(255,255,255,0.06); width: 100%; text-align: center; padding-bottom: 3px; margin-bottom: 2px;">Target Heatmap</div>
+              <!-- Hover tooltip card for Desktop -->
+              <div class="wpn-tooltip-card">
+                <div class="wpn-tt-title">Target Heatmap</div>
                 {@html getHeatmapSvg(hsPct, 64, v)}
-                <div style="display:flex; justify-content:space-between; width:100%; font-family:'DM Mono',monospace; font-size:8px; color:#fff; padding-bottom: 4px; box-sizing:border-box;">
-                  <span style="color:#ff4655">H:{heat.head}%</span>
-                  <span style="color:rgba(255,70,85,0.75)">B:{heat.body}%</span>
-                  <span style="color:rgba(255,70,85,0.45)">L:{heat.legs}%</span>
+                <div class="wpn-tt-stats">
+                  <span class="head">H:{heat.head}%</span>
+                  <span class="body">B:{heat.body}%</span>
+                  <span class="legs">L:{heat.legs}%</span>
                 </div>
                 
                 {#if secSparkSVG}
-                  <div style="border-top: 1px solid rgba(255,255,255,0.06); width: 100%; padding-top: 5px; margin-top: 2px; display: flex; flex-direction: column; align-items: center; gap: 3px;">
-                    <div style="display:flex; justify-content:space-between; width: 100%; font-family:'Barlow Condensed', sans-serif; font-size:9px; font-weight:800; text-transform:uppercase; color:var(--win); letter-spacing:0.5px;">
+                  <div class="wpn-tt-trend-wrap">
+                    <div class="wpn-tt-trend-header">
                       <span>10-Match Trend</span>
-                      <span style="color:var(--muted2); font-weight:normal; font-size:7px;">{secMatchPoints.length} games</span>
+                      <span class="wpn-tt-trend-sub">{secMatchPoints.length} games</span>
                     </div>
-                    <div style="height: 24px; width: 120px; display: flex; align-items: center; justify-content: center; margin: 2px 0;">
+                    <div class="wpn-tt-svg-box">
                       {@html secSparkSVG}
                     </div>
-                    <div style="display:flex; justify-content:space-between; width:100%; font-family:'DM Mono',monospace; font-size:7px; color:var(--muted2);">
+                    <div class="wpn-tt-axis">
                       <span>Min: {Math.min(...secMatchPoints)}%</span>
                       <span>Max: {Math.max(...secMatchPoints)}%</span>
                     </div>
                   </div>
                 {:else}
-                  <div style="border-top: 1px solid rgba(255,255,255,0.06); width: 100%; padding-top: 5px; margin-top: 2px; display: flex; flex-direction: column; align-items: center; gap: 3px; font-family:'Barlow Condensed', sans-serif; font-size:8px; color:var(--muted2); text-align:center;">
+                  <div class="wpn-tt-no-trend">
                     <span>10-MATCH TREND</span>
-                    <span style="font-size:7px;">Not enough matches played with this weapon</span>
+                    <span class="sub">Not enough matches played with this weapon</span>
                   </div>
                 {/if}
               </div>
 
-              <!-- Trend Arrow badge -->
+              <!-- Trend Arrow badge & Mobile Expand Icon -->
               <div class="sec-wpn-trend-col">
                 {#if trend.trend === 'up'}
                   <span class="sec-wpn-trend sec-wpn-trend-up" title="HS% up +{trend.delta}% vs last session">&#9650; +{trend.delta}%</span>
@@ -349,7 +368,40 @@
                 {:else}
                   <span class="sec-wpn-trend sec-wpn-trend-new" title="First session — tracking started">NEW</span>
                 {/if}
+                <span class="sec-weapon-expand-chevron">{isExpanded ? '▲' : '▼'}</span>
               </div>
+
+              <!-- Mobile Expanded Details Drawer -->
+              {#if isExpanded}
+                <div class="sec-weapon-expanded-panel" on:click|stopPropagation>
+                  <div class="sec-expand-col heatmap-col">
+                    <div class="sec-expand-title">Target Heatmap</div>
+                    <div class="sec-expand-hm-body">
+                      {@html getHeatmapSvg(hsPct, 75, v)}
+                      <div class="sec-expand-hm-stats">
+                        <div class="sec-hm-row"><span class="head-lbl">HEAD</span> <strong class="head-val">{heat.head}%</strong></div>
+                        <div class="sec-hm-row"><span class="body-lbl">BODY</span> <strong class="body-val">{heat.body}%</strong></div>
+                        <div class="sec-hm-row"><span class="legs-lbl">LEGS</span> <strong class="legs-val">{heat.legs}%</strong></div>
+                      </div>
+                    </div>
+                  </div>
+                  {#if secSparkSVG}
+                    <div class="sec-expand-col trend-col">
+                      <div class="sec-expand-title">
+                        <span>10-Match Trend</span>
+                        <span class="sec-expand-sub">{secMatchPoints.length} games</span>
+                      </div>
+                      <div class="sec-expand-svg-wrap">
+                        {@html secSparkSVG}
+                      </div>
+                      <div class="sec-expand-axis">
+                        <span>Min: {Math.min(...secMatchPoints)}%</span>
+                        <span>Max: {Math.max(...secMatchPoints)}%</span>
+                      </div>
+                    </div>
+                  {/if}
+                </div>
+              {/if}
             </div>
           {/each}
         </div>
