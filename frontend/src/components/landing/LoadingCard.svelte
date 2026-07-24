@@ -371,8 +371,8 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: flex-start;
-    text-align: left;
+    align-items: center;
+    text-align: center;
     width: 100%;
     max-width: 360px;
     box-sizing: border-box;
@@ -405,6 +405,7 @@
     color: #e2e8f0;
     font-weight: 400;
     line-height: 1.45;
+    text-align: center;
   }
 
   .loading-estimate {
