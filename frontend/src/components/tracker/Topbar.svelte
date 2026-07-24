@@ -128,7 +128,7 @@
     const y = window.scrollY;
     scrolled = y > 20;
 
-    if ($currentView === 'tracker' && $player.loaded) {
+    if ($currentView === 'tracker' && $player.loaded && window.innerWidth > 800) {
       if (y > 150) {
         const diff = y - lastScrollY;
         if (diff > 15) {
@@ -251,7 +251,7 @@
   <div class="topbar-main-row">
     <a href="/" class="topbar-logo" on:click|preventDefault={goHome}>
       <img src="/logo.png" alt="" class="topbar-logo-icon">
-      VAL<span class="logo-accent">TRACKER</span>
+      VALTRACKER
     </a>
     
     <div class="topbar-tabs">

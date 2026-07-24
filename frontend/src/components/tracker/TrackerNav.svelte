@@ -1,5 +1,5 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, tick } from 'svelte';
 
   export let onScrollTo = (sectionId) => {};
   export let sessionActive = false;
@@ -11,6 +11,28 @@
   const dispatch = createEventDispatcher();
 
   let toolsOpen = false;
+  let navLeftEl;
+
+  $: if (activeSection && navLeftEl) {
+    scrollToActiveItem(activeSection);
+  }
+
+  async function scrollToActiveItem(sectionId) {
+    await tick();
+    if (!navLeftEl) return;
+    const activeEl = navLeftEl.querySelector('.tracker-nav-item.active');
+    if (!activeEl) return;
+
+    const containerRect = navLeftEl.getBoundingClientRect();
+    const itemRect = activeEl.getBoundingClientRect();
+
+    const scrollOffset = (itemRect.left - containerRect.left) - (containerRect.width / 2) + (itemRect.width / 2);
+
+    navLeftEl.scrollBy({
+      left: scrollOffset,
+      behavior: 'smooth'
+    });
+  }
 
   const SECTIONS = [
     { id: 'sec-combat', icon: '⚔️', label: 'Combat', number: '01' },
@@ -37,7 +59,7 @@
 <svelte:window on:click={closeTools} />
 
 <div class="tracker-nav" id="tracker-nav" role="navigation" aria-label="Section navigation">
-  <div class="tracker-nav-left">
+  <div class="tracker-nav-left" bind:this={navLeftEl}>
     {#each SECTIONS as section}
       <a
         class="tracker-nav-item"
