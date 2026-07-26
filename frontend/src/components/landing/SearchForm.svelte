@@ -815,11 +815,70 @@
 
   @media (max-width: 480px) {
     .search-form-card {
-      padding: 20px 16px;
+      padding: 16px 12px;
+    }
+    .sf-title {
+      font-size: 18px;
+      margin-bottom: 2px;
+    }
+    .sf-sub {
+      font-size: 8.5px;
+      margin-bottom: 14px;
+    }
+    .sf-input {
+      font-size: 16px; /* Prevents iOS Safari auto-zoom on input focus */
+      padding: 10px 8px;
+    }
+    .sf-input-tag {
+      max-width: 72px;
+    }
+    .input-decor-bracket {
+      display: none !important;
     }
     .sf-row2 {
-      flex-direction: column;
-      gap: 10px;
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .sf-select {
+      font-size: 12px;
+      padding: 10px 22px 10px 8px;
+      text-overflow: ellipsis;
+    }
+    .select-arrow {
+      right: 8px;
+      font-size: 7px;
+    }
+    .sf-btn {
+      padding: 14px;
+      font-size: 15px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+    .sf-btn:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+    .sf-divider {
+      margin: 14px 0;
+    }
+    .sf-profile-row {
+      gap: 6px;
+    }
+    .sf-profile-btn {
+      padding: 4px 8px;
+      font-size: 8.5px;
+      flex-shrink: 0;
+    }
+    .landing-quick-btn {
+      padding: 10px 12px;
+    }
+    .quick-profile-name {
+      font-size: 14px;
+    }
+    .quick-profile-meta {
+      font-size: 8px;
+      padding: 2px 4px;
     }
   }
 </style>

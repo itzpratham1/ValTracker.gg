@@ -234,4 +234,33 @@
     color: #fa4454;
     background: rgba(250, 68, 84, 0.1);
   }
+
+  @media (max-width: 768px) {
+    .rs-delete {
+      opacity: 0.75;
+      font-size: 11px;
+      padding: 4px 8px;
+      min-width: 24px;
+      min-height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .recent-section {
+      padding-top: 14px;
+    }
+    .rs-header {
+      margin-bottom: 8px;
+    }
+    .rs-item {
+      padding: 10px 12px;
+      min-height: 44px;
+    }
+  }
 </style>

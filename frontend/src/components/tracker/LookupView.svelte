@@ -727,35 +727,64 @@
   }
 
   /* ── MOBILE BREAKPOINTS ── */
-  @media (max-width: 800px) {
-    .hud-hidden-mobile {
+  @media (max-width: 768px) {
+    .hud-hidden-mobile,
+    .lookup-corners,
+    .lookup-decorations {
       display: none !important;
     }
   }
 
   @media (max-width: 480px) {
     .lookup-root {
-      padding: 70px 10px 40px;
+      padding: 54px 10px calc(36px + env(safe-area-inset-bottom, 0px));
+      min-height: 100dvh;
+    }
+    .hud-top-bar {
+      padding: 0 14px;
+      padding-top: env(safe-area-inset-top, 0px);
+      height: calc(46px + env(safe-area-inset-top, 0px));
+    }
+    .lookup-container {
+      margin-top: 4px;
+      margin-bottom: 10px;
+    }
+    .lookup-header-block {
+      margin-bottom: 16px;
     }
     .lookup-logo-wrap {
-      font-size: 38px;
+      font-size: 32px;
       letter-spacing: 2px;
+      margin-bottom: 4px;
+    }
+    .logo-box {
+      margin-right: 10px;
     }
     .logo-box img {
-      height: 40px;
+      height: 34px;
     }
     .lookup-tagline {
-      font-size: 9px;
-      letter-spacing: 2px;
+      font-size: 8.5px;
+      letter-spacing: 1.5px;
     }
     .lookup-columns-wrap {
-      gap: 16px;
+      gap: 14px;
     }
     .lookup-card {
       min-width: 100%;
+      border-radius: 10px;
+    }
+    .lookup-card :global(.search-form-card) {
+      padding: 16px 12px !important;
     }
     .history-card-inner {
-      padding: 16px;
+      padding: 14px 12px;
+      min-height: auto;
+      gap: 16px;
+    }
+    .hud-bottom-ticker {
+      height: calc(26px + env(safe-area-inset-bottom, 0px));
+      padding-bottom: env(safe-area-inset-bottom, 0px);
     }
   }
 </style>

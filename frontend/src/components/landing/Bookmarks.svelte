@@ -252,4 +252,22 @@
     color: #fa4454;
     background: rgba(250, 68, 84, 0.1);
   }
+
+  @media (max-width: 480px) {
+    .bm-header {
+      margin-bottom: 8px;
+    }
+    .bm-item {
+      padding: 10px 12px;
+      min-height: 44px;
+    }
+    .bm-remove {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+  }
 </style>
