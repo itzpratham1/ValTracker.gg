@@ -100,16 +100,34 @@
 
   player.subscribe(p => { playerState = p; });
 
+  let isProgrammaticScroll = false;
+  let programmaticScrollTimer = null;
+
   function scrollToSection(sectionId) {
     activeSection = sectionId;
     const el = document.getElementById(sectionId);
     if (el) {
+      isProgrammaticScroll = true;
+      if (programmaticScrollTimer) clearTimeout(programmaticScrollTimer);
+
+      const isMobile = typeof window !== 'undefined' && window.innerWidth <= 800;
       const topbar = document.querySelector('.topbar');
       const nav = document.querySelector('.tracker-nav');
-      const topbarH = topbar ? topbar.offsetHeight : 108;
+      
+      // On desktop, topbar is sticky (or slides up).
+      // On mobile, topbar is position: relative (scrolled out of view), so topbar offset is 0.
+      const topbarH = (!isMobile && topbar) ? topbar.offsetHeight : 0;
       const navH = nav ? nav.offsetHeight : 52;
-      const top = el.getBoundingClientRect().top + window.scrollY - topbarH - navH - 8;
-      window.scrollTo({ top, behavior: 'smooth' });
+      const totalOffset = topbarH + navH + 8;
+
+      const elementTop = el.getBoundingClientRect().top + window.scrollY;
+      const targetY = Math.max(0, elementTop - totalOffset);
+
+      window.scrollTo({ top: targetY, behavior: 'smooth' });
+
+      programmaticScrollTimer = setTimeout(() => {
+        isProgrammaticScroll = false;
+      }, 1000);
     }
   }
 
@@ -157,6 +175,7 @@
       ticking = false;
     }
     function onScroll() {
+      if (isProgrammaticScroll) return;
       if (!ticking) {
         ticking = true;
         requestAnimationFrame(update);

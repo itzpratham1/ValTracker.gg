@@ -67,7 +67,7 @@
         href="#{section.id}"
         tabindex="0"
         aria-current={activeSection === section.id ? 'page' : undefined}
-        on:click={(e) => smoothScrollTo(section.id, e)}
+        on:click|preventDefault={(e) => smoothScrollTo(section.id, e)}
         on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') smoothScrollTo(section.id, e); }}
       >
         <span class="nav-icon">{section.icon}</span> {section.label}

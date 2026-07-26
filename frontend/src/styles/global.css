@@ -4699,6 +4699,7 @@ input:checked + .slider:before {
     scrollbar-width: none !important;
     white-space: nowrap !important;
     padding: 2px 0 !important;
+    touch-action: pan-x !important;
   }
   .tracker-nav-left::-webkit-scrollbar {
     display: none !important;
@@ -4708,6 +4709,9 @@ input:checked + .slider:before {
     padding: 5px 10px !important;
     font-size: 11px !important;
     border-radius: 16px !important;
+    touch-action: manipulation !important;
+    cursor: pointer !important;
+    -webkit-tap-highlight-color: transparent !important;
   }
   .tracker-nav-right {
     display: none !important;
@@ -9192,6 +9196,7 @@ body::after {
     scrollbar-width: none !important;
     white-space: nowrap !important;
     padding: 2px 0 !important;
+    touch-action: pan-x !important;
   }
   .tracker-nav-left::-webkit-scrollbar {
     display: none !important;
@@ -9201,6 +9206,9 @@ body::after {
     padding: 5px 10px !important;
     font-size: 11px !important;
     border-radius: 16px !important;
+    touch-action: manipulation !important;
+    cursor: pointer !important;
+    -webkit-tap-highlight-color: transparent !important;
   }
   .tracker-nav-right {
     display: none !important;
