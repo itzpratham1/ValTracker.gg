@@ -4615,19 +4615,43 @@ input:checked + .slider:before {
   .store-filters {
     flex-direction: column !important;
     gap: 10px !important;
+    padding: 12px !important;
   }
   .store-filter-selects {
     width: 100% !important;
-    flex-direction: column !important;
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 8px !important;
   }
   .store-select {
-    width: 100% !important;
-    font-size: 16px !important;
-    min-height: 44px !important;
+    flex: 1 !important;
+    width: 50% !important;
+    min-width: 0 !important;
+    font-size: 13px !important;
+    padding: 9px 10px !important;
+    height: 38px !important;
+    min-height: 38px !important;
   }
   .store-search-input {
-    font-size: 16px !important;
-    min-height: 44px !important;
+    font-size: 13px !important;
+    padding: 9px 12px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+  }
+  .skin-catalog-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+  .skin-catalog-card {
+    min-width: 0 !important;
+    width: 100% !important;
+    min-height: 112px !important;
+    height: 100% !important;
+    aspect-ratio: unset !important;
+    padding: 10px 8px !important;
+    box-sizing: border-box !important;
   }
 
   .stat-modal-overlay,

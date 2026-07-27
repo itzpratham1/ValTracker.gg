@@ -277,20 +277,20 @@
             {@const tier = getSkinRarityTier(skin.contentTierUuid)}
             {@const isMelee = skin.displayName.toLowerCase().includes('melee') || skin.displayName.toLowerCase().includes('knife') || skin.displayName.toLowerCase().includes('axe')}
             <div
-              class="card player-card skin-catalog-card"
+              class="card skin-catalog-card"
               style="border-left: 3px solid {tier.color};"
               on:click={() => openSkinModal(skin)}
               on:mouseover={(e) => e.currentTarget.style.borderColor = tier.color}
               on:mouseout={(e) => e.currentTarget.style.borderColor = tier.color}
             >
-              <div class="skin-card-rarity-dot" style="background:{tier.color};" title={tier.name}>&#8203;</div>
+              <div class="skin-card-rarity-dot" style="background:{tier.color}; box-shadow: 0 0 6px {tier.color};" title={tier.name}>&#8203;</div>
               <div class="skin-card-img-wrap">
                 {#if skin.displayIcon}
                   <img
                     src={skin.displayIcon}
                     alt={skin.displayName}
                     class="skin-card-img"
-                    style={isMelee ? 'max-width:70%; max-height:60px;' : ''}
+                    style={isMelee ? 'max-width:70%; max-height:50px;' : ''}
                   />
                 {:else}
                   <div class="skin-card-fallback">{skin.displayName.substring(0, 2).toUpperCase()}</div>
@@ -358,6 +358,7 @@
     color: var(--muted);
     margin: 0;
     max-width: 700px;
+    line-height: 1.4;
   }
 
   .store-grid {
@@ -415,17 +416,15 @@
   .store-filters {
     padding: 16px;
     display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    align-items: center;
+    flex-direction: column;
+    gap: 12px;
     border-radius: 12px;
     background: rgba(20, 20, 22, 0.45);
     border: 1px solid var(--border);
   }
 
   .store-search-wrap {
-    flex: 1;
-    min-width: 280px;
+    width: 100%;
     position: relative;
   }
 
@@ -448,55 +447,65 @@
   .store-filter-selects {
     display: flex;
     gap: 12px;
-    flex-wrap: wrap;
+    width: 100%;
   }
 
   .store-select {
-    padding: 11px 14px;
+    flex: 1;
+    min-width: 0;
+    padding: 10px 12px;
     border: 1px solid var(--border);
     border-radius: 8px;
-    background: rgba(0,0,0,0.4);
+    background: rgba(0,0,0,0.5);
     color: #fff;
-    font-size: 13px;
+    font-size: 12px;
     outline: none;
     cursor: pointer;
     transition: var(--transition);
   }
 
+  .store-select:focus {
+    border-color: var(--accent);
+  }
+
   .skin-catalog-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+    gap: 12px;
   }
 
   .skin-catalog-card {
-    min-height: 165px;
-    padding: 16px;
-    background: rgba(20, 20, 22, 0.35);
+    min-height: 140px;
+    height: 100%;
+    aspect-ratio: unset !important;
+    padding: 14px 12px;
+    background: rgba(20, 20, 22, 0.55);
     border-radius: 10px;
     cursor: pointer;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 12px;
+    justify-content: space-between;
+    gap: 8px;
     transition: all 0.2s cubic-bezier(0.25,0.8,0.25,1);
     position: relative;
+    box-sizing: border-box;
   }
 
   .skin-card-rarity-dot {
     position: absolute;
     top: 8px;
     right: 8px;
-    width: 14px;
-    height: 14px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
-    opacity: 0.75;
+    opacity: 0.9;
     font-size: 0;
+    z-index: 2;
   }
 
   .skin-card-img-wrap {
-    height: 70px;
+    height: 60px;
     width: 100%;
     display: flex;
     align-items: center;
@@ -505,22 +514,26 @@
   }
 
   .skin-card-img {
-    max-width: 90%;
-    max-height: 55px;
+    max-width: 95%;
+    max-height: 52px;
     object-fit: contain;
-    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.55));
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.65));
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  .skin-catalog-card:hover .skin-card-img {
+    transform: scale(1.06);
   }
 
   .skin-card-fallback {
     width: 100%;
-    height: 80px;
+    height: 60px;
     background: rgba(255,255,255,0.02);
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 36px;
+    font-size: 28px;
     font-weight: 900;
     color: rgba(255,255,255,0.05);
   }
@@ -535,12 +548,12 @@
 
   .skin-card-name {
     font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 900;
+    font-weight: 800;
     font-size: 12px;
     color: #fff;
     text-transform: uppercase;
     text-align: center;
-    line-height: 1.2;
+    line-height: 1.1;
     max-width: 98%;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -579,22 +592,23 @@
     margin-bottom: 30px;
   }
 
-  @media (max-width: 992px) {
+  @media (max-width: 1024px) {
     .store-grid {
       grid-template-columns: 1fr !important;
       gap: 20px !important;
     }
 
     .store-view {
-      padding: 14px;
+      padding: 14px 12px;
     }
 
     .store-banner {
       padding: 16px;
+      margin-bottom: 16px;
     }
 
     .store-banner-title {
-      font-size: clamp(20px, 6vw, 28px);
+      font-size: clamp(20px, 6vw, 26px);
     }
 
     .store-banner-desc {
@@ -602,27 +616,73 @@
     }
 
     .skin-catalog-grid {
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 12px;
+      display: grid !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      gap: 10px !important;
+      width: 100% !important;
     }
 
-    .store-filters {
-      flex-wrap: wrap;
+    .skin-catalog-card {
+      min-width: 0 !important;
+      width: 100% !important;
+      min-height: 115px !important;
+      padding: 10px 8px !important;
     }
 
-    .store-search-wrap {
-      min-width: 100%;
+    .skin-card-img-wrap {
+      height: 50px;
+    }
+
+    .skin-card-img {
+      max-height: 44px;
+    }
+
+    .skin-card-name {
+      font-size: 11px;
     }
   }
 
   @media (max-width: 480px) {
     .store-view {
+      padding: 10px 8px;
+    }
+
+    .store-filters {
       padding: 10px;
+      gap: 8px;
+    }
+
+    .store-filter-selects {
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+      width: 100%;
     }
 
     .skin-catalog-grid {
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-      gap: 10px;
+      display: grid !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      gap: 8px !important;
+      width: 100% !important;
+    }
+
+    .skin-catalog-card {
+      min-width: 0 !important;
+      width: 100% !important;
+      min-height: 110px !important;
+      padding: 10px 6px !important;
+    }
+
+    .skin-card-img-wrap {
+      height: 46px;
+    }
+
+    .skin-card-img {
+      max-height: 40px;
+    }
+
+    .skin-card-name {
+      font-size: 10.5px;
     }
   }
 </style>

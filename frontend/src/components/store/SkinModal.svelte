@@ -5,8 +5,13 @@
   export let open = false;
   export let onClose = () => {};
 
+  let videoContainer = null;
   let videoPlayer = null;
   let selectedChromaIdx = 0;
+  let activeVideoUrl = '';
+  let videoLoading = false;
+  let videoError = false;
+  let currentSkinUuid = null;
 
   function getSkinRarityTier(tierUuid) {
     const tiers = {
@@ -35,12 +40,32 @@
   }
 
   function playLevelVideo(url) {
+    if (!url) return;
+    activeVideoUrl = url;
+    videoError = false;
+    videoLoading = true;
+
+    if (videoContainer) {
+      videoContainer.style.display = 'block';
+    }
+
     if (videoPlayer) {
       videoPlayer.src = url;
-      videoPlayer.play();
+      videoPlayer.load();
+      const playPromise = videoPlayer.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            videoLoading = false;
+          })
+          .catch(err => {
+            console.warn("Autoplay notice:", err);
+            videoLoading = false;
+          });
+      }
       setTimeout(() => {
-        videoPlayer?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-      }, 100);
+        videoContainer?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 50);
     }
   }
 
@@ -56,11 +81,37 @@
     }
   }
 
-  $: if (open) {
+  // Only reset when transitioning to a NEW skin or when closing!
+  $: if (open && skin && skin.uuid !== currentSkinUuid) {
+    currentSkinUuid = skin.uuid;
     selectedChromaIdx = 0;
+    activeVideoUrl = '';
+    videoLoading = false;
+    videoError = false;
+    if (videoContainer) {
+      videoContainer.style.display = 'none';
+    }
     if (videoPlayer) {
-      videoPlayer.pause();
-      videoPlayer.src = '';
+      try {
+        videoPlayer.pause();
+        videoPlayer.src = '';
+      } catch (e) {}
+    }
+  }
+
+  $: if (!open && currentSkinUuid !== null) {
+    currentSkinUuid = null;
+    activeVideoUrl = '';
+    videoLoading = false;
+    videoError = false;
+    if (videoContainer) {
+      videoContainer.style.display = 'none';
+    }
+    if (videoPlayer) {
+      try {
+        videoPlayer.pause();
+        videoPlayer.src = '';
+      } catch (e) {}
     }
   }
 </script>
@@ -129,6 +180,8 @@
                   </div>
                   {#if level.streamedVideo}
                     <span style="color:var(--win); font-weight:bold; font-size:11px;">&#9654; Watch Demonstration Video</span>
+                  {:else}
+                    <span style="color:var(--muted); font-size:10px;">(Base cosmetic level)</span>
                   {/if}
                 </button>
               {/each}
@@ -137,8 +190,43 @@
         {/if}
 
         <!-- Inline Video Player -->
-        <div class="skin-modal-video-container">
-          <video bind:this={videoPlayer} controls class="skin-modal-video-player"></video>
+        <div
+          class="skin-modal-video-container"
+          bind:this={videoContainer}
+          style="display: {activeVideoUrl ? 'block' : 'none'}; margin-top: 20px;"
+        >
+          <div class="skin-video-header">
+            <span>🎥 DEMONSTRATION STREAM</span>
+          </div>
+
+          {#if videoLoading}
+            <div class="video-status-box">
+              <div class="cyber-spinner"></div>
+              <span>CONNECTING TO HIGH-SPEED DEMO STREAM...</span>
+            </div>
+          {/if}
+
+          {#if videoError}
+            <div class="video-status-box error">
+              <span>⚠️ Media stream temporarily unavailable or blocked by network provider.</span>
+              <a href={activeVideoUrl} target="_blank" rel="noopener noreferrer" class="fetch-btn" style="padding: 4px 12px; font-size: 11px; text-decoration: none;">
+                Open Video Direct Link ↗
+              </a>
+            </div>
+          {/if}
+
+          <video
+            bind:this={videoPlayer}
+            src={activeVideoUrl}
+            controls
+            autoplay
+            playsinline
+            preload="auto"
+            referrerpolicy="no-referrer"
+            class="skin-modal-video-player"
+            on:loadeddata={() => { videoLoading = false; videoError = false; }}
+            on:error={() => { videoLoading = false; videoError = true; }}
+          ></video>
         </div>
       </div>
     </div>
@@ -302,6 +390,7 @@
 
   .skin-level-card.playable:hover {
     border-color: var(--win);
+    background: rgba(62,207,142,0.05);
   }
 
   .skin-level-badge {
@@ -313,18 +402,100 @@
   .skin-modal-video-container {
     display: none;
     margin-top: 24px;
-    background: #000;
-    border-radius: 8px;
+    background: #0b0b0e;
+    border-radius: 12px;
     border: 1px solid var(--border);
     overflow: hidden;
-    aspect-ratio: 16/9;
     width: 100%;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    position: relative;
+  }
+
+  .skin-video-header {
+    background: rgba(250,68,84,0.1);
+    border-bottom: 1px solid rgba(250,68,84,0.2);
+    padding: 8px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: 1px;
   }
 
   .skin-modal-video-player {
     width: 100%;
-    height: 100%;
+    max-height: 400px;
     object-fit: contain;
+    background: #000;
+    display: block;
+    aspect-ratio: 16/9;
+  }
+
+  .video-status-box {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    background: rgba(0,0,0,0.4);
+  }
+
+  .video-status-box.error {
+    color: var(--loss);
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+
+  @media (max-width: 600px) {
+    .skin-modal {
+      width: 96vw;
+      border-radius: 12px;
+    }
+
+    .skin-modal-title {
+      font-size: 18px;
+    }
+
+    .skin-modal-preview {
+      padding: 24px 12px;
+      min-height: 170px;
+      margin-bottom: 16px;
+    }
+
+    .skin-modal-preview-img {
+      max-height: 120px;
+    }
+
+    .skin-modal-price-badge {
+      bottom: 8px;
+      right: 8px;
+      padding: 4px 10px;
+      font-size: 11px;
+    }
+
+    .skin-modal-section {
+      margin-bottom: 16px;
+    }
+
+    .skin-modal-chromas {
+      gap: 8px;
+    }
+
+    .skin-chroma-card {
+      padding: 5px 9px;
+      font-size: 9px;
+    }
+
+    .skin-level-card {
+      padding: 8px 10px;
+      font-size: 10px;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
   }
 </style>
