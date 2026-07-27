@@ -272,7 +272,24 @@
       </div>
     </div>
 
-    <div class="table-responsive">
+    <!-- Mobile Sort Bar -->
+    <div class="mobile-sort-bar">
+      <span class="mobile-sort-label">Sort:</span>
+      <div class="mobile-sort-options">
+        <button class="mobile-sort-btn {sortKey === 'matchesCount' ? 'active' : ''}" on:click={() => handleSort('matchesCount')}>
+          Games {sortKey === 'matchesCount' ? (sortAsc ? '▲' : '▼') : ''}
+        </button>
+        <button class="mobile-sort-btn {sortKey === 'winRate' ? 'active' : ''}" on:click={() => handleSort('winRate')}>
+          Win Rate {sortKey === 'winRate' ? (sortAsc ? '▲' : '▼') : ''}
+        </button>
+        <button class="mobile-sort-btn {sortKey === 'kd' ? 'active' : ''}" on:click={() => handleSort('kd')}>
+          K/D {sortKey === 'kd' ? (sortAsc ? '▲' : '▼') : ''}
+        </button>
+      </div>
+    </div>
+
+    <!-- Desktop Table View -->
+    <div class="table-responsive desktop-only-table">
       <table class="teammates-table">
         <thead>
           <tr>
@@ -360,6 +377,66 @@
           {/if}
         </tbody>
       </table>
+    </div>
+
+    <!-- Mobile Cards List View -->
+    <div class="teammates-mobile-list">
+      {#if filteredTeammates.length > 0}
+        {#each filteredTeammates as t}
+          <div class="mobile-teammate-card" on:click={() => handleTeammateClick(t.name, t.tag)}>
+            <div class="m-tm-header">
+              <div class="m-tm-identity">
+                {#if getAgentIconUrl(t.favoriteAgent)}
+                  <img src={getAgentIconUrl(t.favoriteAgent)} alt={t.favoriteAgent} class="m-tm-avatar">
+                {:else}
+                  <div class="m-tm-avatar-placeholder">👤</div>
+                {/if}
+                <div class="m-tm-names">
+                  <div class="m-tm-name-row">
+                    <span class="m-tm-name">{t.name}</span>
+                    <span class="m-tm-tag">#{t.tag}</span>
+                  </div>
+                  {#if t.favoriteAgent && t.favoriteAgent !== 'Unknown'}
+                    <div class="m-tm-agent-info">
+                      <span class="m-tm-agent-lbl">Fav Agent:</span>
+                      <span class="m-tm-agent-val">{t.favoriteAgent}</span>
+                    </div>
+                  {/if}
+                </div>
+              </div>
+
+              <div class="m-tm-badges">
+                <span class="m-tm-pill wr {t.winRate >= 55 ? 'good' : t.winRate < 45 ? 'bad' : 'normal'}">
+                  {t.winRate}% WR
+                </span>
+                <span class="m-tm-pill kd {parseFloat(t.kd) >= 1.1 ? 'good' : parseFloat(t.kd) < 0.9 ? 'bad' : 'normal'}">
+                  {t.kd} KD
+                </span>
+              </div>
+            </div>
+
+            <div class="m-tm-footer">
+              <div class="m-tm-games-stat">
+                <span class="m-tm-games-val">{t.matchesCount} {t.matchesCount === 1 ? 'Match' : 'Matches'}</span>
+                <span class="m-tm-record">({t.wins}W - {t.losses}L)</span>
+              </div>
+
+              <div class="m-tm-recent-wrap">
+                {#each t.recentResults.slice(-5) as res}
+                  <span class="dot-badge {res ? 'win' : 'loss'}" title={res ? 'Win' : 'Loss'}>
+                    {res ? 'W' : 'L'}
+                  </span>
+                {/each}
+                <span class="m-tm-chevron">›</span>
+              </div>
+            </div>
+          </div>
+        {/each}
+      {:else}
+        <div class="empty-table-msg">
+          No teammates found matching "{searchQuery}"
+        </div>
+      {/if}
     </div>
   </div>
 </div>

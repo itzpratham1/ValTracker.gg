@@ -171,7 +171,7 @@
               tabindex="0"
             >
               <div class="mr-result {wl}">{m.won ? 'WIN' : 'LOSS'}</div>
-              <div class="mr-agent" style="padding:0;gap:0;overflow:hidden;">
+              <div class="mr-agent">
                 {#if getMapImg(m.map)}
                   <div class="mr-map-thumb">
                     <img src={getMapImg(m.map)} alt={m.map} loading="lazy">
