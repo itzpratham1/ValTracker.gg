@@ -11724,6 +11724,190 @@ a:focus-visible {
 .match-ai-acc-bar.leg-bar { background: var(--loss); }
 .match-ai-acc-pct { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 13px; color: var(--text); width: 32px; text-align: right; flex-shrink: 0; }
 
+/* ── STATS GROUP DESKTOP UNWRAP ── */
+.mr-stats-group {
+  display: contents;
+}
+
+/* ── ULTRA MOBILE MATCH ROW OPTIMIZATION ── */
+@media (max-width: 650px) {
+  .match-row,
+  .tracker-layout .match-row {
+    grid-template-columns: 42px 1fr auto 38px 14px !important;
+    gap: 10px !important;
+    padding: 8px 10px !important;
+    min-height: 50px !important;
+    align-items: center !important;
+    border-radius: 8px !important;
+  }
+
+  /* Result Badge (WIN / LOSS Pill) */
+  .mr-result,
+  .tracker-layout .mr-result {
+    height: 24px !important;
+    width: 42px !important;
+    padding: 0 !important;
+    margin: auto 0 !important;
+    font-size: 10px !important;
+    font-weight: 800 !important;
+    border-radius: 5px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    letter-spacing: 0.8px !important;
+    box-sizing: border-box !important;
+    flex-shrink: 0 !important;
+    font-family: 'Barlow Condensed', sans-serif !important;
+  }
+  .mr-result.win,
+  .tracker-layout .mr-result.win {
+    background: rgba(16, 185, 129, 0.16) !important;
+    color: #3ecf8e !important;
+    border: 1px solid rgba(16, 185, 129, 0.35) !important;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.15) !important;
+  }
+  .mr-result.loss,
+  .tracker-layout .mr-result.loss {
+    background: rgba(244, 63, 94, 0.16) !important;
+    color: #f43f5e !important;
+    border: 1px solid rgba(244, 63, 94, 0.35) !important;
+    box-shadow: 0 0 8px rgba(244, 63, 94, 0.15) !important;
+  }
+
+  /* Agent Container */
+  .mr-agent,
+  .tracker-layout .mr-agent {
+    padding: 0 !important;
+    gap: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    min-width: 0 !important;
+  }
+  .mr-agent-icon-wrap {
+    padding: 0 !important;
+    flex-shrink: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+  .mr-agent-icon {
+    width: 30px !important;
+    height: 30px !important;
+    border-radius: 6px !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+  .mr-agent-info {
+    padding: 0 !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+  }
+  .mr-agent-name {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    line-height: 1.2 !important;
+    color: var(--text) !important;
+  }
+  .mr-map {
+    font-size: 10px !important;
+    color: var(--muted) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    margin-top: 1px !important;
+    line-height: 1 !important;
+  }
+  .mr-date {
+    display: none !important;
+  }
+  .mr-map-thumb {
+    display: none !important;
+  }
+
+  /* Stats Group Container: Stacks Score and KDA vertically */
+  .mr-stats-group,
+  .tracker-layout .mr-stats-group {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+    gap: 2px !important;
+    padding: 0 4px !important;
+  }
+
+  /* Score (Top Line of Stats Group) */
+  .mr-score,
+  .tracker-layout .mr-score {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.5px !important;
+    white-space: nowrap !important;
+    padding: 0 !important;
+    color: #ffffff !important;
+    line-height: 1.1 !important;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5) !important;
+  }
+
+  /* KDA (Bottom Line of Stats Group) */
+  .mr-kda,
+  .tracker-layout .mr-kda {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    padding: 0 !important;
+  }
+  .mr-kda-main {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+    letter-spacing: 0.2px !important;
+    color: #94a3b8 !important;
+    line-height: 1 !important;
+    font-family: 'DM Mono', monospace !important;
+  }
+  .mr-kda-sub {
+    display: none !important;
+  }
+
+  /* RR Delta Column */
+  .mr-rr,
+  .tracker-layout .mr-rr {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+  }
+  .mr-rr-val {
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.3px !important;
+  }
+  .mr-rr-lbl,
+  .mr-lobby,
+  .mr-acs-wrap,
+  .mr-grade-wrap {
+    display: none !important;
+  }
+
+  /* Chevron */
+  .mr-chevron {
+    font-size: 8px !important;
+    padding-right: 0 !important;
+    opacity: 0.5 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+}
+
 /* Mobile Breakpoint Adjustments for AI & Details */
 @media (max-width: 600px) {
   .match-ai-summary-v2 { flex-direction: column !important; align-items: flex-start !important; gap: 10px !important; }

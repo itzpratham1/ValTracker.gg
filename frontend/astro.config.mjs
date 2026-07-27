@@ -41,6 +41,9 @@ export default defineConfig({
       cssMinify: true
     },
     server: {
+      watch: {
+        ignored: ['**/.vercel/**', '**/.astro/**', '**/dist/**']
+      },
       proxy: {
         '/api': 'http://localhost:5000'
       }

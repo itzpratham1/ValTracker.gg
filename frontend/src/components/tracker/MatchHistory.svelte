@@ -182,12 +182,12 @@
                     <div class="mr-map-thumb-label">{(m.map || '').toUpperCase()}</div>
                   </div>
                 {/if}
-                <div style="padding:12px 12px;">
+                <div class="mr-agent-icon-wrap">
                   {#if agentIcon}
                     <img class="mr-agent-icon" src={agentIcon} alt={m.agentName} loading="lazy">
                   {/if}
                 </div>
-                <div style="padding:12px 0;">
+                <div class="mr-agent-info">
                   <div class="mr-agent-name">{(m.agentName || '—').toUpperCase()}</div>
                   <div class="mr-map" style="margin-top:2px;">{(m.map || '—').toUpperCase()}</div>
                   {#if matchDateStr}
@@ -195,7 +195,6 @@
                   {/if}
                 </div>
               </div>
-              <div class="mr-score">{m.rounds}</div>
               <div class="mr-lobby">
                 {#if m.lobbyRank && m.lobbyRank.overall}
                   {@const rank = m.lobbyRank.overall}
@@ -212,9 +211,12 @@
                   <span class="mr-lobby-txt">—</span>
                 {/if}
               </div>
-              <div class="mr-kda">
-                <div class="mr-kda-main">{m.kills} / {m.deaths} / {m.assists}</div>
-                <div class="mr-kda-sub">K / D / A</div>
+              <div class="mr-stats-group">
+                <div class="mr-score">{m.rounds}</div>
+                <div class="mr-kda">
+                  <div class="mr-kda-main">{m.kills} / {m.deaths} / {m.assists}</div>
+                  <div class="mr-kda-sub">K / D / A</div>
+                </div>
               </div>
               <div class="mr-acs-wrap">
                 <div class="mr-acs">{acs}</div>
