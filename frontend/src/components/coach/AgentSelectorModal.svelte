@@ -226,4 +226,22 @@
     letter-spacing: 0.5px;
     margin-top: 4px;
   }
+
+  @media (max-width: 600px) {
+    .agent-selector-modal {
+      width: 94%;
+      max-height: 85vh;
+    }
+    .agent-role-grid {
+      grid-template-columns: repeat(auto-fill, minmax(68px, 1fr));
+      gap: 8px;
+    }
+    .agent-pick-icon, .agent-pick-fallback {
+      width: 36px;
+      height: 36px;
+    }
+    .agent-pick-name {
+      font-size: 10px;
+    }
+  }
 </style>

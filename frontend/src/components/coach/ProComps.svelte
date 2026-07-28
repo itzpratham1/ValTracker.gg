@@ -371,4 +371,12 @@
       gap: 8px;
     }
   }
+
+  @media (max-width: 480px) {
+    .pro-comp-box { padding: 10px; }
+    .pro-agent-mini { width: 24px; height: 24px; }
+    .pro-comp-label { font-size: 10px; }
+    .pro-comp-footer { font-size: 8.5px; }
+    .pro-heatmap-title { font-size: 11px; }
+  }
 </style>

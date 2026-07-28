@@ -391,8 +391,8 @@
 
       <div class="card coach-draft-card">
         <!-- Map & Patch Selectors -->
-        <div style="display:flex; gap:12px;">
-          <div style="flex:1;">
+        <div class="coach-select-row">
+          <div style="flex:1; min-width:0;">
             <label class="coach-label">Map</label>
             <select bind:value={selectedMap} on:change={handleMapChange} class="coach-select">
               {#each MAPS as map}
@@ -400,7 +400,7 @@
               {/each}
             </select>
           </div>
-          <div style="flex:0 0 140px;">
+          <div class="coach-select-patch">
             <label class="coach-label">Patch</label>
             <select bind:value={selectedPatch} class="coach-select">
               <option value="latest">Latest ({$latestPatch || '...'})</option>
@@ -435,16 +435,12 @@
           {/each}
         </div>
 
-        <!-- Action Buttons Row 1 -->
-        <div class="dc-btn-row">
-          <button class="fetch-btn dc-btn-primary" on:click={handleBuildAroundMe}>✨ Build Around Me</button>
+        <!-- Action Buttons -->
+        <div class="dc-btn-grid">
+          <button class="fetch-btn dc-btn-primary" on:click={handleBuildAroundMe}>✨ Build Around</button>
           <button class="fetch-btn dc-btn-secondary" on:click={resetDraft}>↻ Clear</button>
-        </div>
-
-        <!-- Action Buttons Row 2 -->
-        <div class="dc-btn-row">
           <button class="fetch-btn dc-btn-accent" on:click={saveCurrentDraft}>💾 Save Draft</button>
-          <button class="fetch-btn dc-btn-export" on:click={exportDraftPNG}>📥 Export Lineup</button>
+          <button class="fetch-btn dc-btn-export" on:click={exportDraftPNG}>📥 Export Card</button>
         </div>
       </div>
 
@@ -730,6 +726,15 @@
     cursor: pointer;
   }
 
+  .coach-select-row {
+    display: flex;
+    gap: 12px;
+  }
+
+  .coach-select-patch {
+    flex: 0 0 140px;
+  }
+
   .coach-slots-header {
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 14px;
@@ -740,24 +745,23 @@
   }
 
   .coach-team-slots {
-    display: flex;
-    justify-content: space-around;
-    gap: 10px;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    width: 100%;
   }
 
   .dc-slot-card {
-    flex: 1;
-    min-width: 90px;
-    max-width: 110px;
+    width: 100%;
+    box-sizing: border-box;
     background: var(--surface2);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 12px 6px;
+    padding: 10px 4px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
   }
@@ -769,14 +773,14 @@
   }
 
   .dc-slot-avatar {
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     background: rgba(255,255,255,0.04);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
+    font-size: 16px;
     color: var(--muted);
     border: 1px solid var(--border);
     overflow: hidden;
@@ -796,25 +800,25 @@
 
   .dc-slot-name {
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     color: #fff;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     text-align: center;
-    max-width: 80px;
+    width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .dc-btn-row {
-    display: flex;
-    gap: 10px;
+  .dc-btn-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
   }
 
   .dc-btn-primary {
-    flex: 1.5;
     margin: 0;
     background: linear-gradient(135deg, var(--accent) 0%, #ff4655 100%);
     color: #0d0d0f;
@@ -822,21 +826,18 @@
   }
 
   .dc-btn-secondary {
-    flex: 0.8;
     margin: 0;
     background: rgba(255,255,255,0.05);
     border: 1px solid var(--border);
   }
 
   .dc-btn-accent {
-    flex: 1;
     margin: 0;
     background: var(--accent);
     color: #0d0d0f;
   }
 
   .dc-btn-export {
-    flex: 1;
     margin: 0;
     background: rgba(255,255,255,0.05);
     border: 1px solid var(--border);
@@ -1080,17 +1081,75 @@
       grid-template-columns: 1fr !important;
       gap: 20px !important;
     }
-    .coach-view { padding: 14px; }
+    .coach-view { padding: 12px; }
   }
 
-  @media (max-width: 480px) {
-    .dc-btn-row {
+  @media (max-width: 600px) {
+    .coach-banner {
+      padding: 14px;
+      margin-bottom: 16px;
+      gap: 4px;
+    }
+    .coach-banner-title {
+      font-size: 22px;
+      letter-spacing: 1px;
+    }
+    .coach-banner-desc {
+      font-size: 11px;
+      line-height: 1.4;
+    }
+    .coach-team-slots {
+      gap: 4px;
+    }
+    .dc-slot-card {
+      padding: 8px 2px;
+      border-radius: 8px;
+      gap: 4px;
+    }
+    .dc-slot-avatar {
+      width: 36px;
+      height: 36px;
+      font-size: 13px;
+    }
+    .dc-slot-name {
+      font-size: 9.5px;
+      letter-spacing: 0;
+    }
+    .dc-btn-grid {
+      gap: 6px;
+    }
+    .dc-btn-grid button {
+      padding: 9px 4px;
+      font-size: 11px;
+    }
+    .coach-verdict-header {
+      gap: 12px;
+    }
+    .coach-score-meter {
+      width: 64px;
+      height: 64px;
+    }
+    .coach-score-num {
+      font-size: 20px;
+    }
+    .coach-score-label {
+      font-size: 7px;
+    }
+    .coach-verdict-title {
+      font-size: 16px;
+    }
+    .coach-verdict-desc {
+      font-size: 10px;
+    }
+  }
+
+  @media (max-width: 440px) {
+    .coach-select-row {
       flex-direction: column;
       gap: 8px;
     }
-    .dc-btn-row button {
-      width: 100%;
-      flex: none;
+    .coach-select-patch {
+      flex: 1;
     }
   }
 

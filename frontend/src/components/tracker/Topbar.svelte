@@ -264,19 +264,21 @@
       {/each}
     </div>
 
-    <!-- Persistent Global Searchbar in Row 1 -->
-    <div class="player-search-wrap" style="position: relative;">
-      <input class="player-input" type="text" placeholder="Name" bind:value={$player.name} autocomplete="off" spellcheck="false">
-      <span class="player-input-hash">#</span>
-      <input class="player-input player-input-tag" type="text" placeholder="TAG" bind:value={$player.tag} maxlength="8" autocomplete="off" spellcheck="false" on:input={() => { $player.tag = sanitizeTag($player.tag); }}>
-      <button class="topbar-search-submit-btn" on:click={() => handleSearch($player.name, $player.tag)} title="Search">
-        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-      </button>
-      <div id="topbar-search-dropdown" class="search-dropdown"></div>
-    </div>
+    <!-- Persistent Global Searchbar in Row 1 (Tracker View Only) -->
+    {#if $currentView === 'tracker'}
+      <div class="player-search-wrap" style="position: relative;">
+        <input class="player-input" type="text" placeholder="Name" bind:value={$player.name} autocomplete="off" spellcheck="false">
+        <span class="player-input-hash">#</span>
+        <input class="player-input player-input-tag" type="text" placeholder="TAG" bind:value={$player.tag} maxlength="8" autocomplete="off" spellcheck="false" on:input={() => { $player.tag = sanitizeTag($player.tag); }}>
+        <button class="topbar-search-submit-btn" on:click={() => handleSearch($player.name, $player.tag)} title="Search">
+          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </button>
+        <div id="topbar-search-dropdown" class="search-dropdown"></div>
+      </div>
+    {/if}
   </div>
   
   <!-- Row 2: Sub Header (Search Controls & Filters) — tracker view only -->
