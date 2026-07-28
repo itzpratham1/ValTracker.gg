@@ -43,10 +43,13 @@ export type FranchiseData = Record<string, FranchiseTeam[]>;
 let _franchiseData: FranchiseData | null = null;
 let _allMatchesCache: EsportsMatch[] = [];
 
-function getProxiedImageUrl(logoUrl: string): string {
-  if (!logoUrl) return '';
+export function getProxiedImageUrl(logoUrl: string): string {
+  if (!logoUrl || logoUrl.includes('/img/base/ph/sil.png') || logoUrl.includes('ghost')) return '';
   const API_BASE = import.meta.env.PUBLIC_API_URL || '';
-  const path = logoUrl.startsWith('/api/image') ? logoUrl : `/api/image?url=${encodeURIComponent(logoUrl)}`;
+  if (logoUrl.startsWith('/api/image')) {
+    return logoUrl.startsWith('http') ? logoUrl : `${API_BASE}${logoUrl}`;
+  }
+  const path = `/api/image?url=${encodeURIComponent(logoUrl)}`;
   return path.startsWith('http') ? path : `${API_BASE}${path}`;
 }
 

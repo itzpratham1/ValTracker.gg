@@ -53,6 +53,7 @@
   let vctModalLoading = false;
 
   $: isVisible = $currentView === 'esports';
+  $: groupedRoster = getGroupedRoster(selectedTeam?.roster || []);
 
   $: if (isVisible && activeTab === 'overview') {
     loadOverview();
@@ -167,11 +168,30 @@
     loading.news = false;
   }
 
+  function applyLocalStorageRosters(data) {
+    if (!data) return data;
+    try {
+      const cachedStr = typeof window !== 'undefined' && localStorage.getItem('vct_roster_cache_v2');
+      if (cachedStr) {
+        const rosterMap = JSON.parse(cachedStr);
+        for (const region in data) {
+          for (const team of data[region]) {
+            if (rosterMap[team.id]) {
+              team.roster = rosterMap[team.id];
+            }
+          }
+        }
+      }
+    } catch (e) {}
+    return data;
+  }
+
   async function loadTeams() {
     loading.teams = true;
     try {
       const res = await fetch('/vct_teams.json?v=3');
-      franchiseData = await res.json();
+      const rawData = await res.json();
+      franchiseData = applyLocalStorageRosters(rawData);
       setFranchiseData(franchiseData);
 
       if (!getAllMatchesCache().length) {
@@ -212,7 +232,14 @@
       const liveRoster = rosterRes?.data || [];
       if (liveRoster.length > 0) {
         team.roster = liveRoster;
-        selectedTeam = team;
+        selectedTeam = { ...team, roster: liveRoster };
+        try {
+          if (typeof window !== 'undefined') {
+            const cachedMap = JSON.parse(localStorage.getItem('vct_roster_cache_v2') || '{}');
+            cachedMap[teamId] = liveRoster;
+            localStorage.setItem('vct_roster_cache_v2', JSON.stringify(cachedMap));
+          }
+        } catch (e) {}
       }
     } catch (e) {
       console.warn("Live roster fetch failed, using cached:", e);
@@ -398,14 +425,35 @@
   }
 
   function getProxiedImageUrl(logo) {
-    if (!logo) return '';
+    if (!logo || logo.includes('/img/base/ph/sil.png') || logo.includes('ghost')) return '';
     const API_BASE = import.meta.env.PUBLIC_API_URL || '';
-    const path = logo.startsWith('/api/image') ? logo : `/api/image?url=${encodeURIComponent(logo)}`;
+    if (logo.startsWith('/api/image')) {
+      return logo.startsWith('http') ? logo : `${API_BASE}${logo}`;
+    }
+    const path = `/api/image?url=${encodeURIComponent(logo)}`;
     return path.startsWith('http') ? path : `${API_BASE}${path}`;
   }
 
   function getVlrTeamLogo(t) {
     return getProxiedImageUrl(t.logo);
+  }
+
+  function getGroupedRoster(roster) {
+    if (!roster || !Array.isArray(roster)) return { players: [], staff: [], inactive: [] };
+    const players = [];
+    const staff = [];
+    const inactive = [];
+    for (const p of roster) {
+      const r = (p.role || '').toLowerCase();
+      if (r.includes('inactive') || r.includes('sub') || r.includes('stand-in') || r.includes('bench')) {
+        inactive.push(p);
+      } else if (r.includes('coach') || r.includes('manager') || r.includes('analyst') || r.includes('staff')) {
+        staff.push(p);
+      } else {
+        players.push(p);
+      }
+    }
+    return { players, staff, inactive };
   }
 </script>
 
@@ -641,10 +689,11 @@
               <div class="esp-team-hero">
                 <div class="esp-team-title-row">
                   <div style="display: flex; align-items: center; margin-bottom: 16px;">
-                    {#if selectedTeam}
-                      {@const logoHtml = getEsportsTeamLogoHtml(selectedTeam.name)}
-                      <div style="margin-right: 16px; font-size: 24px;">{@html logoHtml}</div>
-                    {/if}
+                    {#key selectedTeamId}
+                      {#if selectedTeam}
+                        <div style="margin-right: 16px; font-size: 24px;">{@html getEsportsTeamLogoHtml(selectedTeam.name)}</div>
+                      {/if}
+                    {/key}
                     <div class="esp-team-name-lg" style="margin-bottom: 0;">
                       {selectedTeam?.name || 'Select a Team'}
                     </div>
@@ -665,26 +714,101 @@
                 {/if}
               </div>
 
-              <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:18px; text-transform:uppercase; margin-top:20px; color:#fff;">Team Roster</h4>
-              <div class="player-card-grid">
-                {#each (selectedTeam?.roster || []) as p}
-                  <div class="player-card">
-                    <span class="player-card-role" class:coach={p.role.toLowerCase() === 'coach'}>{p.role}</span>
-                    <div class="player-card-avatar" style="width:100%;flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,0.8) 100%);position:relative;">
-                      <div class="pcfb-initials" style="display:flex;align-items:center;justify-content:center;width:100%;min-height:60px;">
-                        <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-family:Barlow Condensed,sans-serif;font-size:14px;font-weight:700;color:var(--accent);">{(p.name || '').substring(0, 2).toUpperCase()}</div>
+              {#if groupedRoster.players.length > 0}
+                <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:16px; text-transform:uppercase; margin-top:24px; color:#fff; display:flex; align-items:center; gap:8px;">
+                  <span>🎮 Active Players</span>
+                  <span style="font-size:11px; color:var(--muted); font-family:'DM Mono',monospace;">({groupedRoster.players.length})</span>
+                </h4>
+                <div class="player-card-grid">
+                  {#each groupedRoster.players as p (selectedTeamId + '_' + p.name)}
+                    <div class="player-card">
+                      <span
+                        class="player-card-role"
+                        class:coach={p.role.toLowerCase().includes('coach')}
+                        class:manager={p.role.toLowerCase().includes('manager')}
+                        class:staff={p.role.toLowerCase().includes('staff') || p.role.toLowerCase().includes('analyst')}
+                        class:inactive={p.role.toLowerCase().includes('inactive') || p.role.toLowerCase().includes('sub') || p.role.toLowerCase().includes('stand-in')}
+                      >{p.role}</span>
+                      <div class="player-card-avatar" style="width:100%;flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,0.8) 100%);position:relative;">
+                        <div class="pcfb-initials" style="display:flex;align-items:center;justify-content:center;width:100%;min-height:60px;">
+                          <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-family:Barlow Condensed,sans-serif;font-size:14px;font-weight:700;color:var(--accent);">{(p.name || '').substring(0, 2).toUpperCase()}</div>
+                        </div>
+                        {#if getProxiedImageUrl(p.avatar)}
+                          <img src={getProxiedImageUrl(p.avatar)} alt={p.name} style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;" on:error={(e) => { e.target.style.display = 'none'; }} />
+                        {/if}
                       </div>
-                      {#if p.avatar}
-                        <img src={p.avatar} alt={p.name} style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;" on:error={(e) => { e.target.style.display = 'none'; }} />
-                      {/if}
+                      <div class="player-card-meta">
+                        <div class="player-card-handle">{p.name}</div>
+                        <div class="player-card-real">{p.real_name}</div>
+                      </div>
                     </div>
-                    <div class="player-card-meta">
-                      <div class="player-card-handle">{p.name}</div>
-                      <div class="player-card-real">{p.real_name}</div>
+                  {/each}
+                </div>
+              {/if}
+
+              {#if groupedRoster.staff.length > 0}
+                <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:16px; text-transform:uppercase; margin-top:28px; color:#fff; display:flex; align-items:center; gap:8px;">
+                  <span>📋 Coaching & Staff</span>
+                  <span style="font-size:11px; color:var(--muted); font-family:'DM Mono',monospace;">({groupedRoster.staff.length})</span>
+                </h4>
+                <div class="player-card-grid">
+                  {#each groupedRoster.staff as p (selectedTeamId + '_' + p.name)}
+                    <div class="player-card">
+                      <span
+                        class="player-card-role"
+                        class:coach={p.role.toLowerCase().includes('coach')}
+                        class:manager={p.role.toLowerCase().includes('manager')}
+                        class:staff={p.role.toLowerCase().includes('staff') || p.role.toLowerCase().includes('analyst')}
+                        class:inactive={p.role.toLowerCase().includes('inactive') || p.role.toLowerCase().includes('sub') || p.role.toLowerCase().includes('stand-in')}
+                      >{p.role}</span>
+                      <div class="player-card-avatar" style="width:100%;flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,0.8) 100%);position:relative;">
+                        <div class="pcfb-initials" style="display:flex;align-items:center;justify-content:center;width:100%;min-height:60px;">
+                          <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-family:Barlow Condensed,sans-serif;font-size:14px;font-weight:700;color:var(--accent);">{(p.name || '').substring(0, 2).toUpperCase()}</div>
+                        </div>
+                        {#if getProxiedImageUrl(p.avatar)}
+                          <img src={getProxiedImageUrl(p.avatar)} alt={p.name} style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;" on:error={(e) => { e.target.style.display = 'none'; }} />
+                        {/if}
+                      </div>
+                      <div class="player-card-meta">
+                        <div class="player-card-handle">{p.name}</div>
+                        <div class="player-card-real">{p.real_name}</div>
+                      </div>
                     </div>
-                  </div>
-                {/each}
-              </div>
+                  {/each}
+                </div>
+              {/if}
+
+              {#if groupedRoster.inactive.length > 0}
+                <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:16px; text-transform:uppercase; margin-top:28px; color:var(--muted); display:flex; align-items:center; gap:8px;">
+                  <span>💤 Inactive & Reserves</span>
+                  <span style="font-size:11px; color:var(--muted); font-family:'DM Mono',monospace;">({groupedRoster.inactive.length})</span>
+                </h4>
+                <div class="player-card-grid">
+                  {#each groupedRoster.inactive as p (selectedTeamId + '_' + p.name)}
+                    <div class="player-card" style="opacity:0.75;">
+                      <span
+                        class="player-card-role"
+                        class:coach={p.role.toLowerCase().includes('coach')}
+                        class:manager={p.role.toLowerCase().includes('manager')}
+                        class:staff={p.role.toLowerCase().includes('staff') || p.role.toLowerCase().includes('analyst')}
+                        class:inactive={true}
+                      >{p.role}</span>
+                      <div class="player-card-avatar" style="width:100%;flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,0.8) 100%);position:relative;">
+                        <div class="pcfb-initials" style="display:flex;align-items:center;justify-content:center;width:100%;min-height:60px;">
+                          <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-family:Barlow Condensed,sans-serif;font-size:14px;font-weight:700;color:var(--accent);">{(p.name || '').substring(0, 2).toUpperCase()}</div>
+                        </div>
+                        {#if getProxiedImageUrl(p.avatar)}
+                          <img src={getProxiedImageUrl(p.avatar)} alt={p.name} style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;" on:error={(e) => { e.target.style.display = 'none'; }} />
+                        {/if}
+                      </div>
+                      <div class="player-card-meta">
+                        <div class="player-card-handle">{p.name}</div>
+                        <div class="player-card-real">{p.real_name}</div>
+                      </div>
+                    </div>
+                  {/each}
+                </div>
+              {/if}
             </div>
 
             <div id="esp-active-team-matches-container">

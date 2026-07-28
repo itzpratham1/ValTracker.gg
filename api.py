@@ -21,7 +21,7 @@ import calendar
 import datetime
 from datetime import datetime, timedelta
 from functools import wraps
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, send_from_directory, Response
 from flask_cors import CORS
 from dotenv import load_dotenv
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -1687,11 +1687,76 @@ def esports_event_teams(event_id):
         return jsonify({"error": "Internal server error", "data": []}), 500
 
 
+def parse_vlr_role(role_txt):
+    if not role_txt:
+        return 'PLAYER'
+    r = role_txt.lower()
+    if 'head coach' in r:
+        return 'HEAD COACH'
+    if 'assistant coach' in r:
+        return 'ASSISTANT COACH'
+    if 'coach' in r:
+        return 'COACH'
+    if 'manager' in r:
+        return 'MANAGER'
+    if 'analyst' in r:
+        return 'ANALYST'
+    if 'staff' in r:
+        return 'STAFF'
+    if 'inactive' in r:
+        return 'INACTIVE'
+    if 'sub' in r or 'bench' in r:
+        return 'SUB'
+    return role_txt.upper()
+
+
+@app.route("/api/image")
+@rate_limit(requests_per_minute=240)
+def image_proxy():
+    url = request.args.get("url")
+    if not url:
+        return jsonify({"error": "Missing url"}), 400
+    if url.startswith('/'):
+        rel_path = url.lstrip('/')
+        if os.path.exists(os.path.join('public', rel_path)):
+            return send_from_directory('public', rel_path)
+        if os.path.exists(os.path.join('frontend', 'public', rel_path)):
+            return send_from_directory(os.path.join('frontend', 'public'), rel_path)
+        return jsonify({"error": "File not found"}), 404
+    try:
+        cache_key = f"img_proxy_{url}"
+        if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < 86400:
+            cached_data = cache[cache_key]
+            return Response(cached_data["content"], content_type=cached_data["content_type"], headers={
+                'Cache-Control': 'public, max-age=86400',
+                'Access-Control-Allow-Origin': '*'
+            })
+
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Referer': 'https://www.vlr.gg/',
+            'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
+        }
+        r = requests.get(url, headers=headers, timeout=8, stream=True)
+        if r.status_code == 200:
+            content_type = r.headers.get('content-type', 'image/png')
+            content = r.content
+            cache[cache_key] = {"content": content, "content_type": content_type, "timestamp": time.time()}
+            return Response(content, content_type=content_type, headers={
+                'Cache-Control': 'public, max-age=86400',
+                'Access-Control-Allow-Origin': '*'
+            })
+        return jsonify({"error": "Failed to fetch image", "status": r.status_code}), 404
+    except Exception as e:
+        print(f"[ERROR] Image proxy failed for {url}:", e)
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/api/esports/team-roster/<team_id>")
 @rate_limit(requests_per_minute=30)
 def esports_team_roster(team_id):
-    cache_key = f"vlr_roster_{team_id}"
-    if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < 3600:
+    cache_key = f"vlr_roster_v2_{team_id}"
+    if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < 1800:
         return jsonify({"data": cache[cache_key]["data"]})
     try:
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
@@ -1708,16 +1773,17 @@ def esports_team_roster(team_id):
             img_el = p.find('img')
             if alias:
                 avatar = img_el['src'] if img_el else ''
-                if avatar == '/img/vlr/tmp/vlr.png':
+                if avatar == '/img/vlr/tmp/vlr.png' or 'ghost' in avatar or 'sil.png' in avatar:
                     avatar = ''
                 elif avatar.startswith('//'):
                     avatar = 'https:' + avatar
-                if 'owcdn.net' in avatar or 'liquipedia.net' in avatar:
-                    avatar = f'/api/image?url={avatar}'
+                
+                raw_role = role_el.text.strip() if role_el else ''
+                role = parse_vlr_role(raw_role)
                 roster.append({
                     'name': alias.text.strip(),
                     'real_name': real.text.strip() if real else '',
-                    'role': 'COACH' if role_el and 'coach' in role_el.text.lower() else 'PLAYER',
+                    'role': role,
                     'avatar': avatar
                 })
         if roster:
