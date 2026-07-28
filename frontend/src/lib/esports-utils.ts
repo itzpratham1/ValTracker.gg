@@ -118,6 +118,27 @@ export function getTeamRegion(tId: string, localId: string, teamName: string): s
   return 'pacific';
 }
 
+export function isTier2Match(m: EsportsMatch): boolean {
+  if (!m) return false;
+  let event = m.league?.name || 'VCT';
+  if (m.league?.region) {
+    if (m.league.region.toLowerCase().includes(event.toLowerCase())) {
+      event = m.league.region;
+    } else {
+      event = `${m.league.region} ${event}`;
+    }
+  }
+  const evLower = event.toLowerCase();
+  return evLower.includes('challengers') ||
+         evLower.includes('game changers') ||
+         evLower.includes('ascension') ||
+         evLower.includes('vcl') ||
+         evLower.includes('tier 2') ||
+         evLower.includes('tier 3') ||
+         evLower.includes('t2') ||
+         evLower.includes('t3');
+}
+
 export function getEspHTML(m: EsportsMatch, type: string): string {
   const teams = m.match?.teams || [];
   const rawT1 = teams[0]?.name || 'TBD';
@@ -137,7 +158,7 @@ export function getEspHTML(m: EsportsMatch, type: string): string {
       event = `${m.league.region} ${event}`;
     }
   }
-  const isTier2 = event.toLowerCase().includes('challengers') || event.toLowerCase().includes('game changers') || event.toLowerCase().includes('ascension') || event.toLowerCase().includes('vcl');
+  const isTier2 = isTier2Match(m);
   const tierClass = isTier2 ? 'tier-t2' : 'tier-t1';
   const tierBadge = isTier2 ? '<span class="tier-badge t2">Tier 2</span>' : '<span class="tier-badge t1">VCT Tier 1</span>';
 

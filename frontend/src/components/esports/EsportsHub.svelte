@@ -2,7 +2,7 @@
   import { onMount, onDestroy } from 'svelte';
   import { currentView } from '../../lib/appStore';
   import { fetchEsportsLive, fetchEsportsResults, fetchEsportsUpcoming, fetchEsportsNews, fetchEsportsEvent, fetchEsportsTeamRoster } from '../../lib/api';
-  import { setFranchiseData, getFranchiseData, setAllMatchesCache, getAllMatchesCache, getEspHTML, getEsportsTeamLogoHtml, getTeamRegion, getMatchCardHtml } from '../../lib/esports-utils';
+  import { setFranchiseData, getFranchiseData, setAllMatchesCache, getAllMatchesCache, getEspHTML, getEsportsTeamLogoHtml, getTeamRegion, getMatchCardHtml, isTier2Match } from '../../lib/esports-utils';
   import { VCT_STAGE_DATA, VCT_VLR_EVENTS } from '../../lib/esports-vct';
   import { escapeHtml } from '../../lib/utils';
 
@@ -449,7 +449,7 @@
               <div class="placeholder-txt">No live matches right now.</div>
             {:else}
               {#each liveMatches as m}
-                <div class:tier-t2={getEspHTML(m, 'live').includes('tier-t2')} style={showTier2 ? '' : 'display:none'}>
+                <div class:tier-t2={isTier2Match(m)} style={isTier2Match(m) && !showTier2 ? 'display:none' : ''}>
                   {@html getEspHTML(m, 'live')}
                 </div>
               {/each}
@@ -462,7 +462,7 @@
               <div class="placeholder-txt">No recent results found.</div>
             {:else}
               {#each resultsMatches as m}
-                <div class:tier-t2={getEspHTML(m, 'results').includes('tier-t2')} style={showTier2 ? '' : 'display:none'}>
+                <div class:tier-t2={isTier2Match(m)} style={isTier2Match(m) && !showTier2 ? 'display:none' : ''}>
                   {@html getEspHTML(m, 'results')}
                 </div>
               {/each}
@@ -512,7 +512,7 @@
               <div class="placeholder-txt">No upcoming matches scheduled.</div>
             {:else}
               {#each upcomingMatches.slice(0, 30) as m}
-                <div class:tier-t2={getEspHTML(m, 'upcoming').includes('tier-t2')} style={showTier2 ? '' : 'display:none'}>
+                <div class:tier-t2={isTier2Match(m)} style={isTier2Match(m) && !showTier2 ? 'display:none' : ''}>
                   {@html getEspHTML(m, 'upcoming')}
                 </div>
               {/each}
@@ -529,7 +529,7 @@
               <div class="placeholder-txt">No recent results found.</div>
             {:else}
               {#each resultsMatches.slice(0, 30) as m}
-                <div class:tier-t2={getEspHTML(m, 'results').includes('tier-t2')} style={showTier2 ? '' : 'display:none'}>
+                <div class:tier-t2={isTier2Match(m)} style={isTier2Match(m) && !showTier2 ? 'display:none' : ''}>
                   {@html getEspHTML(m, 'results')}
                 </div>
               {/each}
@@ -695,7 +695,7 @@
                 </div>
               {:else}
                 {#each teamMatches as m}
-                  <div class="esp-match-card-wrap" style="margin-bottom:8px;">{@html getEspHTML(m, 'upcoming')}</div>
+                  <div class="esp-match-card-wrap" class:tier-t2={isTier2Match(m)} style={isTier2Match(m) && !showTier2 ? 'display:none' : 'margin-bottom:8px;'}>{@html getEspHTML(m, 'upcoming')}</div>
                 {/each}
               {/if}
             </div>
