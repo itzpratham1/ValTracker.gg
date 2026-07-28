@@ -1,3 +1,4 @@
+import sys
 import os
 import re
 import json
@@ -5,6 +6,13 @@ import time
 import random
 import urllib.request
 from bs4 import BeautifulSoup
+
+# Ensure UTF-8 output encoding for Windows environment
+if sys.stdout and hasattr(sys.stdout, 'reconfigure'):
+    try:
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
 
 # VLR.gg scraper settings
 RESULTS_URL = "https://www.vlr.gg/matches/results"
@@ -18,26 +26,6 @@ VALID_AGENTS = {
     "omen", "viper", "brimstone", "astra", "harbor", "clove", "miks",
     "cypher", "killjoy", "sage", "deadlock", "vyse", "veto", "chamber"
 }
-
-def date_to_patch(date_str):
-    """
-    Map match dates to logical patch versions for 2026 match resets.
-    Defaulting to recent patches.
-    """
-    lower = date_str.lower()
-    if 'jan' in lower: return '12.00'
-    elif 'feb' in lower: return '12.02'
-    elif 'mar' in lower: return '12.04'
-    elif 'apr' in lower: return '12.06'
-    elif 'may' in lower: return '12.08'
-    elif 'jun' in lower: return '12.10'
-    elif 'jul' in lower: return '13.00'
-    elif 'aug' in lower: return '13.02'
-    elif 'sep' in lower: return '13.04'
-    elif 'oct' in lower: return '13.06'
-    elif 'nov' in lower: return '13.08'
-    elif 'dec' in lower: return '13.10'
-    return '12.08' # Standard active meta patch fallback
 
 def normalize_agent_name(name):
     """Clean and match agent name to our internal taxonomy."""
@@ -65,26 +53,41 @@ def fetch_page(url):
             time.sleep(2 + random.random() * 2)
 
 def load_existing_db():
-    """Load current pro comps file if it exists."""
-    if os.path.exists(DB_PATH):
-        try:
-            with open(DB_PATH, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        except Exception as e:
-            print(f"[DB LOAD ERROR] Corrupt db file, starting fresh: {e}")
-            return []
-    return []
+    """Load current pro comps file if it exists, prioritizing the larger dataset."""
+    p1 = os.path.join(os.path.dirname(__file__), "frontend", "public", "vct_pro_comps.json")
+    p2 = os.path.join(os.path.dirname(__file__), "public", "vct_pro_comps.json")
+    best_recs = []
+    for p in (p1, p2):
+        if os.path.exists(p):
+            try:
+                with open(p, 'r', encoding='utf-8') as f:
+                    recs = json.load(f)
+                    if len(recs) > len(best_recs):
+                        best_recs = recs
+            except Exception as e:
+                print(f"[DB LOAD ERROR] Failed loading {p}: {e}")
+    return best_recs
 
 def save_db(data):
-    """Write parsed data out to the localized JSON database."""
-    # Ensure public directory exists
-    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
-    try:
-        with open(DB_PATH, 'w', encoding='utf-8') as f:
-            json.dump(data, f, indent=2, ensure_ascii=False)
-        print(f"[DB SAVED] Successfully wrote {len(data)} compositions to {DB_PATH}")
-    except Exception as e:
-        print(f"[DB SAVE ERROR] Failed to save JSON database: {e}")
+    """Write parsed data out to localized JSON databases."""
+    if not data:
+        existing = load_existing_db()
+        if existing:
+            print("[DB SAVE SKIPPED] Refusing to overwrite populated database with empty array.")
+            return
+
+    paths = [
+        os.path.join(os.path.dirname(__file__), "frontend", "public", "vct_pro_comps.json"),
+        os.path.join(os.path.dirname(__file__), "public", "vct_pro_comps.json")
+    ]
+    for p in paths:
+        try:
+            os.makedirs(os.path.dirname(p), exist_ok=True)
+            with open(p, 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+            print(f"[DB SAVED] Successfully wrote {len(data)} compositions to {p}")
+        except Exception as e:
+            print(f"[DB SAVE ERROR] Failed to save JSON database to {p}: {e}")
 
 def run_scraper(limit_new=100, max_pages=5):
     """Parse recently completed professional VCT and Challengers comps."""
@@ -105,7 +108,7 @@ def run_scraper(limit_new=100, max_pages=5):
             time.sleep(1.0 + random.random() * 0.8) # Safe politeness pause between results pages
             html = fetch_page(url)
             soup = BeautifulSoup(html, 'html.parser')
-            page_cards = [a for a in soup.find_all('a', href=True) if re.search(r'^/\d+/', a['href'])]
+            page_cards = soup.find_all('a', {'class': 'match-item'})
             
             # De-duplicate page cards
             seen_hrefs = {c['href'] for c in match_cards}
@@ -148,7 +151,9 @@ def run_scraper(limit_new=100, max_pages=5):
         # We target professional leagues
         is_pro = any(term in event_name_clean.lower() for term in [
             'vct', 'champions', 'masters', 'challengers', 'game changers',
-            'evolution series', 'premier', 'world cup', 'ewc'
+            'evolution series', 'premier', 'world cup', 'ewc', 'kickoff',
+            'ascension', 'offseason', 'off//season', 'pacific', 'emea',
+            'americas', 'cn', 'stage'
         ])
         if not is_pro:
             # Skip non-professional or casual community tournaments
@@ -171,23 +176,24 @@ def run_scraper(limit_new=100, max_pages=5):
                 continue
             team_names = [t.text.strip() for t in teams_el]
             
-            # 2. Parse Match Date and Actual Patch from VLR.gg
+            # 2. Parse Match Date and Actual Patch directly from VLR.gg match HTML
             header_div = match_soup.find(class_='match-header')
             match_date = "Unknown Date"
-            patch_version = "12.08"
+            patch_version = "Unknown"
             if header_div:
                 date_div = header_div.find('div', {'class': 'match-header-date'})
                 if date_div:
                     moment = date_div.find('div', {'class': 'moment-tz-convert'})
                     if moment:
                         match_date = moment.text.strip()
-                header_text = header_div.get_text()
-                patch_match = re.search(r'Patch\s*(\d+)\.(\d+)', header_text, re.IGNORECASE)
+                
+                full_text = match_soup.get_text()
+                patch_match = re.search(r'Patch\s*(\d+)\.(\d+)', full_text, re.IGNORECASE)
                 if patch_match:
                     major, minor = patch_match.group(1), patch_match.group(2)
                     patch_version = f'{major}.{int(minor):02d}'
                 else:
-                    patch_version = date_to_patch(match_date)
+                    patch_version = "Unknown"
             print(f"  Teams: {team_names[0]} vs {team_names[1]} | Date: {match_date} | Patch: {patch_version}")
             
             # 3. Parse Played Maps List
@@ -223,52 +229,35 @@ def run_scraper(limit_new=100, max_pages=5):
                     continue
                 game_div = games[div_idx]
                 
-                # Extract scoreboards
+                # Extract scores & winner
                 score_divs = game_div.find_all(class_='score')
                 scores = [s.text.strip() for s in score_divs]
-                
-                if len(scores) < 2:
-                    continue
-                    
-                # Determine map winner
                 winner_idx = -1
                 for s_idx, s in enumerate(score_divs):
                     if 'mod-win' in s.get('class', []):
                         winner_idx = s_idx
-                
-                # Check overview tables for players and agent lists
-                tables = game_div.find_all('table', {'class': 'mod-overview'})
-                for t_idx, table in enumerate(tables):
-                    if t_idx >= 2:
-                        break
-                    
-                    team_name = team_names[t_idx]
-                    opposing_team = team_names[1 - t_idx]
-                    has_won = (t_idx == winner_idx)
-                    score_str = f"{scores[t_idx]}-{scores[1 - t_idx]}"
-                    
-                    rows = table.find_all('tr')[1:] # Skip headers row
-                    agents = []
-                    for row in rows:
-                        agent_td = row.find('td', {'class': 'mod-agents'})
-                        if not agent_td:
-                            agent_td = row.find('td', {'class': 'mod-agent'})
-                        
-                        agent_name = "unknown"
-                        if agent_td:
-                            img = agent_td.find('img')
-                            if img:
-                                if img.has_attr('title'):
-                                    agent_name = img['title']
-                                elif img.has_attr('alt'):
-                                    agent_name = img['alt']
-                        
-                        normalized = normalize_agent_name(agent_name)
-                        if normalized and normalized != "unknown":
-                            agents.append(normalized)
-                    
-                    # Store only full 5-agent lineups
+
+                # Extract agent icons directly from game_div (supports modern & classic VLR layouts)
+                agent_imgs = game_div.find_all('img', src=re.compile(r'/game/agents/'))
+                raw_agents = []
+                for img in agent_imgs:
+                    name = img.get('alt') or img.get('title') or ''
+                    if not name and img.has_attr('src'):
+                        m = re.search(r'/agents/([^.]+)', img['src'])
+                        if m: name = m.group(1)
+                    normalized = normalize_agent_name(name)
+                    if normalized and normalized != "unknown":
+                        raw_agents.append(normalized)
+
+                team_lineups = [raw_agents[:5], raw_agents[5:10]]
+                for t_idx in range(min(2, len(team_names))):
+                    agents = team_lineups[t_idx]
                     if len(agents) == 5:
+                        team_name = team_names[t_idx]
+                        opposing_team = team_names[1 - t_idx]
+                        has_won = (t_idx == winner_idx)
+                        score_str = f"{scores[t_idx]}-{scores[1 - t_idx]}" if len(scores) >= 2 else ""
+
                         comp_record = {
                             "vlr_match_id": vlr_match_id,
                             "match_date": match_date,
@@ -276,7 +265,7 @@ def run_scraper(limit_new=100, max_pages=5):
                             "map_name": map_name,
                             "team_name": team_name,
                             "opposing_team": opposing_team,
-                            "agents": sorted(agents), # sorted alphabetically for unique identifiers grouping
+                            "agents": sorted(agents),
                             "has_won": has_won,
                             "score": score_str,
                             "event_name": event_name_clean
@@ -285,15 +274,16 @@ def run_scraper(limit_new=100, max_pages=5):
                         
             processed_count += 1
             print(f"  Successfully parsed match! Appended {len(new_records)} total team compositions.")
-            
+            if new_records:
+                save_db(existing_records + new_records)
+
         except Exception as e:
             print(f"  [ERROR] Failed to parse match details for {href}: {e}")
             continue
 
-    # Merge and update records
+    # Final summary log
     if new_records:
-        all_records = existing_records + new_records
-        save_db(all_records)
+        save_db(existing_records + new_records)
         print(f"=== SCRAPER SUCCESS: ADDED {len(new_records)} NEW RECS ===")
     else:
         print("=== SCRAPER SUCCESS: NO NEW RECORDS FOUND ===")

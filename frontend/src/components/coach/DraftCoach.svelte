@@ -406,9 +406,10 @@
               <option value="latest">Latest ({$latestPatch || '...'})</option>
               {#each $allPatches as p}
                 {#if p !== $latestPatch}
-                  <option value={p}>{p}</option>
+                  <option value={p}>Patch {p}</option>
                 {/if}
               {/each}
+              <option value="all">All Patches</option>
             </select>
           </div>
         </div>

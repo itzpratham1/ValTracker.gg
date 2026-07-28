@@ -1860,32 +1860,90 @@ def store_featured():
     return jsonify({"status": 500, "error": "Failed to retrieve store offers"}), 500
 
 
+_scraper_running = False
+
+def run_weekly_meta_scraper_async():
+    global _scraper_running
+    if _scraper_running:
+        return
+    _scraper_running = True
+    def _worker():
+        global _scraper_running
+        try:
+            print("[META SCRAPER] Running weekly VCT pro comps scraper...")
+            import scrape_vlr_meta
+            scrape_vlr_meta.run_scraper(limit_new=100, max_pages=5)
+            print("[META SCRAPER] Weekly scraper completed successfully!")
+        except Exception as e:
+            print(f"[META SCRAPER ERROR] Failed during background scrape: {e}")
+        finally:
+            _scraper_running = False
+
+    t = threading.Thread(target=_worker, daemon=True)
+    t.start()
+
+def _start_meta_comps_scheduler():
+    def _loop():
+        db_file = os.path.join(os.path.dirname(__file__), "frontend", "public", "vct_pro_comps.json")
+        alt_db_file = os.path.join(os.path.dirname(__file__), "public", "vct_pro_comps.json")
+        while True:
+            try:
+                target_file = db_file if os.path.exists(db_file) else alt_db_file
+                should_run = False
+                if not os.path.exists(target_file):
+                    should_run = True
+                else:
+                    mtime = os.path.getmtime(target_file)
+                    age_days = (time.time() - mtime) / 86400.0
+                    if age_days >= 7.0:
+                        should_run = True
+
+                if should_run and not _scraper_running:
+                    run_weekly_meta_scraper_async()
+            except Exception as e:
+                print(f"[META SCHEDULER ERROR] {e}")
+
+            time.sleep(21600)
+
+    t = threading.Thread(target=_loop, daemon=True)
+    t.start()
+
+# Initialize meta comps auto-scheduler
+_start_meta_comps_scheduler()
+
+
 @app.route("/api/v3/meta-comps")
 @rate_limit(requests_per_minute=60)
 def api_meta_comps():
     map_param = request.args.get("map", "").strip().lower()
     patch_param = request.args.get("patch", "").strip()
-    
-    db_file = os.path.join(os.path.dirname(__file__), "frontend", "public", "vct_pro_comps.json")
-    if not os.path.exists(db_file):
-        return jsonify({
-            "map": map_param,
-            "patch": "latest",
-            "agent_stats": {},
-            "most_played_comp": {"agents": [], "picks": 0, "win_rate": 0},
-            "highest_winrate_comp": {"agents": [], "picks": 0, "win_rate": 0},
-            "total_comps_parsed": 0,
-            "available_patches": [],
-            "message": "Scraper database has not been initialized yet."
-        })
+    force_refresh = request.args.get("refresh", "").lower() in ("1", "true")
+
+    if force_refresh:
+        run_weekly_meta_scraper_async()
+
     try:
-        with open(db_file, "r", encoding="utf-8") as f:
-            records = json.load(f)
+        import scrape_vlr_meta
+        all_records = scrape_vlr_meta.load_existing_db()
     except Exception as e:
         print("[ERROR] Failed to load JSON database inside API:", e)
+        all_records = []
+        print("[ERROR] Failed to load JSON database inside API:", e)
         return jsonify({"error": "Failed to read database"}), 500
+
+    def patch_key(v):
+        try:
+            return [int(x) for x in re.findall(r'\d+', str(v))]
+        except Exception:
+            return [0]
+
+    valid_patches = {r.get("patch_version") for r in all_records if r.get("patch_version") and r.get("patch_version") != "Unknown"}
+    available_patches = sorted(list(valid_patches), key=patch_key, reverse=True)
+
+    records = all_records
     if map_param:
         records = [r for r in records if r.get("map_name", "").lower() == map_param]
+
     if not records:
         return jsonify({
             "map": map_param,
@@ -1894,17 +1952,25 @@ def api_meta_comps():
             "most_played_comp": {"agents": [], "picks": 0, "win_rate": 0},
             "highest_winrate_comp": {"agents": [], "picks": 0, "win_rate": 0},
             "total_comps_parsed": 0,
-            "available_patches": [],
+            "available_patches": available_patches,
             "message": f"No VCT pro matches played on {map_param} yet - data updates weekly"
         })
-    available_patches = sorted(list({r.get("patch_version", "12.08") for r in records if r.get("patch_version")}), reverse=True)
+
     selected_patch = patch_param
-    if not selected_patch or selected_patch.lower() == "latest":
-        selected_patch = available_patches[0] if available_patches else "12.08"
-    patch_records = [r for r in records if r.get("patch_version") == selected_patch]
-    if not patch_records:
-        patch_records = records
+    if not selected_patch or selected_patch.lower() in ("latest", ""):
+        selected_patch = available_patches[0] if available_patches else "all"
+        patch_records = [r for r in records if r.get("patch_version") == selected_patch]
+        if not patch_records:
+            patch_records = records
+            selected_patch = "all"
+    elif selected_patch.lower() == "all":
         selected_patch = "all"
+        patch_records = records
+    else:
+        patch_records = [r for r in records if r.get("patch_version") == selected_patch]
+        if not patch_records:
+            patch_records = records
+            selected_patch = "all"
     agent_appearances = {}
     agent_wins = {}
     total_compositions = len(patch_records)
@@ -1969,4 +2035,4 @@ if __name__ == "__main__":
         print("\n[WARNING] API Key missing in .env file! Requests to HenrikDev might fail.\n")
     port = int(os.environ.get("PORT", 5000))
     print(f"\n[SUCCESS] API Server starting on http://0.0.0.0:{port}")
-    app.run(host="0.0.0.0", port=port, debug=False)
+    app.run(host="0.0.0.0", port=port, debug=False, use_reloader=False)
