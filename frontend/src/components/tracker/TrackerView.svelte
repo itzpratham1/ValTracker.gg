@@ -504,39 +504,45 @@
     <div class="ai-premium-wrapper">
       <div class="ai-tools-container">
         <div class="ai-tools-nav">
-          <button class="ai-nav-tab" class:active={activeAiTab === 'valbot'} on:click={() => activeAiTab = 'valbot'}>
-            <span class="tab-icon">🤖</span> ValBot AI
+          <button class="ai-nav-tab" class:active={activeAiTab === 'summary' || activeAiTab === 'valbot'} on:click={() => activeAiTab = 'summary'}>
+            <span class="tab-icon">⚡</span> Executive Summary
           </button>
-          <button class="ai-nav-tab" class:active={activeAiTab === 'deep'} on:click={() => activeAiTab = 'deep'}>
-            <span class="tab-icon">🔬</span> Deep Analysis
+          <button class="ai-nav-tab" class:active={activeAiTab === 'action'} on:click={() => activeAiTab = 'action'}>
+            <span class="tab-icon">🎯</span> 3-Step Action Plan
           </button>
-          <button class="ai-nav-tab" class:active={activeAiTab === 'lab'} on:click={() => activeAiTab = 'lab'}>
-            <span class="tab-icon">🧪</span> Perf Lab
+          <button class="ai-nav-tab" class:active={activeAiTab === 'deeplab' || activeAiTab === 'deep' || activeAiTab === 'lab'} on:click={() => activeAiTab = 'deeplab'}>
+            <span class="tab-icon">📡</span> Deep Telemetry Lab
           </button>
         </div>
 
         <div class="ai-tools-content">
-          {#if activeAiTab === 'valbot'}
+          {#if activeAiTab === 'summary' || activeAiTab === 'valbot'}
             <ValBotCoach
+              mode="summary"
               matches={actFilteredMatches}
               playerName={playerState.name}
               playerTag={playerState.tag}
               {rankName}
+              {mmrHistory}
+              onShareProfile={() => profileShareOpen = true}
             />
-          {:else if activeAiTab === 'deep'}
+          {:else if activeAiTab === 'action'}
+            <ValBotCoach
+              mode="action"
+              matches={actFilteredMatches}
+              playerName={playerState.name}
+              playerTag={playerState.tag}
+              {rankName}
+              {mmrHistory}
+            />
+          {:else if activeAiTab === 'deeplab' || activeAiTab === 'deep' || activeAiTab === 'lab'}
             <DeepAnalysis
               matches={actFilteredMatches}
               playerName={playerState.name}
               playerTag={playerState.tag}
-              {mmrHistory}
-            />
-          {:else if activeAiTab === 'lab'}
-            <PerformanceLab
-              playerName={playerState.name}
-              playerTag={playerState.tag}
-              currentMode={playerState.mode || 'competitive'}
-              {mmrHistory}
               {rankName}
+              {mmrHistory}
+              currentMode={playerState.mode || 'competitive'}
             />
           {/if}
         </div>

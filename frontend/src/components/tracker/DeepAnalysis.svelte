@@ -1,25 +1,29 @@
 <script>
   import { tick } from 'svelte';
-  import { AGENT_ROLES, getRankFromRR } from '../../lib/constants';
-  import { streamHtmlReactive, animateAllNumbersInContainer } from '../../lib/aiStreamer';
+  import { AGENT_ROLES, getRankFromRR, MAP_IMAGES_FALLBACK } from '../../lib/constants';
+  import { getAgentIconUrl } from '../../lib/assets';
+  import { animateAllNumbersInContainer } from '../../lib/aiStreamer';
 
   export let matches = [];
   export let playerName = '';
   export let playerTag = '';
+  export let rankName = 'Silver 2';
   export let mmrHistory = {};
+  export let currentMode = 'competitive';
 
   let loading = false;
   let resultHtml = '';
   let deepBodyEl = null;
-  let streamController = null;
-  let isStreaming = false;
 
-  function skipStream() {
-    if (streamController) streamController.skip();
+  let loadingText = 'PROCESSING MATCH TELEMETRY...';
+
+  $: if (matches && matches.length && !resultHtml && !loading) {
+    runDeepAnalysis();
   }
 
   function findMe(match) {
-    const all = match.players?.all_players || match.players || [];
+    if (!match) return null;
+    const all = Array.isArray(match.players) ? match.players : (match.players?.all_players || match.players || []);
     const tn = (playerName || '').toLowerCase().replace(/\s+/g, '');
     const tt = (playerTag || '').toLowerCase().replace(/\s+/g, '');
     return (Array.isArray(all) ? all : []).find(
@@ -47,43 +51,65 @@
     return `<div class="deep-card"><div class="deep-card-label">${label}</div><div style="display:flex;align-items:flex-end;gap:8px;margin-top:4px;"><div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:30px;line-height:1;">${newVal}</div><div style="margin-bottom:4px;"><div style="font-family:'DM Mono',monospace;font-size:10px;color:${isUp ? 'var(--win)' : 'var(--loss)'};">${delta}</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2);">was ${oldVal}</div></div></div></div>`;
   }
 
-  function patternCard(patterns) {
-    return `<div class="deep-card span3"><div class="deep-pattern-list">${patterns.map(p => `<div class="deep-pattern-item"><div class="deep-pattern-dot ${p.dot}"></div><div>${p.text}</div></div>`).join('')}</div></div>`;
-  }
-
   async function runDeepAnalysis() {
-    if (!matches.length) return;
+    if (!matches || !matches.length) return;
     loading = true;
     resultHtml = '';
 
-    const msgs = ['PROCESSING MATCHES...', 'ANALYSING MAP DATA...', 'CALCULATING ATTACK/DEFENCE...', 'DETECTING PATTERNS...', 'BUILDING REPORT...'];
+    const msgs = [
+      'PROCESSING MATCH TELEMETRY...',
+      'ANALYSING MAP SIDE WIN RATES...',
+      'CALCULATING AGENT SYNERGY...',
+      'MAPPING TIME-OF-DAY HEATMAP...',
+      'BENCHMARKING VS RANK TIERS...'
+    ];
     let mi = 0;
-    const iv = setInterval(() => { mi = (mi + 1) % msgs.length; }, 700);
-    await new Promise(r => setTimeout(r, 800));
+    const iv = setInterval(() => { mi = (mi + 1) % msgs.length; loadingText = msgs[mi]; }, 400);
+
+    await new Promise(r => setTimeout(r, 1200));
 
     try {
-      const html = buildDeepAnalysis(matches);
-      loading = false;
+      resultHtml = buildDeepAnalysis(matches);
       clearInterval(iv);
+      loading = false;
       await tick();
-
-      isStreaming = true;
-      streamController = streamHtmlReactive(html, (currentChunk) => {
-        resultHtml = currentChunk;
-      }, {
-        speed: 6,
-        chunkSize: 10,
-        onComplete: () => {
-          isStreaming = false;
-          resultHtml = html;
-          if (deepBodyEl) animateAllNumbersInContainer(deepBodyEl);
-        }
-      });
+      if (deepBodyEl) animateAllNumbersInContainer(deepBodyEl);
     } catch (e) {
       resultHtml = `<div style="color:var(--loss);padding:16px">Analysis error: ${e.message}</div>`;
-      loading = false;
       clearInterval(iv);
+      loading = false;
     }
+  }
+
+  const RANK_BENCHMARKS = {
+    'Iron':      { kd:0.75, wr:44, acs:110, hs:12 }, 'Bronze':    { kd:0.88, wr:46, acs:135, hs:14 },
+    'Silver':    { kd:1.00, wr:48, acs:155, hs:17 }, 'Gold':      { kd:1.12, wr:50, acs:175, hs:20 },
+    'Platinum':  { kd:1.22, wr:51, acs:195, hs:22 }, 'Diamond':   { kd:1.35, wr:52, acs:215, hs:24 },
+    'Ascendant': { kd:1.50, wr:53, acs:240, hs:26 }, 'Immortal':  { kd:1.65, wr:54, acs:265, hs:28 },
+    'Radiant':   { kd:1.85, wr:56, acs:290, hs:30 },
+  };
+  const RANK_ORDER = ['Iron','Bronze','Silver','Gold','Platinum','Diamond','Ascendant','Immortal','Radiant'];
+
+  function getRankTier(name) {
+    if (!name) return 'Silver';
+    const lower = name.toLowerCase();
+    return RANK_ORDER.find(r => lower.startsWith(r.toLowerCase())) || 'Silver';
+  }
+  function getNextRank(tier) {
+    const idx = RANK_ORDER.indexOf(tier);
+    return idx < RANK_ORDER.length-1 ? RANK_ORDER[idx+1] : null;
+  }
+
+  function rankGapRow(stat, you, avg, next, passing) {
+    return `<div class="plab-rankgap-row"><div class="plab-rankgap-stat">${stat}</div><div class="plab-rankgap-you" style="color:${passing?'var(--win)':'var(--loss)'}">${you}</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2);min-width:30px">avg</div><div class="plab-rankgap-target">${avg}</div>${next?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2);min-width:30px">next</div><div class="plab-rankgap-target" style="color:var(--accent)">${next}</div>`:''}<div style="font-family:'DM Mono',monospace;font-size:10px;margin-left:auto;color:${passing?'var(--win)':'var(--loss)'}">${passing?'✓ Above avg':'↑ Needs work'}</div></div>`;
+  }
+
+  function nextGapRow(stat, you, target, passing) {
+    const youNum = parseFloat(String(you));
+    const targetNum = parseFloat(String(target));
+    const pct = passing ? 100 : Math.min(99, Math.round((youNum/targetNum)*100));
+    const gap = passing ? '✓ Ready' : `Need +${(targetNum-youNum).toFixed(stat==='K/D'?2:0)}`;
+    return `<div class="plab-rankgap-row"><div class="plab-rankgap-stat">${stat}</div><div class="plab-rankgap-you" style="color:${passing?'var(--win)':'rgba(240,240,242,0.7)'}">${you}</div><div class="plab-rankgap-bar-wrap" style="margin:0 12px"><div class="plab-rankgap-bar" style="width:${pct}%;background:${passing?'var(--win)':'var(--accent)'}"></div></div><div class="plab-rankgap-target">${target}</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:${passing?'var(--win)':'var(--muted)'};margin-left:8px;white-space:nowrap">${gap}</div></div>`;
   }
 
   function buildDeepAnalysis(allMatches) {
@@ -102,7 +128,6 @@
       const rr = mmrHistory[matchId];
       const role = getRoleClass(agent);
       const gameStart = match.metadata?.game_start || null;
-      const rounds = match.rounds || [];
       const myTeam = match.teams?.[myTeamId] || {};
       const oppId = myTeamId === 'red' ? 'blue' : 'red';
       const oppTeam = match.teams?.[oppId] || {};
@@ -111,6 +136,7 @@
       const totalRounds = myRoundsWon + oppRoundsWon;
       const acs = Math.round(sc / Math.max(1, totalRounds));
       const hsPct = shots ? Math.round((hs / shots) * 100) : 0;
+      const kd = d ? k/d : k;
 
       // Attack/Defence estimation
       let halfSize = 12;
@@ -132,18 +158,18 @@
       const atkKills = atkRoundsPlayed > 0 ? Math.round(k * (atkRoundsPlayed / Math.max(totalRounds, 1))) : 0;
       const defKills = k - atkKills;
 
-      data.push({ k, d, a, sc, hs, shots, acs, hsPct, won, agent, map, matchId, rr, role,
+      data.push({ k, d, a, sc, hs, shots, acs, hsPct, kd, won, agent, map, matchId, rr, role,
         atkKills, defKills, atkRoundsPlayed, defRoundsPlayed, atkWins, defWins,
         myRoundsWon, oppRoundsWon, totalRounds, gameStart, myTeamId });
     }
 
-    if (!data.length) return '<div>Not enough data</div>';
+    if (!data.length) return '<div>Not enough match data</div>';
 
     const n = data.length;
     let html = '';
 
     // Chapter 1 — Map Deep Dive
-    html += chapter('🗺️', 'Map Performance Deep Dive');
+    html += chapter('🗺️', 'Map Performance Telemetry');
     const mapStats = {};
     for (const d of data) {
       if (!mapStats[d.map]) mapStats[d.map] = { m: 0, w: 0, k: 0, de: 0, sc: 0, hs: 0, sh: 0, atkK: 0, defK: 0, atkW: 0, defW: 0, atkR: 0, defR: 0, r: 0, rr: 0, hasRR: false };
@@ -170,52 +196,100 @@
       const wrCol = wr >= 55 ? 'color:var(--win)' : wr < 45 ? 'color:var(--loss)' : 'color:#f5a623';
       const kdCol = parseFloat(String(kd)) >= 1.2 ? 'color:var(--win)' : parseFloat(String(kd)) < 0.9 ? 'color:var(--loss)' : '';
       const rrTxt = ms.hasRR ? `<span style="${ms.rr > 0 ? 'color:var(--win)' : ms.rr < 0 ? 'color:var(--loss)' : ''}">${ms.rr > 0 ? '+' : ''}${ms.rr}</span>` : '';
-      html += `<tr><td><span class="deep-map-row-name">${mapName}</span><span class="deep-map-verdict ${verdict}">${verdictTxt}</span></td><td>${ms.w}W / ${ms.m - ms.w}L</td><td style="${wrCol};font-weight:800">${wr}%</td><td style="${kdCol}">${kd}</td><td>${acs}</td><td style="${hsPct < 15 ? 'color:var(--loss)' : hsPct >= 25 ? 'color:var(--win)' : ''}">${hsPct}%</td><td style="${atkWR !== null && atkWR < 45 ? 'color:var(--loss)' : atkWR !== null && atkWR >= 55 ? 'color:var(--win)' : ''}">${atkWR !== null ? atkWR + '%' : '—'}</td><td style="${defWR !== null && defWR < 45 ? 'color:var(--loss)' : defWR !== null && defWR >= 55 ? 'color:var(--win)' : ''}">${defWR !== null ? defWR + '%' : '—'}</td>${hasRR ? `<td>${rrTxt || '—'}</td>` : ''}</tr>`;
+      const mapImg = MAP_IMAGES_FALLBACK[mapName] || null;
+
+      html += `<tr><td>
+        <div style="display:flex;align-items:center;gap:8px;">
+          ${mapImg ? `<img src="${mapImg}" alt="${mapName}" style="width:28px;height:28px;border-radius:4px;object-fit:cover;border:1px solid rgba(255,255,255,0.15);" />` : ''}
+          <div>
+            <span class="deep-map-row-name">${mapName}</span>
+            <span class="deep-map-verdict ${verdict}">${verdictTxt}</span>
+          </div>
+        </div>
+      </td><td>${ms.w}W / ${ms.m - ms.w}L</td><td style="${wrCol};font-weight:800">${wr}%</td><td style="${kdCol}">${kd}</td><td>${acs}</td><td style="${hsPct < 15 ? 'color:var(--loss)' : hsPct >= 25 ? 'color:var(--win)' : ''}">${hsPct}%</td><td style="${atkWR !== null && atkWR < 45 ? 'color:var(--loss)' : atkWR !== null && atkWR >= 55 ? 'color:var(--win)' : ''}">${atkWR !== null ? atkWR + '%' : '—'}</td><td style="${defWR !== null && defWR < 45 ? 'color:var(--loss)' : defWR !== null && defWR >= 55 ? 'color:var(--win)' : ''}">${defWR !== null ? defWR + '%' : '—'}</td>${hasRR ? `<td>${rrTxt || '—'}</td>` : ''}</tr>`;
     }
     html += `</tbody></table></div>`;
 
-    // Best/worst map cards
-    const sorted = [...mapRows].sort((a, b) => (b[1].w / b[1].m) - (a[1].w / a[1].m));
-    const bestMap = sorted[0], worstMap = sorted[sorted.length - 1];
-    if (bestMap) {
-      html += `<div class="deep-insight-grid cols2">`;
-      html += deepCard('Best Map', bestMap[0].toUpperCase(), `${Math.round((bestMap[1].w / bestMap[1].m) * 100)}% WR · ${bestMap[1].m} games`, 'good', 'accent-green');
-      if (worstMap && worstMap[0] !== bestMap[0]) {
-        html += deepCard('Worst Map', worstMap[0].toUpperCase(), `${Math.round((worstMap[1].w / worstMap[1].m) * 100)}% WR`, 'bad', 'accent-red');
-      }
-      html += `</div>`;
+    // MAP-BY-MAP AGENT PICK ASSISTANT
+    html += chapter('🎮', 'Map-by-Map Agent Pick Assistant');
+    const agentMapWR = {};
+    data.forEach(d => {
+      const k = `${d.map}|${d.agent}`;
+      if (!agentMapWR[k]) agentMapWR[k] = { map: d.map, agent: d.agent, m: 0, w: 0, k: 0, de: 0 };
+      agentMapWR[k].m++;
+      if (d.won) agentMapWR[k].w++;
+      agentMapWR[k].k += d.k;
+      agentMapWR[k].de += d.d;
+    });
+
+    const mapPickMap = {};
+    Object.values(agentMapWR).forEach(item => {
+      if (!mapPickMap[item.map]) mapPickMap[item.map] = [];
+      const wr = Math.round((item.w / item.m) * 100);
+      const kd = item.de ? parseFloat((item.k / item.de).toFixed(2)) : item.k;
+      mapPickMap[item.map].push({ agent: item.agent, wr, m: item.m, kd });
+    });
+
+    html += `<div class="ai-agent-pick-grid">`;
+    for (const [mapName, agentList] of Object.entries(mapPickMap)) {
+      agentList.sort((a, b) => b.wr - a.wr);
+      const best = agentList[0];
+      const worst = agentList.length > 1 ? agentList[agentList.length - 1] : null;
+      const mapSplash = MAP_IMAGES_FALLBACK[mapName] || '';
+      const bestIcon = getAgentIconUrl(best.agent);
+      const worstIcon = worst ? getAgentIconUrl(worst.agent) : null;
+
+      html += `<div class="ai-agent-pick-card" style="background:${mapSplash ? `linear-gradient(180deg, rgba(15,15,22,0.85) 0%, rgba(11,11,15,0.96) 100%), url('${mapSplash}') center/cover no-repeat` : 'rgba(20,20,28,0.85)'};">
+        <div class="ai-agent-pick-map-name">${mapName.toUpperCase()}</div>
+        <div class="ai-agent-pick-content">
+          <div class="ai-agent-pick-col good">
+            <div class="ai-agent-pick-label">RECOMMENDED PICK</div>
+            <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
+              ${bestIcon ? `<img src="${bestIcon}" alt="${best.agent}" style="width:36px;height:36px;border-radius:50%;border:2px solid var(--win);background:rgba(0,0,0,0.5);" />` : ''}
+              <div>
+                <div class="ai-agent-pick-agent">${best.agent}</div>
+                <div class="ai-agent-pick-sub" style="color:var(--win)">${best.wr}% WR · ${best.kd} K/D (${best.m}g)</div>
+              </div>
+            </div>
+          </div>
+          ${worst && worst.agent !== best.agent ? `
+            <div class="ai-agent-pick-col bad">
+              <div class="ai-agent-pick-label">AVOID PICK</div>
+              <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
+                ${worstIcon ? `<img src="${worstIcon}" alt="${worst.agent}" style="width:36px;height:36px;border-radius:50%;border:2px solid var(--loss);background:rgba(0,0,0,0.5);" />` : ''}
+                <div>
+                  <div class="ai-agent-pick-agent">${worst.agent}</div>
+                  <div class="ai-agent-pick-sub" style="color:var(--loss)">${worst.wr}% WR · ${worst.kd} K/D (${worst.m}g)</div>
+                </div>
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      </div>`;
     }
-
-    // Chapter 2 — Attack vs Defence
-    html += chapter('⚔️', 'Attack vs Defence');
-    let totAtkK = 0, totDefK = 0, totAtkW = 0, totDefW = 0, totAtkR = 0, totDefR = 0;
-    for (const d of data) { totAtkK += d.atkKills; totDefK += d.defKills; totAtkW += d.atkWins; totDefW += d.defWins; totAtkR += d.atkRoundsPlayed; totDefR += d.defRoundsPlayed; }
-    const atkWR = totAtkR ? Math.round((totAtkW / totAtkR) * 100) : 0;
-    const defWR = totDefR ? Math.round((totDefW / totDefR) * 100) : 0;
-    const atkKPR = totAtkR ? (totAtkK / totAtkR).toFixed(2) : '0';
-    const defKPR = totDefR ? (totDefK / totDefR).toFixed(2) : '0';
-    const atkStronger = atkWR >= defWR;
-
-    html += `<div class="deep-insight-grid cols4">`;
-    html += deepCard('Attack WR', atkWR + '%', `${totAtkW}W / ${totAtkR - totAtkW}L · ${atkKPR} KPR`, atkWR >= 50 ? 'good' : atkWR >= 42 ? 'warn' : 'bad', atkStronger ? 'accent-green' : '');
-    html += deepCard('Defence WR', defWR + '%', `${totDefW}W / ${totDefR - totDefW}L · ${defKPR} KPR`, defWR >= 50 ? 'good' : defWR >= 42 ? 'warn' : 'bad', !atkStronger ? 'accent-green' : '');
-    html += deepCard('Avg Kills Atk Half', (totAtkK / Math.max(n, 1)).toFixed(1), `${atkKPR} est. KPR`, parseFloat(atkKPR) >= 0.7 ? 'good' : parseFloat(atkKPR) >= 0.5 ? 'warn' : 'bad', '');
-    html += deepCard('Avg Kills Def Half', (totDefK / Math.max(n, 1)).toFixed(1), `${defKPR} est. KPR`, parseFloat(defKPR) >= 0.7 ? 'good' : parseFloat(defKPR) >= 0.5 ? 'warn' : 'bad', '');
     html += `</div>`;
 
-    // Pattern insights
-    const atkDefPatterns = [];
-    const gap = Math.abs(atkWR - defWR);
-    if (gap >= 15) {
-      const weak = atkStronger ? 'defence' : 'attack';
-      atkDefPatterns.push({ dot: 'r', text: `Your ${weak} side is significantly weaker (${atkStronger ? defWR : atkWR}% WR vs ${atkStronger ? atkWR : defWR}% on ${atkStronger ? 'attack' : 'defence'}). This is your biggest macro problem.` });
-    } else if (gap < 8) {
-      atkDefPatterns.push({ dot: 'g', text: `Your attack and defence win rates are balanced (${atkWR}% atk / ${defWR}% def) — you adapt well to both halves.` });
-    }
-    if (atkDefPatterns.length) html += patternCard(atkDefPatterns);
+    // ⚔️ DUEL ANALYSIS (Explicitly requested by user)
+    html += chapter('⚔️', 'Combat & Duel Analysis');
+    const totalK = data.reduce((s, d) => s + d.k, 0);
+    const totalD = data.reduce((s, d) => s + d.d, 0);
+    const totalR = data.reduce((s, d) => s + d.totalRounds, 0);
+    const avgKPR = totalR ? (totalK / totalR).toFixed(2) : '0';
+    const avgDPR = totalR ? (totalD / totalR).toFixed(2) : '0';
+    const duelWinPct = Math.round((totalK / Math.max(1, totalK + totalD)) * 100);
+    const highKGames = data.filter(d => d.k >= 18).length;
+    const highKWins = data.filter(d => d.k >= 18 && d.won).length;
+    const highKWR = highKGames ? Math.round((highKWins / highKGames) * 100) : null;
 
-    // Chapter 3 — Agent-Map Fit
-    html += chapter('🎭', 'Agent-Map Mismatch Analysis');
+    html += `<div class="deep-insight-grid cols4">`;
+    html += deepCard('Duel Win %', duelWinPct + '%', `${totalK} kills vs ${totalD} deaths`, duelWinPct >= 55 ? 'good' : duelWinPct >= 45 ? 'warn' : 'bad', duelWinPct >= 55 ? 'accent-green' : '');
+    html += deepCard('Avg KPR', avgKPR, 'Kills per round', parseFloat(avgKPR) >= 0.8 ? 'good' : parseFloat(avgKPR) >= 0.6 ? 'warn' : 'bad', '');
+    html += deepCard('Avg DPR', avgDPR, 'Deaths per round', parseFloat(avgDPR) <= 0.7 ? 'good' : parseFloat(avgDPR) <= 0.85 ? 'warn' : 'bad', '');
+    html += deepCard('High Kill Games', `${highKGames}/${n}`, `${highKWR !== null ? highKWR + '% WR when 18+ kills' : 'Frag carry rate'}`, highKGames / n >= 0.3 ? 'good' : 'warn', '');
+    html += `</div>`;
+
+    // Chapter 2 — Agent-Map Synergy Matrix
+    html += chapter('🎭', 'Agent-Map Synergy Matrix');
     const agentMapMatrix = {};
     for (const d of data) {
       const key = `${d.agent}|${d.map}`;
@@ -238,56 +312,132 @@
 
     html += `<div class="deep-card span3"><div class="deep-card-label">Problem Combinations (≥2 games, ≤35% WR)</div>`;
     if (!mismatches.length) {
-      html += `<div style="color:var(--win);font-family:'DM Mono',monospace;font-size:11px;padding:8px 0;">No significant mismatches found — nice!</div>`;
+      html += `<div style="color:var(--win);font-family:'DM Mono',monospace;font-size:11px;padding:8px 0;">No significant mismatches found — solid role picks across maps!</div>`;
     } else {
       for (const e of mismatches.slice(0, 5)) {
-        html += `<div class="deep-mismatch-row"><span class="deep-mismatch-agent">${e.agent}</span><span class="deep-mismatch-on">on ${e.map.toUpperCase()}</span><span class="deep-mismatch-stat" style="color:var(--loss)">${e.wr}% WR</span><span class="deep-mismatch-stat">${e.kd} K/D</span><span class="deep-mismatch-tag bad">${e.m} games</span></div>`;
+        const icon = getAgentIconUrl(e.agent);
+        html += `<div class="deep-mismatch-row">
+          ${icon ? `<img src="${icon}" alt="${e.agent}" style="width:24px;height:24px;border-radius:50%;" />` : ''}
+          <span class="deep-mismatch-agent">${e.agent}</span><span class="deep-mismatch-on">on ${e.map.toUpperCase()}</span><span class="deep-mismatch-stat" style="color:var(--loss)">${e.wr}% WR</span><span class="deep-mismatch-stat">${e.kd} K/D</span><span class="deep-mismatch-tag bad">${e.m} games</span></div>`;
       }
     }
     html += `</div>`;
 
     html += `<div class="deep-card span3"><div class="deep-card-label">Strong Combinations (≥2 games, ≥65% WR)</div>`;
     if (!goodFits.length) {
-      html += `<div style="color:var(--muted);font-family:'DM Mono',monospace;font-size:11px;padding:8px 0;">Not enough data yet — play more matches with the same agent on the same map.</div>`;
+      html += `<div style="color:var(--muted);font-family:'DM Mono',monospace;font-size:11px;padding:8px 0;">Keep playing consistent agents on your main maps to generate strong fit data.</div>`;
     } else {
       for (const e of goodFits.slice(0, 4)) {
-        html += `<div class="deep-mismatch-row"><span class="deep-mismatch-agent">${e.agent}</span><span class="deep-mismatch-on">on ${e.map.toUpperCase()}</span><span class="deep-mismatch-stat" style="color:var(--win)">${e.wr}% WR</span><span class="deep-mismatch-stat">${e.kd} K/D</span><span class="deep-mismatch-tag ok">${e.m} games</span></div>`;
+        const icon = getAgentIconUrl(e.agent);
+        html += `<div class="deep-mismatch-row">
+          ${icon ? `<img src="${icon}" alt="${e.agent}" style="width:24px;height:24px;border-radius:50%;" />` : ''}
+          <span class="deep-mismatch-agent">${e.agent}</span><span class="deep-mismatch-on">on ${e.map.toUpperCase()}</span><span class="deep-mismatch-stat" style="color:var(--win)">${e.wr}% WR</span><span class="deep-mismatch-stat">${e.kd} K/D</span><span class="deep-mismatch-tag ok">${e.m} games</span></div>`;
       }
     }
     html += `</div>`;
 
-    // Chapter 4 — Improvement Trend
-    html += chapter('📈', 'Improvement Over Time');
-    const third = Math.floor(n / 3) || 1;
-    const early = data.slice(n - third, n);
-    const recent = data.slice(0, third);
-    const avg = (arr, fn) => arr.length ? arr.reduce((s, x) => s + fn(x), 0) / arr.length : 0;
-    const eKD = avg(early, d => d.d ? (d.k / d.d) : d.k);
-    const rKD = avg(recent, d => d.d ? (d.k / d.d) : d.k);
-    const eWR = avg(early, d => d.won ? 1 : 0) * 100;
-    const rWR = avg(recent, d => d.won ? 1 : 0) * 100;
-    const eACS = avg(early, d => d.acs);
-    const rACS = avg(recent, d => d.acs);
-    const eHS = avg(early, d => d.hsPct);
-    const rHS = avg(recent, d => d.hsPct);
-      const delta = (r, e) => { const d = r - e; return d > 0 ? `▲ +${d.toFixed(1)}` : `▼ ${d.toFixed(1)}`; };
-      const dCls = (r, e) => r > e ? 'good' : r < e ? 'bad' : 'warn';
+    // Chapter 3 — Time of Day Performance Heatmap (From PerfLab)
+    html += chapter('🕐', 'Time of Day Performance');
+    const hourBuckets = Array(24).fill(null).map(() => ({ m:0, w:0, rr:0 }));
+    data.forEach(d => {
+      if (!d.gameStart) return;
+      const h = new Date(d.gameStart * 1000).getHours();
+      hourBuckets[h].m++; if (d.won) hourBuckets[h].w++; if (d.rr !== undefined) hourBuckets[h].rr += d.rr;
+    });
+    const playedHours = hourBuckets.filter(b => b.m > 0);
+    const maxGames = Math.max(...hourBuckets.map(b=>b.m), 1);
+    const bestHour = hourBuckets.reduce((best,b,i) => b.m>=2 && (b.w/b.m) > best.wr ? {h:i, wr:b.w/b.m, m:b.m} : best, {h:-1,wr:0,m:0});
+    const worstHour = hourBuckets.reduce((worst,b,i) => b.m>=2 && (b.w/b.m) < worst.wr ? {h:i, wr:b.w/b.m, m:b.m} : worst, {h:-1,wr:1,m:0});
 
-    html += `<div class="deep-insight-grid cols4">`;
-    html += trendCard('K/D Trend', eKD.toFixed(2), rKD.toFixed(2), delta(rKD, eKD), dCls(rKD, eKD));
-    html += trendCard('Win Rate Trend', Math.round(eWR) + '%', Math.round(rWR) + '%', delta(rWR, eWR), dCls(rWR, eWR));
-    html += trendCard('ACS Trend', Math.round(eACS), Math.round(rACS), delta(rACS, eACS), dCls(rACS, eACS));
-    html += trendCard('HS% Trend', Math.round(eHS) + '%', Math.round(rHS) + '%', delta(rHS, eHS), dCls(rHS, eHS));
+    if (playedHours.length >= 2) {
+      html += `<div class="deep-card span3"><div class="deep-card-label">Games & Win Rate by Hour</div><div class="plab-heatmap">`;
+      hourBuckets.forEach((b, h) => {
+        const wr = b.m ? b.w/b.m : 0;
+        const intensity = b.m / maxGames;
+        const col = b.m === 0 ? 'var(--surface3)' : wr >= 0.6 ? `rgba(62,207,142,${0.15 + intensity*0.7})` : wr >= 0.45 ? `rgba(232,255,71,${0.1 + intensity*0.5})` : `rgba(255,87,87,${0.15 + intensity*0.6})`;
+        const tt = b.m ? `${h}:00 — ${b.m} games, ${Math.round(wr*100)}% WR` : `${h}:00 — no games`;
+        html += `<div class="plab-heat-cell" style="background:${col}" title="${tt}"></div>`;
+      });
+      html += `</div><div class="plab-heat-labels">`;
+      hourBuckets.forEach((b,h) => { html += `<div class="plab-heat-label">${h%6===0?h:''}</div>`; });
+      html += `</div></div>`;
+
+      html += `<div class="deep-insight-grid cols2">`;
+      if (bestHour.h >= 0) html += deepCard('Best Hour to Play', `${bestHour.h}:00`, `${Math.round(bestHour.wr*100)}% WR · ${bestHour.m} matches`, 'good', 'accent-green');
+      if (worstHour.h >= 0 && worstHour.h !== bestHour.h) html += deepCard('Worst Hour to Avoid', `${worstHour.h}:00`, `${Math.round(worstHour.wr*100)}% WR · ${worstHour.m} matches`, 'bad', 'accent-red');
+      html += `</div>`;
+    }
+
+    // Chapter 4 — Economy Intelligence (From PerfLab)
+    html += chapter('💰', 'Economy Intelligence & ACS Breakdown');
+    const avgACS = data.reduce((s,d)=>s+d.acs,0)/n;
+    const fullBuyMatches = data.filter(d => d.acs >= avgACS * 0.95);
+    const ecoBuyMatches = data.filter(d => d.acs < avgACS * 0.75);
+    const forceBuyMatches = data.filter(d => d.acs >= avgACS * 0.75 && d.acs < avgACS * 0.95);
+    const fWR = fullBuyMatches.length ? Math.round(fullBuyMatches.filter(d=>d.won).length/fullBuyMatches.length*100) : 0;
+    const eWR = ecoBuyMatches.length ? Math.round(ecoBuyMatches.filter(d=>d.won).length/ecoBuyMatches.length*100) : 0;
+    const foWR = forceBuyMatches.length ? Math.round(forceBuyMatches.filter(d=>d.won).length/forceBuyMatches.length*100) : 0;
+
+    html += `<div class="deep-card span3"><div class="deep-card-label">Win Rate by Economy Type (Estimated from ACS telemetry)</div>
+    <table class="plab-eco-table"><thead><tr><th>Type</th><th>Games</th><th>Win Rate</th><th>Avg ACS</th><th>Assessment</th></tr></thead><tbody>
+    <tr><td><span class="plab-eco-type" style="color:var(--win)">Full Buy</span></td><td>${fullBuyMatches.length}</td><td style="color:${fWR>=50?'var(--win)':'var(--loss)'};font-weight:800">${fWR}%</td><td>${Math.round(fullBuyMatches.reduce((s,d)=>s+d.acs,0)/Math.max(fullBuyMatches.length,1))}</td><td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${fWR>=55?'Strong ✓':fWR>=45?'Average':'Underperforming ⚠️'}</td></tr>
+    <tr><td><span class="plab-eco-type" style="color:#f5a623">Force Buy</span></td><td>${forceBuyMatches.length}</td><td style="color:${foWR>=50?'var(--win)':'var(--loss)'};font-weight:800">${foWR}%</td><td>${Math.round(forceBuyMatches.reduce((s,d)=>s+d.acs,0)/Math.max(forceBuyMatches.length,1))}</td><td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${foWR>=45?'Holding well':foWR>=35?'Average':'Struggling'}</td></tr>
+    <tr><td><span class="plab-eco-type" style="color:var(--loss)">Eco</span></td><td>${ecoBuyMatches.length}</td><td style="color:${eWR>=40?'var(--win)':'var(--loss)'};font-weight:800">${eWR}%</td><td>${Math.round(ecoBuyMatches.reduce((s,d)=>s+d.acs,0)/Math.max(ecoBuyMatches.length,1))}</td><td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${eWR>=35?'Good eco steals':eWR>=25?'Expected':'Very low'}</td></tr>
+    </tbody></table></div>`;
+
+    // 📋 PERSONALISED ACTION PLAN (Explicitly requested by user)
+    html += chapter('📋', 'Personalised Action Plan');
+    const currentTier = getRankTier(rankName);
+    const currentBench = RANK_BENCHMARKS[currentTier] || RANK_BENCHMARKS['Silver'];
+    const myHS = Math.round(data.reduce((s, d) => s + d.hsPct, 0) / n);
+    const myWR = Math.round(data.filter(d => d.won).length / n * 100);
+    const actions = [];
+
+    if (duelWinPct < 50) actions.push({ priority: 'HIGH', title: 'Fix Crosshair Placement', desc: `Your ${duelWinPct}% duel win rate means you're losing more gunfights than you win. Spend 15 min daily in Aimlab "Microshot Precision", focus on pre-aiming head level at every corner.` });
+    if (myHS < (currentBench.hs - 2)) actions.push({ priority: 'HIGH', title: 'Improve Headshot Rate', desc: `You're at ${myHS}% HS rate vs ${currentBench.hs}% average for your rank. Stop burst-firing — one tap, check if enemy is dead, then tap again.` });
+    if (myWR < currentBench.wr) actions.push({ priority: 'MED', title: 'Round Economy Awareness', desc: `At ${myWR}% WR vs ${currentBench.wr}% for your rank, you're losing rounds you should win. After every loss, check: did you save when you should have?` });
+    if (bestHour.h >= 0 && worstHour.h >= 0 && bestHour.h !== worstHour.h) actions.push({ priority: 'MED', title: `Play at ${bestHour.h}:00, Avoid ${worstHour.h}:00`, desc: `Your data shows a ${Math.round(Math.abs(bestHour.wr - worstHour.wr) * 100)}% WR swing between your best and worst hours.` });
+    actions.push({ priority: 'LOW', title: 'VoD Review — Deaths Only', desc: `Record every session with OBS. Watch only the rounds you died in. Ask: was I peeking without info? Did I have angle disadvantage?` });
+
+    html += `<div class="deep-card span3"><div style="display:flex;flex-direction:column;gap:12px;">`;
+    const pColors = { HIGH: 'var(--loss)', MED: '#f5a623', LOW: 'var(--accent)' };
+    actions.forEach((a, i) => {
+      html += `<div style="display:flex;align-items:flex-start;gap:14px;padding:${i > 0 ? '12px 0 0' : 0};${i > 0 ? 'border-top:1px solid rgba(255,255,255,0.06);margin-top:4px' : ''}">
+        <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;padding:3px 8px;border-radius:4px;background:rgba(255,255,255,0.05);color:${pColors[a.priority]};border:1px solid ${pColors[a.priority]}33;flex-shrink:0;margin-top:2px">${a.priority}</div>
+        <div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;text-transform:uppercase;letter-spacing:0.5px;color:#ffffff;">${a.title}</div>
+          <div style="font-family:'Barlow',sans-serif;font-size:12px;color:rgba(240,240,242,0.7);margin-top:3px;line-height:1.5">${a.desc}</div>
+        </div>
+      </div>`;
+    });
+    html += `</div></div>`;
+
+    // Chapter 5 — Rank Benchmark & Gap Analysis (From PerfLab)
+    html += chapter('🏆', 'Rank Benchmark & Gap Analysis');
+    const nextTier = getNextRank(currentTier);
+    const nextBench = nextTier ? RANK_BENCHMARKS[nextTier] : null;
+    const myKD = parseFloat((data.reduce((s, d) => s + d.kd, 0) / n).toFixed(2));
+    const myACS = Math.round(data.reduce((s, d) => s + d.acs, 0) / n);
+
+    html += `<div class="deep-insight-grid cols2">`;
+    html += `<div class="deep-card"><div class="deep-card-label">You vs ${currentTier} Average</div><div class="plab-rankgap">
+    ${rankGapRow('K/D', myKD, currentBench.kd, nextBench?.kd, myKD >= currentBench.kd)}
+    ${rankGapRow('Win Rate', myWR+'%', currentBench.wr+'%', nextBench?.wr+'%', myWR >= currentBench.wr)}
+    ${rankGapRow('ACS', myACS, currentBench.acs, nextBench?.acs, myACS >= currentBench.acs)}
+    ${rankGapRow('HS%', myHS+'%', currentBench.hs+'%', nextBench?.hs+'%', myHS >= currentBench.hs)}
+    </div></div>`;
+    if (nextBench) {
+      html += `<div class="deep-card"><div class="deep-card-label">Target Stats for ${nextTier}</div><div class="plab-rankgap">
+      ${nextGapRow('K/D', myKD, nextBench.kd, myKD >= nextBench.kd)}
+      ${nextGapRow('Win Rate', myWR, nextBench.wr, myWR >= nextBench.wr)}
+      ${nextGapRow('ACS', myACS, nextBench.acs, myACS >= nextBench.acs)}
+      ${nextGapRow('HS%', myHS, nextBench.hs, myHS >= nextBench.hs)}
+      </div></div>`;
+    }
     html += `</div>`;
 
-    const trendPatterns = [];
-    if (rKD - eKD > 0.15) trendPatterns.push({ dot: 'g', text: `Your K/D has improved by ${(rKD - eKD).toFixed(2)} — you are winning duels more consistently.` });
-    else if (eKD - rKD > 0.15) trendPatterns.push({ dot: 'r', text: `Your K/D has dropped by ${(eKD - rKD).toFixed(2)} recently — review your last 5 losses.` });
-    if (!trendPatterns.length) trendPatterns.push({ dot: 'y', text: `Your performance is relatively stable across the tracked period.` });
-    html += patternCard(trendPatterns);
-
-    // Chapter 5 — Death Pattern
-    html += chapter('💀', 'Death Pattern Analysis');
+    // Chapter 6 — Death Pattern Telemetry
+    html += chapter('💀', 'Death Pattern Diagnostics');
     const totalDeaths = data.reduce((s, d) => s + d.d, 0);
     const avgDeaths = (totalDeaths / n).toFixed(1);
     const highDeathGames = data.filter(d => d.d >= 16).length;
@@ -303,25 +453,29 @@
     html += deepCard('Low Death Games', `${lowDeathGames}/${n}`, `WR when dying ≤9: ${winRateLowD}%`, winRateLowD >= 65 ? 'good' : 'warn', '');
     html += `</div>`;
 
-    // Chapter 6 — Top Priorities
-    html += chapter('🎯', 'Your Top Improvement Priorities');
-    const priorities = [];
-    const overallHS = data.reduce((s, d) => s + d.hsPct, 0) / n;
-    const overallWR = data.filter(d => d.won).length / n * 100;
+    // Chapter 7 — Improvement Over Time Trends
+    html += chapter('📈', 'Improvement Over Time Trends');
+    const third = Math.floor(n / 3) || 1;
+    const early = data.slice(n - third, n);
+    const recent = data.slice(0, third);
+    const avg = (arr, fn) => arr.length ? arr.reduce((s, x) => s + fn(x), 0) / arr.length : 0;
+    const trendEarlyKD = avg(early, d => d.d ? (d.k / d.d) : d.k);
+    const trendRecentKD = avg(recent, d => d.d ? (d.k / d.d) : d.k);
+    const trendEarlyWR = avg(early, d => d.won ? 1 : 0) * 100;
+    const trendRecentWR = avg(recent, d => d.won ? 1 : 0) * 100;
+    const trendEarlyACS = avg(early, d => d.acs);
+    const trendRecentACS = avg(recent, d => d.acs);
+    const trendEarlyHS = avg(early, d => d.hsPct);
+    const trendRecentHS = avg(recent, d => d.hsPct);
+    const delta = (r, e) => { const d = r - e; return d > 0 ? `▲ +${d.toFixed(1)}` : `▼ ${d.toFixed(1)}`; };
+    const dCls = (r, e) => r > e ? 'good' : r < e ? 'bad' : 'warn';
 
-    if (overallHS < 16) priorities.push({ title: 'Headshot Rate', desc: `${Math.round(overallHS)}% HS rate is below the Silver/Gold threshold (~20%). Spend 10 min daily in Aimlab on Microshot (head-only mode).`, score: 3 });
-    if (parseFloat(avgDeaths) >= 15) priorities.push({ title: 'Death Reduction', desc: `${avgDeaths} avg deaths is costing you rounds. Identify the 2-3 angles where you die most per session.`, score: 3 });
-    if (gap >= 15) priorities.push({ title: `${atkStronger ? 'Defence' : 'Attack'} Side Mechanics`, desc: `${atkStronger ? defWR : atkWR}% WR on ${atkStronger ? 'defence' : 'attack'} vs ${atkStronger ? atkWR : defWR}% on the other side — a 15%+ gap.`, score: 2 });
-    if (overallWR < 47) priorities.push({ title: 'Round Closing', desc: `${Math.round(overallWR)}% win rate — focus on not forcing when ahead and playing for post-plant.`, score: 2 });
-    priorities.push({ title: 'VoD Review Habit', desc: `Record your games. After every loss, watch only the rounds you died in. 10 minutes of VoD review accelerates improvement.`, score: 1 });
-    priorities.sort((a, b) => b.score - a.score);
-
-    html += `<div class="deep-priority"><div class="deep-priority-label">Do These In Order</div><div class="deep-priority-list">`;
-    for (let i = 0; i < Math.min(priorities.length, 5); i++) {
-      const p = priorities[i];
-      html += `<div class="deep-priority-item"><div class="deep-priority-num">${i + 1}</div><div class="deep-priority-text"><div class="deep-priority-title">${p.title}</div><div class="deep-priority-desc">${p.desc}</div></div></div>`;
-    }
-    html += `</div></div>`;
+    html += `<div class="deep-insight-grid cols4">`;
+    html += trendCard('K/D Trend', trendEarlyKD.toFixed(2), trendRecentKD.toFixed(2), delta(trendRecentKD, trendEarlyKD), dCls(trendRecentKD, trendEarlyKD));
+    html += trendCard('Win Rate Trend', Math.round(trendEarlyWR) + '%', Math.round(trendRecentWR) + '%', delta(trendRecentWR, trendEarlyWR), dCls(trendRecentWR, trendEarlyWR));
+    html += trendCard('ACS Trend', Math.round(trendEarlyACS), Math.round(trendRecentACS), delta(trendRecentACS, trendEarlyACS), dCls(trendRecentACS, trendEarlyACS));
+    html += trendCard('HS% Trend', Math.round(trendEarlyHS) + '%', Math.round(trendRecentHS) + '%', delta(trendRecentHS, trendEarlyHS), dCls(trendRecentHS, trendEarlyHS));
+    html += `</div>`;
 
     return html;
   }
@@ -331,41 +485,27 @@
   <div class="deep-clarification-banner">
     <div class="deep-clar-icon">🔬</div>
     <div>
-      <div class="deep-clar-title">Deep Self-Analysis Diagnostics</div>
+      <div class="deep-clar-title">Deep Telemetry Lab</div>
       <div class="deep-clar-desc">
-        Your micro-tactical execution blueprint. Correlates rounds to calculate <strong>map side win rates</strong>, evaluates <strong>agent-to-map performance fits</strong>, checks for <strong>multi-match consistency trends</strong>, and issues direct strategic recommendations.
+        Comprehensive performance analytics hub. Integrates <strong>Combat duels</strong>, <strong>Map side win rates</strong>, <strong>Agent synergy</strong>, <strong>Time-of-day heatmaps</strong>, <strong>Economy intelligence</strong>, and <strong>Personalised action plans</strong> into a single telemetry dashboard.
       </div>
     </div>
   </div>
 
   <div class="deep-trigger-card">
     <div class="deep-trigger-info">
-      <div class="deep-trigger-title">🔬 Deep Self-Analysis</div>
-      <div class="deep-trigger-sub">MAP WEAKNESS · ATTACK VS DEFENCE · AGENT-MAP FIT · IMPROVEMENT TREND · PRIORITIES</div>
+      <div class="deep-trigger-title">🔬 Deep Telemetry Lab</div>
+      <div class="deep-trigger-sub">DUELS · MAP TELEMETRY · AGENT FIT · TIME-OF-DAY · ECONOMY · RANK GAP · ACTION PLAN</div>
     </div>
-    {#if isStreaming}
-      <button class="ai-skip-btn" on:click={skipStream}>⏩ Fast-Forward</button>
-    {:else}
-      <button class="deep-run-btn" on:click={runDeepAnalysis} disabled={loading}>
-        {loading ? 'Analysing...' : '🔬 Run Analysis'}
-      </button>
-    {/if}
+    <button class="deep-run-btn" on:click={runDeepAnalysis} disabled={loading}>
+      {loading ? 'Analysing...' : '⚡ Re-Run Telemetry Scan'}
+    </button>
   </div>
 
   {#if loading}
     <div class="deep-loading">
       <div class="deep-spinner"></div>
-      <span class="deep-loading-txt">PROCESSING MATCHES...</span>
-    </div>
-  {/if}
-
-  {#if isStreaming}
-    <div class="ai-stream-hud-bar" style="margin-top:16px;">
-      <div class="ai-hud-status-group">
-        <div class="ai-hud-pulse-dot"></div>
-        <div class="ai-hud-title">VALINTEL DEEP NEURAL DIAGNOSTICS</div>
-      </div>
-      <div class="ai-hud-subtitle">STREAMING PROFILE BLUEPRINT...</div>
+      <span class="deep-loading-txt">{loadingText}</span>
     </div>
   {/if}
 
@@ -375,6 +515,3 @@
     {/if}
   </div>
 </div>
-
-<style>
-</style>
