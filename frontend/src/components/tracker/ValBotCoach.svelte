@@ -148,18 +148,26 @@
   })();
 </script>
 
-<div class="ai-card">
+<div class="ai-card" class:mode-summary={mode === 'summary'} class:mode-action={mode === 'action'}>
   <div class="ai-card-header">
     <div class="ai-header-left">
-      <div class="ai-icon">{mode === 'summary' ? '🤖' : '🎯'}</div>
+      <div class="ai-icon-glow-wrap">
+        <div class="ai-icon">{mode === 'summary' ? '🤖' : '🎯'}</div>
+      </div>
       <div>
-        <div class="ai-title">{mode === 'summary' ? 'AI Executive Diagnostic' : 'Hyper-Personalized Practice Hub'}</div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div class="ai-title">{mode === 'summary' ? 'AI Executive Diagnostic' : 'Hyper-Personalized Practice Hub'}</div>
+          <span class="ai-engine-pill">
+            <span class="ai-status-pulse"></span>
+            NEURAL SCAN READY
+          </span>
+        </div>
         <div class="ai-subtitle">
           {mode === 'summary' ? 'Telemetry analysis, rank readiness & interactive warmup' : 'Custom AimLab drills, warm-up routine & tactical levers'}
         </div>
       </div>
     </div>
-    <div style="display: flex; gap: 10px; align-items: center;">
+    <div class="ai-header-actions">
       {#if mode === 'summary'}
         <button class="ai-share-btn" on:click={onShareProfile} title="Share your summary card">
           <span class="btn-icon">🎴</span> Share Summary Card

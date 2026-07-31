@@ -29,6 +29,7 @@
   import Toast from '../shared/Toast.svelte';
   import Footer from '../shared/Footer.svelte';
   import ProfileShare from '../shared/ProfileShare.svelte';
+  import BackToTop from '../shared/BackToTop.svelte';
   import { player, currentView, setPlayer, startFetch, endFetch } from '../../lib/appStore';
   import { processMatches } from '../../lib/processMatches';
   import { ACTS_TIMELINE, RANKS, getRankFromRR, getRankImgUrl } from '../../lib/constants';
@@ -139,41 +140,66 @@
     ];
     let ticking = false;
     const OFFSET = 180;
+    let cachedOffsets = [];
+
+    function updateCachedOffsets() {
+      cachedOffsets = SECTION_IDS.map(id => {
+        const el = document.getElementById(id);
+        if (!el) return null;
+        const rect = el.getBoundingClientRect();
+        const top = rect.top + window.scrollY;
+        const bottom = rect.bottom + window.scrollY;
+        return { id, top, bottom };
+      }).filter(Boolean);
+    }
+
     function update() {
-      let current = SECTION_IDS[0];
+      const scrollY = window.scrollY;
       const viewportH = window.innerHeight;
       const docH = document.documentElement.scrollHeight;
-      const maxScroll = docH - viewportH;
-      const atBottom = window.scrollY >= maxScroll - 5;
+      const atBottom = (scrollY + viewportH) >= docH - 40;
 
-      if (!atBottom) {
-        for (let i = 0; i < SECTION_IDS.length; i++) {
-          const el = document.getElementById(SECTION_IDS[i]);
-          if (!el) continue;
-          if (el.getBoundingClientRect().top <= OFFSET) {
-            current = SECTION_IDS[i];
+      let current = activeSection;
+
+      if (atBottom) {
+        current = SECTION_IDS[SECTION_IDS.length - 1];
+      } else {
+        if (!cachedOffsets.length) updateCachedOffsets();
+        let found = false;
+        for (let i = 0; i < cachedOffsets.length; i++) {
+          const item = cachedOffsets[i];
+          const relativeTop = item.top - scrollY;
+          const relativeBottom = item.bottom - scrollY;
+          if (relativeTop <= OFFSET && relativeBottom > 0) {
+            current = item.id;
+            found = true;
           }
         }
-      } else {
-        let bestDist = Infinity;
-        const centerY = viewportH / 2;
-        for (let i = 0; i < SECTION_IDS.length; i++) {
-          const el = document.getElementById(SECTION_IDS[i]);
-          if (!el) continue;
-          const rect = el.getBoundingClientRect();
-          if (rect.bottom > 0 && rect.top < viewportH) {
-            const dist = Math.abs(rect.top - centerY);
-            if (dist < bestDist) {
-              bestDist = dist;
-              current = SECTION_IDS[i];
+
+        if (!found && cachedOffsets.length > 0) {
+          const lastItem = cachedOffsets[cachedOffsets.length - 1];
+          if (lastItem.top - scrollY <= OFFSET) {
+            current = lastItem.id;
+          } else {
+            let minDiff = Infinity;
+            for (let i = 0; i < cachedOffsets.length; i++) {
+              const item = cachedOffsets[i];
+              const diff = Math.abs((item.top - scrollY) - OFFSET);
+              if (diff < minDiff) {
+                minDiff = diff;
+                current = item.id;
+              }
             }
           }
         }
       }
 
-      activeSection = current;
+      if (current && current !== activeSection) {
+        activeSection = current;
+      }
       ticking = false;
     }
+
     function onScroll() {
       if (isProgrammaticScroll) return;
       if (!ticking) {
@@ -181,9 +207,16 @@
         requestAnimationFrame(update);
       }
     }
+
+    updateCachedOffsets();
     window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', updateCachedOffsets, { passive: true });
     requestAnimationFrame(update);
-    cleanupScroll = () => window.removeEventListener('scroll', onScroll);
+
+    cleanupScroll = () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', updateCachedOffsets);
+    };
   }
 
   function toggleSession() {
@@ -496,22 +529,40 @@
     <!-- Q11: AI Tools -->
     <div class="section-label ai-premium-label reveal-on-scroll" id="sec-ai-tools">
       <span class="sl-text ai-premium-text">AI Diagnostic Suite</span>
-      <span class="sl-badge">Exclusive</span>
+      <span class="sl-badge">Exclusive v2.0</span>
       <span class="sl-line ai-premium-line"></span>
       <span class="sl-num">11</span>
     </div>
 
-    <div class="ai-premium-wrapper">
+    <div class="ai-premium-wrapper" data-active-tab={activeAiTab}>
       <div class="ai-tools-container">
         <div class="ai-tools-nav">
-          <button class="ai-nav-tab" class:active={activeAiTab === 'summary' || activeAiTab === 'valbot'} on:click={() => activeAiTab = 'summary'}>
-            <span class="tab-icon">⚡</span> Executive Summary
+          <button 
+            class="ai-nav-tab nav-tab-summary" 
+            class:active={activeAiTab === 'summary' || activeAiTab === 'valbot'} 
+            on:click={() => activeAiTab = 'summary'}
+          >
+            <span class="tab-icon">⚡</span>
+            <span class="tab-label">Executive Summary</span>
+            <span class="tab-tag tag-summary">AI DIAGNOSTIC</span>
           </button>
-          <button class="ai-nav-tab" class:active={activeAiTab === 'action'} on:click={() => activeAiTab = 'action'}>
-            <span class="tab-icon">🎯</span> 3-Step Action Plan
+          <button 
+            class="ai-nav-tab nav-tab-action" 
+            class:active={activeAiTab === 'action'} 
+            on:click={() => activeAiTab = 'action'}
+          >
+            <span class="tab-icon">🎯</span>
+            <span class="tab-label">3-Step Action Plan</span>
+            <span class="tab-tag tag-action">3 DRILLS</span>
           </button>
-          <button class="ai-nav-tab" class:active={activeAiTab === 'deeplab' || activeAiTab === 'deep' || activeAiTab === 'lab'} on:click={() => activeAiTab = 'deeplab'}>
-            <span class="tab-icon">📡</span> Deep Telemetry Lab
+          <button 
+            class="ai-nav-tab nav-tab-deeplab" 
+            class:active={activeAiTab === 'deeplab' || activeAiTab === 'deep' || activeAiTab === 'lab'} 
+            on:click={() => activeAiTab = 'deeplab'}
+          >
+            <span class="tab-icon">📡</span>
+            <span class="tab-label">Deep Telemetry Lab</span>
+            <span class="tab-tag tag-deeplab">FULL MATRIX</span>
           </button>
         </div>
 
@@ -643,6 +694,8 @@
     mode={playerState.mode}
     onClose={() => exportProfileOpen = false}
   />
+
+  <BackToTop />
 </div>
 
 <style>

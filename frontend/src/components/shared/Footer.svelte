@@ -16,6 +16,12 @@
         </svg>
       </a>
     </div>
+    <button class="footer-top-btn" on:click={() => typeof window !== 'undefined' && window.scrollTo({ top: 0, behavior: 'smooth' })} title="Back to Top">
+      <span>Top</span>
+      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="18 15 12 9 6 15"></polyline>
+      </svg>
+    </button>
   </div>
 </footer>
 
@@ -48,6 +54,7 @@
     justify-content: center;
     gap: 16px;
     margin-top: 8px;
+    flex-wrap: wrap;
   }
   .footer-developer {
     font-family: 'Barlow Condensed', sans-serif;
@@ -69,5 +76,28 @@
   }
   .footer-link:hover {
     color: var(--accent);
+  }
+  .footer-top-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+    border-radius: 20px;
+    padding: 4px 12px;
+    color: var(--muted);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .footer-top-btn:hover {
+    background: var(--surface2, #181820);
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-2px);
   }
 </style>

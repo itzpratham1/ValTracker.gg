@@ -101,7 +101,7 @@
   }
 
   function rankGapRow(stat, you, avg, next, passing) {
-    return `<div class="plab-rankgap-row"><div class="plab-rankgap-stat">${stat}</div><div class="plab-rankgap-you" style="color:${passing?'var(--win)':'var(--loss)'}">${you}</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2);min-width:30px">avg</div><div class="plab-rankgap-target">${avg}</div>${next?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2);min-width:30px">next</div><div class="plab-rankgap-target" style="color:var(--accent)">${next}</div>`:''}<div style="font-family:'DM Mono',monospace;font-size:10px;margin-left:auto;color:${passing?'var(--win)':'var(--loss)'}">${passing?'✓ Above avg':'↑ Needs work'}</div></div>`;
+    return `<div class="plab-rankgap-row"><div class="plab-rankgap-stat">${stat}</div><div class="plab-rankgap-you" style="color:${passing?'var(--win)':'var(--loss)'}">${you}</div><div class="plab-rankgap-lbl">avg</div><div class="plab-rankgap-target">${avg}</div>${next?`<div class="plab-rankgap-lbl">next</div><div class="plab-rankgap-target" style="color:var(--accent)">${next}</div>`:''}<div class="plab-rankgap-status" style="color:${passing?'var(--win)':'var(--loss)'}">${passing?'✓ Above avg':'↑ Needs work'}</div></div>`;
   }
 
   function nextGapRow(stat, you, target, passing) {
@@ -109,7 +109,7 @@
     const targetNum = parseFloat(String(target));
     const pct = passing ? 100 : Math.min(99, Math.round((youNum/targetNum)*100));
     const gap = passing ? '✓ Ready' : `Need +${(targetNum-youNum).toFixed(stat==='K/D'?2:0)}`;
-    return `<div class="plab-rankgap-row"><div class="plab-rankgap-stat">${stat}</div><div class="plab-rankgap-you" style="color:${passing?'var(--win)':'rgba(240,240,242,0.7)'}">${you}</div><div class="plab-rankgap-bar-wrap" style="margin:0 12px"><div class="plab-rankgap-bar" style="width:${pct}%;background:${passing?'var(--win)':'var(--accent)'}"></div></div><div class="plab-rankgap-target">${target}</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:${passing?'var(--win)':'var(--muted)'};margin-left:8px;white-space:nowrap">${gap}</div></div>`;
+    return `<div class="plab-rankgap-row"><div class="plab-rankgap-stat">${stat}</div><div class="plab-rankgap-you" style="color:${passing?'var(--win)':'rgba(240,240,242,0.7)'}">${you}</div><div class="plab-rankgap-bar-wrap"><div class="plab-rankgap-bar" style="width:${pct}%;background:${passing?'var(--win)':'var(--accent)'}"></div></div><div class="plab-rankgap-target">${target}</div><div class="plab-rankgap-gap-lbl" style="color:${passing?'var(--win)':'var(--muted)'}">${gap}</div></div>`;
   }
 
   function buildDeepAnalysis(allMatches) {
@@ -183,7 +183,7 @@
     const mapRows = Object.entries(mapStats).filter(([, ms]) => ms.m >= 1).sort((a, b) => b[1].m - a[1].m);
     const hasRR = mapRows.some(([, ms]) => ms.hasRR);
 
-    html += `<div class="deep-card span3"><div class="deep-card-label">All Maps — Performance Breakdown</div><table class="deep-map-table"><thead><tr><th>Map</th><th>W/L</th><th>WR%</th><th>K/D</th><th>ACS</th><th>HS%</th><th>Atk WR%</th><th>Def WR%</th>${hasRR ? '<th>RR</th>' : ''}</tr></thead><tbody>`;
+    html += `<div class="deep-card span3"><div class="deep-card-label">All Maps — Performance Breakdown</div><div class="deep-table-wrap"><table class="deep-map-table"><thead><tr><th>Map</th><th>W/L</th><th>WR%</th><th>K/D</th><th>ACS</th><th>HS%</th><th>Atk WR%</th><th>Def WR%</th>${hasRR ? '<th>RR</th>' : ''}</tr></thead><tbody>`;
     for (const [mapName, ms] of mapRows) {
       const wr = Math.round((ms.w / ms.m) * 100);
       const kd = ms.de ? (ms.k / ms.de).toFixed(2) : ms.k;
@@ -199,16 +199,16 @@
       const mapImg = MAP_IMAGES_FALLBACK[mapName] || null;
 
       html += `<tr><td>
-        <div style="display:flex;align-items:center;gap:8px;">
-          ${mapImg ? `<img src="${mapImg}" alt="${mapName}" style="width:28px;height:28px;border-radius:4px;object-fit:cover;border:1px solid rgba(255,255,255,0.15);" />` : ''}
-          <div>
+        <div style="display:flex;align-items:center;gap:8px;white-space:nowrap;">
+          ${mapImg ? `<img src="${mapImg}" alt="${mapName}" style="width:28px;height:28px;border-radius:4px;object-fit:cover;border:1px solid rgba(255,255,255,0.15);flex-shrink:0;" />` : ''}
+          <div style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;">
             <span class="deep-map-row-name">${mapName}</span>
             <span class="deep-map-verdict ${verdict}">${verdictTxt}</span>
           </div>
         </div>
-      </td><td>${ms.w}W / ${ms.m - ms.w}L</td><td style="${wrCol};font-weight:800">${wr}%</td><td style="${kdCol}">${kd}</td><td>${acs}</td><td style="${hsPct < 15 ? 'color:var(--loss)' : hsPct >= 25 ? 'color:var(--win)' : ''}">${hsPct}%</td><td style="${atkWR !== null && atkWR < 45 ? 'color:var(--loss)' : atkWR !== null && atkWR >= 55 ? 'color:var(--win)' : ''}">${atkWR !== null ? atkWR + '%' : '—'}</td><td style="${defWR !== null && defWR < 45 ? 'color:var(--loss)' : defWR !== null && defWR >= 55 ? 'color:var(--win)' : ''}">${defWR !== null ? defWR + '%' : '—'}</td>${hasRR ? `<td>${rrTxt || '—'}</td>` : ''}</tr>`;
+      </td><td style="white-space:nowrap;">${ms.w}W / ${ms.m - ms.w}L</td><td style="${wrCol};font-weight:800;white-space:nowrap;">${wr}%</td><td style="${kdCol};white-space:nowrap;">${kd}</td><td style="white-space:nowrap;">${acs}</td><td style="${hsPct < 15 ? 'color:var(--loss)' : hsPct >= 25 ? 'color:var(--win)' : ''};white-space:nowrap;">${hsPct}%</td><td style="${atkWR !== null && atkWR < 45 ? 'color:var(--loss)' : atkWR !== null && atkWR >= 55 ? 'color:var(--win)' : ''};white-space:nowrap;">${atkWR !== null ? atkWR + '%' : '—'}</td><td style="${defWR !== null && defWR < 45 ? 'color:var(--loss)' : defWR !== null && defWR >= 55 ? 'color:var(--win)' : ''};white-space:nowrap;">${defWR !== null ? defWR + '%' : '—'}</td>${hasRR ? `<td style="white-space:nowrap;">${rrTxt || '—'}</td>` : ''}</tr>`;
     }
-    html += `</tbody></table></div>`;
+    html += `</tbody></table></div></div>`;
 
     // MAP-BY-MAP AGENT PICK ASSISTANT
     html += chapter('🎮', 'Map-by-Map Agent Pick Assistant');
@@ -240,27 +240,34 @@
       const worstIcon = worst ? getAgentIconUrl(worst.agent) : null;
 
       html += `<div class="ai-agent-pick-card" style="background:${mapSplash ? `linear-gradient(180deg, rgba(15,15,22,0.85) 0%, rgba(11,11,15,0.96) 100%), url('${mapSplash}') center/cover no-repeat` : 'rgba(20,20,28,0.85)'};">
-        <div class="ai-agent-pick-map-name">${mapName.toUpperCase()}</div>
-        <div class="ai-agent-pick-content">
-          <div class="ai-agent-pick-col good">
-            <div class="ai-agent-pick-label">RECOMMENDED PICK</div>
-            <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
-              ${bestIcon ? `<img src="${bestIcon}" alt="${best.agent}" style="width:36px;height:36px;border-radius:50%;border:2px solid var(--win);background:rgba(0,0,0,0.5);" />` : ''}
-              <div>
-                <div class="ai-agent-pick-agent">${best.agent}</div>
-                <div class="ai-agent-pick-sub" style="color:var(--win)">${best.wr}% WR · ${best.kd} K/D (${best.m}g)</div>
-              </div>
+        <div class="ai-agent-pick-map-head">
+          <span class="ai-agent-pick-map-name">${mapName.toUpperCase()}</span>
+          <span class="ai-agent-pick-map-badge">${agentList.length} ${agentList.length === 1 ? 'agent' : 'agents'}</span>
+        </div>
+        <div class="ai-agent-pick-rows">
+          <div class="ai-agent-pick-row good">
+            <div class="ai-agent-pick-left">
+              ${bestIcon ? `<img src="${bestIcon}" alt="${best.agent}" class="ai-agent-pick-avatar win" />` : ''}
+              <span class="ai-agent-pick-agent">${best.agent}</span>
+              <span class="ai-agent-pick-badge win">BEST</span>
+            </div>
+            <div class="ai-agent-pick-right">
+              <span class="ai-agent-pick-stat win">${best.wr}% WR</span>
+              <span class="ai-agent-pick-stat kd">${best.kd} K/D</span>
+              <span class="ai-agent-pick-count">(${best.m}g)</span>
             </div>
           </div>
           ${worst && worst.agent !== best.agent ? `
-            <div class="ai-agent-pick-col bad">
-              <div class="ai-agent-pick-label">AVOID PICK</div>
-              <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
-                ${worstIcon ? `<img src="${worstIcon}" alt="${worst.agent}" style="width:36px;height:36px;border-radius:50%;border:2px solid var(--loss);background:rgba(0,0,0,0.5);" />` : ''}
-                <div>
-                  <div class="ai-agent-pick-agent">${worst.agent}</div>
-                  <div class="ai-agent-pick-sub" style="color:var(--loss)">${worst.wr}% WR · ${worst.kd} K/D (${worst.m}g)</div>
-                </div>
+            <div class="ai-agent-pick-row bad">
+              <div class="ai-agent-pick-left">
+                ${worstIcon ? `<img src="${worstIcon}" alt="${worst.agent}" class="ai-agent-pick-avatar loss" />` : ''}
+                <span class="ai-agent-pick-agent">${worst.agent}</span>
+                <span class="ai-agent-pick-badge loss">AVOID</span>
+              </div>
+              <div class="ai-agent-pick-right">
+                <span class="ai-agent-pick-stat loss">${worst.wr}% WR</span>
+                <span class="ai-agent-pick-stat kd">${worst.kd} K/D</span>
+                <span class="ai-agent-pick-count">(${worst.m}g)</span>
               </div>
             </div>
           ` : ''}
@@ -317,8 +324,19 @@
       for (const e of mismatches.slice(0, 5)) {
         const icon = getAgentIconUrl(e.agent);
         html += `<div class="deep-mismatch-row">
-          ${icon ? `<img src="${icon}" alt="${e.agent}" style="width:24px;height:24px;border-radius:50%;" />` : ''}
-          <span class="deep-mismatch-agent">${e.agent}</span><span class="deep-mismatch-on">on ${e.map.toUpperCase()}</span><span class="deep-mismatch-stat" style="color:var(--loss)">${e.wr}% WR</span><span class="deep-mismatch-stat">${e.kd} K/D</span><span class="deep-mismatch-tag bad">${e.m} games</span></div>`;
+          <div class="deep-mismatch-left">
+            ${icon ? `<img src="${icon}" alt="${e.agent}" class="deep-mismatch-icon" />` : ''}
+            <div class="deep-mismatch-agent-info">
+              <span class="deep-mismatch-agent">${e.agent}</span>
+              <span class="deep-mismatch-on">on ${e.map.toUpperCase()}</span>
+            </div>
+          </div>
+          <div class="deep-mismatch-right">
+            <span class="deep-mismatch-stat bad">${e.wr}% WR</span>
+            <span class="deep-mismatch-stat">${e.kd} K/D</span>
+            <span class="deep-mismatch-tag bad">${e.m} ${e.m === 1 ? 'game' : 'games'}</span>
+          </div>
+        </div>`;
       }
     }
     html += `</div>`;
@@ -330,8 +348,19 @@
       for (const e of goodFits.slice(0, 4)) {
         const icon = getAgentIconUrl(e.agent);
         html += `<div class="deep-mismatch-row">
-          ${icon ? `<img src="${icon}" alt="${e.agent}" style="width:24px;height:24px;border-radius:50%;" />` : ''}
-          <span class="deep-mismatch-agent">${e.agent}</span><span class="deep-mismatch-on">on ${e.map.toUpperCase()}</span><span class="deep-mismatch-stat" style="color:var(--win)">${e.wr}% WR</span><span class="deep-mismatch-stat">${e.kd} K/D</span><span class="deep-mismatch-tag ok">${e.m} games</span></div>`;
+          <div class="deep-mismatch-left">
+            ${icon ? `<img src="${icon}" alt="${e.agent}" class="deep-mismatch-icon" />` : ''}
+            <div class="deep-mismatch-agent-info">
+              <span class="deep-mismatch-agent">${e.agent}</span>
+              <span class="deep-mismatch-on">on ${e.map.toUpperCase()}</span>
+            </div>
+          </div>
+          <div class="deep-mismatch-right">
+            <span class="deep-mismatch-stat good">${e.wr}% WR</span>
+            <span class="deep-mismatch-stat">${e.kd} K/D</span>
+            <span class="deep-mismatch-tag ok">${e.m} ${e.m === 1 ? 'game' : 'games'}</span>
+          </div>
+        </div>`;
       }
     }
     html += `</div>`;
@@ -349,18 +378,63 @@
     const bestHour = hourBuckets.reduce((best,b,i) => b.m>=2 && (b.w/b.m) > best.wr ? {h:i, wr:b.w/b.m, m:b.m} : best, {h:-1,wr:0,m:0});
     const worstHour = hourBuckets.reduce((worst,b,i) => b.m>=2 && (b.w/b.m) < worst.wr ? {h:i, wr:b.w/b.m, m:b.m} : worst, {h:-1,wr:1,m:0});
 
+    const periods = [
+      { name: 'Late Night', icon: '🌌', hours: [0,1,2,3,4,5] },
+      { name: 'Morning', icon: '🌅', hours: [6,7,8,9,10,11] },
+      { name: 'Afternoon', icon: '☀️', hours: [12,13,14,15,16,17] },
+      { name: 'Evening', icon: '🌙', hours: [18,19,20,21,22,23] }
+    ].map(p => {
+      const m = p.hours.reduce((s, h) => s + hourBuckets[h].m, 0);
+      const w = p.hours.reduce((s, h) => s + hourBuckets[h].w, 0);
+      const wr = m ? Math.round((w / m) * 100) : null;
+      return { ...p, m, w, wr };
+    });
+
     if (playedHours.length >= 2) {
-      html += `<div class="deep-card span3"><div class="deep-card-label">Games & Win Rate by Hour</div><div class="plab-heatmap">`;
+      html += `<div class="deep-card span3">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+          <div class="deep-card-label" style="margin:0;">Games & Win Rate by Hour</div>
+          <div class="plab-heat-legend">
+            <span class="plab-legend-item"><span class="plab-legend-dot bad"></span> &lt;45% WR</span>
+            <span class="plab-legend-item"><span class="plab-legend-dot warn"></span> 45-55%</span>
+            <span class="plab-legend-item"><span class="plab-legend-dot good"></span> &ge;55% WR</span>
+          </div>
+        </div>
+
+        <div class="plab-period-grid">`;
+      periods.forEach(p => {
+        const wrStr = p.wr !== null ? `${p.wr}% WR` : 'No games';
+        const wrCls = p.wr === null ? 'muted' : p.wr >= 55 ? 'good' : p.wr >= 45 ? 'warn' : 'bad';
+        html += `<div class="plab-period-card ${wrCls}">
+          <div class="plab-period-head"><span class="plab-period-icon">${p.icon}</span><span class="plab-period-name">${p.name}</span></div>
+          <div class="plab-period-val ${wrCls}">${wrStr}</div>
+          <div class="plab-period-sub">${p.m} ${p.m === 1 ? 'match' : 'matches'}</div>
+        </div>`;
+      });
+      html += `</div>
+
+        <div class="plab-heatmap-scroll">
+          <div class="plab-heatmap">`;
       hourBuckets.forEach((b, h) => {
         const wr = b.m ? b.w/b.m : 0;
         const intensity = b.m / maxGames;
-        const col = b.m === 0 ? 'var(--surface3)' : wr >= 0.6 ? `rgba(62,207,142,${0.15 + intensity*0.7})` : wr >= 0.45 ? `rgba(232,255,71,${0.1 + intensity*0.5})` : `rgba(255,87,87,${0.15 + intensity*0.6})`;
-        const tt = b.m ? `${h}:00 — ${b.m} games, ${Math.round(wr*100)}% WR` : `${h}:00 — no games`;
-        html += `<div class="plab-heat-cell" style="background:${col}" title="${tt}"></div>`;
+        const col = b.m === 0 ? 'rgba(255,255,255,0.03)' : wr >= 0.55 ? `rgba(62,207,142,${0.25 + intensity*0.75})` : wr >= 0.45 ? `rgba(245,166,35,${0.2 + intensity*0.6})` : `rgba(255,87,87,${0.25 + intensity*0.75})`;
+        const borderCol = b.m === 0 ? 'rgba(255,255,255,0.05)' : wr >= 0.55 ? 'rgba(62,207,142,0.4)' : wr >= 0.45 ? 'rgba(245,166,35,0.4)' : 'rgba(255,87,87,0.4)';
+        const tt = b.m ? `${h}:00 — ${b.m} matches, ${Math.round(wr*100)}% WR` : `${h}:00 — no matches`;
+        html += `<div class="plab-heat-cell" style="background:${col};border:1px solid ${borderCol}" title="${tt}">
+          <span class="plab-heat-hour">${h}</span>
+        </div>`;
       });
-      html += `</div><div class="plab-heat-labels">`;
-      hourBuckets.forEach((b,h) => { html += `<div class="plab-heat-label">${h%6===0?h:''}</div>`; });
-      html += `</div></div>`;
+      html += `</div>
+          <div class="plab-heat-axis">
+            <span>00:00</span>
+            <span>06:00</span>
+            <span>12:00</span>
+            <span>18:00</span>
+            <span>23:00</span>
+          </div>
+        </div>
+      </div>`;
 
       html += `<div class="deep-insight-grid cols2">`;
       if (bestHour.h >= 0) html += deepCard('Best Hour to Play', `${bestHour.h}:00`, `${Math.round(bestHour.wr*100)}% WR · ${bestHour.m} matches`, 'good', 'accent-green');
@@ -379,11 +453,11 @@
     const foWR = forceBuyMatches.length ? Math.round(forceBuyMatches.filter(d=>d.won).length/forceBuyMatches.length*100) : 0;
 
     html += `<div class="deep-card span3"><div class="deep-card-label">Win Rate by Economy Type (Estimated from ACS telemetry)</div>
-    <table class="plab-eco-table"><thead><tr><th>Type</th><th>Games</th><th>Win Rate</th><th>Avg ACS</th><th>Assessment</th></tr></thead><tbody>
+    <div class="deep-table-wrap"><table class="plab-eco-table"><thead><tr><th>Type</th><th>Games</th><th>Win Rate</th><th>Avg ACS</th><th>Assessment</th></tr></thead><tbody>
     <tr><td><span class="plab-eco-type" style="color:var(--win)">Full Buy</span></td><td>${fullBuyMatches.length}</td><td style="color:${fWR>=50?'var(--win)':'var(--loss)'};font-weight:800">${fWR}%</td><td>${Math.round(fullBuyMatches.reduce((s,d)=>s+d.acs,0)/Math.max(fullBuyMatches.length,1))}</td><td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${fWR>=55?'Strong ✓':fWR>=45?'Average':'Underperforming ⚠️'}</td></tr>
     <tr><td><span class="plab-eco-type" style="color:#f5a623">Force Buy</span></td><td>${forceBuyMatches.length}</td><td style="color:${foWR>=50?'var(--win)':'var(--loss)'};font-weight:800">${foWR}%</td><td>${Math.round(forceBuyMatches.reduce((s,d)=>s+d.acs,0)/Math.max(forceBuyMatches.length,1))}</td><td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${foWR>=45?'Holding well':foWR>=35?'Average':'Struggling'}</td></tr>
     <tr><td><span class="plab-eco-type" style="color:var(--loss)">Eco</span></td><td>${ecoBuyMatches.length}</td><td style="color:${eWR>=40?'var(--win)':'var(--loss)'};font-weight:800">${eWR}%</td><td>${Math.round(ecoBuyMatches.reduce((s,d)=>s+d.acs,0)/Math.max(ecoBuyMatches.length,1))}</td><td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${eWR>=35?'Good eco steals':eWR>=25?'Expected':'Very low'}</td></tr>
-    </tbody></table></div>`;
+    </tbody></table></div></div>`;
 
     // 📋 PERSONALISED ACTION PLAN (Explicitly requested by user)
     html += chapter('📋', 'Personalised Action Plan');
