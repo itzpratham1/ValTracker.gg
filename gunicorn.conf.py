@@ -1,18 +1,19 @@
 import os
 
-# Single worker is safest for Render free tier (512MB RAM)
-# 2 workers would duplicate ALL in-memory caches, causing OOM
+# Single worker with 8 threads for Render free tier (512MB RAM)
+# Using gthread worker_class enables concurrent request handling
+# so HTTP health check probes (/api/health) are processed instantly
+# even while other threads are waiting on external network I/O (HenrikDev / Supabase / VLR scraping).
 workers = 1
-
-# Single-threaded sync workers are most stable for this workload
-worker_class = "sync"
+worker_class = "gthread"
+threads = 8
 
 # Bind to PORT env var (Render injects this automatically)
 bind = f"0.0.0.0:{os.environ.get('PORT', '5000')}"
 
-# Kill workers that hang for more than 30 seconds (e.g. slow VLR scrapes)
-# With 1 worker, a hang means the entire site is down
-timeout = 30
+# Worker timeout after 60 seconds (prevents worker hangs without killing legitimate scrapes)
+timeout = 60
+graceful_timeout = 10
 
 # Keep connections alive for 5 seconds (reduces TCP handshake overhead)
 keepalive = 5
@@ -22,5 +23,6 @@ accesslog = "-"
 errorlog = "-"
 loglevel = "warning"
 
-# Preload app to share memory between forking workers (if workers > 1 later)
+# Preload app to share memory and accelerate worker startup
 preload_app = True
+

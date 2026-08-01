@@ -27,6 +27,17 @@ from dotenv import load_dotenv
 from werkzeug.middleware.proxy_fix import ProxyFix
 from bs4 import BeautifulSoup
 import builtins
+from requests.adapters import HTTPAdapter
+from urllib3.util import Retry
+
+http_session = requests.Session()
+retries = Retry(total=2, backoff_factor=0.3, status_forcelist=[502, 503, 504])
+adapter = HTTPAdapter(pool_connections=35, pool_maxsize=35, max_retries=retries)
+http_session.mount("http://", adapter)
+http_session.mount("https://", adapter)
+
+cache_lock = threading.Lock()
+
 
 def safe_print(*args, **kwargs):
     try:
@@ -106,13 +117,13 @@ def supabase_request(method, table, data=None, params=None, headers=None):
         
     try:
         if method.upper() == "GET":
-            r = requests.get(url, headers=default_headers, params=params, timeout=8)
+            r = http_session.get(url, headers=default_headers, params=params, timeout=8)
         elif method.upper() == "POST":
-            r = requests.post(url, headers=default_headers, json=data, timeout=8)
+            r = http_session.post(url, headers=default_headers, json=data, timeout=8)
         elif method.upper() == "PATCH":
-            r = requests.patch(url, headers=default_headers, json=data, params=params, timeout=8)
+            r = http_session.patch(url, headers=default_headers, json=data, params=params, timeout=8)
         elif method.upper() == "DELETE":
-            r = requests.delete(url, headers=default_headers, params=params, timeout=8)
+            r = http_session.delete(url, headers=default_headers, params=params, timeout=8)
         else:
             return None
         return r
@@ -396,39 +407,42 @@ _last_prune_time = time.time()
 _PRUNE_INTERVAL = 15
 
 def prune_cache():
-    now = time.time()
-    for k in list(cache.keys()):
-        entry = cache.get(k)
-        if entry and now - entry.get("timestamp", 0) > CACHE_TTL:
-            cache.pop(k, None)
-    if len(cache) > CACHE_MAX_SIZE:
-        sorted_keys = sorted(cache.keys(), key=lambda k: cache[k].get("timestamp", 0))
-        for k in sorted_keys[:len(cache) - CACHE_MAX_SIZE]:
-            cache.pop(k, None)
+    with cache_lock:
+        now = time.time()
+        for k in list(cache.keys()):
+            entry = cache.get(k)
+            if entry and now - entry.get("timestamp", 0) > CACHE_TTL:
+                cache.pop(k, None)
+        if len(cache) > CACHE_MAX_SIZE:
+            sorted_keys = sorted(cache.keys(), key=lambda k: cache[k].get("timestamp", 0))
+            for k in sorted_keys[:len(cache) - CACHE_MAX_SIZE]:
+                cache.pop(k, None)
 
 def prune_rate_limit_records():
-    now = time.time()
-    for k in list(rate_limit_records.keys()):
-        history = rate_limit_records.get(k)
-        if not history:
-            rate_limit_records.pop(k, None)
-        elif now - history[0] > 60:
-            rate_limit_records.pop(k, None)
-    if len(rate_limit_records) > RATE_LIMIT_MAX:
-        sorted_keys = sorted(rate_limit_records.keys(), key=lambda k: rate_limit_records[k][-1] if rate_limit_records[k] else 0)
-        for k in sorted_keys[:len(rate_limit_records) - RATE_LIMIT_MAX // 2]:
-            rate_limit_records.pop(k, None)
+    with cache_lock:
+        now = time.time()
+        for k in list(rate_limit_records.keys()):
+            history = rate_limit_records.get(k)
+            if not history:
+                rate_limit_records.pop(k, None)
+            elif now - history[0] > 60:
+                rate_limit_records.pop(k, None)
+        if len(rate_limit_records) > RATE_LIMIT_MAX:
+            sorted_keys = sorted(rate_limit_records.keys(), key=lambda k: rate_limit_records[k][-1] if rate_limit_records[k] else 0)
+            for k in sorted_keys[:len(rate_limit_records) - RATE_LIMIT_MAX // 2]:
+                rate_limit_records.pop(k, None)
 
 def prune_image_cache():
-    now = time.time()
-    for k in list(image_cache.keys()):
-        entry = image_cache.get(k)
-        if entry and now - entry.get("timestamp", 0) > IMAGE_CACHE_TTL:
-            image_cache.pop(k, None)
-    if len(image_cache) > IMAGE_CACHE_MAX:
-        sorted_keys = sorted(image_cache.keys(), key=lambda k: image_cache.get(k, {}).get("timestamp", 0))
-        for k in sorted_keys[:len(image_cache) - IMAGE_CACHE_MAX]:
-            image_cache.pop(k, None)
+    with cache_lock:
+        now = time.time()
+        for k in list(image_cache.keys()):
+            entry = image_cache.get(k)
+            if entry and now - entry.get("timestamp", 0) > IMAGE_CACHE_TTL:
+                image_cache.pop(k, None)
+        if len(image_cache) > IMAGE_CACHE_MAX:
+            sorted_keys = sorted(image_cache.keys(), key=lambda k: image_cache.get(k, {}).get("timestamp", 0))
+            for k in sorted_keys[:len(image_cache) - IMAGE_CACHE_MAX]:
+                image_cache.pop(k, None)
 
 @app.errorhandler(500)
 def handle_500(e):
@@ -875,7 +889,7 @@ def _warm_cache_background(data):
                 lifetime_url = f"https://api.henrikdev.xyz/valorant/v1/lifetime/matches/{region_lt}/{urllib.parse.quote(name)}/{urllib.parse.quote(tag)}"
                 lifetime_params = {"mode": mode, "size": 50}
                 headers_lt = {"Authorization": API_KEY, "Content-Type": "application/json"}
-                r_lt = requests.get(lifetime_url, headers=headers_lt, params=lifetime_params, timeout=10)
+                r_lt = http_session.get(lifetime_url, headers=headers_lt, params=lifetime_params, timeout=10)
                 if r_lt.status_code == 200:
                     lt_data = r_lt.json().get("data", [])
                     for lm in lt_data:
@@ -1007,7 +1021,7 @@ def proxy_api(subpath):
             encoded_subpath = urllib.parse.quote(subpath, safe='/')
             target_url = f"https://api.henrikdev.xyz/valorant/{encoded_subpath}"
             headers = {"Authorization": API_KEY, "Content-Type": "application/json"}
-            response = requests.get(target_url, headers=headers, params=params, timeout=8)
+            response = http_session.get(target_url, headers=headers, params=params, timeout=8)
             live_status_code = response.status_code
             if response.status_code == 200:
                 live_matches_data = response.json()
@@ -1125,9 +1139,9 @@ def proxy_api(subpath):
     try:
         print(f"[{request.method}] Fetching from {target_url}")
         if request.method == "GET":
-            response = requests.get(target_url, headers=headers, params=params, timeout=10)
+            response = http_session.get(target_url, headers=headers, params=params, timeout=10)
         else:
-            response = requests.post(target_url, headers=headers, json=request.json, timeout=10)
+            response = http_session.post(target_url, headers=headers, json=request.json, timeout=10)
         
         if response.status_code != 200:
             try:
@@ -1241,7 +1255,7 @@ def scrape_vlr_matches():
         return cache[cache_key]["data"]
     try:
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
-        r = requests.get('https://www.vlr.gg/matches', headers=headers, timeout=10)
+        r = http_session.get('https://www.vlr.gg/matches', headers=headers, timeout=10)
         if r.status_code != 200:
             if cache_key in cache:
                 return cache[cache_key]["data"]
@@ -1341,7 +1355,7 @@ def scrape_vlr_results():
         return cache[cache_key]["data"]
     try:
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
-        r = requests.get('https://www.vlr.gg/matches/results', headers=headers, timeout=10)
+        r = http_session.get('https://www.vlr.gg/matches/results', headers=headers, timeout=10)
         if r.status_code != 200:
             if cache_key in cache:
                 return cache[cache_key]["data"]
@@ -1465,7 +1479,7 @@ def esports_news():
     try:
         print("[INFO] Attempting local BeautifulSoup scraping for VLR news...")
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
-        r = requests.get('https://www.vlr.gg/news', headers=headers, timeout=6)
+        r = http_session.get('https://www.vlr.gg/news', headers=headers, timeout=6)
         if r.status_code == 200:
             r.encoding = 'utf-8'
             soup = BeautifulSoup(r.text, 'html.parser')
@@ -1503,7 +1517,7 @@ def esports_news():
     except Exception as e:
         print("[WARNING] Local VLR scraper failed:", e)
     try:
-        r = requests.get('https://vlrggapi.vercel.app/news', timeout=5)
+        r = http_session.get('https://vlrggapi.vercel.app/news', timeout=5)
         if r.status_code == 200:
             data = r.json()
             segments = data.get('data', {}).get('segments', [])
@@ -1563,7 +1577,7 @@ def esports_standings(region):
         elif region == "ap": url_region = "asia-pacific"
         elif region == "la": url_region = "latin-america"
         elif region == "mn": url_region = "china"
-        r = requests.get(f'https://www.vlr.gg/rankings/{url_region}', headers=headers, timeout=10)
+        r = http_session.get(f'https://www.vlr.gg/rankings/{url_region}', headers=headers, timeout=10)
         r.encoding = 'utf-8'
         soup = BeautifulSoup(r.text, 'html.parser')
         standings = []
@@ -1628,7 +1642,7 @@ def esports_event_teams(event_id):
         return jsonify({"data": cache[cache_key]["data"]})
     try:
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
-        r = requests.get(f'https://www.vlr.gg/event/{event_id}', headers=headers, timeout=10)
+        r = http_session.get(f'https://www.vlr.gg/event/{event_id}', headers=headers, timeout=10)
         if r.status_code != 200:
             return jsonify({"error": "Failed to load VLR event page", "data": []}), 500
         r.encoding = 'utf-8'
@@ -1737,7 +1751,7 @@ def image_proxy():
             'Referer': 'https://www.vlr.gg/',
             'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
         }
-        r = requests.get(url, headers=headers, timeout=8, stream=True)
+        r = http_session.get(url, headers=headers, timeout=8, stream=True)
         if r.status_code == 200:
             content_type = r.headers.get('content-type', 'image/png')
             content = r.content
@@ -1760,7 +1774,7 @@ def esports_team_roster(team_id):
         return jsonify({"data": cache[cache_key]["data"]})
     try:
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
-        r = requests.get(f'https://www.vlr.gg/team/{team_id}/', headers=headers, timeout=8)
+        r = http_session.get(f'https://www.vlr.gg/team/{team_id}/', headers=headers, timeout=8)
         if r.status_code != 200:
             return jsonify({"error": "Failed to load VLR team page", "data": []}), 500
         r.encoding = 'utf-8'
@@ -1835,7 +1849,7 @@ def store_featured():
 
     try:
         headers = {"Authorization": API_KEY}
-        r = requests.get("https://api.henrikdev.xyz/valorant/v2/store-featured", headers=headers, timeout=10)
+        r = http_session.get("https://api.henrikdev.xyz/valorant/v2/store-featured", headers=headers, timeout=10)
         if r.status_code == 200:
             data = r.json()
             if data and isinstance(data, dict) and "data" in data:
