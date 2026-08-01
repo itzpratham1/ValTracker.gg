@@ -14,6 +14,7 @@
   $: currentRR = mmrData?.current?.rr ?? 0;
   $: peakName = mmrData?.peak?.tier?.name || '—';
   $: peakImg = getRankImgUrl(peakName);
+  $: peakRR = mmrData?.peak?.rr ?? mmrData?.peak?.ranking_in_tier ?? mmrData?.highest_rank?.rr ?? null;
   $: playerName = $player.name || '—';
   $: playerTag = $player.tag || '';
   $: modeLabel = { competitive:'Competitive', unrated:'Unrated', deathmatch:'Deathmatch', teamdeathmatch:'Team Deathmatch', swiftplay:'Swiftplay', spikerush:'Spike Rush' }[$player.mode] || $player.mode;
@@ -151,14 +152,21 @@
             {/if}
           </div>
           <div class="hero-rank-info">
-            <div class="hero-rank-name" id="rank-display">{rankName}</div>
+            <div class="hero-rank-name" id="rank-display">
+              {rankName}
+              {#if rankName !== 'UNRANKED'}
+                <span class="hero-current-rr">· {currentRR} RR</span>
+              {/if}
+            </div>
             <div class="hero-rank-rr">
+              <span id="rank-rr-txt">
+                Peak: {peakName}{#if peakRR !== null && peakRR !== undefined && peakRR > 0} ({peakRR} RR){/if}
+              </span>
               <span id="peak-icon">
                 {#if peakImg}
-                  <img style="width:16px;height:16px;object-fit:contain;" src={peakImg} alt={peakName}>
+                  <img style="width:16px;height:16px;object-fit:contain;margin-left:2px;" src={peakImg} alt={peakName}>
                 {/if}
               </span>
-              <span id="rank-rr-txt">{currentRR} RR · Peak: {peakName}</span>
             </div>
           </div>
         </div>

@@ -16,6 +16,7 @@
   $: currentRR = mmrData?.current?.rr ?? 0;
   $: peakName = mmrData?.peak?.tier?.name || '—';
   $: peakImg = getRankImgUrl(peakName);
+  $: peakRR = mmrData?.peak?.rr ?? mmrData?.peak?.ranking_in_tier ?? mmrData?.highest_rank?.rr ?? null;
 
   $: prediction = stats && isCurrentOrAll
     ? getRankPrediction(
@@ -58,13 +59,18 @@
       {/if}
     </div>
     <div class="rd-info">
-      <div class="rd-name" style="color: {rankColor}">{displayRank.name.toUpperCase()}</div>
+      <div class="rd-name" style="color: {rankColor}">
+        {displayRank.name.toUpperCase()}
+        {#if displayRank.name !== 'UNRANKED' && isCurrentOrAll && mmrData}
+          <span class="rd-current-rr">· {currentRR} RR</span>
+        {/if}
+      </div>
       {#if isCurrentOrAll && mmrData}
         <div class="rd-rr">
+          Peak: {peakName}{#if peakRR !== null && peakRR !== undefined && peakRR > 0} ({peakRR} RR){/if}
           {#if peakImg}
-            <img class="rd-peak-icon" src={peakImg} alt={peakName}>
+            <img class="rd-peak-icon" src={peakImg} alt={peakName} style="margin-left: 2px;">
           {/if}
-          {currentRR} RR · Peak: {peakName}
         </div>
       {:else}
         <div class="rd-rr">Season Concluded</div>
@@ -125,6 +131,18 @@
     letter-spacing: 1.5px;
     line-height: 1.1;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .rd-current-rr {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    letter-spacing: 0.5px;
+    text-shadow: none;
   }
 
   .rd-rr {
