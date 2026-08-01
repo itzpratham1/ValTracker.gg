@@ -33,20 +33,20 @@ html {
   overscroll-behavior-y: auto;
   width: 100% !important;
   max-width: 100vw !important;
-  overflow-x: hidden !important;
+  overflow-x: clip !important;
 }
 body {
   scroll-behavior: smooth !important;
   touch-action: pan-y;
   width: 100% !important;
   max-width: 100vw !important;
-  overflow-x: hidden !important;
+  overflow-x: clip !important;
   position: relative;
 }
 .tracker-layout {
   width: 100% !important;
   max-width: 100vw !important;
-  overflow-x: hidden !important;
+  overflow-x: clip !important;
   box-sizing: border-box;
 }
 
@@ -281,8 +281,10 @@ body::before {
   position: sticky;
   top: 60px;
   z-index: 99;
-  background: rgba(10, 10, 12, 0.95);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: #060608 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -8013,32 +8015,37 @@ select option {
    the base index.css values for visual parity.
    ═══════════════════════════════════════════════════════ */
 
-/* Sticky topbar & tracker-nav with scroll-hide (desktop) */
+/* Sticky topbar & tracker-nav (desktop) */
 @media (min-width: 801px) {
   .topbar {
     position: sticky !important;
     top: 0 !important;
     z-index: 1000 !important;
-    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1) !important;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
     will-change: transform;
   }
   .tracker-nav {
     position: sticky !important;
     top: calc(var(--topbar-height, 108px) - 1.5px) !important;
     z-index: 999 !important;
-    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1) !important;
+    background: #060608 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
     will-change: transform;
   }
   body.scrolled-down .topbar {
     transform: translateY(-100%) !important;
   }
   body.scrolled-down .tracker-nav {
-    transform: translateY(calc(-1 * var(--topbar-height, 108px) - 1.5px)) !important;
+    transform: translateY(calc(-1 * (var(--topbar-height, 108px) - 1.5px))) !important;
   }
-  body.scrolled-up .topbar {
+  body.scrolled-up .topbar,
+  body:not(.scrolled-down) .topbar {
     transform: translateY(0) !important;
   }
-  body.scrolled-up .tracker-nav {
+  body.scrolled-up .tracker-nav,
+  body:not(.scrolled-down) .tracker-nav {
     transform: translateY(0) !important;
   }
 }
@@ -8653,8 +8660,8 @@ body::after {
 }
 
 .ai-premium-text {
-  font-size: 16px !important;
-  font-weight: 800 !important;
+  font-size: 22px !important;
+  font-weight: 900 !important;
   letter-spacing: 2px !important;
   background: linear-gradient(135deg, var(--accent) 0%, #ff6b7b 100%);
   -webkit-background-clip: text;
@@ -9125,14 +9132,14 @@ body::after {
   .overlay-studio-grid { grid-template-columns: 1fr !important; }
 }
 
-/* ── Desktop sticky scroll-hide (801px+) ── */
+/* ── Desktop sticky navigation (801px+) ── */
 @media (min-width: 801px) {
-  .topbar { position: sticky !important; top: 0; z-index: 1000; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); will-change: transform; }
-  .tracker-nav { position: sticky !important; top: calc(var(--topbar-height, 108px) - 1.5px); z-index: 999; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); will-change: transform; }
-  body.scrolled-down .topbar { transform: translateY(-100%); }
-  body.scrolled-down .tracker-nav { transform: translateY(calc(-1 * var(--topbar-height, 108px) - 1.5px)); }
-  body.scrolled-up .topbar { transform: translateY(0); }
-  body.scrolled-up .tracker-nav { transform: translateY(0); }
+  .topbar { position: sticky !important; top: 0; z-index: 1000; transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); will-change: transform; }
+  .tracker-nav { position: sticky !important; top: calc(var(--topbar-height, 108px) - 1.5px); z-index: 999; transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); will-change: transform; }
+  body.scrolled-down .topbar { transform: translateY(-100%) !important; }
+  body.scrolled-down .tracker-nav { transform: translateY(calc(-1 * (var(--topbar-height, 108px) - 1.5px))) !important; }
+  body.scrolled-up .topbar, body:not(.scrolled-down) .topbar { transform: translateY(0) !important; }
+  body.scrolled-up .tracker-nav, body:not(.scrolled-down) .tracker-nav { transform: translateY(0) !important; }
   #schedule-col-upcoming, #schedule-col-results { display: block !important; }
   body.modal-open { overflow: hidden !important; }
 }
@@ -15322,11 +15329,17 @@ a:focus-visible {
   gap: 8px !important;
   overflow-x: auto !important;
   -webkit-overflow-scrolling: touch !important;
-  padding-top: 16px !important;
+  padding-top: 12px !important;
+  padding-bottom: 8px !important;
   margin-top: 4px !important;
   border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
   width: 100% !important;
-  flex-wrap: wrap !important;
+  flex-wrap: nowrap !important;
+  scrollbar-width: none !important;
+}
+
+.deep-subnav-container::-webkit-scrollbar {
+  display: none !important;
 }
 
 .deep-subnav-btn {
@@ -15346,6 +15359,7 @@ a:focus-visible {
   align-items: center !important;
   gap: 6px !important;
   transition: all 0.2s ease !important;
+  flex-shrink: 0 !important;
 }
 
 .deep-subnav-btn:hover {
@@ -15404,6 +15418,179 @@ a:focus-visible {
   color: var(--muted) !important;
   margin-top: 4px !important;
 }
+
+/* ==========================================
+   MOBILE RESPONSIVE OVERRIDES FOR AI TOOLS & DIAGNOSTICS
+   ========================================== */
+
+/* Outer Mobile Grid & Padding Tweaks */
+@media (max-width: 800px) {
+  .ai-card, .deep-wrap {
+    padding: 16px 14px !important;
+  }
+  .ai-tools-nav {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    padding-bottom: 6px !important;
+    margin-bottom: 14px !important;
+    width: 100% !important;
+  }
+  .ai-tools-nav::-webkit-scrollbar {
+    display: none !important;
+  }
+  .ai-nav-tab {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+  }
+  .ai-rank-session-wrapper {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .ai-readiness-divider {
+    display: none !important;
+  }
+  .ai-strengths-wrapper {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .ai-aimlab-grid,
+  .ai-action-bento-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .deep-insight-grid.cols2,
+  .deep-insight-grid.cols3,
+  .deep-insight-grid.cols4 {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .deep-card.span3 {
+    grid-column: span 1 !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .ai-card {
+    padding: 14px 12px !important;
+    border-radius: 12px !important;
+  }
+  .ai-card-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+  .ai-header-left {
+    gap: 10px !important;
+  }
+  .ai-title {
+    font-size: 15px !important;
+    line-height: 1.2 !important;
+  }
+  .ai-engine-pill {
+    font-size: 9px !important;
+    padding: 2px 6px !important;
+  }
+  .ai-subtitle {
+    font-size: 11px !important;
+    line-height: 1.4 !important;
+  }
+  .ai-header-actions {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+  }
+  .ai-share-btn, .ai-analyse-btn {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 8px 8px !important;
+    font-size: 11px !important;
+    letter-spacing: 0.5px !important;
+  }
+  .ai-warmup-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+  .ai-warmup-item {
+    padding: 10px 12px !important;
+  }
+  .ai-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+  .ai-stat-pill {
+    padding: 10px 8px !important;
+  }
+  .ai-stat-pill-val {
+    font-size: 18px !important;
+  }
+
+  /* Deep Telemetry Header Mobile Adjustments */
+  .deep-clarification-banner {
+    padding: 14px 14px !important;
+    gap: 12px !important;
+    border-radius: 12px !important;
+  }
+  .deep-clar-top-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+  .deep-clar-left {
+    gap: 10px !important;
+  }
+  .deep-clar-icon {
+    font-size: 24px !important;
+  }
+  .deep-clar-title {
+    font-size: 17px !important;
+  }
+  .deep-clar-desc {
+    font-size: 11.5px !important;
+    line-height: 1.5 !important;
+  }
+  .deep-run-btn {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 10px 16px !important;
+    font-size: 12px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .ai-summary-banner {
+    padding: 12px 14px !important;
+    font-size: 13px !important;
+  }
+  .ai-tilt-alert {
+    padding: 12px 14px !important;
+  }
+  .ai-readiness-ring {
+    padding: 12px !important;
+  }
+  .ai-session-card {
+    padding: 12px !important;
+  }
+  .ai-focus-block {
+    padding: 14px 16px !important;
+  }
+  .ai-focus-title {
+    font-size: 18px !important;
+  }
+  .ai-aimlab-card {
+    padding: 12px !important;
+  }
+  .ai-drill-modal {
+    margin: 10px !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+  }
+}
+
 
 
 

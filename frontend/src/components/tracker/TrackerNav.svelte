@@ -40,8 +40,6 @@
     { id: 'sec-trend', icon: '📊', label: 'Trend', number: '03' },
     { id: 'sec-agents', icon: '👤', label: 'Agents', number: '04' },
     { id: 'sec-maps', icon: '🗺️', label: 'Maps', number: '05' },
-    { id: 'sec-clutch', icon: '⚡', label: 'Clutches', number: '06' },
-    { id: 'sec-accuracy', icon: '🎯', label: 'Accuracy', number: '07' },
     { id: 'sec-weapons', icon: '🔫', label: 'Weapons', number: '08' },
     { id: 'sec-teammates', icon: '👥', label: 'Teammates', number: '09' },
     { id: 'sec-matches', icon: '🎮', label: 'Matches', number: '10' },

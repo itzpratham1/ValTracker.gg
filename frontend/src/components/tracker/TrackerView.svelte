@@ -111,14 +111,13 @@
       isProgrammaticScroll = true;
       if (programmaticScrollTimer) clearTimeout(programmaticScrollTimer);
 
-      const isMobile = typeof window !== 'undefined' && window.innerWidth <= 800;
-      const topbar = document.querySelector('.topbar');
       const nav = document.querySelector('.tracker-nav');
+      const topbar = document.querySelector('.topbar');
+      const isMobile = window.innerWidth <= 800;
+      const isScrolledDown = document.body.classList.contains('scrolled-down');
       
-      // On desktop, topbar is sticky (or slides up).
-      // On mobile, topbar is position: relative (scrolled out of view), so topbar offset is 0.
-      const topbarH = (!isMobile && topbar) ? topbar.offsetHeight : 0;
-      const navH = nav ? nav.offsetHeight : 52;
+      const navH = nav ? nav.offsetHeight : 50;
+      const topbarH = (!isMobile && topbar && !isScrolledDown) ? topbar.offsetHeight : 0;
       const totalOffset = topbarH + navH + 8;
 
       const elementTop = el.getBoundingClientRect().top + window.scrollY;
@@ -128,7 +127,7 @@
 
       programmaticScrollTimer = setTimeout(() => {
         isProgrammaticScroll = false;
-      }, 1000);
+      }, 750);
     }
   }
 
@@ -136,10 +135,9 @@
   function setupScrollTracker() {
     const SECTION_IDS = [
       'sec-combat', 'sec-performance', 'sec-trend', 'sec-agents', 'sec-maps',
-      'sec-clutch', 'sec-accuracy', 'sec-weapons', 'sec-teammates', 'sec-matches', 'sec-ai-tools'
+      'sec-weapons', 'sec-teammates', 'sec-matches', 'sec-ai-tools'
     ];
     let ticking = false;
-    const OFFSET = 180;
     let cachedOffsets = [];
 
     function updateCachedOffsets() {
@@ -159,12 +157,18 @@
       const docH = document.documentElement.scrollHeight;
       const atBottom = (scrollY + viewportH) >= docH - 40;
 
+      const isMobile = window.innerWidth <= 800;
+      const isScrolledDown = document.body.classList.contains('scrolled-down');
+      const topbarH = (!isMobile && !isScrolledDown) ? (document.querySelector('.topbar')?.offsetHeight || 108) : 0;
+      const navH = document.querySelector('.tracker-nav')?.offsetHeight || 50;
+      const OFFSET = topbarH + navH + 40;
+
       let current = activeSection;
 
       if (atBottom) {
         current = SECTION_IDS[SECTION_IDS.length - 1];
       } else {
-        if (!cachedOffsets.length) updateCachedOffsets();
+        updateCachedOffsets();
         let found = false;
         for (let i = 0; i < cachedOffsets.length; i++) {
           const item = cachedOffsets[i];
@@ -528,8 +532,7 @@
 
     <!-- Q11: AI Tools -->
     <div class="section-label ai-premium-label reveal-on-scroll" id="sec-ai-tools">
-      <span class="sl-text ai-premium-text">AI Diagnostic Suite</span>
-      <span class="sl-badge">Exclusive v2.0</span>
+      <span class="sl-text ai-premium-text">AI Diagnosis Lab</span>
       <span class="sl-line ai-premium-line"></span>
       <span class="sl-num">11</span>
     </div>

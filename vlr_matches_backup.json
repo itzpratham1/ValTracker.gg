@@ -2,7 +2,7 @@
   {
     "id": "698906",
     "date": "Aug 01, 2026 1:30 PM",
-    "state": "unstarted",
+    "state": "in_progress",
     "vlr_path": "/698906/t1-vs-detonation-focusme-vct-2026-pacific-stage-2-w3",
     "league": {
       "name": "VCT 2026: Pacific Stage 2",
@@ -13,12 +13,12 @@
       "teams": [
         {
           "name": "T1",
-          "game_wins": 0,
+          "game_wins": 1,
           "has_won": false
         },
         {
           "name": "DetonatioN FocusMe",
-          "game_wins": 0,
+          "game_wins": 1,
           "has_won": false
         }
       ]
@@ -27,7 +27,7 @@
   },
   {
     "id": "698907",
-    "date": "Aug 01, 2026 3:30 PM",
+    "date": "Aug 01, 2026 4:30 PM",
     "state": "unstarted",
     "vlr_path": "/698907/full-sense-vs-rex-regum-qeon-vct-2026-pacific-stage-2-w3",
     "league": {

@@ -95,22 +95,35 @@
     return `${r} \u00B7 ${m} \u00B7 ${a}`;
   })();
 
+  function updateTopbarHeight() {
+    if (topbarEl) {
+      const h = topbarEl.getBoundingClientRect().height;
+      if (h > 0) {
+        document.documentElement.style.setProperty('--topbar-height', `${h}px`);
+      }
+    }
+  }
+
   onMount(() => {
+    updateTopbarHeight();
+    window.addEventListener('resize', updateTopbarHeight);
     window.addEventListener('scroll', handleScroll, { passive: true });
     document.addEventListener('click', closeDropdowns);
 
+    if (typeof document !== 'undefined' && document.fonts) {
+      document.fonts.ready.then(updateTopbarHeight);
+    }
+
     let resizeObserver;
     if (topbarEl && typeof ResizeObserver !== 'undefined') {
-      resizeObserver = new ResizeObserver((entries) => {
-        for (let entry of entries) {
-          const rectHeight = entry.target.getBoundingClientRect().height;
-          document.documentElement.style.setProperty('--topbar-height', `${rectHeight}px`);
-        }
+      resizeObserver = new ResizeObserver(() => {
+        updateTopbarHeight();
       });
       resizeObserver.observe(topbarEl);
     }
 
     return () => {
+      window.removeEventListener('resize', updateTopbarHeight);
       window.removeEventListener('scroll', handleScroll);
       document.removeEventListener('click', closeDropdowns);
       if (resizeObserver) {
@@ -129,12 +142,12 @@
     scrolled = y > 20;
 
     if ($currentView === 'tracker' && $player.loaded && window.innerWidth > 800) {
-      if (y > 150) {
+      if (y > 120) {
         const diff = y - lastScrollY;
-        if (diff > 15) {
+        if (diff > 10) {
           document.body.classList.add('scrolled-down');
           document.body.classList.remove('scrolled-up');
-        } else if (diff < -15) {
+        } else if (diff < -10) {
           document.body.classList.add('scrolled-up');
           document.body.classList.remove('scrolled-down');
         }
