@@ -354,10 +354,10 @@ export function analyseStats(stats: AIStats, rankName: string): AnalysisResult {
   // Summary
   let summary = '';
   const performanceLevel = kd >= 1.3 && wr >= 52 ? 'strong' : kd >= 1.0 && wr >= 48 ? 'average' : 'below average';
-  const trendSuffix = trend === 'improving' ? ' Your recent trend is improving — keep the momentum.' : trend === 'declining' ? ' Your recent form is declining — be careful.' : '';
-  if (performanceLevel === 'strong') summary = `You are performing at a <strong>strong level</strong> with a ${kd} K/D and ${wr}% win rate — ranked progress is a matter of consistency.${trendSuffix}`;
-  else if (performanceLevel === 'average') summary = `You are at an <strong>average level</strong> — the fundamentals are there, but small inefficiencies are holding back your rank.${trendSuffix}`;
-  else summary = `Your stats show clear room to grow — fixing core habits will have an immediate rank impact.${trendSuffix}`;
+  const trendSuffix = trend === 'improving' ? ' Your recent trend is <strong>improving</strong> — keep the momentum.' : trend === 'declining' ? ' Your recent form is <strong>declining</strong> — play with caution.' : '';
+  if (performanceLevel === 'strong') summary = `You are performing at a <strong>strong level</strong> with a <strong>${kd} K/D</strong> and <strong>${wr}% win rate</strong> — ranked progress is a matter of consistency.${trendSuffix}`;
+  else if (performanceLevel === 'average') summary = `You are at an <strong>average level</strong> — core fundamentals are solid, but small inefficiencies are holding back your rank.${trendSuffix}`;
+  else summary = `Your stats show <strong>clear room to grow</strong> — fixing core habits will have an immediate rank impact.${trendSuffix}`;
 
   // Priority Focus
   const focusOptions = [

@@ -1,5 +1,5 @@
 <script>
-  import { tick } from 'svelte';
+  import { tick, onMount, onDestroy } from 'svelte';
   import { AGENT_ROLES, getRankFromRR, MAP_IMAGES_FALLBACK } from '../../lib/constants';
   import { getAgentIconUrl } from '../../lib/assets';
   import { animateAllNumbersInContainer } from '../../lib/aiStreamer';
@@ -14,12 +14,71 @@
   let loading = false;
   let resultHtml = '';
   let deepBodyEl = null;
+  let cardEl = null;
+
+  let activeChapter = 'map';
+
+  const SUBNAV_ITEMS = [
+    { id: 'map', label: 'MAP TELEMETRY', icon: '🗺️' },
+    { id: 'duels', label: 'DUELS', icon: '⚔️' },
+    { id: 'agent', label: 'AGENT FIT', icon: '🎭' },
+    { id: 'time', label: 'TIME-OF-DAY', icon: '🕐' },
+    { id: 'economy', label: 'ECONOMY', icon: '💰' },
+    { id: 'plan', label: 'ACTION PLAN', icon: '📋' },
+    { id: 'rankgap', label: 'RANK GAP', icon: '🏆' },
+    { id: 'death', label: 'DEATH PATTERNS', icon: '💀' },
+    { id: 'trend', label: 'TRENDS', icon: '📈' }
+  ];
+
+  function scrollToChapter(id) {
+    activeChapter = id;
+    const el = document.getElementById('deep-chapter-' + id);
+    if (el) {
+      const isMobile = typeof window !== 'undefined' && window.innerWidth <= 800;
+      const topbar = document.querySelector('.topbar');
+      const nav = document.querySelector('.tracker-nav');
+      const topbarH = (!isMobile && topbar) ? topbar.offsetHeight : 0;
+      const navH = nav ? nav.offsetHeight : 52;
+      const totalOffset = topbarH + navH + 24;
+
+      const elementTop = el.getBoundingClientRect().top + window.pageYOffset;
+      const targetY = Math.max(0, elementTop - totalOffset);
+
+      window.scrollTo({ top: targetY, behavior: 'smooth' });
+    }
+  }
 
   let loadingText = 'PROCESSING MATCH TELEMETRY...';
 
-  $: if (matches && matches.length && !resultHtml && !loading) {
+  // --- Scroll-triggered: only run when card enters viewport ---
+  let hasBeenVisible = false;
+  let observer = null;
+
+  function maybeRunOnVisible() {
+    if (!hasBeenVisible) return;
+    if (resultHtml || loading) return;
+    if (!matches || !matches.length) return;
     runDeepAnalysis();
   }
+
+  onMount(() => {
+    observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !hasBeenVisible) {
+          hasBeenVisible = true;
+          observer.disconnect();
+          maybeRunOnVisible();
+        }
+      },
+      { threshold: 0.12 }
+    );
+    if (cardEl) observer.observe(cardEl);
+  });
+
+  onDestroy(() => { if (observer) observer.disconnect(); });
+
+  // If matches arrive AFTER the card is already in view, start then
+  $: if (matches && matches.length) { maybeRunOnVisible(); }
 
   function findMe(match) {
     if (!match) return null;
@@ -38,8 +97,9 @@
     return AGENT_ROLES[clean.toLowerCase().replace(/\//g, '')] || 'duelist';
   }
 
-  function chapter(icon, title) {
-    return `<div class="deep-chapter"><span class="deep-chapter-icon">${icon}</span><span class="deep-chapter-title">${title}</span><div class="deep-chapter-line"></div></div>`;
+  function chapter(icon, title, id = '') {
+    const idAttr = id ? ` id="deep-chapter-${id}"` : '';
+    return `<div class="deep-chapter"${idAttr}><span class="deep-chapter-icon">${icon}</span><span class="deep-chapter-title">${title}</span><div class="deep-chapter-line"></div></div>`;
   }
 
   function deepCard(label, val, sub, valCls, accentCls) {
@@ -169,7 +229,7 @@
     let html = '';
 
     // Chapter 1 — Map Deep Dive
-    html += chapter('🗺️', 'Map Performance Telemetry');
+    html += chapter('🗺️', 'Map Performance Telemetry', 'map');
     const mapStats = {};
     for (const d of data) {
       if (!mapStats[d.map]) mapStats[d.map] = { m: 0, w: 0, k: 0, de: 0, sc: 0, hs: 0, sh: 0, atkK: 0, defK: 0, atkW: 0, defW: 0, atkR: 0, defR: 0, r: 0, rr: 0, hasRR: false };
@@ -211,7 +271,7 @@
     html += `</tbody></table></div></div>`;
 
     // MAP-BY-MAP AGENT PICK ASSISTANT
-    html += chapter('🎮', 'Map-by-Map Agent Pick Assistant');
+    html += chapter('🎮', 'Map-by-Map Agent Pick Assistant', 'agentpick');
     const agentMapWR = {};
     data.forEach(d => {
       const k = `${d.map}|${d.agent}`;
@@ -277,7 +337,7 @@
     html += `</div>`;
 
     // ⚔️ DUEL ANALYSIS (Explicitly requested by user)
-    html += chapter('⚔️', 'Combat & Duel Analysis');
+    html += chapter('⚔️', 'Combat & Duel Analysis', 'duels');
     const totalK = data.reduce((s, d) => s + d.k, 0);
     const totalD = data.reduce((s, d) => s + d.d, 0);
     const totalR = data.reduce((s, d) => s + d.totalRounds, 0);
@@ -296,7 +356,7 @@
     html += `</div>`;
 
     // Chapter 2 — Agent-Map Synergy Matrix
-    html += chapter('🎭', 'Agent-Map Synergy Matrix');
+    html += chapter('🎭', 'Agent-Map Synergy Matrix', 'agent');
     const agentMapMatrix = {};
     for (const d of data) {
       const key = `${d.agent}|${d.map}`;
@@ -366,7 +426,7 @@
     html += `</div>`;
 
     // Chapter 3 — Time of Day Performance Heatmap (From PerfLab)
-    html += chapter('🕐', 'Time of Day Performance');
+    html += chapter('🕐', 'Time of Day Performance', 'time');
     const hourBuckets = Array(24).fill(null).map(() => ({ m:0, w:0, rr:0 }));
     data.forEach(d => {
       if (!d.gameStart) return;
@@ -443,7 +503,7 @@
     }
 
     // Chapter 4 — Economy Intelligence (From PerfLab)
-    html += chapter('💰', 'Economy Intelligence & ACS Breakdown');
+    html += chapter('💰', 'Economy Intelligence & ACS Breakdown', 'economy');
     const avgACS = data.reduce((s,d)=>s+d.acs,0)/n;
     const fullBuyMatches = data.filter(d => d.acs >= avgACS * 0.95);
     const ecoBuyMatches = data.filter(d => d.acs < avgACS * 0.75);
@@ -460,7 +520,7 @@
     </tbody></table></div></div>`;
 
     // 📋 PERSONALISED ACTION PLAN (Explicitly requested by user)
-    html += chapter('📋', 'Personalised Action Plan');
+    html += chapter('📋', 'Personalised Action Plan', 'plan');
     const currentTier = getRankTier(rankName);
     const currentBench = RANK_BENCHMARKS[currentTier] || RANK_BENCHMARKS['Silver'];
     const myHS = Math.round(data.reduce((s, d) => s + d.hsPct, 0) / n);
@@ -487,7 +547,7 @@
     html += `</div></div>`;
 
     // Chapter 5 — Rank Benchmark & Gap Analysis (From PerfLab)
-    html += chapter('🏆', 'Rank Benchmark & Gap Analysis');
+    html += chapter('🏆', 'Rank Benchmark & Gap Analysis', 'rankgap');
     const nextTier = getNextRank(currentTier);
     const nextBench = nextTier ? RANK_BENCHMARKS[nextTier] : null;
     const myKD = parseFloat((data.reduce((s, d) => s + d.kd, 0) / n).toFixed(2));
@@ -511,7 +571,7 @@
     html += `</div>`;
 
     // Chapter 6 — Death Pattern Telemetry
-    html += chapter('💀', 'Death Pattern Diagnostics');
+    html += chapter('💀', 'Death Pattern Diagnostics', 'death');
     const totalDeaths = data.reduce((s, d) => s + d.d, 0);
     const avgDeaths = (totalDeaths / n).toFixed(1);
     const highDeathGames = data.filter(d => d.d >= 16).length;
@@ -528,7 +588,7 @@
     html += `</div>`;
 
     // Chapter 7 — Improvement Over Time Trends
-    html += chapter('📈', 'Improvement Over Time Trends');
+    html += chapter('📈', 'Improvement Over Time Trends', 'trend');
     const third = Math.floor(n / 3) || 1;
     const early = data.slice(n - third, n);
     const recent = data.slice(0, third);
@@ -555,31 +615,47 @@
   }
 </script>
 
-<div class="deep-wrap">
+<div class="deep-wrap" bind:this={cardEl}>
+  <!-- UNIFIED TOP HEADER CARD WITH INTERACTIVE SUB-NAV -->
   <div class="deep-clarification-banner">
-    <div class="deep-clar-icon">🔬</div>
-    <div>
-      <div class="deep-clar-title">Deep Telemetry Lab</div>
-      <div class="deep-clar-desc">
-        Comprehensive performance analytics hub. Integrates <strong>Combat duels</strong>, <strong>Map side win rates</strong>, <strong>Agent synergy</strong>, <strong>Time-of-day heatmaps</strong>, <strong>Economy intelligence</strong>, and <strong>Personalised action plans</strong> into a single telemetry dashboard.
+    <div class="deep-clar-top-row">
+      <div class="deep-clar-left">
+        <div class="deep-clar-icon">🔬</div>
+        <div>
+          <div class="deep-clar-title">Deep Telemetry Lab</div>
+          <div class="deep-clar-desc">
+            Comprehensive performance analytics hub. Integrates <span class="deep-kw">Combat duels</span>, <span class="deep-kw">Map side win rates</span>, <span class="deep-kw">Agent synergy</span>, <span class="deep-kw">Time-of-day heatmaps</span>, <span class="deep-kw">Economy intelligence</span>, and <span class="deep-kw">Personalised action plans</span> into a single telemetry dashboard.
+          </div>
+        </div>
       </div>
+      <button class="deep-run-btn" on:click={runDeepAnalysis} disabled={loading}>
+        {loading ? 'Analysing...' : '⚡ Re-Run Telemetry Scan'}
+      </button>
     </div>
-  </div>
 
-  <div class="deep-trigger-card">
-    <div class="deep-trigger-info">
-      <div class="deep-trigger-title">🔬 Deep Telemetry Lab</div>
-      <div class="deep-trigger-sub">DUELS · MAP TELEMETRY · AGENT FIT · TIME-OF-DAY · ECONOMY · RANK GAP · ACTION PLAN</div>
+    <!-- INNER SUB-NAV TABS WITH ACTIVE HIGH-LIGHT STATES -->
+    <div class="deep-subnav-container">
+      {#each SUBNAV_ITEMS as item}
+        <button 
+          class="deep-subnav-btn" 
+          class:active={activeChapter === item.id}
+          on:click={() => scrollToChapter(item.id)}
+        >
+          <span class="subnav-icon">{item.icon}</span>
+          <span class="subnav-label">{item.label}</span>
+        </button>
+      {/each}
     </div>
-    <button class="deep-run-btn" on:click={runDeepAnalysis} disabled={loading}>
-      {loading ? 'Analysing...' : '⚡ Re-Run Telemetry Scan'}
-    </button>
   </div>
 
   {#if loading}
     <div class="deep-loading">
-      <div class="deep-spinner"></div>
-      <span class="deep-loading-txt">{loadingText}</span>
+      <div class="deep-spinner">
+        <div class="deep-spinner-core"></div>
+      </div>
+      <div class="deep-loading-bar"></div>
+      <div class="deep-loading-txt">{loadingText}</div>
+      <div class="deep-loading-dots"><span></span><span></span><span></span></div>
     </div>
   {/if}
 

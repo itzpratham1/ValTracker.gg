@@ -1,5 +1,5 @@
 <script>
-  import { tick } from 'svelte';
+  import { tick, onMount, onDestroy } from 'svelte';
   import { buildStatsForAI, analyseStats } from '../../lib/ai-engine';
   import { animateAllNumbersInContainer } from '../../lib/aiStreamer';
   import { getRankImgUrl, getRankColor, MAP_IMAGES_FALLBACK } from '../../lib/constants';
@@ -18,6 +18,7 @@
   let result = null;
   let aiStats = null;
   let coachResultsEl = null;
+  let cardEl = null;
 
   // Interactive Warmup State
   let warmupDone = { 1: false, 2: false, 3: false, 4: false };
@@ -31,9 +32,35 @@
 
   let loadingText = 'CRUNCHING TELEMETRY MATRIX...';
 
-  $: if (matches && matches.length && !result && !loading) {
+  // --- Scroll-triggered: only run analysis when card enters viewport ---
+  let hasBeenVisible = false;
+  let observer = null;
+
+  function maybeRunOnVisible() {
+    if (!hasBeenVisible) return;
+    if (result || loading) return;
+    if (!matches || !matches.length) return;
     runAnalysis();
   }
+
+  onMount(() => {
+    observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !hasBeenVisible) {
+          hasBeenVisible = true;
+          observer.disconnect();
+          maybeRunOnVisible();
+        }
+      },
+      { threshold: 0.12 }
+    );
+    if (cardEl) observer.observe(cardEl);
+  });
+
+  onDestroy(() => { if (observer) observer.disconnect(); });
+
+  // If matches arrive AFTER the card is already in view, start then
+  $: if (matches && matches.length) { maybeRunOnVisible(); }
 
   async function runAnalysis() {
     if (!matches || !matches.length) {
@@ -128,27 +155,76 @@
   $: topAgentName = aiStats?.topAgent || 'Jett';
   $: topAgentIcon = getAgentIconUrl(topAgentName);
 
+  let selectedDrill = null;
+
   $: aimlabScenarios = (() => {
-    const scenarios = [];
-    if (!aiStats) return scenarios;
-    if (aiStats.hsPct < 22) {
-      scenarios.push({ name: 'Microshot Precision', focus: 'Headshot & First-Bullet Accuracy', duration: '5 min', tag: 'Aim Mechanics', icon: '🎯' });
-      scenarios.push({ name: 'Sixshot Ultimate', focus: 'Small Target Head-Level Clicks', duration: '5 min', tag: 'Crosshair Precision', icon: '⚡' });
+    const scenarios = [
+      {
+        id: 'microshot',
+        name: 'Microshot Precision',
+        focus: 'Headshot & First-Bullet Accuracy',
+        duration: '5 min',
+        tag: 'Aim Mechanics',
+        icon: '🎯',
+        target: 'Score: >85,000 pts · 92% Acc',
+        steps: [
+          'Use Guardian or Sheriff only in Aim Lab or Range.',
+          'Focus purely on micro-adjustments to target centers without over-flicking.',
+          'Maintain steady 120-140 BPM rhythm. Zero panic spraying.'
+        ]
+      },
+      {
+        id: 'spheretrack',
+        name: 'SphereTrack & Motiontrack',
+        focus: 'Tracking Peeking Enemies & Smoothness',
+        duration: '5 min',
+        tag: 'Duel Stabilization',
+        icon: '👁️',
+        target: 'Tracking Time: >88%',
+        steps: [
+          'Select smooth tracking mode at 100% target speed.',
+          'Keep crosshair glued to target center while strafing left and right.',
+          'Simulate tracking enemies peeking long site angles.'
+        ]
+      },
+      {
+        id: 'strafetrack',
+        name: 'StrafeTrack & Counter-Strafe',
+        focus: 'Movement Lock & Stopping Speed',
+        duration: '5 min',
+        tag: 'Movement Sync',
+        icon: '⚡',
+        target: 'Counter-strafe Error: <50ms',
+        steps: [
+          'Practice A-D counter-strafing before releasing shots.',
+          'Shoot ONLY when completely velocity stationary.',
+          'Combine 2-bullet Vandal burst with immediate cover reset.'
+        ]
+      }
+    ];
+
+    if (aiStats && aiStats.avgACS < 170) {
+      scenarios.push({
+        id: 'spidershot',
+        name: 'Spidershot Speed & Reflex',
+        focus: 'Fast Reaction & Large Flicks',
+        duration: '5 min',
+        tag: 'Reaction Speed',
+        icon: '💥',
+        target: 'Reaction Time: <210ms',
+        steps: [
+          'Focus on immediate target acquisition from crosshair center.',
+          'Reset crosshair to center after every target hit.',
+          'Build rapid muscle memory for wide-swinging enemies.'
+        ]
+      });
     }
-    if (aiStats.kd < 1.0) {
-      scenarios.push({ name: 'SphereTrack & Motiontrack', focus: 'Tracking Peeking Enemies', duration: '5 min', tag: 'Duel Stabilization', icon: '👁️' });
-    }
-    if (aiStats.avgACS < 180) {
-      scenarios.push({ name: 'Spidershot Speed', focus: 'Fast Target Acquisition', duration: '5 min', tag: 'Reaction Time', icon: '💥' });
-    }
-    if (scenarios.length === 0) {
-      scenarios.push({ name: 'StrafeTrack Ultimate', focus: 'Counter-strafing Aim Locks', duration: '5 min', tag: 'Radiant Drill', icon: '👑' });
-    }
+
     return scenarios;
   })();
 </script>
 
-<div class="ai-card" class:mode-summary={mode === 'summary'} class:mode-action={mode === 'action'}>
+<div class="ai-card" class:mode-summary={mode === 'summary'} class:mode-action={mode === 'action'} bind:this={cardEl}>
   <div class="ai-card-header">
     <div class="ai-header-left">
       <div class="ai-icon-glow-wrap">
@@ -168,11 +244,9 @@
       </div>
     </div>
     <div class="ai-header-actions">
-      {#if mode === 'summary'}
-        <button class="ai-share-btn" on:click={onShareProfile} title="Share your summary card">
-          <span class="btn-icon">🎴</span> Share Summary Card
-        </button>
-      {/if}
+      <button class="ai-share-btn" on:click={onShareProfile} title="Share profile card">
+        <span class="btn-icon">🎴</span> {mode === 'summary' ? 'Share Summary Card' : 'Share Action Plan'}
+      </button>
       <button class="ai-analyse-btn" on:click={runAnalysis} disabled={loading}>
         <span class="btn-icon">⚡</span> {loading ? 'Analysing...' : 'Re-Run Scan'}
       </button>
@@ -182,8 +256,12 @@
   <div class="ai-body">
     {#if loading}
       <div class="ai-loading">
-        <div class="ai-spinner"></div>
+        <div class="ai-spinner">
+          <div class="ai-spinner-core"></div>
+        </div>
+        <div class="ai-loading-bar"></div>
         <div class="ai-loading-txt">{loadingText}</div>
+        <div class="ai-loading-dots"><span></span><span></span><span></span></div>
       </div>
     {:else if error}
       <div class="ai-error active">{error}</div>
@@ -221,7 +299,7 @@
           {@const circumference = 2 * Math.PI * 28}
           {@const dashOffset = circumference * (1 - rs / 100)}
           {@const rsColor = rs >= 70 ? 'var(--win)' : rs >= 45 ? '#f5a623' : 'var(--loss)'}
-          <div class="ai-readiness-wrapper">
+          <div class="ai-rank-session-wrapper">
             <div class="ai-readiness-ring">
               <div style="position:relative; width:72px; height:72px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
                 <svg width="72" height="72" viewBox="0 0 72 72">
@@ -244,12 +322,20 @@
               </div>
             </div>
 
+            <div class="ai-readiness-divider"></div>
+
             <!-- Today's Session Snapshot Card with Top Agent Art -->
             <div class="ai-session-card">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div class="ai-session-header-row">
                 <div class="ai-session-header">TODAY'S SESSION SNAPSHOT</div>
                 {#if topAgentIcon}
-                  <img src={topAgentIcon} alt={topAgentName} style="width:32px; height:32px; border-radius:50%; border:1px solid rgba(250,68,84,0.4); background:rgba(0,0,0,0.4);" title="Top Agent: {topAgentName}" />
+                  <div class="ai-session-agent-badge" title="Top Pick: {topAgentName}">
+                    <img src={topAgentIcon} alt={topAgentName} class="ai-session-agent-img" />
+                    <div class="ai-session-agent-info">
+                      <span class="ai-session-agent-lbl">TOP AGENT</span>
+                      <span class="ai-session-agent-name">{topAgentName}</span>
+                    </div>
+                  </div>
                 {/if}
               </div>
               <div class="ai-session-grid">
@@ -268,7 +354,7 @@
           </div>
 
           <!-- KEY STRENGTHS & AREAS TO IMPROVE -->
-          <div class="ai-readiness-wrapper" style="margin-top:20px;">
+          <div class="ai-strengths-wrapper">
             <!-- 💪 Key Strengths -->
             <div class="ai-bento-card">
               <div class="ai-bento-header">
@@ -436,16 +522,18 @@
 
             <div class="ai-aimlab-grid">
               {#each aimlabScenarios as sc}
-                <div class="ai-aimlab-card">
+                <div class="ai-aimlab-card" on:click={() => selectedDrill = sc}>
                   <div style="display:flex; justify-content:space-between; align-items:center;">
                     <div class="ai-aimlab-card-badge">{sc.tag}</div>
-                    <span style="font-size:16px;">{sc.icon}</span>
+                    <button class="ai-aimlab-preview-btn" title="Preview drill breakdown">
+                      <span style="font-size:14px;">👁️</span> Preview
+                    </button>
                   </div>
                   <div class="ai-aimlab-card-title">{sc.name}</div>
                   <div class="ai-aimlab-card-desc">{sc.focus}</div>
                   <div class="ai-aimlab-card-footer">
-                    <span>⏱️ Duration: {sc.duration}</span>
-                    <span style="color:var(--accent)">Recommended</span>
+                    <span>⏱️ {sc.duration}</span>
+                    <span style="color:var(--accent); font-weight:700;">{sc.target || 'Recommended'}</span>
                   </div>
                 </div>
               {/each}
@@ -457,7 +545,7 @@
             <!-- Bento Card 1: Aim & Mechanics -->
             <div class="ai-bento-card">
               <div class="ai-bento-header">
-                <span class="ai-bento-icon">🎯</span>
+                <span class="ai-bento-icon-box combat">🎯</span>
                 <div class="ai-bento-title">Combat & Aim Mechanics</div>
               </div>
               <div class="ai-bento-metric-row">
@@ -481,7 +569,7 @@
             <!-- Bento Card 2: Map Positioning & Agent Fit -->
             <div class="ai-bento-card">
               <div class="ai-bento-header">
-                <span class="ai-bento-icon">🗺️</span>
+                <span class="ai-bento-icon-box positioning">🛡️</span>
                 <div class="ai-bento-title">Positioning & Agent Fit</div>
               </div>
               <div class="ai-bento-metric-row">
@@ -502,7 +590,7 @@
             <!-- Bento Card 3: Utility & Economy Trading -->
             <div class="ai-bento-card">
               <div class="ai-bento-header">
-                <span class="ai-bento-icon">💰</span>
+                <span class="ai-bento-icon-box utility">⚡</span>
                 <div class="ai-bento-title">Utility & Economy Trading</div>
               </div>
               <div class="ai-bento-metric-row">
@@ -524,8 +612,11 @@
           <!-- Structured Action Tips List -->
           <div class="ai-sections-grid" style="margin-top:20px;">
             {#if result.tips && result.tips.length}
-              <div class="ai-tip-block full">
-                <div class="ai-tip-header"><span class="ai-tip-emoji">⚡</span><span class="ai-tip-title tips">Actionable Tactical Advice</span></div>
+              <div class="ai-tip-block full tactical">
+                <div class="ai-tip-header">
+                  <span class="ai-tip-emoji-badge tactical">⚡</span>
+                  <span class="ai-tip-title tips">Actionable Tactical Advice</span>
+                </div>
                 <div class="ai-tip-list">
                   {#each result.tips as item}
                     <div class="ai-tip-item"><div class="ai-tip-bullet yellow"></div><div>{item}</div></div>
@@ -535,8 +626,11 @@
             {/if}
 
             {#if result.mental && result.mental.length}
-              <div class="ai-tip-block full">
-                <div class="ai-tip-header"><span class="ai-tip-emoji">🧠</span><span class="ai-tip-title mental">Mental Game & Pre-Queue Rules</span></div>
+              <div class="ai-tip-block full mental">
+                <div class="ai-tip-header">
+                  <span class="ai-tip-emoji-badge mental">🧠</span>
+                  <span class="ai-tip-title mental">Mental Game & Pre-Queue Rules</span>
+                </div>
                 <div class="ai-tip-list">
                   {#each result.mental as item}
                     <div class="ai-tip-item"><div class="ai-tip-bullet purple"></div><div>{item}</div></div>
@@ -548,8 +642,14 @@
 
           {#if result.verdict}
             <div class="ai-verdict">
-              <div class="ai-verdict-label">⚡ Coach's Final Verdict</div>
-              <div>{@html result.verdict}</div>
+              <div class="ai-verdict-header">
+                <div class="ai-verdict-title">
+                  <span class="ai-verdict-icon">⚡</span>
+                  COACH'S FINAL VERDICT
+                </div>
+                <span class="ai-verdict-tag">AI ANALYSIS COMPLETE</span>
+              </div>
+              <div class="ai-verdict-body">{@html result.verdict}</div>
             </div>
           {/if}
 
@@ -558,3 +658,47 @@
     {/if}
   </div>
 </div>
+
+<!-- DRILL PREVIEW MODAL -->
+{#if selectedDrill}
+  <div class="ai-drill-modal-backdrop" on:click={() => selectedDrill = null}>
+    <div class="ai-drill-modal" on:click|stopPropagation>
+      <div class="ai-drill-modal-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:24px;">{selectedDrill.icon}</span>
+          <div>
+            <div class="ai-drill-modal-title">{selectedDrill.name}</div>
+            <div class="ai-drill-modal-sub">{selectedDrill.focus} · ⏱️ {selectedDrill.duration}</div>
+          </div>
+        </div>
+        <button class="ai-drill-modal-close" on:click={() => selectedDrill = null}>✕</button>
+      </div>
+
+      <div class="ai-drill-modal-body">
+        <div class="ai-drill-target-box">
+          <span class="ai-drill-target-lbl">BENCHMARK GOAL</span>
+          <span class="ai-drill-target-val">{selectedDrill.target}</span>
+        </div>
+
+        <div style="font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:14px; letter-spacing:1px; color:#fff; text-transform:uppercase; margin-bottom:8px;">
+          EXECUTION STEPS:
+        </div>
+
+        <div class="ai-drill-steps-list">
+          {#each selectedDrill.steps as step, i}
+            <div class="ai-drill-step-item">
+              <span class="ai-drill-step-num">{i + 1}</span>
+              <span class="ai-drill-step-txt">{step}</span>
+            </div>
+          {/each}
+        </div>
+      </div>
+
+      <div class="ai-drill-modal-footer">
+        <button class="ai-drill-modal-done" on:click={() => selectedDrill = null}>
+          ✓ Close Preview
+        </button>
+      </div>
+    </div>
+  </div>
+{/if}

@@ -136,7 +136,7 @@
   function setupScrollTracker() {
     const SECTION_IDS = [
       'sec-combat', 'sec-performance', 'sec-trend', 'sec-agents', 'sec-maps',
-      'sec-weapons', 'sec-teammates', 'sec-matches', 'sec-ai-tools'
+      'sec-clutch', 'sec-accuracy', 'sec-weapons', 'sec-teammates', 'sec-matches', 'sec-ai-tools'
     ];
     let ticking = false;
     const OFFSET = 180;
