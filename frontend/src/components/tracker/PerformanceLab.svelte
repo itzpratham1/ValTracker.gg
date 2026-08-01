@@ -412,14 +412,14 @@
     return `<div class="plab-card span4"><div class="plab-patterns">${patterns.map(p=>`<div class="plab-pattern"><div class="plab-dot ${p.c}"></div><div>${p.t}</div></div>`).join('')}</div></div>`;
   }
   function rankGapRow(stat, you, avg, next, passing) {
-    return `<div class="plab-rankgap-row"><div class="plab-rankgap-stat">${stat}</div><div class="plab-rankgap-you" style="color:${passing?'var(--win)':'var(--loss)'}">${you}</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2);min-width:30px">avg</div><div class="plab-rankgap-target">${avg}</div>${next?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2);min-width:30px">next</div><div class="plab-rankgap-target" style="color:var(--accent)">${next}</div>`:''}<div style="font-family:'DM Mono',monospace;font-size:10px;margin-left:auto;color:${passing?'var(--win)':'var(--loss)'}">${passing?'✓ Above avg':'↑ Needs work'}</div></div>`;
+    return `<div class="plab-rankgap-row"><div class="plab-rankgap-stat">${stat}</div><div class="plab-rankgap-you" style="color:${passing?'var(--win)':'var(--loss)'}">${you}</div><div class="plab-rankgap-lbl">avg</div><div class="plab-rankgap-target">${avg}</div>${next?`<div class="plab-rankgap-lbl">next</div><div class="plab-rankgap-target" style="color:var(--accent)">${next}</div>`:''}<div class="plab-rankgap-status" style="color:${passing?'var(--win)':'var(--loss)'}">${passing?'✓ Above avg':'↑ Needs work'}</div></div>`;
   }
   function nextGapRow(stat, you, target, passing) {
     const youNum = parseFloat(String(you));
     const targetNum = parseFloat(String(target));
     const pct = passing ? 100 : Math.min(99, Math.round((youNum/targetNum)*100));
     const gap = passing ? '✓ Ready' : `Need +${(targetNum-youNum).toFixed(stat==='K/D'?2:0)}`;
-    return `<div class="plab-rankgap-row"><div class="plab-rankgap-stat">${stat}</div><div class="plab-rankgap-you" style="color:${passing?'var(--win)':'rgba(240,240,242,0.7)'}">${you}</div><div class="plab-rankgap-bar-wrap" style="margin:0 12px"><div class="plab-rankgap-bar" style="width:${pct}%;background:${passing?'var(--win)':'var(--accent)'}"></div></div><div class="plab-rankgap-target">${target}</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:${passing?'var(--win)':'var(--muted)'};margin-left:8px;white-space:nowrap">${gap}</div></div>`;
+    return `<div class="plab-rankgap-row"><div class="plab-rankgap-stat">${stat}</div><div class="plab-rankgap-you" style="color:${passing?'var(--win)':'rgba(240,240,242,0.7)'}">${you}</div><div class="plab-rankgap-bar-wrap"><div class="plab-rankgap-bar" style="width:${pct}%;background:${passing?'var(--win)':'var(--accent)'}"></div></div><div class="plab-rankgap-target">${target}</div><div class="plab-rankgap-gap-lbl" style="color:${passing?'var(--win)':'var(--muted)'}">${gap}</div></div>`;
   }
 </script>
 

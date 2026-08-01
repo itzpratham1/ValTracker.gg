@@ -110,7 +110,7 @@
   })();
 </script>
 
-<div style="padding: 24px; max-width: 1400px; margin: 0 auto;">
+<div class="overlay-studio-container">
   <!-- Header Banner -->
   <div style="background: linear-gradient(135deg, rgba(250, 68, 84, 0.12) 0%, rgba(20, 20, 22, 0.45) 100%); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 8px;">
     <h2 style="font-family:'Barlow Condensed', sans-serif; font-size: 32px; font-weight: 900; text-transform: uppercase; color: #fff; letter-spacing: 1.5px; margin: 0;">OBS Stream Overlay Studio</h2>
