@@ -908,12 +908,15 @@ body::before {
 }
 .agent-wr-chip {
   position: absolute; top: 10px; right: 10px;
+  z-index: 10;
   font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px;
   padding: 2px 8px; border-radius: 4px;
-  background: rgba(3, 3, 4, 0.85);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border: 1px solid var(--border);
+  background: rgba(11, 11, 15, 0.92);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
 }
 .agent-wr-chip.good { color: var(--win); }
 .agent-wr-chip.mid { color: #f5a623; }
@@ -1315,6 +1318,10 @@ body::before {
 .ps-item:nth-child(4) .psv { color: #38bdf8; text-shadow: 0 0 12px rgba(56, 189, 248, 0.35); }
 .ps-item:nth-child(5) .psv { text-shadow: 0 0 12px currentColor; }
 .ps-item:nth-child(6) .psv { text-shadow: 0 0 8px rgba(255, 255, 255, 0.15); }
+.panel-share-wrap { margin: 8px 0 10px; display: flex; gap: 8px; align-items: center; }
+.psv-rank { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; }
+.psv-rank-img { width: 22px; height: 22px; object-fit: contain; flex-shrink: 0; }
+.psv-rank-name { font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 
 /* PANEL TABS */
 .panel-tabs {
@@ -1375,7 +1382,17 @@ body::before {
 .panel-section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
 /* MVP BADGES */
-.mvp-badge { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; padding: 2px 7px; border-radius: 3px; margin-left: 8px; vertical-align: middle; display: inline-block; }
+.mvp-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.5px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  vertical-align: middle;
+  display: inline-block;
+  white-space: nowrap;
+  line-height: 1.2;
+}
 .mvp-badge.match-mvp { background: rgba(232, 255, 71, 0.12); color: var(--accent); border: 1px solid var(--accentborder); }
 .mvp-badge.team-mvp { background: rgba(16, 185, 129, 0.08); color: var(--win); border: 1px solid rgba(16, 185, 129, 0.25); }
 .mvp-header-badge { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 1.5px; padding: 4px 14px; display: inline-block; margin-top: 6px; border-radius: 4px; }
@@ -1390,8 +1407,25 @@ body::before {
 .scoreboard th { font-family: 'Exo 2', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 1.5px; color: var(--muted2); padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border); text-transform: uppercase; }
 .scoreboard td { padding: 8px 10px; font-size: 13px; font-weight: 600; border-bottom: 1px solid rgba(255, 255, 255, 0.03); vertical-align: middle; color: var(--text); }
 .scoreboard tr:hover td { background: rgba(255, 255, 255, 0.02); }
-.sb-name { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 0.5px; color: var(--text); }
-.sb-agent { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted2); margin-top: 2px; letter-spacing: 0.5px; }
+.sb-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 165px;
+}
+.sb-sub-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 1px;
+}
+.sb-agent { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted2); letter-spacing: 0.5px; }
 .sb-kd-bar { width: 40px; height: 2px; background: var(--surface3); margin-top: 3px; border-radius: 1px; }
 .sb-kd-fill { height: 100%; background: var(--accent); border-radius: 1px; }
 .sb-rank { display: flex; align-items: center; gap: 5px; }
@@ -4565,6 +4599,7 @@ input:checked + .slider:before {
   /* Bento elements mobile spans — 2 per row */
   .agent-bento { grid-column: span 1 !important; width: 100% !important; }
   .agent-portrait { height: 95px !important; }
+  .agent-wr-chip { top: 6px !important; right: 6px !important; font-size: 12px !important; padding: 2px 6px !important; z-index: 10 !important; }
   .map-card-bento { grid-column: span 1 !important; width: 100% !important; }
   .map-stats-mini { grid-template-columns: repeat(2, 1fr) !important; }
   .impact-bento { grid-column: span 1 !important; width: 100% !important; padding: 12px 10px !important; }
@@ -8238,15 +8273,23 @@ body::after {
   border-spacing: 0;
 }
 .scoreboard th:first-child,
-.scoreboard td:first-child {
+.scoreboard td:first-child:not(.team-label) {
   position: sticky !important;
   left: 0 !important;
-  z-index: 10 !important;
+  z-index: 12 !important;
   background: #0b0b13 !important; /* solid background matches card surface */
   border-right: 1px solid var(--border) !important;
+  min-width: 190px !important;
+  max-width: 260px !important;
+  width: 210px !important;
+}
+.scoreboard td.team-label {
+  position: static !important;
+  z-index: 1 !important;
 }
 .scoreboard th:first-child {
   background: #060608 !important;
+  z-index: 13 !important;
 }
 .scoreboard tr:hover td:first-child {
   background: rgba(255, 255, 255, 0.05) !important;
@@ -9075,13 +9118,23 @@ body::after {
   .stat-modal .table-wrap table,
   .match-panel .table-wrap table,
   .scoreboard-scroll-wrap table,
-  .scoreboard { min-width: 580px !important; width: 100% !important; }
+  .scoreboard { width: max-content !important; min-width: 100% !important; max-width: none !important; }
   .stat-modal .table-wrap th,
   .stat-modal .table-wrap td,
   .match-panel .table-wrap th,
   .match-panel .table-wrap td,
   .scoreboard th,
   .scoreboard td { font-size: 11px !important; padding: 5px 6px !important; }
+  .scoreboard th:first-child,
+  .scoreboard td:first-child:not(.team-label) {
+    min-width: 130px !important;
+    max-width: 145px !important;
+    width: 135px !important;
+  }
+  .sb-name {
+    font-size: 12.5px !important;
+    max-width: 95px !important;
+  }
   body.modal-open { overflow: hidden !important; position: fixed !important; width: 100% !important; top: var(--scroll-y, 0) !important; }
 }
 
@@ -15601,6 +15654,109 @@ a:focus-visible {
     margin: 10px !important;
     max-height: 90vh !important;
     overflow-y: auto !important;
+  }
+}
+
+/* ==========================================================================
+   MOBILE LAYOUT OPTIMIZATION: EXPANDED MATCH PANEL & STAT GRID (<= 600px)
+   ========================================================================== */
+@media (max-width: 600px) {
+  .panel-body {
+    padding: 8px 6px !important;
+  }
+  .panel-header-row {
+    gap: 8px !important;
+    margin-bottom: 6px !important;
+  }
+  .panel-grade-badge {
+    width: 38px !important;
+    height: 38px !important;
+    font-size: 22px !important;
+    border-radius: 8px !important;
+  }
+  .panel-match-title {
+    font-size: 15px !important;
+    gap: 5px !important;
+  }
+  .panel-match-title img {
+    width: 20px !important;
+    height: 20px !important;
+  }
+  .panel-match-sub {
+    font-size: 9px !important;
+    margin-top: 1px !important;
+  }
+  .panel-share-wrap {
+    margin: 4px 0 2px !important;
+  }
+  .share-flex-btn {
+    font-size: 10px !important;
+    padding: 3px 8px !important;
+    border-radius: 12px !important;
+  }
+  .panel-stat-row {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 4px !important;
+    padding: 5px 4px !important;
+    margin-top: 6px !important;
+    border-radius: 8px !important;
+  }
+  .ps-item {
+    min-height: 38px !important;
+    padding: 3px 2px !important;
+    border-radius: 6px !important;
+  }
+  .ps-item .psv {
+    font-size: 14px !important;
+    line-height: 1.1 !important;
+  }
+  .ps-item .psl {
+    font-size: 7.5px !important;
+    margin-top: 1px !important;
+    letter-spacing: 0.3px !important;
+  }
+  .psv-rank {
+    gap: 3px !important;
+  }
+  .psv-rank-img {
+    width: 14px !important;
+    height: 14px !important;
+  }
+  .psv-rank-name {
+    font-size: 10.5px !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 100% !important;
+  }
+  .panel-tabs {
+    margin: 6px 0 6px !important;
+    gap: 4px !important;
+    padding-bottom: 2px !important;
+  }
+  .panel-tab-btn {
+    font-size: 10.5px !important;
+    padding: 4px 8px !important;
+    letter-spacing: 0.4px !important;
+  }
+  .lobby-rank-bar {
+    padding: 6px 8px !important;
+    gap: 6px !important;
+    margin-bottom: 6px !important;
+    border-radius: 6px !important;
+  }
+  .lobby-rank-label {
+    font-size: 8px !important;
+  }
+  .lobby-avg-rank-name,
+  .lobby-team-avg-name {
+    font-size: 11px !important;
+  }
+  .lobby-avg-rank img,
+  .lobby-team-block img {
+    width: 15px !important;
+    height: 15px !important;
   }
 }
 

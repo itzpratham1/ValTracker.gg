@@ -329,7 +329,7 @@
     {/if}
 
   <div class="scoreboard-scroll-wrap" style="width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch;">
-    <table class="scoreboard" style="min-width: 600px; width: 100%;">
+    <table class="scoreboard" style="width: max-content; min-width: 100%;">
       <thead>
         <tr>
           <th>PLAYER</th>
@@ -339,14 +339,14 @@
           <th>K</th>
           <th>D</th>
           <th>A</th>
-          <th class="hide-mobile" title="Kill Difference (Kills - Deaths)">+/-</th>
-          <th class="hide-mobile" title="Average Damage per Round">ADR</th>
-          <th class="hide-mobile" title="Average Damage Delta per Round">DD</th>
-          <th class="hide-mobile" title="Killed/Assisted/Survived/Traded %">KAST</th>
+          <th title="Kill Difference (Kills - Deaths)">+/-</th>
+          <th title="Average Damage per Round">ADR</th>
+          <th title="Average Damage Delta per Round">DD</th>
+          <th title="Killed/Assisted/Survived/Traded %">KAST</th>
           <th>HS%</th>
           <th>FK</th>
           <th>FD</th>
-          <th class="hide-mobile" title="Multi-Kill Rounds (3K / 4K / 5K)">MK</th>
+          <th title="Multi-Kill Rounds (3K / 4K / 5K)">MK</th>
         </tr>
       </thead>
       <tbody>
@@ -387,16 +387,18 @@
                 {#if agentIcon}
                   <img src={agentIcon} alt={p.character} style="width:26px;height:26px;object-fit:contain;border-radius:3px;background:var(--surface2);" on:error={(e) => e.target.style.display='none'}>
                 {/if}
-                <div>
-                  <div class="sb-name">
+                <div style="min-width:0; flex:1;">
+                  <div class="sb-name" title={p.name || ''}>
                     {escapeHtml(p.name || '—')}
+                  </div>
+                  <div class="sb-sub-row">
+                    <span class="sb-agent">{escapeHtml((p.character || '—').toUpperCase())}</span>
                     {#if isMatchMVP}
                       <span class="mvp-badge match-mvp">Match MVP</span>
                     {:else if isTeamMVP}
                       <span class="mvp-badge team-mvp">Team MVP</span>
                     {/if}
                   </div>
-                  <div class="sb-agent">{escapeHtml((p.character || '—').toUpperCase())}</div>
                 </div>
               </div>
             </td>
@@ -416,18 +418,18 @@
             <td><b>{k}</b></td>
             <td>{d}</td>
             <td>{a}</td>
-            <td class="hide-mobile" style="color:{kdDiff > 0 ? 'var(--win)' : kdDiff < 0 ? 'var(--loss)' : 'var(--muted)'}; font-weight:bold;">
+            <td style="color:{kdDiff > 0 ? 'var(--win)' : kdDiff < 0 ? 'var(--loss)' : 'var(--muted)'}; font-weight:bold;">
               {kdDiff > 0 ? '+' : ''}{kdDiff}
             </td>
-            <td class="hide-mobile">{adr}</td>
-            <td class="hide-mobile" style="color:{dd > 0 ? 'var(--win)' : dd < 0 ? 'var(--loss)' : 'var(--muted)'};">
+            <td>{adr}</td>
+            <td style="color:{dd > 0 ? 'var(--win)' : dd < 0 ? 'var(--loss)' : 'var(--muted)'};">
               {dd > 0 ? '+' : ''}{dd}
             </td>
-            <td class="hide-mobile">{kast}%</td>
+            <td>{kast}%</td>
             <td>{hsPct}%</td>
             <td style="color:var(--win); font-weight:bold;">{fk}</td>
             <td style="color:var(--loss);">{fd}</td>
-            <td class="hide-mobile" style="font-size:11px; font-family:'DM Mono',monospace; color:var(--muted);">{mk}</td>
+            <td style="font-size:11px; font-family:'DM Mono',monospace; color:var(--muted);">{mk}</td>
           </tr>
         {/each}
 
@@ -468,11 +470,18 @@
                 {#if agentIcon}
                   <img src={agentIcon} alt={p.character} style="width:26px;height:26px;object-fit:contain;border-radius:3px;background:var(--surface2);" on:error={(e) => e.target.style.display='none'}>
                 {/if}
-                <div>
-                  <div class="sb-name">
+                <div style="min-width:0; flex:1;">
+                  <div class="sb-name" title={p.name || ''}>
                     {escapeHtml(p.name || '—')}
                   </div>
-                  <div class="sb-agent">{escapeHtml((p.character || '—').toUpperCase())}</div>
+                  <div class="sb-sub-row">
+                    <span class="sb-agent">{escapeHtml((p.character || '—').toUpperCase())}</span>
+                    {#if isMatchMVP}
+                      <span class="mvp-badge match-mvp">Match MVP</span>
+                    {:else if isTeamMVP}
+                      <span class="mvp-badge team-mvp">Team MVP</span>
+                    {/if}
+                  </div>
                 </div>
               </div>
             </td>
@@ -492,18 +501,18 @@
             <td><b>{k}</b></td>
             <td>{d}</td>
             <td>{a}</td>
-            <td class="hide-mobile" style="color:{kdDiff > 0 ? 'var(--win)' : kdDiff < 0 ? 'var(--loss)' : 'var(--muted)'}; font-weight:bold;">
+            <td style="color:{kdDiff > 0 ? 'var(--win)' : kdDiff < 0 ? 'var(--loss)' : 'var(--muted)'}; font-weight:bold;">
               {kdDiff > 0 ? '+' : ''}{kdDiff}
             </td>
-            <td class="hide-mobile">{adr}</td>
-            <td class="hide-mobile" style="color:{dd > 0 ? 'var(--win)' : dd < 0 ? 'var(--loss)' : 'var(--muted)'};">
+            <td>{adr}</td>
+            <td style="color:{dd > 0 ? 'var(--win)' : dd < 0 ? 'var(--loss)' : 'var(--muted)'};">
               {dd > 0 ? '+' : ''}{dd}
             </td>
-            <td class="hide-mobile">{kast}%</td>
+            <td>{kast}%</td>
             <td>{hsPct}%</td>
             <td style="color:var(--win); font-weight:bold;">{fk}</td>
             <td style="color:var(--loss);">{fd}</td>
-            <td class="hide-mobile" style="font-size:11px; font-family:'DM Mono',monospace; color:var(--muted);">{mk}</td>
+            <td style="font-size:11px; font-family:'DM Mono',monospace; color:var(--muted);">{mk}</td>
           </tr>
         {/each}
       </tbody>

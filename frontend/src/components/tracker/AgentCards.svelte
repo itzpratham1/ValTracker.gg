@@ -111,12 +111,12 @@
       {@const img = getAgentIcon(name)}
       {@const trend = getAgentTrend(name, allMatches)}
       <div class="agent-bento reveal-on-scroll stagger-{i}">
-        <div class="agent-wr-chip {wrCls}">{wr}%</div>
         {#if img}
           <img class="agent-portrait" src={img} alt={name}>
         {:else}
           <div class="agent-portrait-fallback">{name[0] || '?'}</div>
         {/if}
+        <div class="agent-wr-chip {wrCls}">{wr}%</div>
         <div class="agent-info">
           <div class="agent-name">{name}</div>
           <div class="agent-role-chip {role}">{role}</div>

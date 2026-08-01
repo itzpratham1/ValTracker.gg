@@ -796,7 +796,7 @@
             {mvpBadge}
           </div>
         {/if}
-        <div style="margin: 8px 0 10px; display: flex; gap: 8px; align-items: center;">
+        <div class="panel-share-wrap">
           <button class="share-flex-btn" on:click|stopPropagation={onShare}>
             <span>✨ Share Flex Card</span>
           </button>
@@ -828,11 +828,11 @@
         {/if}
         {#if lobbyRankName}
           <div class="ps-item">
-            <div class="psv" style="display:flex;align-items:center;gap:6px;font-size:18px;">
+            <div class="psv psv-rank">
               {#if lobbyRankImg}
-                <img src={lobbyRankImg} alt={lobbyRankName} style="width:22px;height:22px;object-fit:contain;" on:error={(e) => e.target.style.display='none'}>
+                <img src={lobbyRankImg} alt={lobbyRankName} class="psv-rank-img" on:error={(e) => e.target.style.display='none'}>
               {/if}
-              {lobbyRankName}
+              <span class="psv-rank-name">{lobbyRankName}</span>
             </div>
             <div class="psl">Lobby Avg Rank</div>
           </div>
