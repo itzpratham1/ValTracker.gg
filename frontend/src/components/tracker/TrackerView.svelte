@@ -600,8 +600,6 @@
       </div>
     </div>
   </main>
-
-  <Footer />
   {/if}
 
   {#if $currentView === 'esports'}
@@ -619,6 +617,8 @@
   {#if $currentView === 'overlay'}
     <OverlayStudio />
   {/if}
+
+  <Footer />
 
   <HeadToHead
     open={h2hOpen}

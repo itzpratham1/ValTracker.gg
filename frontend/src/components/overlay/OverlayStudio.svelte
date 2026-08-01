@@ -112,9 +112,9 @@
 
 <div class="overlay-studio-container">
   <!-- Header Banner -->
-  <div style="background: linear-gradient(135deg, rgba(250, 68, 84, 0.12) 0%, rgba(20, 20, 22, 0.45) 100%); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 8px;">
-    <h2 style="font-family:'Barlow Condensed', sans-serif; font-size: 32px; font-weight: 900; text-transform: uppercase; color: #fff; letter-spacing: 1.5px; margin: 0;">OBS Stream Overlay Studio</h2>
-    <p style="font-size: 13px; color: var(--muted); margin: 0; max-width: 700px;">Design premium, real-time telemetry overlays for your stream. Configure color schemes, layout scaling, and stats packages, then paste the generated URL into an OBS Browser Source.</p>
+  <div class="overlay-studio-header-banner">
+    <h2>OBS Stream Overlay Studio</h2>
+    <p>Design premium, real-time telemetry overlays for your stream. Configure color schemes, layout scaling, and stats packages, then paste the generated URL into an OBS Browser Source.</p>
   </div>
 
   <!-- Dashboard Split Grid -->
@@ -144,7 +144,7 @@
       <div class="overlay-settings-group">
         <h3>1. Link Player Profile</h3>
         <div class="overlay-settings-row">
-          <input class="overlay-studio-input" type="text" placeholder="Name" bind:value={name} autocomplete="off" spellcheck="false" style="flex-grow: 1;">
+          <input class="overlay-studio-input overlay-studio-name-input" type="text" placeholder="Name" bind:value={name} autocomplete="off" spellcheck="false">
           <span class="overlay-studio-hash">#</span>
           <input class="overlay-studio-input overlay-studio-tag-input" type="text" placeholder="TAG" bind:value={tag} maxlength="8" autocomplete="off" spellcheck="false">
           <select class="overlay-studio-select" bind:value={region}>
@@ -156,7 +156,7 @@
         </div>
       </div>
 
-      <!-- 2. Select Layout -->
+      <!-- 2. Select Layout Preset -->
       <div class="overlay-settings-group">
         <h3>2. Select Layout Preset</h3>
         <select class="overlay-studio-select-large" bind:value={variant}>
@@ -214,31 +214,31 @@
             </div>
           </div>
         </div>
-        <div class="scale-slider-control" style="margin-top: 14px;">
-          <div style="display:flex; justify-content:space-between; margin-bottom: 6px;">
-            <label style="font-family:'DM Mono',monospace; font-size:11px; color:var(--muted);">Overlay Scale (OBS Multiplier)</label>
-            <span style="font-family:'DM Mono',monospace; font-size:11px; color:var(--accent); font-weight:700;">{scale.toFixed(2)}x</span>
+        <div class="scale-slider-control">
+          <div class="scale-slider-header">
+            <label>Overlay Scale (OBS Multiplier)</label>
+            <span class="scale-slider-val">{scale.toFixed(2)}x</span>
           </div>
-          <input type="range" min="0.5" max="1.5" step="0.05" bind:value={scale} style="width:100%; accent-color:var(--accent); cursor:pointer;">
+          <input type="range" min="0.5" max="1.5" step="0.05" bind:value={scale} class="scale-range-input">
         </div>
       </div>
 
       <!-- 5. Generate Link & Setup Guide -->
-      <div class="overlay-settings-group final-link-box" style="border: 1px solid rgba(250, 68, 84, 0.16); background: rgba(250, 68, 84, 0.02);">
+      <div class="overlay-settings-group final-link-box">
         <h3>4. Generate OBS URL</h3>
-        <div class="obs-url-row" style="display: flex; gap: 8px; margin-bottom: 12px;">
-          <input type="text" readonly value={generatedUrl || 'Please enter name and tag first'} on:click={(e) => e.target.select()} style="flex-grow:1; background:var(--surface2); border:1px solid var(--border); color:#fff; padding:8px 12px; border-radius:6px; font-family:'DM Mono',monospace; font-size:11px; outline:none; text-overflow:ellipsis;">
-          <button class="fetch-btn" on:click={copyObsUrl} style="padding: 8px 16px;">Copy URL</button>
+        <div class="obs-url-row">
+          <input type="text" readonly value={generatedUrl || 'Please enter name and tag first'} on:click={(e) => e.target.select()} class="obs-url-input">
+          <button class="fetch-btn copy-url-btn" on:click={copyObsUrl}>Copy URL</button>
         </div>
         
-        <div class="obs-setup-guide" style="font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); padding-top: 12px;">
-          <h4 style="color:#fff; font-family:'Barlow Condensed',sans-serif; font-size:14px; text-transform:uppercase; margin-bottom:6px; letter-spacing:0.5px;">How to add to OBS Studio:</h4>
-          <ol style="padding-left: 16px; margin: 0; display:flex; flex-direction:column; gap:4px; line-height:1.4;">
+        <div class="obs-setup-guide">
+          <h4>How to add to OBS Studio:</h4>
+          <ol>
             <li>In OBS, click <strong>+</strong> under the <em>Sources</em> panel.</li>
             <li>Select <strong>Browser Source</strong> and name it (e.g. "Valorant Overlay").</li>
             <li>Paste the copied URL into the <strong>URL</strong> field.</li>
             <li>Set the Width and Height based on your layout:
-              <ul style="margin-top: 2px; padding-left: 16px; color: var(--accent); list-style-type: square;">
+              <ul>
                 <li>Competitive: <strong>600 x 200</strong></li>
                 <li>Center HUD: <strong>720 x 120</strong></li>
                 <li>Flexible Panel: <strong>320 x 480</strong></li>
@@ -251,3 +251,408 @@
     </div>
   </div>
 </div>
+
+<style>
+  .overlay-studio-container {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 16px;
+    padding-bottom: 110px;
+    overflow-x: hidden;
+  }
+
+  .overlay-studio-header-banner {
+    background: linear-gradient(135deg, rgba(250, 68, 84, 0.12) 0%, rgba(20, 20, 22, 0.6) 100%);
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .overlay-studio-header-banner h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: #fff;
+    letter-spacing: 1.5px;
+    margin: 0;
+  }
+
+  .overlay-studio-header-banner p {
+    font-size: 13px;
+    color: var(--muted, #9494a0);
+    margin: 0;
+    max-width: 700px;
+    line-height: 1.5;
+  }
+
+  .overlay-studio-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 20px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .overlay-studio-preview-col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .overlay-studio-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted, #9494a0);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .overlay-studio-canvas {
+    background: radial-gradient(circle, rgba(25, 25, 30, 0.6) 0%, rgba(5, 5, 8, 0.95) 100%);
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+    border-radius: 12px;
+    height: 440px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .overlay-studio-settings-col {
+    background: var(--surface, #121216);
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .overlay-settings-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+    padding-bottom: 20px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .overlay-settings-group:last-of-type {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .overlay-settings-group h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    text-transform: uppercase;
+    color: var(--accent, #fa4454);
+    letter-spacing: 0.5px;
+    margin: 0;
+  }
+
+  .overlay-settings-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .overlay-studio-name-input {
+    flex: 1 1 0%;
+    min-width: 0;
+    background: var(--surface2, #1a1a22);
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    height: 38px;
+    box-sizing: border-box;
+    outline: none;
+  }
+
+  .overlay-studio-hash {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    color: var(--muted, #9494a0);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .overlay-studio-tag-input {
+    width: 70px;
+    flex-shrink: 0;
+    background: var(--surface2, #1a1a22);
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+    color: #fff;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    height: 38px;
+    box-sizing: border-box;
+    outline: none;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .overlay-studio-select {
+    width: 65px;
+    flex-shrink: 0;
+    background: var(--surface2, #1a1a22);
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+    color: #fff;
+    padding: 8px 6px;
+    border-radius: 6px;
+    font-size: 12px;
+    height: 38px;
+    box-sizing: border-box;
+    outline: none;
+    font-family: 'DM Mono', monospace;
+    cursor: pointer;
+  }
+
+  .overlay-studio-select-large {
+    background: var(--surface2, #1a1a22);
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+    color: #fff;
+    padding: 10px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    outline: none;
+    font-size: 13px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .colors-controls-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .color-picker-control {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .color-picker-control label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted, #9494a0);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .color-picker-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface2, #1a1a22);
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+    border-radius: 6px;
+    padding: 4px 8px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .color-picker-input-wrap input[type="text"] {
+    flex: 1 1 0%;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    outline: none;
+    width: 100%;
+  }
+
+  .scale-slider-control {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 12px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .scale-slider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  .scale-slider-header label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted, #9494a0);
+  }
+
+  .scale-slider-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent, #fa4454);
+    font-weight: 700;
+  }
+
+  .scale-range-input {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    accent-color: var(--accent, #fa4454);
+    cursor: pointer;
+    margin: 4px 0 0 0;
+    display: block;
+  }
+
+  .final-link-box {
+    border: 1px solid rgba(250, 68, 84, 0.2);
+    background: rgba(250, 68, 84, 0.03);
+    border-radius: 8px;
+    padding: 16px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .obs-url-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 14px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .obs-url-input {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    background: var(--surface2, #1a1a22) !important;
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.1)) !important;
+    color: #fff !important;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    outline: none;
+    text-overflow: ellipsis;
+    -webkit-appearance: none;
+  }
+
+  .copy-url-btn {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 16px;
+    background: var(--accent, #fa4454);
+    color: #ffffff;
+    font-weight: 800;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .obs-setup-guide {
+    font-size: 12px;
+    color: var(--muted, #9494a0);
+    border-top: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+    padding-top: 12px;
+    width: 100%;
+    box-sizing: border-box;
+    padding-right: 12px;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .obs-setup-guide h4 {
+    color: #fff;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    text-transform: uppercase;
+    margin: 0 0 6px 0;
+    letter-spacing: 0.5px;
+  }
+
+  .obs-setup-guide ol {
+    padding-left: 16px;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    line-height: 1.4;
+    white-space: normal;
+  }
+
+  .obs-setup-guide li, .obs-setup-guide strong {
+    white-space: normal !important;
+    word-break: break-word !important;
+    text-overflow: clip !important;
+  }
+
+  .obs-setup-guide ul {
+    margin-top: 2px;
+    padding-left: 16px;
+    color: var(--accent, #fa4454);
+    list-style-type: square;
+  }
+
+  @media (max-width: 900px) {
+    .overlay-studio-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .overlay-studio-canvas {
+      height: 280px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .overlay-studio-container {
+      padding: 12px;
+      padding-bottom: 110px;
+    }
+    .overlay-studio-header-banner {
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+    .overlay-studio-header-banner h2 {
+      font-size: 22px;
+    }
+    .overlay-studio-settings-col {
+      padding: 14px;
+    }
+  }
+</style>

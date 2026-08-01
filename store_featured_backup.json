@@ -2,46 +2,187 @@
   "status": 200,
   "data": [
     {
-      "bundle_uuid": "039a79c4-44ce-f75d-d0d1-d3bb02b5c2cf",
-      "bundle_price": 1425,
-      "whole_sale_only": true,
+      "bundle_uuid": "4d368017-4f98-1e89-dbec-31abd2533eb9",
+      "bundle_price": 6700,
+      "whole_sale_only": false,
       "items": [
         {
-          "uuid": "5483ce5b-4b3c-3057-770d-0f96235625f4",
-          "name": "Matchday Buddy",
-          "image": "https://media.valorant-api.com/buddies/5483ce5b-4b3c-3057-770d-0f96235625f4/displayicon.png",
-          "type": "buddy",
-          "amount": 2,
-          "discount_percent": 0.4,
-          "base_price": 675,
-          "discounted_price": 405,
+          "uuid": "38d47ee7-414d-8cee-5bbd-aca16656cda9",
+          "name": "Neo Frontier Lasso",
+          "image": "https://media.valorant-api.com/weaponskins/38d47ee7-414d-8cee-5bbd-aca16656cda9/displayicon.png",
+          "type": "skin_level",
+          "amount": 1,
+          "discount_percent": 0.23,
+          "base_price": 4350,
+          "discounted_price": 3350,
           "promo_item": false
         },
         {
-          "uuid": "1a91f02e-4269-9d5c-c613-8fa93e0c5ae8",
-          "name": "Matchday Spray",
-          "image": "https://media.valorant-api.com/sprays/1a91f02e-4269-9d5c-c613-8fa93e0c5ae8/displayicon.png",
+          "uuid": "5ef15ada-4332-093f-ea15-8a8891d863d0",
+          "name": "Neo Frontier Vandal",
+          "image": "https://media.valorant-api.com/weaponskins/5ef15ada-4332-093f-ea15-8a8891d863d0/displayicon.png",
+          "type": "skin_level",
+          "amount": 1,
+          "discount_percent": 0.23,
+          "base_price": 2175,
+          "discounted_price": 1675,
+          "promo_item": false
+        },
+        {
+          "uuid": "de88d366-4d2b-655f-345c-719b97ddf9d9",
+          "name": "Neo Frontier Shorty",
+          "image": "https://media.valorant-api.com/weaponskins/de88d366-4d2b-655f-345c-719b97ddf9d9/displayicon.png",
+          "type": "skin_level",
+          "amount": 1,
+          "discount_percent": 0.23,
+          "base_price": 2175,
+          "discounted_price": 1675,
+          "promo_item": false
+        },
+        {
+          "uuid": "e9a3d874-4893-b17a-00ca-0b88017f7919",
+          "name": "Neo Frontier, V26 Card",
+          "image": "https://media.valorant-api.com/playercards/e9a3d874-4893-b17a-00ca-0b88017f7919/displayicon.png",
+          "type": "player_card",
+          "amount": 1,
+          "discount_percent": 1.0,
+          "base_price": 375,
+          "discounted_price": 0,
+          "promo_item": false
+        },
+        {
+          "uuid": "5e5a435f-4a0d-0320-39c9-3fbe8ff65ae2",
+          "name": "Frontier, V26 Card",
+          "image": "https://media.valorant-api.com/playercards/5e5a435f-4a0d-0320-39c9-3fbe8ff65ae2/displayicon.png",
+          "type": "player_card",
+          "amount": 1,
+          "discount_percent": 1.0,
+          "base_price": 375,
+          "discounted_price": 0,
+          "promo_item": false
+        },
+        {
+          "uuid": "5d3cde59-4d50-e54b-9126-d7bfac8d18bc",
+          "name": "Neo Frontier, V26 Spray",
+          "image": "https://media.valorant-api.com/sprays/5d3cde59-4d50-e54b-9126-d7bfac8d18bc/displayicon.png",
           "type": "spray",
           "amount": 1,
-          "discount_percent": 0.4,
+          "discount_percent": 1.0,
           "base_price": 325,
-          "discounted_price": 195,
-          "promo_item": false
-        },
-        {
-          "uuid": "7f9b236f-40d5-1c22-88a0-d38ffd5c7b8f",
-          "name": "Matchday Flex",
-          "image": "https://media.valorant-api.com/flex/7f9b236f-40d5-1c22-88a0-d38ffd5c7b8f/displayicon.png",
-          "type": "flex",
-          "amount": 1,
-          "discount_percent": 0.4,
-          "base_price": 1375,
-          "discounted_price": 825,
+          "discounted_price": 0,
           "promo_item": false
         }
       ],
-      "seconds_remaining": 127496,
-      "expires_at": "2026-07-29T05:00:08.977Z"
+      "seconds_remaining": 1552929,
+      "expires_at": "2026-08-19T05:03:29.831Z"
+    },
+    {
+      "bundle_uuid": "8d29f5fe-402a-94ee-2d67-e29b97dda6f4",
+      "bundle_price": 9310,
+      "whole_sale_only": false,
+      "items": [
+        {
+          "uuid": "52417dc8-48b7-111a-b63b-5db108b2e63a",
+          "name": "Neo Frontier Phantom",
+          "image": "https://media.valorant-api.com/weaponskins/52417dc8-48b7-111a-b63b-5db108b2e63a/displayicon.png",
+          "type": "skin_level",
+          "amount": 1,
+          "discount_percent": 0.6,
+          "base_price": 2175,
+          "discounted_price": 870,
+          "promo_item": false
+        },
+        {
+          "uuid": "b73f455a-4d77-44e7-fd90-1db9db82a8f6",
+          "name": "Neo Frontier Sheriff",
+          "image": "https://media.valorant-api.com/weaponskins/b73f455a-4d77-44e7-fd90-1db9db82a8f6/displayicon.png",
+          "type": "skin_level",
+          "amount": 1,
+          "discount_percent": 0.6,
+          "base_price": 2175,
+          "discounted_price": 870,
+          "promo_item": false
+        },
+        {
+          "uuid": "d70d33ff-4a88-bf66-f256-bcb05fa9bd60",
+          "name": "Neo Frontier Marshal",
+          "image": "https://media.valorant-api.com/weaponskins/d70d33ff-4a88-bf66-f256-bcb05fa9bd60/displayicon.png",
+          "type": "skin_level",
+          "amount": 1,
+          "discount_percent": 0.6,
+          "base_price": 2175,
+          "discounted_price": 870,
+          "promo_item": false
+        },
+        {
+          "uuid": "38d47ee7-414d-8cee-5bbd-aca16656cda9",
+          "name": "Neo Frontier Lasso",
+          "image": "https://media.valorant-api.com/weaponskins/38d47ee7-414d-8cee-5bbd-aca16656cda9/displayicon.png",
+          "type": "skin_level",
+          "amount": 1,
+          "discount_percent": 0.23,
+          "base_price": 4350,
+          "discounted_price": 3350,
+          "promo_item": false
+        },
+        {
+          "uuid": "5ef15ada-4332-093f-ea15-8a8891d863d0",
+          "name": "Neo Frontier Vandal",
+          "image": "https://media.valorant-api.com/weaponskins/5ef15ada-4332-093f-ea15-8a8891d863d0/displayicon.png",
+          "type": "skin_level",
+          "amount": 1,
+          "discount_percent": 0.23,
+          "base_price": 2175,
+          "discounted_price": 1675,
+          "promo_item": false
+        },
+        {
+          "uuid": "de88d366-4d2b-655f-345c-719b97ddf9d9",
+          "name": "Neo Frontier Shorty",
+          "image": "https://media.valorant-api.com/weaponskins/de88d366-4d2b-655f-345c-719b97ddf9d9/displayicon.png",
+          "type": "skin_level",
+          "amount": 1,
+          "discount_percent": 0.23,
+          "base_price": 2175,
+          "discounted_price": 1675,
+          "promo_item": false
+        },
+        {
+          "uuid": "e9a3d874-4893-b17a-00ca-0b88017f7919",
+          "name": "Neo Frontier, V26 Card",
+          "image": "https://media.valorant-api.com/playercards/e9a3d874-4893-b17a-00ca-0b88017f7919/displayicon.png",
+          "type": "player_card",
+          "amount": 1,
+          "discount_percent": 1.0,
+          "base_price": 375,
+          "discounted_price": 0,
+          "promo_item": false
+        },
+        {
+          "uuid": "5d3cde59-4d50-e54b-9126-d7bfac8d18bc",
+          "name": "Neo Frontier, V26 Spray",
+          "image": "https://media.valorant-api.com/sprays/5d3cde59-4d50-e54b-9126-d7bfac8d18bc/displayicon.png",
+          "type": "spray",
+          "amount": 1,
+          "discount_percent": 1.0,
+          "base_price": 325,
+          "discounted_price": 0,
+          "promo_item": false
+        },
+        {
+          "uuid": "5e5a435f-4a0d-0320-39c9-3fbe8ff65ae2",
+          "name": "Frontier, V26 Card",
+          "image": "https://media.valorant-api.com/playercards/5e5a435f-4a0d-0320-39c9-3fbe8ff65ae2/displayicon.png",
+          "type": "player_card",
+          "amount": 1,
+          "discount_percent": 1.0,
+          "base_price": 375,
+          "discounted_price": 0,
+          "promo_item": false
+        }
+      ],
+      "seconds_remaining": 1552929,
+      "expires_at": "2026-08-19T05:03:29.831Z"
     }
   ]
 }

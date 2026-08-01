@@ -3,6 +3,7 @@
   import SearchForm from '../landing/SearchForm.svelte';
   import Bookmarks from '../landing/Bookmarks.svelte';
   import RecentSearches from '../landing/RecentSearches.svelte';
+  import Footer from '../shared/Footer.svelte';
   import { playSound, getMuted, setMuted } from '../../lib/audio';
 
   let canvasRef;
@@ -265,6 +266,8 @@
         </div>
       </div>
     </div>
+
+    <Footer />
   </div>
 
   <!-- Bottom Marquee Status Ticker -->
