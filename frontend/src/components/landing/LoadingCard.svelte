@@ -56,24 +56,34 @@
     { tag: 'VCT ESPORTS', text: 'Evil Geniuses made a historic lower bracket run at VCT Champions 2023.' },
     { tag: 'VCT ESPORTS', text: 'EDward Gaming won VCT Champions 2024, China\'s first world championship.' },
     { tag: 'VCT ESPORTS', text: 'DRX is known for their disciplined, tactical approach to Valorant.' },
-    { tag: 'VCT ESPORTS', text: '100 Thieves rebuilt their roster around star duelist Cryo in 2023.' },
     { tag: 'VCT ESPORTS', text: 'Team Heretics surprised everyone with a deep run at VCT Champions 2024.' },
     { tag: 'VCT ESPORTS', text: 'ZETA DIVISION built one of the largest fanbases in VCT Pacific.' },
-    { tag: 'VCT ESPORTS', text: 'FunPlus Phoenix brought their Counter-Strike pedigree to Valorant.' },
-    { tag: 'VCT ESPORTS', text: 'Leviatán\'s aggressive playstyle made them fan favorites in 2024.' },
+    { tag: 'VCT ESPORTS', text: 'Leviatán\'s aggressive playstyle has made them fan favorites across VCT Americas.' },
     { tag: 'VCT ESPORTS', text: 'Karmine Corp quickly became a top contender after joining VCT EMEA.' },
-    { tag: 'VCT ESPORTS', text: 'Gen.G emerged as a powerhouse in VCT Pacific during 2024.' },
-    { tag: 'VCT ESPORTS', text: 'Trace Esports represented China with flair at multiple VCT events.' },
-    { tag: 'VCT ESPORTS', text: 'FUT Esports built a roster of experienced veterans for the 2024 season.' },
+    { tag: 'VCT ESPORTS', text: 'Gen.G has emerged as a powerhouse in VCT Pacific.' },
+    { tag: 'VCT ESPORTS', text: 'FUT Esports built a roster of experienced veterans competing in VCT EMEA.' },
     { tag: 'VCT ESPORTS', text: 'Bilibili Gaming brought fresh Chinese talent to the VCT circuit.' },
-    { tag: 'VCT ESPORTS', text: 'FURIA became Brazil\'s rising hope in VCT Americas.' },
-    { tag: 'VCT ESPORTS', text: 'Global Esports represented the South Asian region on the global stage.' },
-    { tag: 'VCT ESPORTS', text: 'Nongshim RedForce brought Korean esports expertise to VCT Pacific.' },
-    { tag: 'VCT ESPORTS', text: 'BBL Esports carved out a reputation as EMEA\'s underdog dark horse.' },
+    { tag: 'VCT ESPORTS', text: 'Global Esports represents the South Asian region on the VCT Pacific stage.' },
     { tag: 'VCT ESPORTS', text: 'XLG Esports emerged as a new force in the Chinese Valorant scene.' }
   ];
 
-  const allTips = [...VALORANT_LORE, ...VCT_ESPORTS];
+  const VCT_2026 = [
+    { tag: 'CHAMPIONS SHANGHAI', text: 'The next Major is VALORANT Champions Shanghai, running September 24 – October 18, 2026.' },
+    { tag: 'CHAMPIONS SHANGHAI', text: 'Teams qualify for Champions Shanghai as the Stage 2 Champion, Stage 2 Runner-up, or via the Top 2 Championship Points in each region.' },
+    { tag: 'VCT PACIFIC', text: 'Gen.G sits undefeated at 4–0 atop VCT Pacific Group Alpha, ahead of Global Esports and ZETA DIVISION.' },
+    { tag: 'VCT PACIFIC', text: 'Paper Rex leads VCT Pacific Group Omega at 3–1, tied with DetonatioN FocusMe and VARREL.' },
+    { tag: 'VCT PACIFIC', text: 'The 2026 VCT Pacific Finals will be held live at the Sajik Indoor Gymnasium in Busan, South Korea.' },
+    { tag: 'VCT PACIFIC', text: 'Onside Gaming, Sharper Esports, QT DIG, and Xipto Esports have secured VCT Pacific Play-In spots.' },
+    { tag: 'VCT AMERICAS', text: '100 Thieves leads VCT Americas Group Omega at 3–0, while MIBR and NRG head Group Alpha.' },
+    { tag: 'VCT AMERICAS', text: 'Masters London winners Leviatán and G2 Esports sit right behind the top seed as playoff favorites.' },
+    { tag: 'VCT AMERICAS', text: 'The VCT Americas Stage 2 Finals take place in São Paulo, Brazil on September 4–6.' },
+    { tag: 'VCT EMEA', text: 'Team Vitality and FUT Esports lead VCT EMEA Group Alpha, while Karmine Corp and Team Heretics top Group Omega.' },
+    { tag: 'VCT EMEA', text: 'GIANTX signed Jesse due to visa issues with musz3kk, while Eternal Fire benched Izzy in favor of debuting Spear.' },
+    { tag: 'VCT CHINA', text: 'Nova Esports went undefeated in the VCT China Stage 2 regular season to secure the #1 seed.' },
+    { tag: 'VCT CHINA', text: 'EDward Gaming and Xi Lai Gaming hold the top positions in overall VCT China Championship Points.' }
+  ];
+
+  const allTips = [...VALORANT_LORE, ...VCT_ESPORTS, ...VCT_2026];
 
   $: if (visible) {
     startLoading();
