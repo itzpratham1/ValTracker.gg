@@ -354,13 +354,14 @@
     flex-shrink: 0;
   }
   .loading-brand-name {
-    font-family: 'Barlow Condensed', sans-serif;
+    font-family: 'Barlow Condensed', 'Rajdhani', sans-serif;
     font-weight: 900;
-    font-size: 28px;
-    color: #fff;
+    font-size: 34px;
+    color: #ffffff;
     text-transform: uppercase;
-    letter-spacing: 2.5px;
+    letter-spacing: 3px;
     line-height: 1;
+    text-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
   }
 
   @media (max-width: 480px) {

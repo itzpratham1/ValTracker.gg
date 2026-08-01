@@ -200,7 +200,7 @@
 
   <div class="sf-label">Riot ID</div>
   <div class="sf-input-row" bind:this={dropdownRef}>
-    <div class="sf-input-box-wrapper">
+    <div class="sf-input-box-wrapper" class:sf-shake={error}>
       <input
         class="sf-input"
         bind:this={nameInput}
@@ -298,14 +298,18 @@
     on:mouseenter={playHover} 
     disabled={currentLoading}
   >
-    <div class="sf-btn-glitch-bg"></div>
+    <span class="sf-btn-shimmer" aria-hidden="true"></span>
     <span class="sf-btn-text">
-      {currentLoading ? 'Loading...' : '▶ View Stats'}
+      {#if currentLoading}
+        <span class="sf-loading-dots">Loading<span class="sf-dot">.</span><span class="sf-dot">.</span><span class="sf-dot">.</span></span>
+      {:else}
+        ▶ View Stats
+      {/if}
     </span>
   </button>
 
   {#if error}
-    <div class="sf-error">
+    <div class="sf-error" style="animation: sfErrSlide 0.3s cubic-bezier(0.22,1,0.36,1) both;">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
       </svg>
@@ -368,13 +372,13 @@
 
   .sf-title {
     font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 800;
-    font-size: 20px;
+    font-weight: 900;
+    font-size: 22px;
     color: #fff;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 2.5px;
     margin-bottom: 4px;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+    text-shadow: 0 2px 16px rgba(0,0,0,0.5);
   }
 
   .sf-sub {
@@ -421,7 +425,21 @@
 
   .sf-input-box-wrapper:focus-within {
     border-color: rgba(250, 68, 84, 0.5);
-    box-shadow: 0 0 12px rgba(250, 68, 84, 0.15);
+    box-shadow: 0 0 12px rgba(250, 68, 84, 0.15), 0 0 0 3px rgba(250,68,84,0.06);
+  }
+
+  /* Error shake animation */
+  .sf-shake {
+    animation: sfShake 0.45s cubic-bezier(0.25,0.8,0.25,1) both;
+    border-color: rgba(250, 68, 84, 0.6) !important;
+  }
+
+  @keyframes sfShake {
+    0%,100% { transform: translateX(0); }
+    20%     { transform: translateX(-6px); }
+    40%     { transform: translateX(6px); }
+    60%     { transform: translateX(-4px); }
+    80%     { transform: translateX(4px); }
   }
 
   .sf-input-box-wrapper:focus-within .input-decor-bracket {
@@ -474,7 +492,7 @@
   }
 
   .sf-input-tag {
-    max-width: 90px;
+    max-width: 110px;
     text-transform: uppercase;
   }
 
@@ -600,12 +618,13 @@
     cursor: pointer;
     outline: none;
     appearance: none;
-    transition: all 0.2s;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.15s ease;
   }
 
   .sf-select:focus, .sf-select:hover {
     border-color: rgba(250, 68, 84, 0.35);
     box-shadow: 0 0 8px rgba(250, 68, 84, 0.1);
+    background: rgba(8, 8, 13, 0.8);
   }
 
   .select-arrow {
@@ -625,46 +644,77 @@
     letter-spacing: 1.5px;
     text-transform: uppercase;
     padding: 13px 20px;
-    background: #fa4454;
+    background: linear-gradient(135deg, #fa4454 0%, #d62f3f 100%);
     color: #fff;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    box-shadow: 0 4px 20px rgba(250, 68, 84, 0.25);
-    transition: all 0.2s ease-in-out;
+    box-shadow: 0 4px 20px rgba(250, 68, 84, 0.3);
+    transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
     margin-bottom: 12px;
     position: relative;
     overflow: hidden;
   }
 
-  .sf-btn::after {
-    content: '';
+  /* Shimmer sweep element */
+  .sf-btn-shimmer {
     position: absolute;
     top: 0;
     left: -100%;
-    width: 100%;
+    width: 60%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: all 0.6s ease;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+    transform: skewX(-18deg);
+    transition: left 0.55s ease;
+    pointer-events: none;
   }
 
-  .sf-btn:hover::after {
-    left: 100%;
+  .sf-btn:hover:not(:disabled) .sf-btn-shimmer {
+    left: 150%;
   }
 
   .sf-btn:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(250, 68, 84, 0.45);
-    background: #ff5c6b;
+    box-shadow: 0 10px 28px rgba(250, 68, 84, 0.5);
+    background: linear-gradient(135deg, #ff5c6b 0%, #fa4454 100%);
   }
 
   .sf-btn:active:not(:disabled) {
-    transform: translateY(0) scale(0.98);
+    transform: translateY(1px) scale(0.985);
+    box-shadow: 0 3px 10px rgba(250, 68, 84, 0.3);
+    transition: transform 0.08s ease;
   }
 
   .sf-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  .loading-btn {
+    background: linear-gradient(135deg, rgba(250,68,84,0.5) 0%, rgba(214,47,63,0.5) 100%) !important;
+    animation: sfLoadPulse 1.5s ease-in-out infinite !important;
+  }
+
+  @keyframes sfLoadPulse {
+    0%,100% { box-shadow: 0 4px 20px rgba(250,68,84,0.2); }
+    50%      { box-shadow: 0 4px 28px rgba(250,68,84,0.5); }
+  }
+
+  /* Loading dots */
+  .sf-loading-dots { display: inline-flex; align-items: center; gap: 0; }
+  .sf-dot {
+    display: inline-block;
+    animation: sfDotBounce 1.2s ease-in-out infinite;
+    font-size: 18px;
+    line-height: 1;
+  }
+  .sf-dot:nth-child(1) { animation-delay: 0s; }
+  .sf-dot:nth-child(2) { animation-delay: 0.2s; }
+  .sf-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes sfDotBounce {
+    0%,60%,100% { transform: translateY(0); opacity: 1; }
+    30%          { transform: translateY(-4px); opacity: 0.6; }
   }
 
   .sf-error {
@@ -677,8 +727,13 @@
     margin-bottom: 12px;
     padding: 6px 10px;
     background: rgba(250, 68, 84, 0.06);
-    border: 1px solid rgba(250, 68, 84, 0.15);
+    border: 1px solid rgba(250, 68, 84, 0.2);
     border-radius: 4px;
+  }
+
+  @keyframes sfErrSlide {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
   /* Divider */
@@ -687,6 +742,12 @@
     align-items: center;
     gap: 12px;
     margin: 20px 0;
+    animation: sfFadeIn 0.4s ease 0.1s both;
+  }
+
+  @keyframes sfFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
   }
 
   .sf-divider-line {
@@ -721,39 +782,40 @@
   }
 
   .sf-profile-btn {
-    background: none;
-    border: none;
     font-family: 'DM Mono', monospace;
     font-size: 9px;
-    color: #e8ff47;
-    letter-spacing: 1.5px;
+    color: rgba(250, 68, 84, 0.85);
+    letter-spacing: 1.2px;
     cursor: pointer;
-    padding: 2px 6px;
+    padding: 3px 9px;
     border-radius: 3px;
     transition: all 0.2s;
-    background: rgba(232, 255, 71, 0.05);
-    border: 1px solid rgba(232, 255, 71, 0.15);
+    background: rgba(250, 68, 84, 0.06);
+    border: 1px solid rgba(250, 68, 84, 0.2);
+    text-transform: uppercase;
   }
 
   .sf-profile-btn:hover:not(:disabled) {
-    background: rgba(232, 255, 71, 0.15);
-    border-color: rgba(232, 255, 71, 0.4);
-    box-shadow: 0 0 10px rgba(232, 255, 71, 0.1);
+    background: rgba(250, 68, 84, 0.14);
+    border-color: rgba(250, 68, 84, 0.45);
+    color: #fa4454;
+    box-shadow: 0 0 10px rgba(250, 68, 84, 0.12);
   }
 
   .landing-quick-btn {
-    background: rgba(250, 68, 84, 0.03);
-    border: 1px solid rgba(250, 68, 84, 0.15);
-    border-radius: 6px;
+    background: rgba(250, 68, 84, 0.04);
+    border: 1px solid rgba(250, 68, 84, 0.18);
+    border-radius: 8px;
     padding: 12px 14px;
-    transition: all 0.25s;
+    transition: all 0.25s cubic-bezier(0.25,0.8,0.25,1);
     cursor: pointer;
   }
 
   .landing-quick-btn:hover {
-    background: rgba(250, 68, 84, 0.08);
-    border-color: rgba(250, 68, 84, 0.45);
-    box-shadow: 0 4px 15px rgba(250, 68, 84, 0.1);
+    background: rgba(250, 68, 84, 0.1);
+    border-color: rgba(250, 68, 84, 0.5);
+    box-shadow: 0 4px 16px rgba(250, 68, 84, 0.12);
+    transform: translateY(-1px);
   }
 
   .landing-quick-dot {
