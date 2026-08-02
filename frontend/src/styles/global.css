@@ -1094,6 +1094,20 @@ body::before {
   transition: var(--transition);
   user-select: none;
 }
+
+@media (min-width: 651px) {
+  .match-row,
+  .tracker-layout .match-row {
+    grid-template-columns: 72px 240px 1fr 72px 140px 70px 70px 60px 36px !important;
+    justify-content: start !important;
+    gap: 24px !important;
+  }
+  .match-row .mr-agent,
+  .tracker-layout .match-row .mr-agent {
+    margin-left: -24px !important;
+  }
+}
+
 .match-row:hover { border-color: rgba(255,255,255,0.12); background: rgba(255, 255, 255, 0.01); }
 .match-row.open { border-color: var(--accent); border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-bottom-color: transparent; }
 
