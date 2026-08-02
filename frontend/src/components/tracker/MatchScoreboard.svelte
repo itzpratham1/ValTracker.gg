@@ -378,6 +378,8 @@
           {@const fk = adv.firstKills ?? 0}
           {@const fd = adv.firstDeaths ?? 0}
           {@const mk = `${adv.multi3k || 0}/${adv.multi4k || 0}/${adv.multi5k || 0}`}
+          {@const pTag = p.tag ? (p.tag.startsWith('#') ? p.tag : `#${p.tag}`) : ''}
+          {@const fullRiotId = p.name ? (pTag ? `${p.name}${pTag}` : p.name) : '—'}
           <tr class:me={isMe(p)} class:match-mvp-row={isMatchMVP} class:team-mvp-row={isTeamMVP}>
             <td>
               {#if p.party_id && parties[p.party_id]}
@@ -388,8 +390,11 @@
                   <img src={agentIcon} alt={p.character} style="width:26px;height:26px;object-fit:contain;border-radius:3px;background:var(--surface2);" on:error={(e) => e.target.style.display='none'}>
                 {/if}
                 <div style="min-width:0; flex:1;">
-                  <div class="sb-name" title={p.name || ''}>
-                    {escapeHtml(p.name || '—')}
+                  <div class="sb-name" title={fullRiotId}>
+                    <span class="sb-player-name">{escapeHtml(p.name || '—')}</span>
+                    {#if pTag}
+                      <span class="sb-tag">{escapeHtml(pTag)}</span>
+                    {/if}
                   </div>
                   <div class="sb-sub-row">
                     <span class="sb-agent">{escapeHtml((p.character || '—').toUpperCase())}</span>
@@ -461,6 +466,8 @@
           {@const fk = adv.firstKills ?? 0}
           {@const fd = adv.firstDeaths ?? 0}
           {@const mk = `${adv.multi3k || 0}/${adv.multi4k || 0}/${adv.multi5k || 0}`}
+          {@const pTag = p.tag ? (p.tag.startsWith('#') ? p.tag : `#${p.tag}`) : ''}
+          {@const fullRiotId = p.name ? (pTag ? `${p.name}${pTag}` : p.name) : '—'}
           <tr class:me={isMe(p)} class:match-mvp-row={isMatchMVP} class:team-mvp-row={isTeamMVP}>
             <td>
               {#if p.party_id && parties[p.party_id]}
@@ -471,8 +478,11 @@
                   <img src={agentIcon} alt={p.character} style="width:26px;height:26px;object-fit:contain;border-radius:3px;background:var(--surface2);" on:error={(e) => e.target.style.display='none'}>
                 {/if}
                 <div style="min-width:0; flex:1;">
-                  <div class="sb-name" title={p.name || ''}>
-                    {escapeHtml(p.name || '—')}
+                  <div class="sb-name" title={fullRiotId}>
+                    <span class="sb-player-name">{escapeHtml(p.name || '—')}</span>
+                    {#if pTag}
+                      <span class="sb-tag">{escapeHtml(pTag)}</span>
+                    {/if}
                   </div>
                   <div class="sb-sub-row">
                     <span class="sb-agent">{escapeHtml((p.character || '—').toUpperCase())}</span>

@@ -1431,6 +1431,38 @@ body::before {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 165px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0px;
+  cursor: pointer;
+  transition: max-width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.sb-name:hover {
+  max-width: 280px;
+  overflow: visible;
+}
+.sb-player-name {
+  flex-shrink: 0;
+}
+.sb-tag {
+  display: inline-block;
+  opacity: 0;
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: opacity 0.2s ease, max-width 0.25s cubic-bezier(0.4, 0, 0.2, 1), margin-left 0.2s ease;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-left: 0;
+  vertical-align: middle;
+  pointer-events: none;
+}
+.sb-name:hover .sb-tag {
+  opacity: 1;
+  max-width: 120px;
+  margin-left: 5px;
 }
 .sb-sub-row {
   display: flex;
