@@ -1,7 +1,10 @@
 <script>
+  import { createEventDispatcher } from 'svelte';
   import { player } from '../../lib/appStore';
   import { getRankImgUrl, getRankFromRR } from '../../lib/constants';
   import { escapeHtml } from '../../lib/utils';
+
+  const dispatch = createEventDispatcher();
 
   export let mmrData = null;
   export let accountData = null;
@@ -87,11 +90,23 @@
   <div id="player-card-bg" style="background-image: url('{cardUrl || ''}'); opacity: {cardUrl ? 0.26 : 0};"></div>
   <div class="hero-content">
     <div class="hero-left">
-      <div class="hero-avatar-wrap">
-        {#if smallCardUrl}
-          <img class="player-avatar-img" src={smallCardUrl} alt={playerName}>
-        {:else}
-          <div class="hero-avatar-fallback">👤</div>
+      <div
+        class="story-avatar-outer-ring"
+        class:active={matches && matches.length >= 3}
+        on:click={() => { if (matches && matches.length >= 3) dispatch('openWrapped'); }}
+        title={matches && matches.length >= 3 ? 'Click to view Wrapped Story ⚡' : playerName}
+        role={matches && matches.length >= 3 ? 'button' : undefined}
+        tabindex={matches && matches.length >= 3 ? 0 : undefined}
+      >
+        <div class="hero-avatar-wrap">
+          {#if smallCardUrl}
+            <img class="player-avatar-img" src={smallCardUrl} alt={playerName}>
+          {:else}
+            <div class="hero-avatar-fallback">👤</div>
+          {/if}
+        </div>
+        {#if matches && matches.length >= 3}
+          <div class="story-avatar-badge">⚡ WRAPPED</div>
         {/if}
       </div>
       <div class="hero-player-details">
@@ -192,3 +207,52 @@
     </div>
   </div>
 </div>
+
+<style>
+  .story-avatar-outer-ring {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+    padding: 3px;
+    transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .story-avatar-outer-ring.active {
+    cursor: pointer;
+    background: linear-gradient(135deg, #fa4454, #ff007f, #e8ff47, #00f2fe, #fa4454);
+    background-size: 300% 300%;
+    animation: storyRingGlow 4s linear infinite;
+    box-shadow: 0 0 24px rgba(250, 68, 84, 0.65), inset 0 0 10px rgba(232, 255, 71, 0.4);
+  }
+
+  .story-avatar-outer-ring.active:hover {
+    transform: scale(1.08) rotate(1.5deg);
+  }
+
+  .story-avatar-badge {
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #fa4454, #ff007f);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 900;
+    padding: 2px 8px;
+    border-radius: 10px;
+    letter-spacing: 0.8px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.8);
+    white-space: nowrap;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  @keyframes storyRingGlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+</style>

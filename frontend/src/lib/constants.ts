@@ -98,6 +98,57 @@ export function getRankImgUrl(rankName: string): string | null {
   return tier ? `https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/${tier}/smallicon.png` : null;
 }
 
+export function getLargeRankImgUrl(rankName: string): string | null {
+  const tier = TIER_MAP[rankName];
+  return tier ? `https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/${tier}/largeicon.png` : null;
+}
+
+export function getAgentIconUrl(name: string): string {
+  const uuid = AGENT_UUIDS[name] || AGENT_UUIDS['Jett'];
+  return `https://media.valorant-api.com/agents/${uuid}/displayicon.png`;
+}
+
+export function getAgentFullPortraitUrl(name: string): string {
+  const uuid = AGENT_UUIDS[name] || AGENT_UUIDS['Jett'];
+  return `https://media.valorant-api.com/agents/${uuid}/fullportrait.png`;
+}
+
+export function getAgentBackgroundUrl(name: string): string {
+  const uuid = AGENT_UUIDS[name] || AGENT_UUIDS['Jett'];
+  return `https://media.valorant-api.com/agents/${uuid}/background.png`;
+}
+
+export const AGENT_THEME_COLORS: Record<string, { primary: string; accent: string }> = {
+  jett: { primary: '#00f2fe', accent: '#4facfe' },
+  reyna: { primary: '#b92b27', accent: '#1565C0' },
+  phoenix: { primary: '#f12711', accent: '#f5af19' },
+  neon: { primary: '#00c6ff', accent: '#0072ff' },
+  iso: { primary: '#7F00FF', accent: '#E100FF' },
+  yoru: { primary: '#1A2980', accent: '#26D0CE' },
+  raze: { primary: '#FF416C', accent: '#FF4B2B' },
+  sage: { primary: '#11998e', accent: '#38ef7d' },
+  killjoy: { primary: '#FFD100', accent: '#FF6A00' },
+  cypher: { primary: '#ece9e6', accent: '#8e9eab' },
+  chamber: { primary: '#F7971E', accent: '#FFD200' },
+  deadlock: { primary: '#4B79A1', accent: '#283E51' },
+  sova: { primary: '#13547a', accent: '#80d0c7' },
+  breach: { primary: '#d35400', accent: '#e67e22' },
+  skye: { primary: '#56ab2f', accent: '#a8e063' },
+  fade: { primary: '#232526', accent: '#414345' },
+  gekko: { primary: '#A8FF78', accent: '#78FFD6' },
+  kayo: { primary: '#00c6ff', accent: '#0072ff' },
+  brimstone: { primary: '#f857a6', accent: '#ff5858' },
+  viper: { primary: '#11998e', accent: '#38ef7d' },
+  omen: { primary: '#141E30', accent: '#243B55' },
+  astra: { primary: '#654ea3', accent: '#eaafc8' },
+  harbor: { primary: '#00c6ff', accent: '#0072ff' },
+  vyse: { primary: '#a78bfa', accent: '#3ecf8e' },
+  veto: { primary: '#f5a623', accent: '#ff5757' },
+  waylay: { primary: '#ff5757', accent: '#ffd700' },
+  tejo: { primary: '#3ecf8e', accent: '#00d4e0' },
+  miks: { primary: '#e8ff47', accent: '#fa4454' }
+};
+
 export function getRankFromRR(v: number): Rank {
   for (let i = RANKS.length - 1; i >= 0; i--) {
     if (v >= RANKS[i].rr) return RANKS[i];

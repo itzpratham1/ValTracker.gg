@@ -93,6 +93,9 @@
         <span class="dropdown-arrow">▼</span>
       </button>
       <div class="dropdown-menu" on:click|stopPropagation>
+        <button class="dropdown-item" on:click={() => { toolsOpen = false; dispatch('openWrapped'); }}>
+          <span class="dropdown-item-icon">🎁</span> Valorant Wrapped
+        </button>
         <button class="dropdown-item" on:click={() => { toolsOpen = false; dispatch('shareProfile'); }}>
           <span class="dropdown-item-icon">🔗</span> Share Profile
         </button>

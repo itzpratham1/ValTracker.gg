@@ -22,6 +22,7 @@
   import SessionSummary from './SessionSummary.svelte';
   import ExportCard from './ExportCard.svelte';
   import ExportProfileCard from './ExportProfileCard.svelte';
+  import WrappedModal from './WrappedModal.svelte';
   import HeadToHead from './HeadToHead.svelte';
   import BookmarksModal from './BookmarksModal.svelte';
   import LeaderboardModal from './LeaderboardModal.svelte';
@@ -71,6 +72,7 @@
   let profileShareOpen = false;
   let exportProfileOpen = false;
   let bookmarksOpen = false;
+  let wrappedOpen = false;
   let activeSection = 'sec-combat';
   let activeAiTab = 'valbot';
 
@@ -312,6 +314,7 @@
       if (profileShareOpen)  profileShareOpen = false;
       if (exportProfileOpen) exportProfileOpen = false;
       if (bookmarksOpen)     bookmarksOpen = false;
+      if (wrappedOpen)       wrappedOpen = false;
       if (sessionSummaryOpen) sessionSummaryOpen = false;
       if (selectedShareMatch) selectedShareMatch = null;
     }
@@ -347,7 +350,7 @@
   />
 
   {#if $currentView === 'tracker'}
-  <HeroSection {mmrData} {accountData} matches={actFilteredMatches} />
+  <HeroSection {mmrData} {accountData} matches={actFilteredMatches} on:openWrapped={() => wrappedOpen = true} />
 
   <TrackerNav
     {activeSection}
@@ -356,6 +359,7 @@
     onToggleSession={toggleSession}
     onShowSessionSummary={showSessionSummary}
     onScrollTo={scrollToSection}
+    on:openWrapped={() => wrappedOpen = true}
     on:openLeaderboard={() => leaderboardOpen = true}
     on:openH2H={() => h2hOpen = true}
     on:shareProfile={() => profileShareOpen = true}
@@ -696,6 +700,16 @@
     region={playerState.region}
     mode={playerState.mode}
     onClose={() => exportProfileOpen = false}
+  />
+
+  <WrappedModal
+    matches={actFilteredMatches}
+    playerName={playerState.name}
+    playerTag={playerState.tag}
+    {mmrData}
+    {accountData}
+    isOpen={wrappedOpen}
+    on:close={() => wrappedOpen = false}
   />
 
   <BackToTop />
