@@ -175,11 +175,18 @@
 /* ── Hero Browser Tab Switching ── */
 (function initBrowserTabs() {
   const tabs = document.querySelectorAll('.browser-tab');
-  const statsImg = document.getElementById('hero-stats-img');
-  const aiImg = document.getElementById('hero-ai-img');
   const urlText = document.getElementById('browser-url-text');
+  const mockupBody = document.querySelector('.browser-body');
   
-  if (!tabs.length || !statsImg || !aiImg || !urlText) return;
+  if (!tabs.length || !mockupBody || !urlText) return;
+
+  const tabConfig = {
+    'hero-stats-tab': { imgId: 'hero-stats-img', url: 'valtracker.live/app?mode=competitive' },
+    'hero-ai-tab':    { imgId: 'hero-ai-img',    url: 'valtracker.live/app#coach' },
+    'hero-comp-tab':  { imgId: 'hero-comp-img',  url: 'valtracker.live/comp' },
+    'hero-vct-tab':   { imgId: 'hero-vct-img',   url: 'valtracker.live/app#esports' },
+    'hero-obs-tab':   { imgId: 'hero-obs-img',   url: 'valtracker.live/app#overlay' }
+  };
 
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
@@ -187,15 +194,17 @@
       tab.classList.add('active');
 
       const target = tab.getAttribute('data-target');
-      if (target === 'hero-stats-tab') {
-        statsImg.style.display = 'block';
-        aiImg.style.display = 'none';
-        urlText.textContent = 'valtracker.live/app/stats';
-      } else {
-        statsImg.style.display = 'none';
-        aiImg.style.display = 'block';
-        urlText.textContent = 'valtracker.live/app/coach';
-      }
+      const config = tabConfig[target] || tabConfig['hero-stats-tab'];
+
+      const allImgs = mockupBody.querySelectorAll('img');
+      allImgs.forEach(img => {
+        if (img.id === config.imgId) {
+          img.style.display = 'block';
+        } else {
+          img.style.display = 'none';
+        }
+      });
+      urlText.textContent = config.url;
     });
   });
 })();
