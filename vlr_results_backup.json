@@ -1,5 +1,57 @@
 [
   {
+    "id": "716626",
+    "date": "Aug 04, 2026 8:30 PM",
+    "state": "completed",
+    "vlr_path": "/716626/karmine-corp-gc-vs-fokus-sakura-game-changers-2026-emea-stage-3-w3",
+    "league": {
+      "name": "Game Changers 2026: EMEA Stage 3",
+      "region": "Group Stage\u2013Week 3"
+    },
+    "match": {
+      "id": "716626",
+      "teams": [
+        {
+          "name": "Karmine Corp GC",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "FOKUS Sakura",
+          "game_wins": 2,
+          "has_won": true
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "716627",
+    "date": "Aug 04, 2026 8:30 PM",
+    "state": "completed",
+    "vlr_path": "/716627/g2-gozen-vs-bar-a-esports-gc-game-changers-2026-emea-stage-3-w3",
+    "league": {
+      "name": "Game Changers 2026: EMEA Stage 3",
+      "region": "Group Stage\u2013Week 3"
+    },
+    "match": {
+      "id": "716627",
+      "teams": [
+        {
+          "name": "G2 Gozen",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "Bar\u00e7a eSports GC",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
     "id": "724889",
     "date": "Aug 04, 2026 5:40 AM",
     "state": "completed",
@@ -20,6 +72,58 @@
           "name": "Revitalize GC",
           "game_wins": 2,
           "has_won": true
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "730317",
+    "date": "Aug 04, 2026 5:30 AM",
+    "state": "completed",
+    "vlr_path": "/730317/akave-esports-gc-vs-myvra-gc-game-changers-2026-latam-main-event-ubsf",
+    "league": {
+      "name": "Game Changers 2026: LATAM Main Event",
+      "region": "North\u2013Upper Semifinals"
+    },
+    "match": {
+      "id": "730317",
+      "teams": [
+        {
+          "name": "Akave Esports GC",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "MYVRA GC",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "730324",
+    "date": "Aug 04, 2026 3:30 AM",
+    "state": "completed",
+    "vlr_path": "/730324/kr-blaze-vs-npc-team-game-changers-2026-latam-main-event-ubsf",
+    "league": {
+      "name": "Game Changers 2026: LATAM Main Event",
+      "region": "South\u2013Upper Semifinals"
+    },
+    "match": {
+      "id": "730324",
+      "teams": [
+        {
+          "name": "KR\u00dc BLAZE",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "NPC TEAM",
+          "game_wins": 0,
+          "has_won": false
         }
       ]
     },
@@ -1190,110 +1294,6 @@
           "name": "ALTERNATE aTTaX Ruby",
           "game_wins": 0,
           "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "716581",
-    "date": "July 28, 2026 8:30 PM",
-    "state": "completed",
-    "vlr_path": "/716581/g2-gozen-vs-fokus-sakura-game-changers-2026-emea-stage-3-w2",
-    "league": {
-      "name": "Game Changers 2026: EMEA Stage 3",
-      "region": "Group Stage\u2013Week 2"
-    },
-    "match": {
-      "id": "716581",
-      "teams": [
-        {
-          "name": "G2 Gozen",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "FOKUS Sakura",
-          "game_wins": 2,
-          "has_won": true
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "716582",
-    "date": "July 28, 2026 8:30 PM",
-    "state": "completed",
-    "vlr_path": "/716582/bar-a-esports-gc-vs-karmine-corp-gc-game-changers-2026-emea-stage-3-w2",
-    "league": {
-      "name": "Game Changers 2026: EMEA Stage 3",
-      "region": "Group Stage\u2013Week 2"
-    },
-    "match": {
-      "id": "716582",
-      "teams": [
-        {
-          "name": "Bar\u00e7a eSports GC",
-          "game_wins": 1,
-          "has_won": false
-        },
-        {
-          "name": "Karmine Corp GC",
-          "game_wins": 2,
-          "has_won": true
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "720392",
-    "date": "July 28, 2026 5:30 AM",
-    "state": "completed",
-    "vlr_path": "/720392/3-vs-revitalize-gc-game-changers-2026-north-america-stage-2-swiss-stage-r3-0-2",
-    "league": {
-      "name": "Game Changers 2026: North America Stage 2",
-      "region": "Swiss Stage\u2013Round 3 (0-2)"
-    },
-    "match": {
-      "id": "720392",
-      "teams": [
-        {
-          "name": ":3",
-          "game_wins": 2,
-          "has_won": true
-        },
-        {
-          "name": "Revitalize GC",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "720388",
-    "date": "July 28, 2026 2:30 AM",
-    "state": "completed",
-    "vlr_path": "/720388/shopify-rebellion-gold-vs-swimtrek-blue-game-changers-2026-north-america-stage-2-swiss-stage-r3",
-    "league": {
-      "name": "Game Changers 2026: North America Stage 2",
-      "region": "Swiss Stage\u2013Round 3 (2-0)"
-    },
-    "match": {
-      "id": "720388",
-      "teams": [
-        {
-          "name": "Shopify Rebellion Gold",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "SwimTrek Blue",
-          "game_wins": 2,
-          "has_won": true
         }
       ]
     },

@@ -375,7 +375,7 @@
 <div class="coach-view">
   <!-- Banner Header -->
   <div class="coach-banner">
-    <h2 class="coach-banner-title">VCT Meta Comp Architect</h2>
+    <h2 class="coach-banner-title">VCT Meta <span>Comp Architect</span></h2>
     <p class="coach-banner-desc">
       Draft 5-agent team compositions for any active Valorant map. Our real-time coaching heuristics engine evaluates role balances, map suitability, and triggers synergies to flag tactical vulnerabilities before you queue.
     </p>
@@ -418,7 +418,7 @@
         <div class="coach-slots-header">Selected Agent Draft</div>
         <div class="coach-team-slots">
           {#each draftSlots as slot, i}
-            <div class="dc-slot-card" on:click={() => openSelector(i)}>
+            <div class="dc-slot-card" class:filled={!!slot} on:click={() => openSelector(i)}>
               <div class="dc-slot-avatar">
                 {#if slot}
                   {@const iconUrl = getAgentIconUrl(slot)}
@@ -489,11 +489,26 @@
 
       <div class="card coach-verdict-card" bind:this={draftPanelEl}>
         {#if evaluation}
-          <!-- Score Meter + Verdict -->
+          {@const r = 36}
+          {@const circ = 2 * Math.PI * r}
+          {@const offset = circ - (evaluation.score / 100) * circ}
+          <!-- Score Ring + Verdict -->
           <div class="coach-verdict-header">
-            <div class="coach-score-meter" style="border-color: {scoreColor};">
-              <div class="coach-score-num" style="color: {scoreColor};">{evaluation.score}</div>
-              <div class="coach-score-label">SCORE</div>
+            <div class="coach-score-ring-wrap">
+              <svg width="88" height="88" viewBox="0 0 88 88">
+                <circle class="coach-score-ring-bg" cx="44" cy="44" r={r} />
+                <circle
+                  class="coach-score-ring-fill"
+                  cx="44" cy="44" r={r}
+                  stroke={scoreHex}
+                  stroke-dasharray={circ}
+                  stroke-dashoffset={offset}
+                />
+              </svg>
+              <div class="coach-score-inner">
+                <div class="coach-score-num" style="color: {scoreColor};">{evaluation.score}</div>
+                <div class="coach-score-label">SCORE</div>
+              </div>
             </div>
             <div>
               <div class="coach-verdict-title" style="color: {scoreColor};">{evaluation.verdictTitle}</div>
@@ -657,31 +672,66 @@
   }
 
   .coach-banner {
-    background: linear-gradient(135deg, rgba(250, 68, 84, 0.12) 0%, rgba(20, 20, 22, 0.45) 100%);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 24px;
+    background: linear-gradient(135deg, rgba(250, 68, 84, 0.14) 0%, rgba(13, 13, 15, 0.6) 60%, rgba(140, 70, 255, 0.06) 100%);
+    border: 1px solid rgba(250, 68, 84, 0.25);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 28px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 60px rgba(250, 68, 84, 0.07), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+
+  .coach-banner::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), rgba(140, 70, 255, 0.8), transparent);
+    border-radius: 16px 16px 0 0;
+  }
+
+  .coach-banner::after {
+    content: 'VCT';
+    position: absolute;
+    right: 28px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 120px;
+    font-weight: 900;
+    color: rgba(250, 68, 84, 0.04);
+    letter-spacing: -4px;
+    pointer-events: none;
+    user-select: none;
+    line-height: 1;
   }
 
   .coach-banner-title {
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 32px;
+    font-size: 36px;
     font-weight: 900;
     text-transform: uppercase;
     color: #fff;
-    letter-spacing: 1.5px;
+    letter-spacing: 2px;
     margin: 0;
+    line-height: 1;
+    text-shadow: 0 0 40px rgba(250, 68, 84, 0.3);
+  }
+
+  .coach-banner-title span {
+    color: var(--accent);
   }
 
   .coach-banner-desc {
     font-size: 13px;
     color: var(--muted);
     margin: 0;
-    max-width: 700px;
+    max-width: 640px;
+    line-height: 1.6;
   }
 
   .coach-grid {
@@ -755,41 +805,59 @@
   .dc-slot-card {
     width: 100%;
     box-sizing: border-box;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 10px 4px;
+    background: rgba(255,255,255,0.02);
+    border: 1px dashed rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 14px 6px 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+  }
+
+  .dc-slot-card.filled {
+    border: 1px solid rgba(250, 68, 84, 0.2);
+    border-style: solid;
+    background: rgba(250, 68, 84, 0.04);
   }
 
   .dc-slot-card:hover {
-    border-color: var(--accentborder);
-    background: rgba(250, 68, 84, 0.04);
-    transform: translateY(-2px);
+    border-color: var(--accent);
+    border-style: solid;
+    background: rgba(250, 68, 84, 0.08);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(250, 68, 84, 0.15), 0 0 0 1px rgba(250, 68, 84, 0.2);
   }
 
   .dc-slot-avatar {
-    width: 44px;
-    height: 44px;
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.04);
+    background: rgba(255,255,255,0.03);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
-    color: var(--muted);
-    border: 1px solid var(--border);
+    font-size: 20px;
+    color: rgba(255,255,255,0.2);
+    border: 1.5px dashed rgba(255,255,255,0.12);
     overflow: hidden;
-    transition: all 0.2s ease;
+    transition: all 0.25s ease;
+    position: relative;
+  }
+
+  .dc-slot-card.filled .dc-slot-avatar {
+    border: 2px solid rgba(250, 68, 84, 0.4);
+    border-style: solid;
+    box-shadow: 0 0 16px rgba(250, 68, 84, 0.25);
   }
 
   .dc-slot-card:hover .dc-slot-avatar {
     border-color: var(--accent);
+    border-style: solid;
+    box-shadow: 0 0 20px rgba(250, 68, 84, 0.4);
     color: #fff;
   }
 
@@ -797,20 +865,27 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: 50%;
   }
 
   .dc-slot-name {
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
-    color: #fff;
+    color: rgba(255,255,255,0.5);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
     text-align: center;
     width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    transition: color 0.2s;
+  }
+
+  .dc-slot-card.filled .dc-slot-name {
+    color: #fff;
+    letter-spacing: 0.5px;
   }
 
   .dc-btn-grid {
@@ -821,28 +896,57 @@
 
   .dc-btn-primary {
     margin: 0;
-    background: linear-gradient(135deg, var(--accent) 0%, #ff4655 100%);
-    color: #0d0d0f;
-    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent) 0%, #c8313f 100%);
+    color: #fff;
+    font-weight: 900;
+    box-shadow: 0 4px 16px rgba(250, 68, 84, 0.35);
+    border: 1px solid transparent;
+    letter-spacing: 0.5px;
+  }
+
+  .dc-btn-primary:hover {
+    background: linear-gradient(135deg, #ff6070 0%, var(--accent) 100%);
+    box-shadow: 0 6px 20px rgba(250, 68, 84, 0.5);
+    transform: translateY(-1px);
   }
 
   .dc-btn-secondary {
     margin: 0;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.65);
+  }
+
+  .dc-btn-secondary:hover {
+    border-color: rgba(255,255,255,0.3);
+    color: #fff;
     background: rgba(255,255,255,0.05);
-    border: 1px solid var(--border);
   }
 
   .dc-btn-accent {
     margin: 0;
-    background: var(--accent);
-    color: #0d0d0f;
+    background: transparent;
+    border: 1px solid rgba(250, 68, 84, 0.4);
+    color: var(--accent);
+  }
+
+  .dc-btn-accent:hover {
+    background: rgba(250, 68, 84, 0.1);
+    border-color: var(--accent);
+    box-shadow: 0 0 12px rgba(250, 68, 84, 0.2);
   }
 
   .dc-btn-export {
     margin: 0;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid var(--border);
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.55);
+  }
+
+  .dc-btn-export:hover {
+    border-color: rgba(255,255,255,0.25);
     color: #fff;
+    background: rgba(255,255,255,0.04);
   }
 
   .coach-saved-card {
@@ -919,12 +1023,13 @@
   }
 
   .coach-verdict-card {
-    padding: 20px;
+    padding: 22px;
     border-radius: 16px;
     border: 1px solid var(--border);
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 18px;
+    background: rgba(0,0,0,0.2);
   }
 
   .coach-verdict-header {
@@ -932,9 +1037,61 @@
     align-items: center;
     gap: 20px;
     border-bottom: 1px solid rgba(255,255,255,0.05);
-    padding-bottom: 16px;
+    padding-bottom: 18px;
   }
 
+  .coach-score-ring-wrap {
+    flex-shrink: 0;
+    position: relative;
+    width: 88px;
+    height: 88px;
+  }
+
+  .coach-score-ring-wrap svg {
+    transform: rotate(-90deg);
+    overflow: visible;
+  }
+
+  .coach-score-ring-bg {
+    fill: none;
+    stroke: rgba(255,255,255,0.05);
+    stroke-width: 5;
+  }
+
+  .coach-score-ring-fill {
+    fill: none;
+    stroke-width: 5;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.8s cubic-bezier(0.25, 0.8, 0.25, 1), stroke 0.4s;
+  }
+
+  .coach-score-inner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .coach-score-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--muted);
+    line-height: 1;
+  }
+
+  .coach-score-label {
+    font-size: 8px;
+    color: var(--muted);
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-top: 2px;
+  }
+
+  /* Legacy fallback (empty state) */
   .coach-score-meter {
     width: 80px;
     height: 80px;
@@ -947,20 +1104,6 @@
     position: relative;
     box-shadow: 0 0 16px rgba(250, 68, 84, 0.1);
     flex-shrink: 0;
-  }
-
-  .coach-score-num {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 26px;
-    font-weight: 900;
-    color: var(--muted);
-  }
-
-  .coach-score-label {
-    font-size: 8px;
-    color: var(--muted);
-    text-transform: uppercase;
-    font-weight: bold;
   }
 
   .coach-verdict-title {
@@ -1047,34 +1190,39 @@
     display: flex;
     align-items: flex-start;
     gap: 10px;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-size: 11px;
-    line-height: 1.4;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 11.5px;
+    line-height: 1.5;
     border-left: 3px solid transparent;
+    transition: all 0.2s;
   }
 
   .dc-insight-card.good {
-    background: rgba(62, 207, 142, 0.04);
+    background: linear-gradient(90deg, rgba(62, 207, 142, 0.07), rgba(62, 207, 142, 0.02));
     border-color: var(--win);
-    color: #fff;
+    color: rgba(255,255,255,0.9);
+    box-shadow: inset 0 0 0 1px rgba(62, 207, 142, 0.08);
   }
 
   .dc-insight-card.warn {
-    background: rgba(250, 68, 84, 0.04);
+    background: linear-gradient(90deg, rgba(250, 68, 84, 0.08), rgba(250, 68, 84, 0.02));
     border-color: var(--loss);
-    color: #fff;
+    color: rgba(255,255,255,0.9);
+    box-shadow: inset 0 0 0 1px rgba(250, 68, 84, 0.08);
   }
 
   .dc-insight-card.tip {
-    background: rgba(232, 255, 71, 0.04);
+    background: linear-gradient(90deg, rgba(232, 255, 71, 0.07), rgba(232, 255, 71, 0.02));
     border-color: #e8ff47;
-    color: #fff;
+    color: rgba(255,255,255,0.9);
+    box-shadow: inset 0 0 0 1px rgba(232, 255, 71, 0.08);
   }
 
   .dc-insight-card-icon {
-    font-size: 14px;
+    font-size: 16px;
     flex-shrink: 0;
+    margin-top: 1px;
   }
 
   @media (max-width: 992px) {
