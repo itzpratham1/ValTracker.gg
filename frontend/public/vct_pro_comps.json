@@ -19870,5 +19870,1049 @@
     "has_won": false,
     "score": "5-13",
     "event_name": "Group Stage–Week 3 VCT 2026: Americas Stage 2"
+  },
+  {
+    "vlr_match_id": 712833,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "summit",
+    "team_name": "FNATIC",
+    "opposing_team": "Team Heretics",
+    "agents": [
+      "fade",
+      "phoenix",
+      "sova",
+      "viper",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "",
+    "event_name": "Group Stage–Week 3 VCT 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 712833,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "summit",
+    "team_name": "Team Heretics",
+    "opposing_team": "FNATIC",
+    "agents": [
+      "cypher",
+      "neon",
+      "omen",
+      "sova",
+      "yoru"
+    ],
+    "has_won": false,
+    "score": "",
+    "event_name": "Group Stage–Week 3 VCT 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 712833,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "ascent",
+    "team_name": "FNATIC",
+    "opposing_team": "Team Heretics",
+    "agents": [
+      "cypher",
+      "neon",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "0-13",
+    "event_name": "Group Stage–Week 3 VCT 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 712833,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "ascent",
+    "team_name": "Team Heretics",
+    "opposing_team": "FNATIC",
+    "agents": [
+      "cypher",
+      "jett",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-0",
+    "event_name": "Group Stage–Week 3 VCT 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 712832,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "sunset",
+    "team_name": "BBL Esports",
+    "opposing_team": "PCIFIC Esports",
+    "agents": [
+      "cypher",
+      "deadlock",
+      "raze",
+      "waylay",
+      "yoru"
+    ],
+    "has_won": false,
+    "score": "",
+    "event_name": "Group Stage–Week 3 VCT 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 712832,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "sunset",
+    "team_name": "PCIFIC Esports",
+    "opposing_team": "BBL Esports",
+    "agents": [
+      "chamber",
+      "fade",
+      "omen",
+      "sova",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "",
+    "event_name": "Group Stage–Week 3 VCT 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 712832,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "lotus",
+    "team_name": "BBL Esports",
+    "opposing_team": "PCIFIC Esports",
+    "agents": [
+      "cypher",
+      "fade",
+      "omen",
+      "raze",
+      "yoru"
+    ],
+    "has_won": false,
+    "score": "9-13",
+    "event_name": "Group Stage–Week 3 VCT 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 712832,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "lotus",
+    "team_name": "PCIFIC Esports",
+    "opposing_team": "BBL Esports",
+    "agents": [
+      "chamber",
+      "fade",
+      "omen",
+      "raze",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-9",
+    "event_name": "Group Stage–Week 3 VCT 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 712832,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "ascent",
+    "team_name": "BBL Esports",
+    "opposing_team": "PCIFIC Esports",
+    "agents": [
+      "cypher",
+      "deadlock",
+      "omen",
+      "sova",
+      "yoru"
+    ],
+    "has_won": true,
+    "score": "13-7",
+    "event_name": "Group Stage–Week 3 VCT 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 712832,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "ascent",
+    "team_name": "PCIFIC Esports",
+    "opposing_team": "BBL Esports",
+    "agents": [
+      "chamber",
+      "omen",
+      "phoenix",
+      "sova",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "7-13",
+    "event_name": "Group Stage–Week 3 VCT 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 698909,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "sunset",
+    "team_name": "ZETA DIVISION",
+    "opposing_team": "Nongshim RedForce",
+    "agents": [
+      "cypher",
+      "neon",
+      "sage",
+      "skye",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "",
+    "event_name": "Group Stage–Week 3 VCT 2026: Pacific Stage 2"
+  },
+  {
+    "vlr_match_id": 698909,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "sunset",
+    "team_name": "Nongshim RedForce",
+    "opposing_team": "ZETA DIVISION",
+    "agents": [
+      "harbor",
+      "kayo",
+      "omen",
+      "sova",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "",
+    "event_name": "Group Stage–Week 3 VCT 2026: Pacific Stage 2"
+  },
+  {
+    "vlr_match_id": 698909,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "breeze",
+    "team_name": "ZETA DIVISION",
+    "opposing_team": "Nongshim RedForce",
+    "agents": [
+      "harbor",
+      "kayo",
+      "neon",
+      "sova",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "13-15",
+    "event_name": "Group Stage–Week 3 VCT 2026: Pacific Stage 2"
+  },
+  {
+    "vlr_match_id": 698909,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "breeze",
+    "team_name": "Nongshim RedForce",
+    "opposing_team": "ZETA DIVISION",
+    "agents": [
+      "harbor",
+      "neon",
+      "phoenix",
+      "sova",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "15-13",
+    "event_name": "Group Stage–Week 3 VCT 2026: Pacific Stage 2"
+  },
+  {
+    "vlr_match_id": 698909,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "haven",
+    "team_name": "ZETA DIVISION",
+    "opposing_team": "Nongshim RedForce",
+    "agents": [
+      "cypher",
+      "neon",
+      "omen",
+      "skye",
+      "yoru"
+    ],
+    "has_won": false,
+    "score": "0-13",
+    "event_name": "Group Stage–Week 3 VCT 2026: Pacific Stage 2"
+  },
+  {
+    "vlr_match_id": 698909,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "haven",
+    "team_name": "Nongshim RedForce",
+    "opposing_team": "ZETA DIVISION",
+    "agents": [
+      "killjoy",
+      "neon",
+      "omen",
+      "sova",
+      "yoru"
+    ],
+    "has_won": true,
+    "score": "13-0",
+    "event_name": "Group Stage–Week 3 VCT 2026: Pacific Stage 2"
+  },
+  {
+    "vlr_match_id": 698908,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "summit",
+    "team_name": "VARREL",
+    "opposing_team": "KIWOOM DRX",
+    "agents": [
+      "chamber",
+      "cypher",
+      "fade",
+      "sova",
+      "tejo"
+    ],
+    "has_won": false,
+    "score": "",
+    "event_name": "Group Stage–Week 3 VCT 2026: Pacific Stage 2"
+  },
+  {
+    "vlr_match_id": 698908,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "summit",
+    "team_name": "KIWOOM DRX",
+    "opposing_team": "VARREL",
+    "agents": [
+      "astra",
+      "omen",
+      "phoenix",
+      "raze",
+      "sage"
+    ],
+    "has_won": false,
+    "score": "",
+    "event_name": "Group Stage–Week 3 VCT 2026: Pacific Stage 2"
+  },
+  {
+    "vlr_match_id": 698908,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "sunset",
+    "team_name": "VARREL",
+    "opposing_team": "KIWOOM DRX",
+    "agents": [
+      "chamber",
+      "fade",
+      "neon",
+      "omen",
+      "sage"
+    ],
+    "has_won": true,
+    "score": "13-8",
+    "event_name": "Group Stage–Week 3 VCT 2026: Pacific Stage 2"
+  },
+  {
+    "vlr_match_id": 698908,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "sunset",
+    "team_name": "KIWOOM DRX",
+    "opposing_team": "VARREL",
+    "agents": [
+      "cypher",
+      "neon",
+      "omen",
+      "raze",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "8-13",
+    "event_name": "Group Stage–Week 3 VCT 2026: Pacific Stage 2"
+  },
+  {
+    "vlr_match_id": 698908,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "haven",
+    "team_name": "VARREL",
+    "opposing_team": "KIWOOM DRX",
+    "agents": [
+      "cypher",
+      "neon",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-10",
+    "event_name": "Group Stage–Week 3 VCT 2026: Pacific Stage 2"
+  },
+  {
+    "vlr_match_id": 698908,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "haven",
+    "team_name": "KIWOOM DRX",
+    "opposing_team": "VARREL",
+    "agents": [
+      "cypher",
+      "neon",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "10-13",
+    "event_name": "Group Stage–Week 3 VCT 2026: Pacific Stage 2"
+  },
+  {
+    "vlr_match_id": 706369,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "summit",
+    "team_name": "LEVIATÁN",
+    "opposing_team": "NRG",
+    "agents": [
+      "astra",
+      "chamber",
+      "jett",
+      "omen",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "",
+    "event_name": "Group Stage–Week 3 VCT 2026: Americas Stage 2"
+  },
+  {
+    "vlr_match_id": 706369,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "summit",
+    "team_name": "NRG",
+    "opposing_team": "LEVIATÁN",
+    "agents": [
+      "fade",
+      "neon",
+      "omen",
+      "phoenix",
+      "skye"
+    ],
+    "has_won": false,
+    "score": "",
+    "event_name": "Group Stage–Week 3 VCT 2026: Americas Stage 2"
+  },
+  {
+    "vlr_match_id": 706369,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "sunset",
+    "team_name": "LEVIATÁN",
+    "opposing_team": "NRG",
+    "agents": [
+      "chamber",
+      "fade",
+      "neon",
+      "omen",
+      "phoenix"
+    ],
+    "has_won": true,
+    "score": "13-6",
+    "event_name": "Group Stage–Week 3 VCT 2026: Americas Stage 2"
+  },
+  {
+    "vlr_match_id": 706369,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "sunset",
+    "team_name": "NRG",
+    "opposing_team": "LEVIATÁN",
+    "agents": [
+      "cypher",
+      "kayo",
+      "neon",
+      "omen",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "6-13",
+    "event_name": "Group Stage–Week 3 VCT 2026: Americas Stage 2"
+  },
+  {
+    "vlr_match_id": 706369,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "haven",
+    "team_name": "LEVIATÁN",
+    "opposing_team": "NRG",
+    "agents": [
+      "astra",
+      "chamber",
+      "neon",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "14-16",
+    "event_name": "Group Stage–Week 3 VCT 2026: Americas Stage 2"
+  },
+  {
+    "vlr_match_id": 706369,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "haven",
+    "team_name": "NRG",
+    "opposing_team": "LEVIATÁN",
+    "agents": [
+      "chamber",
+      "neon",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "16-14",
+    "event_name": "Group Stage–Week 3 VCT 2026: Americas Stage 2"
+  },
+  {
+    "vlr_match_id": 706368,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "haven",
+    "team_name": "ENVY",
+    "opposing_team": "FURIA",
+    "agents": [
+      "astra",
+      "chamber",
+      "omen",
+      "phoenix",
+      "yoru"
+    ],
+    "has_won": false,
+    "score": "",
+    "event_name": "Group Stage–Week 3 VCT 2026: Americas Stage 2"
+  },
+  {
+    "vlr_match_id": 706368,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "haven",
+    "team_name": "FURIA",
+    "opposing_team": "ENVY",
+    "agents": [
+      "cypher",
+      "neon",
+      "omen",
+      "sova",
+      "waylay"
+    ],
+    "has_won": false,
+    "score": "",
+    "event_name": "Group Stage–Week 3 VCT 2026: Americas Stage 2"
+  },
+  {
+    "vlr_match_id": 706368,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "sunset",
+    "team_name": "ENVY",
+    "opposing_team": "FURIA",
+    "agents": [
+      "cypher",
+      "omen",
+      "sova",
+      "waylay",
+      "yoru"
+    ],
+    "has_won": true,
+    "score": "13-9",
+    "event_name": "Group Stage–Week 3 VCT 2026: Americas Stage 2"
+  },
+  {
+    "vlr_match_id": 706368,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "sunset",
+    "team_name": "FURIA",
+    "opposing_team": "ENVY",
+    "agents": [
+      "cypher",
+      "deadlock",
+      "omen",
+      "raze",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "9-13",
+    "event_name": "Group Stage–Week 3 VCT 2026: Americas Stage 2"
+  },
+  {
+    "vlr_match_id": 706368,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "ascent",
+    "team_name": "ENVY",
+    "opposing_team": "FURIA",
+    "agents": [
+      "chamber",
+      "neon",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-6",
+    "event_name": "Group Stage–Week 3 VCT 2026: Americas Stage 2"
+  },
+  {
+    "vlr_match_id": 706368,
+    "match_date": "Sunday, August 2",
+    "patch_version": "13.01",
+    "map_name": "ascent",
+    "team_name": "FURIA",
+    "opposing_team": "ENVY",
+    "agents": [
+      "cypher",
+      "jett",
+      "kayo",
+      "omen",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "6-13",
+    "event_name": "Group Stage–Week 3 VCT 2026: Americas Stage 2"
+  },
+  {
+    "vlr_match_id": 712831,
+    "match_date": "Saturday, August 1",
+    "patch_version": "13.01",
+    "map_name": "lotus",
+    "team_name": "Karmine Corp",
+    "opposing_team": "Team Liquid",
+    "agents": [
+      "chamber",
+      "fade",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "",
+    "event_name": "Group Stage–Week 3 VCT 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 712831,
+    "match_date": "Saturday, August 1",
+    "patch_version": "13.01",
+    "map_name": "lotus",
+    "team_name": "Team Liquid",
+    "opposing_team": "Karmine Corp",
+    "agents": [
+      "cypher",
+      "fade",
+      "neon",
+      "sova",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "",
+    "event_name": "Group Stage–Week 3 VCT 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 712831,
+    "match_date": "Saturday, August 1",
+    "patch_version": "13.01",
+    "map_name": "summit",
+    "team_name": "Karmine Corp",
+    "opposing_team": "Team Liquid",
+    "agents": [
+      "chamber",
+      "fade",
+      "neon",
+      "omen",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "11-13",
+    "event_name": "Group Stage–Week 3 VCT 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 712831,
+    "match_date": "Saturday, August 1",
+    "patch_version": "13.01",
+    "map_name": "summit",
+    "team_name": "Team Liquid",
+    "opposing_team": "Karmine Corp",
+    "agents": [
+      "jett",
+      "omen",
+      "phoenix",
+      "sova",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-11",
+    "event_name": "Group Stage–Week 3 VCT 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 712831,
+    "match_date": "Saturday, August 1",
+    "patch_version": "13.01",
+    "map_name": "haven",
+    "team_name": "Karmine Corp",
+    "opposing_team": "Team Liquid",
+    "agents": [
+      "cypher",
+      "neon",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-11",
+    "event_name": "Group Stage–Week 3 VCT 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 712831,
+    "match_date": "Saturday, August 1",
+    "patch_version": "13.01",
+    "map_name": "haven",
+    "team_name": "Team Liquid",
+    "opposing_team": "Karmine Corp",
+    "agents": [
+      "cypher",
+      "jett",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "11-13",
+    "event_name": "Group Stage–Week 3 VCT 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 712830,
+    "match_date": "Saturday, August 1",
+    "patch_version": "13.01",
+    "map_name": "lotus",
+    "team_name": "FUT Esports",
+    "opposing_team": "Team Vitality",
+    "agents": [
+      "omen",
+      "raze",
+      "skye",
+      "sova",
+      "waylay"
+    ],
+    "has_won": false,
+    "score": "",
+    "event_name": "Group Stage–Week 3 VCT 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 712830,
+    "match_date": "Saturday, August 1",
+    "patch_version": "13.01",
+    "map_name": "lotus",
+    "team_name": "Team Vitality",
+    "opposing_team": "FUT Esports",
+    "agents": [
+      "chamber",
+      "cypher",
+      "neon",
+      "viper",
+      "vyse"
+    ],
+    "has_won": false,
+    "score": "",
+    "event_name": "Group Stage–Week 3 VCT 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 712830,
+    "match_date": "Saturday, August 1",
+    "patch_version": "13.01",
+    "map_name": "haven",
+    "team_name": "FUT Esports",
+    "opposing_team": "Team Vitality",
+    "agents": [
+      "cypher",
+      "neon",
+      "omen",
+      "sova",
+      "waylay"
+    ],
+    "has_won": true,
+    "score": "14-12",
+    "event_name": "Group Stage–Week 3 VCT 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 712830,
+    "match_date": "Saturday, August 1",
+    "patch_version": "13.01",
+    "map_name": "haven",
+    "team_name": "Team Vitality",
+    "opposing_team": "FUT Esports",
+    "agents": [
+      "astra",
+      "chamber",
+      "jett",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "12-14",
+    "event_name": "Group Stage–Week 3 VCT 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 712830,
+    "match_date": "Saturday, August 1",
+    "patch_version": "13.01",
+    "map_name": "split",
+    "team_name": "FUT Esports",
+    "opposing_team": "Team Vitality",
+    "agents": [
+      "neon",
+      "omen",
+      "raze",
+      "skye",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "6-13",
+    "event_name": "Group Stage–Week 3 VCT 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 712830,
+    "match_date": "Saturday, August 1",
+    "patch_version": "13.01",
+    "map_name": "split",
+    "team_name": "Team Vitality",
+    "opposing_team": "FUT Esports",
+    "agents": [
+      "fade",
+      "neon",
+      "omen",
+      "phoenix",
+      "viper"
+    ],
+    "has_won": true,
+    "score": "13-6",
+    "event_name": "Group Stage–Week 3 VCT 2026: EMEA Stage 2"
+  },
+  {
+    "vlr_match_id": 698907,
+    "match_date": "Saturday, August 1",
+    "patch_version": "13.01",
+    "map_name": "summit",
+    "team_name": "FULL SENSE",
+    "opposing_team": "Rex Regum Qeon",
+    "agents": [
+      "chamber",
+      "fade",
+      "jett",
+      "sova",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "",
+    "event_name": "Group Stage–Week 3 VCT 2026: Pacific Stage 2"
+  },
+  {
+    "vlr_match_id": 698907,
+    "match_date": "Saturday, August 1",
+    "patch_version": "13.01",
+    "map_name": "summit",
+    "team_name": "Rex Regum Qeon",
+    "opposing_team": "FULL SENSE",
+    "agents": [
+      "astra",
+      "harbor",
+      "neon",
+      "phoenix",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "",
+    "event_name": "Group Stage–Week 3 VCT 2026: Pacific Stage 2"
+  },
+  {
+    "vlr_match_id": 698907,
+    "match_date": "Saturday, August 1",
+    "patch_version": "13.01",
+    "map_name": "ascent",
+    "team_name": "FULL SENSE",
+    "opposing_team": "Rex Regum Qeon",
+    "agents": [
+      "astra",
+      "jett",
+      "killjoy",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-4",
+    "event_name": "Group Stage–Week 3 VCT 2026: Pacific Stage 2"
+  },
+  {
+    "vlr_match_id": 698907,
+    "match_date": "Saturday, August 1",
+    "patch_version": "13.01",
+    "map_name": "ascent",
+    "team_name": "Rex Regum Qeon",
+    "opposing_team": "FULL SENSE",
+    "agents": [
+      "cypher",
+      "neon",
+      "omen",
+      "sova",
+      "yoru"
+    ],
+    "has_won": false,
+    "score": "4-13",
+    "event_name": "Group Stage–Week 3 VCT 2026: Pacific Stage 2"
+  },
+  {
+    "vlr_match_id": 698907,
+    "match_date": "Saturday, August 1",
+    "patch_version": "13.01",
+    "map_name": "sunset",
+    "team_name": "FULL SENSE",
+    "opposing_team": "Rex Regum Qeon",
+    "agents": [
+      "chamber",
+      "fade",
+      "neon",
+      "omen",
+      "viper"
+    ],
+    "has_won": false,
+    "score": "8-13",
+    "event_name": "Group Stage–Week 3 VCT 2026: Pacific Stage 2"
+  },
+  {
+    "vlr_match_id": 698907,
+    "match_date": "Saturday, August 1",
+    "patch_version": "13.01",
+    "map_name": "sunset",
+    "team_name": "Rex Regum Qeon",
+    "opposing_team": "FULL SENSE",
+    "agents": [
+      "chamber",
+      "neon",
+      "omen",
+      "sage",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-8",
+    "event_name": "Group Stage–Week 3 VCT 2026: Pacific Stage 2"
+  },
+  {
+    "vlr_match_id": 698906,
+    "match_date": "Saturday, August 1",
+    "patch_version": "13.01",
+    "map_name": "sunset",
+    "team_name": "T1",
+    "opposing_team": "DetonatioN FocusMe",
+    "agents": [
+      "chamber",
+      "jett",
+      "neon",
+      "sova",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "",
+    "event_name": "Group Stage–Week 3 VCT 2026: Pacific Stage 2"
+  },
+  {
+    "vlr_match_id": 698906,
+    "match_date": "Saturday, August 1",
+    "patch_version": "13.01",
+    "map_name": "sunset",
+    "team_name": "DetonatioN FocusMe",
+    "opposing_team": "T1",
+    "agents": [
+      "cypher",
+      "kayo",
+      "omen",
+      "omen",
+      "phoenix"
+    ],
+    "has_won": false,
+    "score": "",
+    "event_name": "Group Stage–Week 3 VCT 2026: Pacific Stage 2"
+  },
+  {
+    "vlr_match_id": 698906,
+    "match_date": "Saturday, August 1",
+    "patch_version": "13.01",
+    "map_name": "haven",
+    "team_name": "T1",
+    "opposing_team": "DetonatioN FocusMe",
+    "agents": [
+      "chamber",
+      "neon",
+      "omen",
+      "phoenix",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-11",
+    "event_name": "Group Stage–Week 3 VCT 2026: Pacific Stage 2"
+  },
+  {
+    "vlr_match_id": 698906,
+    "match_date": "Saturday, August 1",
+    "patch_version": "13.01",
+    "map_name": "haven",
+    "team_name": "DetonatioN FocusMe",
+    "opposing_team": "T1",
+    "agents": [
+      "cypher",
+      "jett",
+      "neon",
+      "omen",
+      "skye"
+    ],
+    "has_won": false,
+    "score": "11-13",
+    "event_name": "Group Stage–Week 3 VCT 2026: Pacific Stage 2"
+  },
+  {
+    "vlr_match_id": 698906,
+    "match_date": "Saturday, August 1",
+    "patch_version": "13.01",
+    "map_name": "ascent",
+    "team_name": "T1",
+    "opposing_team": "DetonatioN FocusMe",
+    "agents": [
+      "cypher",
+      "jett",
+      "kayo",
+      "omen",
+      "sova"
+    ],
+    "has_won": false,
+    "score": "5-13",
+    "event_name": "Group Stage–Week 3 VCT 2026: Pacific Stage 2"
+  },
+  {
+    "vlr_match_id": 698906,
+    "match_date": "Saturday, August 1",
+    "patch_version": "13.01",
+    "map_name": "ascent",
+    "team_name": "DetonatioN FocusMe",
+    "opposing_team": "T1",
+    "agents": [
+      "cypher",
+      "jett",
+      "neon",
+      "omen",
+      "sova"
+    ],
+    "has_won": true,
+    "score": "13-5",
+    "event_name": "Group Stage–Week 3 VCT 2026: Pacific Stage 2"
   }
 ]
