@@ -133,15 +133,13 @@
 /* ── 3D Tilt on bento cards (classy, smooth & subtle — disabled on mobile/touchscreen) ── */
 (function initTiltCards() {
   const cards = document.querySelectorAll('.bento-card');
-  // Disable tilt card completely on screen widths <= 1024 or device touch screens
-  if (window.innerWidth <= 1024 || !window.matchMedia('(hover: hover)').matches) {
+  if (window.innerWidth <= 1024) {
     return;
   }
   
   cards.forEach(card => {
     card.addEventListener('mousemove', (e) => {
-      // Dynamic mobile/touchscreen safety check
-      if (window.innerWidth <= 1024 || !window.matchMedia('(hover: hover)').matches) {
+      if (window.innerWidth <= 1024) {
         return;
       }
       if (!card.classList.contains('visible')) return;
@@ -172,7 +170,7 @@
   });
 })();
 
-/* ── Hero Browser Tab Switching ── */
+/* ── Hero Browser Tab Switching — Smooth Crossfade ── */
 (function initBrowserTabs() {
   const tabs = document.querySelectorAll('.browser-tab');
   const urlText = document.getElementById('browser-url-text');
@@ -188,6 +186,33 @@
     'hero-obs-tab':   { imgId: 'hero-obs-img',   url: 'valtracker.live/app#overlay' }
   };
 
+  // Set up all images with CSS transitions instead of display:none
+  const allImgs = mockupBody.querySelectorAll('img');
+  allImgs.forEach(img => {
+    img.style.position = 'absolute';
+    img.style.top = '0';
+    img.style.left = '0';
+    img.style.width = '100%';
+    img.style.height = 'auto';
+    img.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+    img.style.opacity = '0';
+    img.style.pointerEvents = 'none';
+    img.style.display = 'block';
+  });
+  mockupBody.style.position = 'relative';
+
+  // Show first image by default
+  const firstImg = document.getElementById('hero-stats-img');
+  if (firstImg) {
+    firstImg.style.opacity = '1';
+    firstImg.style.pointerEvents = 'auto';
+    // Set container height to first image's natural height
+    firstImg.addEventListener('load', () => {
+      mockupBody.style.minHeight = firstImg.offsetHeight + 'px';
+    });
+    if (firstImg.complete) mockupBody.style.minHeight = (firstImg.offsetHeight || 300) + 'px';
+  }
+
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
       tabs.forEach(t => t.classList.remove('active'));
@@ -196,14 +221,26 @@
       const target = tab.getAttribute('data-target');
       const config = tabConfig[target] || tabConfig['hero-stats-tab'];
 
-      const allImgs = mockupBody.querySelectorAll('img');
+      // Crossfade: fade out all, fade in target
       allImgs.forEach(img => {
         if (img.id === config.imgId) {
-          img.style.display = 'block';
+          img.style.opacity = '0';
+          img.style.transform = 'scale(0.98)';
+          img.style.pointerEvents = 'auto';
+          // Small delay so outgoing fade starts first
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              img.style.opacity = '1';
+              img.style.transform = 'scale(1)';
+            });
+          });
         } else {
-          img.style.display = 'none';
+          img.style.opacity = '0';
+          img.style.transform = 'scale(1.02)';
+          img.style.pointerEvents = 'none';
         }
       });
+
       urlText.textContent = config.url;
     });
   });
@@ -384,3 +421,16 @@ if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
   const canvas = document.getElementById('hero-canvas');
   if (canvas) canvas.style.display = 'none';
 }
+
+/* ── Steps Progress Line Trigger ── */
+(function initStepsProgress() {
+  const stepsWrap = document.querySelector('.steps-wrap');
+  if (!stepsWrap) return;
+  const obs = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      stepsWrap.classList.add('progress-anim');
+      obs.unobserve(stepsWrap);
+    }
+  }, { threshold: 0.3 });
+  obs.observe(stepsWrap);
+})();

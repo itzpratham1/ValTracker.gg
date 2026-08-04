@@ -32,8 +32,15 @@ const structuredData = {
     <span>ValTracker</span>
   </a>
 
+  <div class="nav-links" role="list" aria-label="Desktop navigation links">
+    <a href="#features" class="nav-link" role="listitem">Features</a>
+    <a href="/app#coach" class="nav-link" role="listitem">AI Coach</a>
+    <a href="/app#esports" class="nav-link" role="listitem">VCT</a>
+    <a href="/comp" class="nav-link" role="listitem">Meta Comp</a>
+  </div>
+
   <div class="nav-actions">
-    <a href="/login" class="btn-red" id="nav-track-btn">Track Now →</a>
+    <a href="/app" class="btn-red" id="nav-track-btn">Track Now →</a>
   </div>
 
   <button class="nav-mobile-toggle" id="nav-mobile-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
@@ -43,11 +50,15 @@ const structuredData = {
   </button>
 
   <div class="nav-mobile-menu" id="nav-mobile-menu" role="menu">
-    <a href="/login" class="nav-mobile-link" role="menuitem">Tracker</a>
+    <a href="/app" class="nav-mobile-link" role="menuitem">Stats Tracker</a>
+    <a href="/app#coach" class="nav-mobile-link" role="menuitem">AI Coach</a>
     <a href="/app#esports" class="nav-mobile-link" role="menuitem">VCT Esports</a>
-    <a href="/app#skins" class="nav-mobile-link" role="menuitem">Skins Store</a>
     <a href="/comp" class="nav-mobile-link" role="menuitem">Meta Comp</a>
+    <a href="/app#skins" class="nav-mobile-link" role="menuitem">Skins Store</a>
     <a href="/app#overlay" class="nav-mobile-link" role="menuitem">OBS Overlay</a>
+    <div class="nav-mobile-action">
+      <a href="/app" class="btn-red nav-mobile-cta">Track Stats Now →</a>
+    </div>
   </div>
 </nav>
 
@@ -66,8 +77,8 @@ const structuredData = {
   </div>
 
   <div class="hero-content">
-    <div class="hero-eyebrow" aria-label="Free Valorant stats tracker">
-      Free forever · No account needed
+    <div class="hero-eyebrow" aria-label="Tracking Valorant in real-time">
+      LIVE — Tracking Valorant in Real-Time
     </div>
 
     <h1 class="hero-headline" id="hero-headline">
@@ -80,16 +91,19 @@ const structuredData = {
     </h1>
 
     <p class="hero-sub">
-      Real-time Valorant stats, AI coaching, and live OBS overlays.<br>
-      Free. Always.
+      Know your ACS, headshot %, tilt patterns, and get AI coaching —<br>
+      all in under 10 seconds. Free. Always.
     </p>
 
     <div class="hero-cta-wrap">
-      <a href="/login" class="btn-hero" id="hero-cta-btn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="5 12 12 5 19 12"></polyline><polyline points="5 19 12 12 19 19"></polyline></svg>
-        Track Your Stats
-      </a>
-      <p class="hero-note">No account needed. Just your Riot ID.</p>
+      <div class="hero-cta-row">
+        <a href="/app" class="btn-hero" id="hero-cta-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="5 12 12 5 19 12"></polyline><polyline points="5 19 12 12 19 19"></polyline></svg>
+          Track Your Stats
+        </a>
+        <a href="#features" class="btn-ghost-hero" id="hero-demo-btn">View Features →</a>
+      </div>
+      <p class="hero-note">No sign-up. Just your Riot ID.</p>
     </div>
   </div>
 
@@ -264,50 +278,62 @@ const structuredData = {
       <div class="section-label reveal" style="justify-content: center; margin-bottom: 24px;">
         <span class="section-eyebrow"><span class="live-dot"></span>Not Your Ordinary Tracker</span>
       </div>
-      <h2 class="section-title reveal" id="njt-title" style="margin-bottom: 16px;">Every other tracker shows you numbers.<br><span style="color: var(--accent);">We show you why.</span></h2>
-      <p class="section-subtitle reveal" style="margin-left: auto; margin-right: auto; max-width: 680px;">tracker.gg tells you your K/D. Others show your rank. ValTracker tells you exactly what's holding your rank back — and what to fix, every session.</p>
+      <h2 class="section-title reveal" id="njt-title" style="margin-bottom: 16px;">Others track your rank.<br><span style="color: var(--accent);">We track your potential.</span></h2>
+      <p class="section-subtitle reveal" style="margin-left: auto; margin-right: auto; max-width: 680px;">tracker.gg shows your K/D. Blitz shows your rank. ValTracker diagnoses exactly what's holding you back — and gives you a session roadmap to fix it.</p>
     </div>
 
     <div class="njt-grid" role="list" aria-label="ValTracker exclusive vs standard features">
       <!-- Exclusive Cards -->
       <article class="njt-card exclusive reveal" role="listitem">
         <span class="njt-badge">Only ValTracker</span>
-        <div class="njt-icon" aria-hidden="true">🤖</div>
+        <div class="njt-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="10" stroke-width="1.5"/><path d="M9.5 8.5l5 3.5-5 3.5V8.5z" fill="currentColor" stroke="none"/></svg>
+        </div>
         <h3 class="njt-card-title">ValBot AI Coach</h3>
-        <p class="njt-card-desc">Get a personalized coaching verdict after every session. Pinpoints exact weak spots and maps out a session roadmap.</p>
+        <p class="njt-card-desc">Get a personalized coaching verdict after every session. Pinpoints exact weak spots and gives you a 3-step ranked roadmap.</p>
       </article>
 
       <article class="njt-card exclusive reveal" role="listitem">
         <span class="njt-badge">Only ValTracker</span>
-        <div class="njt-icon" aria-hidden="true">🧪</div>
+        <div class="njt-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
         <h3 class="njt-card-title">Performance Lab</h3>
-        <p class="njt-card-desc">Quantify your mental game. Detect tilt, monitor fatigue buildup, track performance decay, and find best hours to queue.</p>
+        <p class="njt-card-desc">Quantify your mental game. Detect tilt, monitor fatigue buildup, track performance decay, and find your best hours to queue.</p>
       </article>
 
       <article class="njt-card exclusive reveal" role="listitem">
         <span class="njt-badge">Only ValTracker</span>
-        <div class="njt-icon" aria-hidden="true">📺</div>
+        <div class="njt-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><path d="M8 21h8m-4-4v4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
         <h3 class="njt-card-title">Free OBS Overlays</h3>
-        <p class="njt-card-desc">Show live rank and match stats on stream. Zero setup—simply copy and paste a single browser source URL into OBS.</p>
+        <p class="njt-card-desc">Show live rank and match stats on stream. Zero setup — copy one URL into OBS Browser Source. Live in 30 seconds.</p>
       </article>
 
       <!-- Standard Cards -->
       <article class="njt-card reveal" role="listitem">
-        <div class="njt-icon" aria-hidden="true">📊</div>
+        <div class="njt-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
         <h3 class="njt-card-title">Deep Stats Tracker</h3>
-        <p class="njt-card-desc">Analyze K/D, ACS, headshot %, win rates, and RR progression instantly. Fully operational with no account login required.</p>
+        <p class="njt-card-desc">Analyze K/D, ACS, headshot %, win rates, and RR progression instantly — no login, no account, no gates.</p>
       </article>
 
-      <a href="/comp" class="njt-card reveal njt-card-link" role="listitem">
-        <div class="njt-icon" aria-hidden="true">📐</div>
+      <article class="njt-card reveal" role="listitem">
+        <div class="njt-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
         <h3 class="njt-card-title">Meta Comp Architect</h3>
-        <p class="njt-card-desc">Draft 5-agent team comps and evaluate synergies automatically against active VCT pro tournament picks and win rates.</p>
-      </a>
+        <p class="njt-card-desc">Draft 5-agent team comps and evaluate synergies automatically validated against live VCT pro tournament picks.</p>
+      </article>
 
       <article class="njt-card reveal" role="listitem">
-        <div class="njt-icon" aria-hidden="true">🏆</div>
+        <div class="njt-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
         <h3 class="njt-card-title">VCT Esports Hub</h3>
-        <p class="njt-card-desc">Follow pro tournament rosters, schedules, and live brackets. Get instant matches alerts and VCT point updates.</p>
+        <p class="njt-card-desc">Follow pro tournament brackets, schedules, and live scores. Updated in real-time across all VCT circuits.</p>
       </article>
     </div>
 
@@ -316,10 +342,10 @@ const structuredData = {
       <table class="njt-table" aria-label="Feature comparison table">
         <thead>
           <tr>
-            <th scope="col">Feature / Capabilities</th>
-            <th scope="col" class="highlight-col">ValTracker</th>
-            <th scope="col">tracker.gg</th>
-            <th scope="col">Others</th>
+            <th scope="col" class="col-feature">Feature / Capabilities</th>
+            <th scope="col" class="highlight-col col-vt">ValTracker</th>
+            <th scope="col" class="col-tgg">tracker.gg</th>
+            <th scope="col" class="col-others">Others</th>
           </tr>
         </thead>
         <tbody>
@@ -378,7 +404,7 @@ const structuredData = {
     <!-- CTA Strip -->
     <div class="njt-cta reveal">
       <div class="njt-cta-btn">
-        <a href="/login" class="btn-hero" id="njt-cta-btn" style="display:inline-flex;">Start Tracking Free →</a>
+        <a href="/app" class="btn-hero" id="njt-cta-btn" style="display:inline-flex;">Start Tracking Free →</a>
       </div>
       <p class="njt-cta-label">No sign-up. Just your Riot ID.</p>
     </div>
@@ -420,29 +446,45 @@ const structuredData = {
     </div>
     <div style="text-align:center; margin-bottom:72px;">
       <h2 class="section-title reveal" id="how-title" style="display:inline-block;">Three Steps To Your Stats</h2>
+      <p class="reveal" style="color: var(--text-secondary); font-size: 15px; margin-top: 12px; letter-spacing: 0.5px;">From zero to ranked insights in under 10 seconds.</p>
     </div>
 
     <div class="steps-wrap" role="list" aria-label="Three steps to get started">
+      <!-- Animated progress line overlay -->
+      <div class="steps-progress-line" aria-hidden="true"></div>
+
       <div class="step-item" role="listitem">
         <div class="step-num-wrap" aria-hidden="true">
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><path d="M16 2v4M8 2v4M3 10h18" stroke-linecap="round"/></svg>
+          </div>
           <span class="step-num">01</span>
         </div>
+        <span class="step-time-badge">0s</span>
         <h3 class="step-title">Enter Your Riot ID</h3>
-        <p class="step-body">Type your in-game name and tag. No account. No login. Just paste your Riot ID and go.</p>
+        <p class="step-body">Type your in-game name and tag. No account, no password, no friction. Just your Riot ID.</p>
       </div>
       <div class="step-item" role="listitem">
         <div class="step-num-wrap" aria-hidden="true">
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
           <span class="step-num">02</span>
         </div>
-        <h3 class="step-title">Fetch Your Stats</h3>
-        <p class="step-body">ValTracker pulls your last 20 matches in 5–10 seconds and compiles every metric that matters.</p>
+        <span class="step-time-badge">~5s</span>
+        <h3 class="step-title">Stats Fetched</h3>
+        <p class="step-body">ValTracker pulls your last 20 matches from Riot's API. K/D, ACS, HS%, win rate, RR — all compiled instantly.</p>
       </div>
       <div class="step-item" role="listitem">
         <div class="step-num-wrap" aria-hidden="true">
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><polyline points="18 15 12 9 6 15" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
           <span class="step-num">03</span>
         </div>
+        <span class="step-time-badge">~10s</span>
         <h3 class="step-title">Climb Faster</h3>
-        <p class="step-body">Use ValBot AI, Deep Analysis, and Performance Lab to identify and fix your exact weak spots.</p>
+        <p class="step-body">ValBot AI pinpoints your #1 ranked weakness and gives you a targeted fix — automatically after every session.</p>
       </div>
     </div>
   </div>
@@ -455,16 +497,29 @@ const structuredData = {
 ════════════════════════════════ -->
 <section class="final-cta-section" id="final-cta" aria-labelledby="final-cta-title">
   <div class="final-cta-card reveal">
-    <h2 id="final-cta-title">Ready To See<br>Your Real Stats?</h2>
-    <p>Join thousands of Valorant players already using ValTracker to rank up faster with real data.</p>
-    <a href="/login" class="btn-hero" id="final-cta-btn" style="display:inline-flex;">→ Track Now — It's Free</a>
-    <p class="final-cta-note">
-      No sign-up required
-      <span aria-hidden="true">·</span>
-      Free forever
-      <span aria-hidden="true">·</span>
-      Built by a Valorant player
-    </p>
+    <!-- Floating rank icons in background -->
+    <div class="final-cta-bg" aria-hidden="true">
+      <span class="cta-rank-float cta-rank-1">🎯</span>
+      <span class="cta-rank-float cta-rank-2">⚔️</span>
+      <span class="cta-rank-float cta-rank-3">🏆</span>
+      <span class="cta-rank-float cta-rank-4">📊</span>
+    </div>
+    <div class="final-cta-inner">
+      <span class="final-cta-eyebrow">Join the Climb</span>
+      <h2 id="final-cta-title">Your Rank-Up<br><span style="color: var(--accent);">Starts Now.</span></h2>
+      <p>Over 1,900 matches analyzed. Zero ads. Zero paywalls.<br>Just your data, your stats, your roadmap.</p>
+      <div class="final-cta-btns">
+        <a href="/app" class="btn-hero" id="final-cta-btn" style="display:inline-flex;">→ Track Now — It's Free</a>
+        <a href="#features" class="btn-ghost-hero" id="final-cta-features-btn">← View Features</a>
+      </div>
+      <p class="final-cta-note">
+        No sign-up required
+        <span aria-hidden="true">·</span>
+        Free forever
+        <span aria-hidden="true">·</span>
+        Built by a Valorant player
+      </p>
+    </div>
   </div>
 </section>
 
@@ -482,7 +537,7 @@ const structuredData = {
     </div>
 
     <nav class="footer-nav" aria-label="Footer navigation">
-      <a href="/login">Tracker</a>
+      <a href="/app">Tracker</a>
       <a href="/app#esports">VCT</a>
       <a href="/app#skins">Skins</a>
       <a href="/comp">Meta Comp</a>
@@ -557,7 +612,7 @@ const structuredData = {
   <!-- ── Parallax scroll effects (inline) ── -->
   <script is:inline>
     (function() {
-      if (window.innerWidth <= 1024 || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches)) {
+      if (window.innerWidth <= 1024) {
         return;
       }
       var heroGrid = document.querySelector('.hero-grid');
@@ -584,7 +639,7 @@ const structuredData = {
       }, { passive: true });
       /* Mouse move parallax for background glow */
       var heroBg = document.querySelector('.hero-bg');
-      if (heroBg && window.innerWidth > 1024 && window.matchMedia('(hover: hover)').matches) {
+      if (heroBg && window.innerWidth > 1024) {
         window.addEventListener('mousemove', function(e) {
           var x = (e.clientX / window.innerWidth - 0.5) * 35;
           var y = (e.clientY / window.innerHeight - 0.5) * 35;
@@ -598,38 +653,51 @@ const structuredData = {
   <!-- ── Scroll reveal (IntersectionObserver + CSS transitions) ── -->
   <script is:inline>
     (function() {
+      var initialized = false;
       function initScrollReveal() {
+        if (initialized) return;
         var allEls = document.querySelectorAll('.bento-card, .reveal, .step-item');
-        if (allEls.length) {
-          if (!('IntersectionObserver' in window)) {
-            allEls.forEach(function(el) { el.classList.add('visible'); });
-            return;
-          }
-          var obs = new IntersectionObserver(function(entries) {
-            entries.forEach(function(entry) {
-              if (entry.isIntersecting) {
-                var el = entry.target;
-                if (el.classList.contains('bento-card')) {
-                  var cards = document.querySelectorAll('.bento-card');
-                  var idx = Array.prototype.indexOf.call(cards, el);
-                  setTimeout(function() { el.classList.add('visible'); }, idx * 80);
-                } else if (el.classList.contains('step-item')) {
-                  var steps = document.querySelectorAll('.step-item');
-                  var idx = Array.prototype.indexOf.call(steps, el);
-                  setTimeout(function() { el.classList.add('visible'); }, idx * 150);
-                } else {
-                  el.classList.add('visible');
-                }
-                obs.unobserve(el);
-              }
-            });
-          }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
-          allEls.forEach(function(el) { obs.observe(el); });
+        if (!allEls.length) return;
+        initialized = true;
+
+        if (!('IntersectionObserver' in window)) {
+          allEls.forEach(function(el) { el.classList.add('visible'); });
+          return;
         }
+        var obs = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting || entry.intersectionRatio > 0) {
+              var el = entry.target;
+              if (el.classList.contains('bento-card')) {
+                var cards = document.querySelectorAll('.bento-card');
+                var idx = Array.prototype.indexOf.call(cards, el);
+                setTimeout(function() { el.classList.add('visible'); }, idx * 80);
+              } else if (el.classList.contains('step-item')) {
+                var steps = document.querySelectorAll('.step-item');
+                var idx = Array.prototype.indexOf.call(steps, el);
+                setTimeout(function() { el.classList.add('visible'); }, idx * 150);
+              } else {
+                el.classList.add('visible');
+              }
+              obs.unobserve(el);
+            }
+          });
+        }, { threshold: 0.05, rootMargin: '0px 0px 50px 0px' });
+
+        allEls.forEach(function(el) {
+          var rect = el.getBoundingClientRect();
+          if (rect.top < (window.innerHeight || document.documentElement.clientHeight) + 50 && rect.bottom > 0) {
+            el.classList.add('visible');
+          } else {
+            obs.observe(el);
+          }
+        });
       }
-      if (document.readyState === 'complete') {
+
+      if (document.readyState === 'interactive' || document.readyState === 'complete') {
         initScrollReveal();
       } else {
+        document.addEventListener('DOMContentLoaded', initScrollReveal);
         window.addEventListener('load', initScrollReveal);
       }
     })();
@@ -738,8 +806,36 @@ const structuredData = {
     })();
   </script>
 
+  <!-- ── Inject shimmer divs into bento cards & fix browser body height ── -->
+  <script is:inline>
+    (function() {
+      // Inject .bento-shimmer into each bento card for hover shimmer effect
+      document.querySelectorAll('.bento-card').forEach(function(card) {
+        if (!card.querySelector('.bento-shimmer')) {
+          var shimmer = document.createElement('div');
+          shimmer.className = 'bento-shimmer';
+          card.appendChild(shimmer);
+        }
+      });
+      // Fix browser body height for crossfade absolute positioning
+      var heroImg = document.getElementById('hero-stats-img');
+      var browserBody = document.querySelector('.browser-body');
+      if (heroImg && browserBody) {
+        function setHeight() {
+          if (heroImg.naturalHeight > 0) {
+            var aspectRatio = heroImg.naturalHeight / heroImg.naturalWidth;
+            browserBody.style.minHeight = (browserBody.offsetWidth * aspectRatio) + 'px';
+          }
+        }
+        if (heroImg.complete) { setHeight(); }
+        else { heroImg.addEventListener('load', setHeight); }
+      }
+    })();
+  </script>
+
   <!-- ── Non-critical effects (particles, tilt, lightbox) loaded async ── -->
-  <script is:inline src="/landing.js?v=2" defer></script>
+  <script is:inline src="/landing.js?v=6" defer></script>
 </Layout>
+
 
 
