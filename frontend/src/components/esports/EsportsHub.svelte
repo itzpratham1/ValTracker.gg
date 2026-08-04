@@ -95,7 +95,7 @@
     try {
       if (!getFranchiseData()) {
         try {
-          const res = await fetch('/vct_teams.json?v=3');
+          const res = await fetch('/vct_teams.json?v=10');
           const data = await res.json();
           setFranchiseData(data);
           franchiseData = data;
@@ -171,7 +171,7 @@
   function applyLocalStorageRosters(data) {
     if (!data) return data;
     try {
-      const cachedStr = typeof window !== 'undefined' && localStorage.getItem('vct_roster_cache_v2');
+      const cachedStr = typeof window !== 'undefined' && localStorage.getItem('vct_roster_cache_v10');
       if (cachedStr) {
         const rosterMap = JSON.parse(cachedStr);
         for (const region in data) {
@@ -189,7 +189,7 @@
   async function loadTeams() {
     loading.teams = true;
     try {
-      const res = await fetch('/vct_teams.json?v=3');
+      const res = await fetch('/vct_teams.json?v=10');
       const rawData = await res.json();
       franchiseData = applyLocalStorageRosters(rawData);
       setFranchiseData(franchiseData);
@@ -231,13 +231,20 @@
       const rosterRes = await fetchEsportsTeamRoster(teamId);
       const liveRoster = rosterRes?.data || [];
       if (liveRoster.length > 0) {
-        team.roster = liveRoster;
-        selectedTeam = { ...team, roster: liveRoster };
+        const mergedRoster = liveRoster.map(lp => {
+          const existing = (team.roster || []).find(ep => (ep.name || '').toLowerCase() === (lp.name || '').toLowerCase());
+          return {
+            ...lp,
+            country: lp.country || (existing ? existing.country : '')
+          };
+        });
+        team.roster = mergedRoster;
+        selectedTeam = { ...team, roster: mergedRoster };
         try {
           if (typeof window !== 'undefined') {
-            const cachedMap = JSON.parse(localStorage.getItem('vct_roster_cache_v2') || '{}');
-            cachedMap[teamId] = liveRoster;
-            localStorage.setItem('vct_roster_cache_v2', JSON.stringify(cachedMap));
+            const cachedMap = JSON.parse(localStorage.getItem('vct_roster_cache_v10') || '{}');
+            cachedMap[teamId] = mergedRoster;
+            localStorage.setItem('vct_roster_cache_v10', JSON.stringify(cachedMap));
           }
         } catch (e) {}
       }
@@ -438,6 +445,59 @@
     return getProxiedImageUrl(t.logo);
   }
 
+  function getCountryFlag(countryCode, playerName = '', realName = '') {
+    let code = (countryCode || '').trim().toLowerCase();
+    if (!code) {
+      const p = (playerName || '').toLowerCase();
+      const r = (realName || '').toLowerCase();
+      if (p === 'xavi8k' || p === 'patmen') code = 'ph';
+      else if (p === 'udotan') code = 'kr';
+      else if (p === 'kr1stal') code = 'ru';
+      else if (p === 'autumn') code = 'au';
+      else if (p === 'boaster') code = 'gb';
+      else if (p === 'crashies' || p === 'cojo') code = 'us';
+      else if (p === 'kaajak') code = 'pl';
+      else if (p === 'cloud' || p === 'engh') code = 'ru';
+      else if (p === 'alfajer') code = 'tr';
+      else if (p === 'veqaj') code = 'fr';
+      else if (p === 'desmo') code = 'dk';
+      else if (p === 'szed') code = 'de';
+      else if (/[\uac00-\ud7a3\u3131-\u314e]/.test(realName)) code = 'kr';
+      else if (/[\u3040-\u309f\u30a0-\u30ff]/.test(realName)) code = 'jp';
+      else if (/[\u4e00-\u9fff]/.test(realName)) code = 'cn';
+    }
+    if (!code || code.length < 2) return '';
+    const upper = code.toUpperCase();
+    if (upper === 'UK' || upper === 'GB') return '🇬🇧';
+    try {
+      return String.fromCodePoint(...[...upper].map(c => 127397 + c.charCodeAt(0)));
+    } catch {
+      return '';
+    }
+  }
+
+  function getNewsCategory(title) {
+    const t = (title || '').toLowerCase();
+    if (t.includes('roster') || t.includes('sign') || t.includes('depart') || t.includes('join') || t.includes('acqui') || t.includes('release')) return { label: 'ROSTER', color: '#c084fc' };
+    if (t.includes('playoff') || t.includes('champion') || t.includes('winner') || t.includes('final') || t.includes('qualify')) return { label: 'PLAYOFF', color: '#fbbf24' };
+    if (t.includes('schedule') || t.includes('format') || t.includes('announce') || t.includes('upcoming')) return { label: 'SCHEDULE', color: '#22d3ee' };
+    if (t.includes('stage') || t.includes('week') || t.includes('group') || t.includes('swiss') || t.includes('match')) return { label: 'MATCH', color: '#34d399' };
+    return { label: 'NEWS', color: 'var(--accent)' };
+  }
+
+  function getAuthorLabel(author) {
+    if (!author) return 'VLR.GG';
+    if (author === 'VLR.gg') return 'VLR.GG';
+    return author.toUpperCase();
+  }
+
+  function getSidebarTeamLogo(region, teamId) {
+    if (!franchiseData || !franchiseData[region]) return null;
+    const team = franchiseData[region].find(t => t.id === teamId);
+    if (!team) return null;
+    return team.logo || null;
+  }
+
   function getGroupedRoster(roster) {
     if (!roster || !Array.isArray(roster)) return { players: [], staff: [], inactive: [] };
     const players = [];
@@ -517,19 +577,28 @@
             {/if}
           </div>
           <div>
-            <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:16px; text-transform:uppercase; margin-bottom:12px; color:var(--accent);">📰 Latest headlines</h4>
-            <div style="display:flex; flex-direction:column; gap:12px;">
+            <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:16px; text-transform:uppercase; margin-bottom:12px; color:var(--accent);">📰 Latest Headlines</h4>
+            <div style="display:flex; flex-direction:column; gap:10px;">
               {#if loading.overview && !newsItems.length}
                 <div class="placeholder-txt">Loading latest headlines...</div>
               {:else if newsItems.length === 0}
                 <div class="placeholder-txt">No news headlines found.</div>
               {:else}
                 {#each newsItems as n}
-                  <a href={n.url_path ? 'https://vlr.gg' + n.url_path : '#'} target="_blank" class="esp-news-card" style="padding:12px; gap:8px;">
-                    <div class="esp-news-title" style="font-size:15px;">{n.title}</div>
-                    <div class="esp-news-desc" style="font-size:11px;-webkit-line-clamp:2;">{n.description || ''}</div>
-                    <div class="esp-news-meta" style="font-size:9px; margin-top:4px;">
-                      <span>{n.author === 'VLR.gg' ? 'Valorant Esports' : n.author} • {n.date}</span>
+                  {@const cat = getNewsCategory(n.title)}
+                  <a href={n.url_path ? 'https://vlr.gg' + n.url_path : '#'} target="_blank" class="esp-news-card-rich">
+                    <div class="enc-accent-bar" style="background:{cat.color};"></div>
+                    <div class="enc-body">
+                      <div class="enc-meta-top">
+                        <span class="enc-cat" style="color:{cat.color}; border-color:{cat.color}33;">{cat.label}</span>
+                        <span class="enc-source">VLR.GG</span>
+                      </div>
+                      <div class="enc-title">{n.title}</div>
+                      <div class="enc-desc">{n.description || ''}</div>
+                      <div class="enc-footer">
+                        <span class="enc-author">{getAuthorLabel(n.author)}</span>
+                        <span class="enc-date">{n.date}</span>
+                      </div>
                     </div>
                   </a>
                 {/each}
@@ -670,6 +739,7 @@
           <div class="esp-sidebar">
             {#each ['americas', 'emea', 'pacific', 'china'] as region}
               <button class="esp-sidebar-region-header" class:collapsed={collapsedRegions[region]} on:click={() => toggleRegion(region)}>
+                <span class="esp-region-flag">{region === 'americas' ? '🌎' : region === 'emea' ? '🇪🇺' : region === 'pacific' ? '🌏' : '🇨🇳'}</span>
                 VCT {region === 'china' ? 'CN' : region.charAt(0).toUpperCase() + region.slice(1)}
               </button>
               <div class="esp-sidebar-team-list" class:collapsed={collapsedRegions[region]}>
@@ -678,7 +748,10 @@
                     class="esp-sidebar-team-btn"
                     class:active={selectedTeamId === team.id}
                     on:click={() => selectFranchiseTeam(region, team.id)}
-                  >{team.name}</button>
+                  >
+                    <span class="esp-sidebar-team-logo-wrap">{@html getEsportsTeamLogoHtml(team.name)}</span>
+                    <span class="esp-sidebar-team-name">{team.name}</span>
+                  </button>
                 {/each}
               </div>
             {/each}
@@ -729,6 +802,9 @@
                         class:staff={p.role.toLowerCase().includes('staff') || p.role.toLowerCase().includes('analyst')}
                         class:inactive={p.role.toLowerCase().includes('inactive') || p.role.toLowerCase().includes('sub') || p.role.toLowerCase().includes('stand-in')}
                       >{p.role}</span>
+                      {#if getCountryFlag(p.country, p.name, p.real_name)}
+                        <span class="player-card-flag" title={(p.country || '').toUpperCase()}>{getCountryFlag(p.country, p.name, p.real_name)}</span>
+                      {/if}
                       <div class="player-card-avatar" style="width:100%;flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,0.8) 100%);position:relative;">
                         <div class="pcfb-initials" style="display:flex;align-items:center;justify-content:center;width:100%;min-height:60px;">
                           <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-family:Barlow Condensed,sans-serif;font-size:14px;font-weight:700;color:var(--accent);">{(p.name || '').substring(0, 2).toUpperCase()}</div>
@@ -761,6 +837,9 @@
                         class:staff={p.role.toLowerCase().includes('staff') || p.role.toLowerCase().includes('analyst')}
                         class:inactive={p.role.toLowerCase().includes('inactive') || p.role.toLowerCase().includes('sub') || p.role.toLowerCase().includes('stand-in')}
                       >{p.role}</span>
+                      {#if getCountryFlag(p.country, p.name, p.real_name)}
+                        <span class="player-card-flag" title={(p.country || '').toUpperCase()}>{getCountryFlag(p.country, p.name, p.real_name)}</span>
+                      {/if}
                       <div class="player-card-avatar" style="width:100%;flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,0.8) 100%);position:relative;">
                         <div class="pcfb-initials" style="display:flex;align-items:center;justify-content:center;width:100%;min-height:60px;">
                           <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-family:Barlow Condensed,sans-serif;font-size:14px;font-weight:700;color:var(--accent);">{(p.name || '').substring(0, 2).toUpperCase()}</div>
@@ -793,6 +872,9 @@
                         class:staff={p.role.toLowerCase().includes('staff') || p.role.toLowerCase().includes('analyst')}
                         class:inactive={true}
                       >{p.role}</span>
+                      {#if getCountryFlag(p.country, p.name, p.real_name)}
+                        <span class="player-card-flag" title={(p.country || '').toUpperCase()}>{getCountryFlag(p.country, p.name, p.real_name)}</span>
+                      {/if}
                       <div class="player-card-avatar" style="width:100%;flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,0.8) 100%);position:relative;">
                         <div class="pcfb-initials" style="display:flex;align-items:center;justify-content:center;width:100%;min-height:60px;">
                           <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-family:Barlow Condensed,sans-serif;font-size:14px;font-weight:700;color:var(--accent);">{(p.name || '').substring(0, 2).toUpperCase()}</div>
@@ -831,30 +913,39 @@
     <!-- NEWS SECTION -->
     {#if activeTab === 'news'}
       <div class="esports-section active">
-        <div class="section-label visible" style="margin-bottom:16px;">
+        <div class="section-label visible" style="margin-bottom:20px;">
           <span class="sl-text">Latest News</span>
           <div class="sl-line"></div>
         </div>
         {#if newsLoadError}
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px;">⚠ Live news feed unavailable — showing recent headlines</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2);margin-bottom:16px;text-transform:uppercase;letter-spacing:0.5px;">⚠ Live news feed unavailable — showing recent headlines</div>
         {/if}
-        <div class="esp-news-grid">
-          {#if loading.news}
-            <div class="placeholder-txt">Loading news...</div>
-          {:else if newsItems.length === 0}
-            <div class="placeholder-txt">No news found.</div>
-          {:else}
-            {#each newsItems as n}
-              <a href={n.url_path ? 'https://vlr.gg' + n.url_path : '#'} target="_blank" class="esp-news-card" style="padding:12px; gap:8px;">
-                <div class="esp-news-title" style="font-size:15px;">{n.title}</div>
-                <div class="esp-news-desc" style="font-size:11px;-webkit-line-clamp:2;">{n.description || ''}</div>
-                <div class="esp-news-meta" style="font-size:9px; margin-top:4px;">
-                  <span>{n.author === 'VLR.gg' ? 'Valorant Esports' : n.author} • {n.date}</span>
+        {#if loading.news}
+          <div class="placeholder-txt">Loading news...</div>
+        {:else if newsItems.length === 0}
+          <div class="placeholder-txt">No news found.</div>
+        {:else}
+          <div class="esp-news-rich-grid">
+            {#each newsItems as n, i}
+              {@const cat = getNewsCategory(n.title)}
+              <a href={n.url_path ? 'https://vlr.gg' + n.url_path : '#'} target="_blank" class="esp-news-card-full" class:featured={i === 0}>
+                <div class="enc-accent-bar" style="background:{cat.color};"></div>
+                <div class="enc-body">
+                  <div class="enc-meta-top">
+                    <span class="enc-cat" style="color:{cat.color}; border-color:{cat.color}33;">{cat.label}</span>
+                    <span class="enc-source">VLR.GG ↗</span>
+                  </div>
+                  <div class="enc-title" class:enc-title-lg={i === 0}>{n.title}</div>
+                  <div class="enc-desc">{n.description || ''}</div>
+                  <div class="enc-footer">
+                    <span class="enc-author">✍ {getAuthorLabel(n.author)}</span>
+                    <span class="enc-date">{n.date}</span>
+                  </div>
                 </div>
               </a>
             {/each}
-          {/if}
-        </div>
+          </div>
+        {/if}
       </div>
     {/if}
 

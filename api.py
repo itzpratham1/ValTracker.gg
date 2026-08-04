@@ -1769,7 +1769,7 @@ def image_proxy():
 @app.route("/api/esports/team-roster/<team_id>")
 @rate_limit(requests_per_minute=30)
 def esports_team_roster(team_id):
-    cache_key = f"vlr_roster_v2_{team_id}"
+    cache_key = f"vlr_roster_v10_{team_id}"
     if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < 1800:
         return jsonify({"data": cache[cache_key]["data"]})
     try:
@@ -1785,6 +1785,14 @@ def esports_team_roster(team_id):
             real = p.find('div', class_='team-roster-item-name-real')
             role_el = p.find('div', class_='team-roster-item-name-role')
             img_el = p.find('img')
+            flag_el = p.find('i', class_=lambda c: c and 'flag' in c)
+            country = ''
+            if flag_el:
+                classes = flag_el.get('class', [])
+                for cls in classes:
+                    if cls.startswith('mod-'):
+                        country = cls.replace('mod-', '').strip().lower()
+                        break
             if alias:
                 avatar = img_el['src'] if img_el else ''
                 if avatar == '/img/vlr/tmp/vlr.png' or 'ghost' in avatar or 'sil.png' in avatar:
@@ -1798,7 +1806,8 @@ def esports_team_roster(team_id):
                     'name': alias.text.strip(),
                     'real_name': real.text.strip() if real else '',
                     'role': role,
-                    'avatar': avatar
+                    'avatar': avatar,
+                    'country': country
                 })
         if roster:
             cache[cache_key] = {"data": roster, "timestamp": time.time()}
