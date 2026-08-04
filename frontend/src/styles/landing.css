@@ -2920,6 +2920,101 @@ footer {
 
 .nav-link:hover::after { transform: translateX(-50%) scaleX(1); }
 
+/* -- Navbar Mobile Toggle & Menu -- */
+.nav-mobile-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 24px;
+  height: 18px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 1001;
+}
+
+.nav-hamburger-line {
+  width: 100%;
+  height: 2px;
+  background-color: var(--text-primary);
+  border-radius: 2px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.nav-mobile-toggle[aria-expanded="true"] .nav-hamburger-line:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+  background-color: var(--accent);
+}
+
+.nav-mobile-toggle[aria-expanded="true"] .nav-hamburger-line:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-mobile-toggle[aria-expanded="true"] .nav-hamburger-line:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+  background-color: var(--accent);
+}
+
+.nav-mobile-menu {
+  display: none !important;
+}
+
+@media (max-width: 900px) {
+  .nav-mobile-toggle {
+    display: flex;
+  }
+
+  .nav-mobile-menu.open {
+    display: flex !important;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(3, 3, 4, 0.96);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    z-index: 1000;
+    padding: 100px 32px 40px;
+    gap: 20px;
+    align-items: flex-start;
+    overflow-y: auto;
+  }
+
+  .nav-mobile-link {
+    font-family: var(--font-heading);
+    font-size: 22px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-primary);
+    transition: color 0.2s ease;
+  }
+
+  .nav-mobile-link:hover {
+    color: var(--accent);
+  }
+
+  .nav-mobile-action {
+    margin-top: 16px;
+    width: 100%;
+  }
+
+  .nav-mobile-cta {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+body.nav-menu-open {
+  overflow: hidden;
+}
+
 /* -- Hero Eyebrow Live Dot -- */
 .eyebrow-live-dot {
   width: 7px; height: 7px; border-radius: 50%;
