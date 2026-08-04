@@ -344,6 +344,7 @@ const MAP_IMAGES_FALLBACK = {
   'Sunset':  'https://media.valorant-api.com/maps/92584fbe-486a-b1b2-9faa-39049f7702f2/splash.png',
   'Abyss':   'https://media.valorant-api.com/maps/224b0a95-48b9-d703-5ebe-d58a2f2d3774/splash.png',
   'Corrode': 'https://media.valorant-api.com/maps/fc28a86b-4279-6d37-7499-08a285d22f47/splash.png',
+  'Summit':  'https://media.valorant-api.com/maps/756da597-416b-c0f2-f47b-afbdf28670bc/splash.png',
 };
 
 function getMapImg(name) {
@@ -11058,7 +11059,8 @@ const draftMapRecommendations = {
   sunset: { preferred: ['cypher', 'gekko', 'clove', 'breach'], note: 'Sunset favors heavy initiator utility setups. Gekko is incredibly strong for default plant coverage.' },
   lotus: { preferred: ['killjoy', 'viper', 'omen', 'fade'], note: 'Double controller or heavy initiator pressure dominates Lotus three-site layout.' },
   icebox: { preferred: ['viper', 'killjoy', 'jett', 'sova'], note: 'Viper is essential on Icebox A-screen control. Killjoy secures B yellow default anchors.' },
-  abyss: { preferred: ['omen', 'cypher', 'jett', 'sova'], note: 'Cypher traps excel on flank bridges. Omen teleports cross gaps easily.' }
+  abyss: { preferred: ['omen', 'cypher', 'jett', 'sova'], note: 'Cypher traps excel on flank bridges. Omen teleports cross gaps easily.' },
+  summit: { preferred: ['cypher', 'jett', 'sova', 'omen'], note: 'Summit features vertical elevation shifts and sightlines favored by Sova recon and Omen teleports.' }
 };
 
 function openDraftSelector(slotIndex) {

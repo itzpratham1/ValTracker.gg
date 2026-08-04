@@ -29,11 +29,11 @@ export interface MapRecommendation {
   note: string;
 }
 
-export const MAPS = ['ascent', 'bind', 'haven', 'split', 'breeze', 'sunset', 'lotus', 'icebox', 'abyss'] as const;
+export const MAPS = ['ascent', 'bind', 'haven', 'split', 'breeze', 'sunset', 'lotus', 'icebox', 'abyss', 'summit'] as const;
 
 export const MAP_DISPLAY: Record<string, string> = {
   ascent: 'Ascent', bind: 'Bind', haven: 'Haven', split: 'Split',
-  breeze: 'Breeze', sunset: 'Sunset', lotus: 'Lotus', icebox: 'Icebox', abyss: 'Abyss'
+  breeze: 'Breeze', sunset: 'Sunset', lotus: 'Lotus', icebox: 'Icebox', abyss: 'Abyss', summit: 'Summit'
 };
 
 export const DRAFT_MAP_RECOMMENDATIONS: Record<string, MapRecommendation> = {
@@ -45,7 +45,8 @@ export const DRAFT_MAP_RECOMMENDATIONS: Record<string, MapRecommendation> = {
   sunset: { preferred: ['cypher', 'gekko', 'clove', 'breach'], note: 'Sunset favors heavy initiator utility setups. Gekko is incredibly strong for default plant coverage.' },
   lotus: { preferred: ['killjoy', 'viper', 'omen', 'fade'], note: 'Double controller or heavy initiator pressure dominates Lotus three-site layout.' },
   icebox: { preferred: ['viper', 'killjoy', 'jett', 'sova'], note: 'Viper is essential on Icebox A-screen control. Killjoy secures B yellow default anchors.' },
-  abyss: { preferred: ['omen', 'cypher', 'jett', 'sova'], note: 'Cypher traps excel on flank bridges. Omen teleports cross gaps easily.' }
+  abyss: { preferred: ['omen', 'cypher', 'jett', 'sova'], note: 'Cypher traps excel on flank bridges. Omen teleports cross gaps easily.' },
+  summit: { preferred: ['cypher', 'jett', 'sova', 'omen'], note: 'Summit features vertical elevation shifts and sightlines favored by Sova recon and Omen teleports.' }
 };
 
 const ROLE_POOLS: Record<AgentRole, string[]> = {

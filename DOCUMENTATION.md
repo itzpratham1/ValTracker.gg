@@ -413,7 +413,7 @@ Tabs: **Live | Upcoming | Results | News | Rankings | VCT 2026 Roadmap**
 
 ### 5.7 Meta Comp Architect
 
-Tabs per Valorant map (Ascent, Bind, Haven, Split, Icebox, Breeze, Fracture, Pearl, Lotus, Sunset, Abyss)
+Tabs per Valorant map (Ascent, Bind, Haven, Split, Icebox, Breeze, Fracture, Pearl, Lotus, Sunset, Abyss, Summit)
 
 For each map:
 - Fetches `/api/v3/meta-comps?map=<map>&patch=latest`
