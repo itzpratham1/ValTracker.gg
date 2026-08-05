@@ -7,7 +7,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy Flask API
-COPY app.py api.py gunicorn.conf.py ./
+COPY api.py gunicorn.conf.py ./
 COPY shared_meta.json ./
 COPY vlr_matches_backup.json vlr_results_backup.json vlr_news_backup.json store_featured_backup.json ./
 

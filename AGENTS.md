@@ -55,13 +55,7 @@ valtracker/
 │   │   └── Val_bot_analysis.webp
 │   └── astro.config.mjs           # Vite proxy: /api -> localhost:5000
 ├── api.py                         # Flask API-only backend
-├── public/                        # OLD Flask files (REFERENCE ONLY)
-│   ├── index.html                 # Old tracker HTML (2,819 lines)
-│   ├── index.js                   # Old tracker JS (13,120 lines)
-│   ├── index.css                  # Old tracker CSS (6,514 lines)
-│   ├── landing.html               # Old landing page (2,777 lines)
-│   └── landing.js                 # Old landing JS (496 lines)
-├── app.py                         # Old Flask monolith (REFERENCE ONLY)
+├── public/                        # Static assets & data files for API
 ├── render.yaml
 └── Dockerfile
 ```
