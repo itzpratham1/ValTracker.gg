@@ -358,10 +358,11 @@ def optimize_response(response):
     
     # Security headers
     response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
     response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
     response.headers['Permissions-Policy'] = 'camera=(), microphone=(), geolocation=()'
     response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
-    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.henrikdev.xyz https://valtrackergg.supabase.co; frame-ancestors 'none';"
+    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.henrikdev.xyz https://valtrackergg.supabase.co https://valtracker.live https://val-tracker-gg.vercel.app; frame-ancestors 'none';"
     
     # Cache API responses
     if path.startswith('/api/'):
@@ -448,7 +449,9 @@ def prune_image_cache():
 def handle_500(e):
     import traceback
     traceback.print_exc()
-    return jsonify({"status": 500, "error": str(e), "data": []}), 500
+    is_prod = os.getenv("RENDER") is not None or os.getenv("FLASK_ENV") == "production"
+    err_msg = "Internal Server Error" if is_prod else str(e)
+    return jsonify({"status": 500, "error": err_msg, "data": []}), 500
 
 @app.before_request
 def before_request_cleanup():
