@@ -20,8 +20,7 @@
   import PerformanceLab from './PerformanceLab.svelte';
   import StatModal from './StatModal.svelte';
   import SessionSummary from './SessionSummary.svelte';
-  import ExportCard from './ExportCard.svelte';
-  import ExportProfileCard from './ExportProfileCard.svelte';
+  import ExportCardModal from './ExportCardModal.svelte';
   import WrappedModal from './WrappedModal.svelte';
   import HeadToHead from './HeadToHead.svelte';
   import BookmarksModal from './BookmarksModal.svelte';
@@ -676,31 +675,43 @@
 
   {#if selectedShareMatch}
     {@const rawMatch = actFilteredMatches.find(m => (m.metadata?.matchid || m.metadata?.match_id) === selectedShareMatch.matchId)}
-    <ExportCard
+    <ExportCardModal
+      open={true}
+      cardType="match"
       match={selectedShareMatch}
       playerName={playerState.name}
       playerTag={playerState.tag}
+      region={playerState.region}
       allPlayers={rawMatch ? getPlayerList(rawMatch) : []}
       rawMatch={rawMatch}
       playerBannerUrl={accountData?.card?.wide || accountData?.card?.large || ''}
       playerLevel={accountData?.account_level || ''}
+      {stats}
+      {mmrData}
+      {accountData}
+      {mmrHistory}
+      {actFilteredMatches}
       onClose={() => selectedShareMatch = null}
     />
   {/if}
 
-  <ExportProfileCard
-    open={exportProfileOpen}
-    {stats}
-    {mmrData}
-    {accountData}
-    {mmrHistory}
-    {actFilteredMatches}
-    playerName={playerState.name}
-    playerTag={playerState.tag}
-    region={playerState.region}
-    mode={playerState.mode}
-    onClose={() => exportProfileOpen = false}
-  />
+  {#if exportProfileOpen}
+    <ExportCardModal
+      open={true}
+      cardType="profile"
+      playerName={playerState.name}
+      playerTag={playerState.tag}
+      region={playerState.region}
+      playerBannerUrl={accountData?.card?.wide || accountData?.card?.large || ''}
+      playerLevel={accountData?.account_level || ''}
+      {stats}
+      {mmrData}
+      {accountData}
+      {mmrHistory}
+      {actFilteredMatches}
+      onClose={() => exportProfileOpen = false}
+    />
+  {/if}
 
   <WrappedModal
     matches={actFilteredMatches}
