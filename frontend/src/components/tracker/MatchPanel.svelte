@@ -350,16 +350,17 @@
       }
       let isClutch = false;
       if (rWon && r.player_stats && r.player_stats.length > 0) {
-        let tmDeaths = 0, meDied = false;
+        let deadTeammates = new Set();
+        let meDied = false;
         r.player_stats.forEach(ps => {
           const pStats = typeof ps === 'string' ? JSON.parse(ps) : ps;
           (pStats.kill_events || []).forEach(k => {
             const victim = k.victim_puuid || k.victim;
             if (victim && myPuuids.includes(victim)) meDied = true;
-            if (victim && teammatePuuids.includes(victim)) tmDeaths++;
+            if (victim && teammatePuuids.includes(victim)) deadTeammates.add(victim);
           });
         });
-        if (tmDeaths >= teammatePuuids.length && teammatePuuids.length > 0 && !meDied) isClutch = true;
+        if (deadTeammates.size >= teammatePuuids.length && teammatePuuids.length > 0 && !meDied) isClutch = true;
       }
       if (isClutch) {
         clutchAttempts++;

@@ -108,19 +108,74 @@ export function buildStatsForAI(matches: any[], playerName: string, playerTag: s
     const mp = mapData[mapName];
     mp.matches++; if (won) mp.wins++; mp.kills += k; mp.deaths += d; mp.score += sc;
 
-    // Side win rates
+    // Build PUUID and name identifiers for me and teammates
+    const myPuuids = [me.puuid, me.subject, me.id, me.player_id].filter(Boolean);
+    const meNameClean = (me.name || me.character || '').toLowerCase().replace(/\s+/g, '');
+    const meTagClean = (me.tag || '').toLowerCase().replace(/\s+/g, '');
+    const myNameTag = meNameClean && meTagClean ? `${meNameClean}#${meTagClean}` : meNameClean;
+
+    const allP = getPlayerList(match);
+    const teammates = allP.filter((p: any) => {
+      const t = (p.team || '').toLowerCase();
+      if (t !== myTeamId) return false;
+      const pPuuid = p.puuid || p.subject || p.id || p.player_id;
+      if (pPuuid && myPuuids.includes(pPuuid)) return false;
+      const pName = (p.name || '').toLowerCase().replace(/\s+/g, '');
+      const pTag = (p.tag || '').toLowerCase().replace(/\s+/g, '');
+      if (myNameTag && pName && pTag && `${pName}#${pTag}` === myNameTag) return false;
+      return true;
+    });
+
+    const teammatePuuids = teammates.map((p: any) => p.puuid || p.subject || p.id || p.player_id).filter(Boolean);
+    const teammateNames = teammates.map((p: any) => (p.name || p.display_name || '').toLowerCase().replace(/\s+/g, '')).filter(Boolean);
+
+    // Side win rates & clutch detection
     const rounds = match.rounds || [];
     rounds.forEach((r: any, ri: number) => {
-      const rWon = (r.winning_team || '').toLowerCase() === myTeamId;
+      const rWon = (r.winning_team || r.winningTeam || '').toLowerCase() === myTeamId;
       const isAtt = ri < Math.ceil(rounds.length / 2);
       if (isAtt) { sideWins.attTotal++; if (rWon) sideWins.att++; }
       else { sideWins.defTotal++; if (rWon) sideWins.def++; }
-      const myAlive = r[myTeamId]?.players_alive ?? null;
-      if (myAlive === 1 && rWon) clutchWins++;
+
+      if (rWon) {
+        let playerStats = r._ps || r.player_stats || [];
+        if (typeof playerStats === 'string') {
+          try { playerStats = JSON.parse(playerStats); } catch { playerStats = []; }
+        }
+        if (!Array.isArray(playerStats)) playerStats = Object.values(playerStats || {});
+
+        if (playerStats.length > 0 && teammates.length > 0) {
+          const deadTeammates = new Set<string>();
+          let meDied = false;
+          playerStats.forEach((ps: any) => {
+            const killEvents = ps.kill_events || ps.killEvents || [];
+            killEvents.forEach((k: any) => {
+              const victim = k.victim_puuid || k.victim || '';
+              const victimName = (k.victim_display_name || k.victim_name || '').toLowerCase().replace(/\s+/g, '');
+
+              if ((victim && myPuuids.includes(victim)) || (meNameClean && victimName && victimName.includes(meNameClean))) {
+                meDied = true;
+              }
+
+              teammates.forEach((tm: any, idx: number) => {
+                const tmPuuid = teammatePuuids[idx];
+                const tmName = teammateNames[idx];
+                if ((victim && tmPuuid && victim === tmPuuid) || (victimName && tmName && victimName.includes(tmName))) {
+                  deadTeammates.add(tmPuuid || tmName || `tm_${idx}`);
+                }
+              });
+            });
+          });
+
+          if (deadTeammates.size >= teammates.length && !meDied) {
+            clutchWins++;
+          }
+        }
+      }
     });
 
     // Lobby rank
-    const info = getLobbyRankInfo(getPlayerList(match), myTeamId);
+    const info = getLobbyRankInfo(allP, myTeamId);
     if (info?.overall?.rr != null) lobbyRanks.push(info.overall.rr);
 
     firstBloodEst += Math.round(k * 0.18);

@@ -1,138 +1,8 @@
 [
   {
-    "id": "716629",
-    "date": "Aug 04, 2026 10:20 PM",
-    "state": "in_progress",
-    "vlr_path": "/716629/alternate-attax-ruby-vs-habos-babos-game-changers-2026-emea-stage-3-w3",
-    "league": {
-      "name": "Game Changers 2026: EMEA Stage 3",
-      "region": "Group Stage\u2013Week 3"
-    },
-    "match": {
-      "id": "716629",
-      "teams": [
-        {
-          "name": "ALTERNATE aTTaX Ruby",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "Habos Babos",
-          "game_wins": 1,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "716628",
-    "date": "Aug 04, 2026 10:55 PM",
-    "state": "in_progress",
-    "vlr_path": "/716628/sk-nebula-vs-twisted-minds-orchid-game-changers-2026-emea-stage-3-w3",
-    "league": {
-      "name": "Game Changers 2026: EMEA Stage 3",
-      "region": "Group Stage\u2013Week 3"
-    },
-    "match": {
-      "id": "716628",
-      "teams": [
-        {
-          "name": "SK Nebula",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "Twisted Minds Orchid",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "730325",
-    "date": "August 5, 2026 3:30 AM",
-    "state": "unstarted",
-    "vlr_path": "/730325/looking-for-laburo-vs-olimpo-gold-game-changers-2026-latam-main-event-ubsf",
-    "league": {
-      "name": "Game Changers 2026: LATAM Main Event",
-      "region": "South\u2013Upper Semifinals"
-    },
-    "match": {
-      "id": "730325",
-      "teams": [
-        {
-          "name": "Looking For Laburo",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "Olimpo Gold",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "730318",
-    "date": "August 5, 2026 6:30 AM",
-    "state": "unstarted",
-    "vlr_path": "/730318/no-sweat-blossom-vs-fusion-x-game-changers-2026-latam-main-event-ubsf",
-    "league": {
-      "name": "Game Changers 2026: LATAM Main Event",
-      "region": "North\u2013Upper Semifinals"
-    },
-    "match": {
-      "id": "730318",
-      "teams": [
-        {
-          "name": "No Sweat Blossom",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "FUSION X",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "724619",
-    "date": "August 5, 2026 1:30 PM",
-    "state": "unstarted",
-    "vlr_path": "/724619/trace-esports-vs-a-team-vct-2026-china-stage-2-ur1",
-    "league": {
-      "name": "VCT 2026: China Stage 2",
-      "region": "Play-Ins\u2013Upper Round 1"
-    },
-    "match": {
-      "id": "724619",
-      "teams": [
-        {
-          "name": "Trace Esports",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "A Team",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
     "id": "724620",
-    "date": "August 5, 2026 3:30 PM",
-    "state": "unstarted",
+    "date": "Aug 05, 2026 3:30 PM",
+    "state": "in_progress",
     "vlr_path": "/724620/titan-esports-club-vs-keepbest-gaming-vct-2026-china-stage-2-ur1",
     "league": {
       "name": "VCT 2026: China Stage 2",
@@ -157,7 +27,7 @@
   },
   {
     "id": "716630",
-    "date": "August 5, 2026 8:30 PM",
+    "date": "Aug 05, 2026 8:30 PM",
     "state": "unstarted",
     "vlr_path": "/716630/g2-gozen-vs-giantx-gc-game-changers-2026-emea-stage-3-w3",
     "league": {
@@ -183,7 +53,7 @@
   },
   {
     "id": "716631",
-    "date": "August 5, 2026 8:30 PM",
+    "date": "Aug 05, 2026 8:30 PM",
     "state": "unstarted",
     "vlr_path": "/716631/sk-nebula-vs-karmine-corp-gc-game-changers-2026-emea-stage-3-w3",
     "league": {
@@ -209,7 +79,7 @@
   },
   {
     "id": "716632",
-    "date": "August 5, 2026 11:30 PM",
+    "date": "Aug 05, 2026 11:30 PM",
     "state": "unstarted",
     "vlr_path": "/716632/gentle-mates-gc-vs-twisted-minds-orchid-game-changers-2026-emea-stage-3-w3",
     "league": {
@@ -235,7 +105,7 @@
   },
   {
     "id": "716633",
-    "date": "August 5, 2026 11:30 PM",
+    "date": "Aug 05, 2026 11:30 PM",
     "state": "unstarted",
     "vlr_path": "/716633/fokus-sakura-vs-alternate-attax-ruby-game-changers-2026-emea-stage-3-w3",
     "league": {
@@ -523,7 +393,7 @@
     "id": "724623",
     "date": "August 7, 2026 1:30 PM",
     "state": "unstarted",
-    "vlr_path": "/724623/all-gamers-vs-tbd-vct-2026-china-stage-2-ubqf",
+    "vlr_path": "/724623/all-gamers-vs-trace-esports-vct-2026-china-stage-2-ubqf",
     "league": {
       "name": "VCT 2026: China Stage 2",
       "region": "Play-Ins\u2013Upper Quarterfinals"
@@ -537,7 +407,7 @@
           "has_won": false
         },
         {
-          "name": "TBD",
+          "name": "Trace Esports",
           "game_wins": 0,
           "has_won": false
         }
@@ -731,7 +601,7 @@
     "id": "724625",
     "date": "August 8, 2026 1:30 PM",
     "state": "unstarted",
-    "vlr_path": "/724625/tbd-vct-2026-china-stage-2-lr1",
+    "vlr_path": "/724625/a-team-vs-tbd-vct-2026-china-stage-2-lr1",
     "league": {
       "name": "VCT 2026: China Stage 2",
       "region": "Play-Ins\u2013Lower Round 1"
@@ -740,7 +610,7 @@
       "id": "724625",
       "teams": [
         {
-          "name": "TBD",
+          "name": "A Team",
           "game_wins": 0,
           "has_won": false
         },
@@ -1199,7 +1069,7 @@
     "id": "730328",
     "date": "August 11, 2026 3:30 AM",
     "state": "unstarted",
-    "vlr_path": "/730328/npc-team-vs-tbd-game-changers-2026-latam-main-event-lr1",
+    "vlr_path": "/730328/npc-team-vs-olimpo-gold-game-changers-2026-latam-main-event-lr1",
     "league": {
       "name": "Game Changers 2026: LATAM Main Event",
       "region": "South\u2013Lower Round 1"
@@ -1213,7 +1083,7 @@
           "has_won": false
         },
         {
-          "name": "TBD",
+          "name": "Olimpo Gold",
           "game_wins": 0,
           "has_won": false
         }
@@ -1251,7 +1121,7 @@
     "id": "730321",
     "date": "August 11, 2026 6:30 AM",
     "state": "unstarted",
-    "vlr_path": "/730321/myvra-gc-vs-tbd-game-changers-2026-latam-main-event-lr1",
+    "vlr_path": "/730321/myvra-gc-vs-fusion-x-game-changers-2026-latam-main-event-lr1",
     "league": {
       "name": "Game Changers 2026: LATAM Main Event",
       "region": "North\u2013Lower Round 1"
@@ -1265,7 +1135,7 @@
           "has_won": false
         },
         {
-          "name": "TBD",
+          "name": "FUSION X",
           "game_wins": 0,
           "has_won": false
         }
@@ -1284,6 +1154,136 @@
     },
     "match": {
       "id": "724631",
+      "teams": [
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "724632",
+    "date": "August 11, 2026 3:30 PM",
+    "state": "unstarted",
+    "vlr_path": "/724632/tbd-vct-2026-china-stage-2-lr3",
+    "league": {
+      "name": "VCT 2026: China Stage 2",
+      "region": "Play-Ins\u2013Lower Round 3"
+    },
+    "match": {
+      "id": "724632",
+      "teams": [
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "730326",
+    "date": "August 12, 2026 3:30 AM",
+    "state": "unstarted",
+    "vlr_path": "/730326/kr-blaze-vs-looking-for-laburo-game-changers-2026-latam-main-event-ubf",
+    "league": {
+      "name": "Game Changers 2026: LATAM Main Event",
+      "region": "South\u2013Upper Final"
+    },
+    "match": {
+      "id": "730326",
+      "teams": [
+        {
+          "name": "KR\u00dc BLAZE",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "Looking For Laburo",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "730319",
+    "date": "August 12, 2026 6:30 AM",
+    "state": "unstarted",
+    "vlr_path": "/730319/akave-esports-gc-vs-no-sweat-blossom-game-changers-2026-latam-main-event-ubf",
+    "league": {
+      "name": "Game Changers 2026: LATAM Main Event",
+      "region": "North\u2013Upper Final"
+    },
+    "match": {
+      "id": "730319",
+      "teams": [
+        {
+          "name": "Akave Esports GC",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "No Sweat Blossom",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "724633",
+    "date": "August 12, 2026 1:30 PM",
+    "state": "unstarted",
+    "vlr_path": "/724633/tbd-vct-2026-china-stage-2-ubf",
+    "league": {
+      "name": "VCT 2026: China Stage 2",
+      "region": "Play-Ins\u2013Upper Final"
+    },
+    "match": {
+      "id": "724633",
+      "teams": [
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "724634",
+    "date": "August 12, 2026 3:30 PM",
+    "state": "unstarted",
+    "vlr_path": "/724634/tbd-vct-2026-china-stage-2-lbf",
+    "league": {
+      "name": "VCT 2026: China Stage 2",
+      "region": "Play-Ins\u2013Lower Final"
+    },
+    "match": {
+      "id": "724634",
       "teams": [
         {
           "name": "TBD",

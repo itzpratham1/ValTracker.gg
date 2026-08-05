@@ -41,17 +41,18 @@
 
     // Detect clutch
     let isClutch = false;
-    if (myTeamWon && (r._ps || []).length > 0) {
-      let tmDeaths = 0;
+    if (myTeamWon && (r._ps || r.player_stats || []).length > 0) {
+      let deadTeammates = new Set();
       let meDied = false;
-      (r._ps || []).forEach(ps => {
+      const playerStats = r._ps || r.player_stats || [];
+      playerStats.forEach(ps => {
         (ps.kill_events || []).forEach(k => {
           const victim = k.victim_puuid || k.victim;
           if (victim && myPuuids.includes(victim)) meDied = true;
-          if (victim && teammatePuuids.includes(victim)) tmDeaths++;
+          if (victim && teammatePuuids.includes(victim)) deadTeammates.add(victim);
         });
       });
-      if (tmDeaths >= teammatePuuids.length && teammatePuuids.length > 0 && !meDied) {
+      if (deadTeammates.size >= teammatePuuids.length && teammatePuuids.length > 0 && !meDied) {
         isClutch = true;
       }
     }
