@@ -72,6 +72,13 @@
   async function renderCard() {
     loading = true;
     await tick();
+    if (typeof document !== 'undefined' && document.fonts) {
+      try {
+        await document.fonts.ready;
+      } catch (e) {
+        // Fallback
+      }
+    }
     if (!canvasEl) return;
 
     try {
