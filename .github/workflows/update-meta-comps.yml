@@ -9,6 +9,8 @@ on:
 jobs:
   scrape:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -28,8 +30,9 @@ jobs:
 
       - name: Commit updated data
         run: |
-          git config user.name "valtracker-bot"
-          git config user.email "bot@valtracker.gg"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add frontend/public/vct_pro_comps.json public/vct_pro_comps.json
           git diff --cached --quiet || git commit -m "chore: update VCT meta comps [skip ci]"
           git push
+
