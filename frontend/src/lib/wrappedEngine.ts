@@ -53,10 +53,12 @@ export interface WrappedSlideData {
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
+import { ACTS_TIMELINE } from './constants';
+
 /**
- * Checks if Wrapped recap season is active (e.g. last 7 days of month / act end, or dev force param)
+ * Checks if Wrapped recap season is active (visible only during the last week of the month OR last week of the act, or if dev force URL param is set)
  */
-export function isWrappedSeasonActive(matches: any[] = []): boolean {
+export function isWrappedSeasonActive(matches: any[] = [], actKey?: string): boolean {
   if (typeof window !== 'undefined') {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('wrapped') || urlParams.has('test') || urlParams.has('recap')) return true;
@@ -64,11 +66,24 @@ export function isWrappedSeasonActive(matches: any[] = []): boolean {
   if (!matches || matches.length < 3) return false;
   
   const now = new Date();
+  
+  // 1. Last week (7 days) of the calendar month (e.g. Day 25 to 31 in a 31-day month)
   const dayOfMonth = now.getDate();
   const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+  const isLastWeekOfMonth = dayOfMonth >= (daysInMonth - 6);
   
-  // Active in the last 7 days of the month (or dev preview)
-  return dayOfMonth >= (daysInMonth - 7) || matches.length >= 5;
+  // 2. Last week (7 days) of the Act (or past act end)
+  let isLastWeekOfAct = false;
+  const actInfo = (actKey && ACTS_TIMELINE[actKey]) ? ACTS_TIMELINE[actKey] : ACTS_TIMELINE['v26a4'];
+  if (actInfo && actInfo.end) {
+    const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+    const nowMs = now.getTime();
+    if (nowMs >= (actInfo.end - sevenDaysMs)) {
+      isLastWeekOfAct = true;
+    }
+  }
+  
+  return isLastWeekOfMonth || isLastWeekOfAct;
 }
 
 export function generateWrappedData(

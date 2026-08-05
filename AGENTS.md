@@ -113,6 +113,7 @@ valtracker/
 34. `AppShell.svelte:112-113` — Changed `window.location.href = '/'` to `setPlayer({...loaded: false})` when no URL params (was causing redirect loop back to landing page)
 35. `HeroSection.svelte` — Added `.hero-tag` CSS rule (was missing — class used in template but never defined)
 36. `global.css` — **Added ALL inline `<style>` overrides from old `index.html`** (lines 17-84 and 1737-1851). This was the ROOT CAUSE of visual differences. See details below.
+37. `wrappedEngine.ts` + `HeroSection.svelte` — Fixed Wrapped badge visibility. `isWrappedSeasonActive` now strictly checks if current date is within the last 7 days of the calendar month OR last 7 days of the Act (using `ACTS_TIMELINE`). Removed `matches.length >= 5` override fallback and wired `HeroSection.svelte` to use `isWrappedSeasonActive(matches, $player.act)` so the `⚡ WRAPPED` badge is only shown during recap windows or when URL explicitly contains `?wrapped=1`.
 
 ## Inline Overrides Added to global.css (from old index.html `<style>` block)
 These rules existed ONLY in the old `index.html` inline `<style>` and were NEVER copied to `global.css`:

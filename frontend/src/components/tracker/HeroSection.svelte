@@ -3,6 +3,7 @@
   import { player } from '../../lib/appStore';
   import { getRankImgUrl, getRankFromRR } from '../../lib/constants';
   import { escapeHtml } from '../../lib/utils';
+  import { isWrappedSeasonActive } from '../../lib/wrappedEngine';
 
   const dispatch = createEventDispatcher();
 
@@ -11,6 +12,8 @@
   export let matches = [];
 
   let copied = false;
+
+  $: isWrappedActive = isWrappedSeasonActive(matches, $player.act);
 
   $: rankName = mmrData?.current?.tier?.name || 'UNRANKED';
   $: rankImg = getRankImgUrl(rankName);
@@ -92,11 +95,11 @@
     <div class="hero-left">
       <div
         class="story-avatar-outer-ring"
-        class:active={matches && matches.length >= 3}
-        on:click={() => { if (matches && matches.length >= 3) dispatch('openWrapped'); }}
-        title={matches && matches.length >= 3 ? 'Click to view Wrapped Story ⚡' : playerName}
-        role={matches && matches.length >= 3 ? 'button' : undefined}
-        tabindex={matches && matches.length >= 3 ? 0 : undefined}
+        class:active={isWrappedActive}
+        on:click={() => { if (isWrappedActive) dispatch('openWrapped'); }}
+        title={isWrappedActive ? 'Click to view Wrapped Story ⚡' : playerName}
+        role={isWrappedActive ? 'button' : undefined}
+        tabindex={isWrappedActive ? 0 : undefined}
       >
         <div class="hero-avatar-wrap">
           {#if smallCardUrl}
@@ -105,7 +108,7 @@
             <div class="hero-avatar-fallback">👤</div>
           {/if}
         </div>
-        {#if matches && matches.length >= 3}
+        {#if isWrappedActive}
           <div class="story-avatar-badge">⚡ WRAPPED</div>
         {/if}
       </div>
