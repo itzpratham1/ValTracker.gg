@@ -3229,13 +3229,36 @@ body.nav-menu-open {
 /* ════════════════════════════════════════
    COMPREHENSIVE MOBILE OPTIMIZATIONS
 ════════════════════════════════════════ */
+/* ════════════════════════════════════════
+   COMPREHENSIVE MOBILE OPTIMIZATIONS
+════════════════════════════════════════ */
 @media (max-width: 768px) {
+  /* Navbar: Hide Track Now button on mobile to avoid header overcrowding */
+  .nav {
+    padding: 0 16px !important;
+  }
+  .nav-actions, #nav-track-btn {
+    display: none !important;
+  }
+  .nav-mobile-toggle {
+    margin-left: auto !important;
+  }
+
   .hero {
     min-height: auto !important;
     padding: 84px 16px 40px !important;
   }
+  .hero-sub {
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+    margin-bottom: 24px !important;
+    padding: 0 8px !important;
+  }
+  .hero-sub br {
+    display: none !important;
+  }
   .hero-mockup-wrap {
-    margin-top: 32px !important;
+    margin-top: 28px !important;
   }
   .browser-tabs {
     display: flex !important;
@@ -3284,39 +3307,43 @@ body.nav-menu-open {
     padding: 18px 14px !important;
   }
   
-  /* Comparison Table 100% Mobile Fit - No Horizontal Scroll Clip */
+  /* Comparison Table 100% Mobile Fit */
   .njt-table-container {
-    overflow-x: hidden !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
     border-radius: 12px !important;
     margin-bottom: 40px !important;
   }
   .njt-table {
-    min-width: 0 !important;
+    min-width: 360px !important;
     width: 100% !important;
-    table-layout: fixed !important;
+    table-layout: auto !important;
   }
   .njt-table th.col-feature,
   .njt-table td:first-child {
-    width: 46% !important;
+    width: 42% !important;
     padding: 10px 8px !important;
     font-size: 11px !important;
     line-height: 1.35 !important;
-    word-break: break-word !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
   }
   .njt-table th.col-vt,
   .njt-table th.col-tgg,
   .njt-table th.col-others {
-    width: 18% !important;
-    padding: 10px 2px !important;
-    font-size: 9px !important;
-    letter-spacing: 0.5px !important;
+    width: 19.3% !important;
+    padding: 10px 4px !important;
+    font-size: 10px !important;
+    letter-spacing: 0.2px !important;
     text-align: center !important;
   }
   .njt-table td:not(:first-child) {
-    width: 18% !important;
-    padding: 10px 2px !important;
+    width: 19.3% !important;
+    padding: 10px 4px !important;
     text-align: center !important;
     font-size: 11px !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
   }
   .njt-check, .njt-cross {
     font-size: 14px !important;
@@ -3334,17 +3361,41 @@ body.nav-menu-open {
     font-size: 9px !important;
     letter-spacing: 0.8px !important;
   }
+
+  /* Mobile Steps Section */
   .steps-wrap {
-    gap: 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
   }
   .steps-progress-line {
     display: none !important;
   }
   .step-item {
-    border-left: 2px solid rgba(250, 68, 84, 0.3) !important;
-    border-radius: 0 10px 10px 0 !important;
-    padding: 16px 14px 20px !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-left: 3px solid var(--accent) !important;
+    border-radius: 12px !important;
+    padding: 20px 16px 20px !important;
+    text-align: center !important;
+    background: rgba(255, 255, 255, 0.02) !important;
+    margin-top: 0 !important;
   }
+  .step-icon {
+    position: static !important;
+    transform: none !important;
+    margin: 0 auto 6px !important;
+    display: block !important;
+  }
+  .step-num-wrap {
+    margin: 8px auto 12px !important;
+    position: relative !important;
+    z-index: 2 !important;
+  }
+  .step-time-badge {
+    margin-top: 8px !important;
+    margin-bottom: 12px !important;
+  }
+
   .final-cta-btns {
     flex-direction: column !important;
     width: 100% !important;
@@ -3382,24 +3433,5 @@ body.nav-menu-open {
   .counter-label {
     font-size: 8.5px !important;
     letter-spacing: 0.5px !important;
-  }
-}
-
-/* Mobile Steps Section Fixes */
-@media (max-width: 768px) {
-  .steps-progress-line {
-    display: none !important;
-  }
-  .step-num-wrap {
-    margin-top: 36px !important;
-    margin-bottom: 12px !important;
-  }
-  .step-item {
-    padding: 20px 16px 24px !important;
-    margin-top: 0 !important;
-    border-radius: 12px !important;
-  }
-  .step-icon {
-    top: -24px !important;
   }
 }
