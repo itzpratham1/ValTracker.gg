@@ -33,10 +33,44 @@ export async function fetchMmrData(name: string, tag: string, region: string) {
   return apiFetch(`/v2/mmr?name=${encodedName}&tag=${encodedTag}&region=${region}`);
 }
 
+const prefetchCache = new Map<string, Promise<any>>();
+
+export function prefetchAccountData(name: string, tag: string, region: string = 'ap') {
+  if (!name || !tag) return;
+  const key = `${name.toLowerCase()}#${tag.toLowerCase()}#${region.toLowerCase()}`;
+  if (prefetchCache.has(key)) return;
+
+  if (prefetchCache.size > 20) {
+    const firstKey = prefetchCache.keys().next().value;
+    if (firstKey) prefetchCache.delete(firstKey);
+  }
+
+  const promise = (async () => {
+    try {
+      return await fetchAccountData(name, tag, region);
+    } catch {
+      prefetchCache.delete(key);
+      return null;
+    }
+  })();
+
+  prefetchCache.set(key, promise);
+}
+
 export async function fetchAccountData(name: string, tag: string, region: string) {
+  const key = `${name.toLowerCase()}#${tag.toLowerCase()}#${region.toLowerCase()}`;
+  if (prefetchCache.has(key)) {
+    try {
+      const cached = await prefetchCache.get(key);
+      if (cached && (cached.data || cached.status === 200)) return cached;
+    } catch {}
+  }
+
   const encodedName = encodeURIComponent(name);
   const encodedTag = encodeURIComponent(tag);
-  return apiFetch(`/v1/account?name=${encodedName}&tag=${encodedTag}&region=${region}`);
+  const promise = apiFetch(`/v1/account?name=${encodedName}&tag=${encodedTag}&region=${region}`);
+  prefetchCache.set(key, promise);
+  return promise;
 }
 
 export async function fetchMatchDetails(matchId: string, region: string) {

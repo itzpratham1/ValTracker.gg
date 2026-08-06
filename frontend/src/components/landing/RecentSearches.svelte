@@ -4,11 +4,16 @@
   import { setPlayer } from '../../lib/appStore';
   import { playSound } from '../../lib/audio';
 
+  import { prefetchAccountData } from '../../lib/api';
+
   export let onSelect = (name, tag, region, mode) => {
     setPlayer({ name, tag, region, mode, fetching: true, loaded: false });
   };
 
+  let prefetchTimer = null;
+
   function handleSelect(player) {
+    clearTimeout(prefetchTimer);
     playSound('click');
     onSelect(player.name, player.tag, player.region, player.mode);
   }
@@ -26,6 +31,16 @@
 
   function playHover() {
     playSound('hover');
+  }
+
+  function handleMouseEnter(player) {
+    playHover();
+    clearTimeout(prefetchTimer);
+    prefetchTimer = setTimeout(() => {
+      if (player && player.name && player.tag) {
+        prefetchAccountData(player.name, player.tag, player.region || 'ap');
+      }
+    }, 50);
   }
 </script>
 
@@ -46,7 +61,7 @@
           class="rs-item" 
           role="button" 
           tabindex="0"
-          on:mouseenter={playHover} 
+          on:mouseenter={() => handleMouseEnter(player)} 
           on:click={() => handleSelect(player)}
           on:keydown={(e) => e.key === 'Enter' && handleSelect(player)}
         >

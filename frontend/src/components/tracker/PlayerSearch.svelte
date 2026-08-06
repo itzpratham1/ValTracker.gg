@@ -1,7 +1,7 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
   import { bookmarks, recentSearches } from '../../lib/stores';
-  import { fetchSearch } from '../../lib/api';
+  import { fetchSearch, prefetchAccountData } from '../../lib/api';
   import { getRankImgUrl } from '../../lib/constants';
   import { escapeHtml } from '../../lib/utils';
 
@@ -159,7 +159,11 @@
           {#if item.type === 'header'}
             <div class="ps-dropdown-header">{item.label}</div>
           {:else}
-            <button class="ps-dropdown-item" on:click={() => selectItem(item)}>
+            <button 
+              class="ps-dropdown-item" 
+              on:click={() => selectItem(item)}
+              on:mouseenter={() => item && item.name && item.tag && prefetchAccountData(item.name, item.tag, item.region || region || 'ap')}
+            >
               <div class="ps-dropdown-item-left">
                 <div class="ps-dropdown-avatar">
                   {#if item.card_id}
