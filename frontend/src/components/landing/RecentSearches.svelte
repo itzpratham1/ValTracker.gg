@@ -62,6 +62,7 @@
           role="button" 
           tabindex="0"
           on:mouseenter={() => handleMouseEnter(player)} 
+          on:touchstart={() => handleMouseEnter(player)}
           on:click={() => handleSelect(player)}
           on:keydown={(e) => e.key === 'Enter' && handleSelect(player)}
         >

@@ -163,6 +163,7 @@
               class="ps-dropdown-item" 
               on:click={() => selectItem(item)}
               on:mouseenter={() => item && item.name && item.tag && prefetchAccountData(item.name, item.tag, item.region || region || 'ap')}
+              on:touchstart={() => item && item.name && item.tag && prefetchAccountData(item.name, item.tag, item.region || region || 'ap')}
             >
               <div class="ps-dropdown-item-left">
                 <div class="ps-dropdown-avatar">
