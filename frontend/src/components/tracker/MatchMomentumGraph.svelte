@@ -347,8 +347,19 @@
           >
             <div class="sc-rnum">R{r.num}</div>
             <div class="sc-score">{r.myScore}-{r.oppScore}</div>
-            <div class="sc-icon">
-              {#if r.isAce}👑{:else if r.isClutch}⭐{:else if r.myKills >= 3}🔥{r.myKills}K{:else if r.won}✓{:else}✕{/if}
+            <div class="sc-kills-wrap">
+              {#if r.isAce}
+                <span class="sc-kills-badge is-ace" title="ACE (5 Kills)">👑 5K</span>
+              {:else if r.isClutch}
+                <span class="sc-kills-badge is-clutch" title="Clutch ({r.myKills || 1} Kills)">⭐ {r.myKills || 1}K</span>
+              {:else if r.myKills >= 3}
+                <span class="sc-kills-badge is-multi" title="{r.myKills} Multi-kill">🔥 {r.myKills}K</span>
+              {:else if r.myKills > 0}
+                <span class="sc-kills-badge is-kill">{r.myKills}K</span>
+              {:else}
+                <span class="sc-kills-badge is-zero">0K</span>
+              {/if}
+              <span class="sc-result-symbol {r.won ? 'won' : 'lost'}">{r.won ? '✓' : '✕'}</span>
             </div>
           </div>
           {#if i === 11 && roundsData.length > 12}
@@ -770,13 +781,57 @@
     margin: 2px 0;
   }
 
-  .sc-icon {
-    font-size: 9px;
+  .sc-kills-wrap {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    margin-top: 2px;
+  }
+
+  .sc-kills-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    font-weight: 800;
+    line-height: 1;
+    padding: 1px 3px;
+    border-radius: 3px;
+  }
+
+  .sc-kills-badge.is-ace {
+    color: #ffd700;
+    background: rgba(255, 215, 0, 0.2);
+    border: 1px solid rgba(255, 215, 0, 0.4);
+  }
+
+  .sc-kills-badge.is-clutch {
+    color: #3ecf8e;
+    background: rgba(62, 207, 142, 0.2);
+    border: 1px solid rgba(62, 207, 142, 0.4);
+  }
+
+  .sc-kills-badge.is-multi {
+    color: #fa4454;
+    background: rgba(250, 68, 84, 0.2);
+    border: 1px solid rgba(250, 68, 84, 0.4);
+  }
+
+  .sc-kills-badge.is-kill {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .sc-kills-badge.is-zero {
+    color: rgba(255, 255, 255, 0.35);
+  }
+
+  .sc-result-symbol {
+    font-size: 8px;
+    font-weight: 800;
     line-height: 1;
   }
 
-  .stepper-card.won .sc-icon { color: #3ecf8e; }
-  .stepper-card.lost .sc-icon { color: #fa4454; }
+  .sc-result-symbol.won { color: #3ecf8e; }
+  .sc-result-symbol.lost { color: #fa4454; }
 
   .stepper-divider {
     display: flex;
