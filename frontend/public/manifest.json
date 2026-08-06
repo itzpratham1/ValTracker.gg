@@ -1,0 +1,25 @@
+{
+  "name": "ValTracker.gg — Valorant Stats Tracker",
+  "short_name": "ValTracker",
+  "description": "Real-time stats tracker for Valorant. Analyze competitive match history, weapon accuracy, maps, and agent performance.",
+  "start_url": "/app",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#030304",
+  "theme_color": "#030304",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}
