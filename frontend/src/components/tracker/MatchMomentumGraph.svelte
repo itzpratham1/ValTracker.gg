@@ -68,6 +68,50 @@
     };
   })();
 
+  $: highlightMoments = (() => {
+    if (!roundsData || roundsData.length === 0) return [];
+    const moments = [];
+
+    roundsData.forEach(r => {
+      if (r.isAce) {
+        moments.push({
+          type: 'ace',
+          icon: '👑',
+          label: 'ACE',
+          roundNum: r.num,
+          score: `${r.myScore} - ${r.oppScore}`,
+          desc: `Eliminated all 5 enemies in Round ${r.num}`,
+          index: r.index,
+          roundData: r
+        });
+      } else if (r.isClutch) {
+        moments.push({
+          type: 'clutch',
+          icon: '⭐',
+          label: 'CLUTCH',
+          roundNum: r.num,
+          score: `${r.myScore} - ${r.oppScore}`,
+          desc: `Won clutch situation in Round ${r.num} (${r.myKills || 1} Kills)`,
+          index: r.index,
+          roundData: r
+        });
+      } else if (r.myKills >= 3) {
+        moments.push({
+          type: 'multikill',
+          icon: '🔥',
+          label: `${r.myKills}K MULTI-KILL`,
+          roundNum: r.num,
+          score: `${r.myScore} - ${r.oppScore}`,
+          desc: `Scored ${r.myKills} kills in Round ${r.num}`,
+          index: r.index,
+          roundData: r
+        });
+      }
+    });
+
+    return moments;
+  })();
+
   $: maxDiff = Math.max(3, ...roundsData.map(r => Math.abs(r.diff)));
 
   // SVG dimensions
@@ -183,6 +227,11 @@
             <feGaussianBlur stdDeviation="2.5" result="blur" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
           </filter>
+
+          <filter id="glowGold" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          </filter>
         </defs>
 
         <!-- Zero Equilibrium Baseline -->
@@ -246,17 +295,17 @@
             <circle
               cx="{getX(i)}"
               cy="{getY(r.diff)}"
-              r="{r.isClutch || r.isAce ? 6.5 : activeHoverRound?.index === i ? 6.5 : 4}"
-              class="node-dot {r.diff > 0 ? 'node-lead' : r.diff < 0 ? 'node-trail' : 'node-tie'}"
+              r="{r.isAce ? 8 : r.isClutch ? 7 : activeHoverRound?.index === i ? 7 : 4.5}"
+              class="node-dot {r.isAce ? 'node-ace' : r.isClutch ? 'node-clutch' : r.diff > 0 ? 'node-lead' : r.diff < 0 ? 'node-trail' : 'node-tie'}"
             />
 
             <!-- Event Badges -->
             {#if r.isAce}
-              <text x="{getX(i)}" y="{getY(r.diff) - 10}" class="event-badge badge-ace" text-anchor="middle">👑 ACE</text>
+              <text x="{getX(i)}" y="{getY(r.diff) - 12}" class="event-badge badge-ace" text-anchor="middle">👑 ACE</text>
             {:else if r.isClutch}
-              <text x="{getX(i)}" y="{getY(r.diff) - 10}" class="event-badge badge-clutch" text-anchor="middle">⭐ CLUTCH</text>
+              <text x="{getX(i)}" y="{getY(r.diff) - 12}" class="event-badge badge-clutch" text-anchor="middle">⭐ CLUTCH</text>
             {:else if r.myKills >= 3}
-              <text x="{getX(i)}" y="{getY(r.diff) - 10}" class="event-badge badge-multikill" text-anchor="middle">{r.myKills}K</text>
+              <text x="{getX(i)}" y="{getY(r.diff) - 12}" class="event-badge badge-multikill" text-anchor="middle">🔥 {r.myKills}K</text>
             {/if}
           </g>
         {/each}
@@ -276,11 +325,11 @@
             Differential: {activeHoverRound.diff > 0 ? `+${activeHoverRound.diff} Lead` : activeHoverRound.diff < 0 ? `${activeHoverRound.diff} Trailing` : 'TIED'}
           </div>
           {#if activeHoverRound.isAce}
-            <div class="tt-highlight ace">👑 ACE ({activeHoverRound.myKills} Kills)</div>
+            <div class="tt-highlight ace">👑 ACE (5 Kills)</div>
           {:else if activeHoverRound.isClutch}
             <div class="tt-highlight clutch">⭐ CLUTCH WON</div>
           {:else if activeHoverRound.myKills > 0}
-            <div class="tt-sub">{activeHoverRound.myKills} Kills this round</div>
+            <div class="tt-sub">🔥 {activeHoverRound.myKills} Kills this round</div>
           {/if}
         </div>
       {/if}
@@ -292,14 +341,14 @@
       <div class="stepper-grid">
         {#each roundsData as r, i}
           <div 
-            class="stepper-card {r.won ? 'won' : 'lost'} {activeHoverRound?.index === i ? 'active' : ''}"
+            class="stepper-card {r.won ? 'won' : 'lost'} {r.isAce ? 'is-ace' : r.isClutch ? 'is-clutch' : ''} {activeHoverRound?.index === i ? 'active' : ''}"
             on:mouseenter={() => activeHoverRound = r}
             on:mouseleave={() => activeHoverRound = null}
           >
             <div class="sc-rnum">R{r.num}</div>
             <div class="sc-score">{r.myScore}-{r.oppScore}</div>
             <div class="sc-icon">
-              {#if r.isAce}👑{:else if r.isClutch}⭐{:else if r.myKills >= 3}{r.myKills}K{:else if r.won}✓{:else}✕{/if}
+              {#if r.isAce}👑{:else if r.isClutch}⭐{:else if r.myKills >= 3}🔥{r.myKills}K{:else if r.won}✓{:else}✕{/if}
             </div>
           </div>
           {#if i === 11 && roundsData.length > 12}
@@ -310,6 +359,37 @@
         {/each}
       </div>
     </div>
+
+    <!-- Highlight Moments Showcase Grid -->
+    {#if highlightMoments.length > 0}
+      <div class="highlights-showcase-container">
+        <div class="hs-title">
+          <span class="hs-title-icon">⚡</span>
+          MATCH HIGHLIGHT MOMENTS ({highlightMoments.length})
+        </div>
+
+        <div class="hs-grid">
+          {#each highlightMoments as item}
+            <div 
+              class="hs-card hs-card-{item.type} {activeHoverRound?.index === item.index ? 'active' : ''}"
+              on:mouseenter={() => activeHoverRound = item.roundData}
+              on:mouseleave={() => activeHoverRound = null}
+            >
+              <div class="hs-badge-header">
+                <span class="hs-icon">{item.icon}</span>
+                <span class="hs-type">{item.label}</span>
+                <span class="hs-round">ROUND {item.roundNum}</span>
+              </div>
+
+              <div class="hs-body">
+                <div class="hs-score">Score State: {item.score}</div>
+                <div class="hs-desc">{item.desc}</div>
+              </div>
+            </div>
+          {/each}
+        </div>
+      </div>
+    {/if}
   </div>
 {/if}
 
@@ -497,6 +577,20 @@
     transition: r 0.2s ease, fill 0.2s ease;
   }
 
+  .node-ace {
+    fill: #ffd700;
+    stroke: #000;
+    stroke-width: 2.5;
+    filter: drop-shadow(0 0 6px #ffd700);
+  }
+
+  .node-clutch {
+    fill: #3ecf8e;
+    stroke: #000;
+    stroke-width: 2.5;
+    filter: drop-shadow(0 0 6px #3ecf8e);
+  }
+
   .node-lead {
     fill: #3ecf8e;
     stroke: #0c0c10;
@@ -516,14 +610,14 @@
   }
 
   .node-group:hover .node-dot {
-    r: 7px;
-    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.9));
+    r: 8px;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.9));
   }
 
   .event-badge {
     font-family: 'DM Mono', monospace;
-    font-size: 8px;
-    font-weight: 800;
+    font-size: 8.5px;
+    font-weight: 900;
   }
 
   .badge-ace { fill: #ffd700; }
@@ -589,6 +683,7 @@
   .rounds-stepper-container {
     border-top: 1px solid rgba(255, 255, 255, 0.06);
     padding-top: 12px;
+    margin-bottom: 16px;
   }
 
   .stepper-title {
@@ -633,18 +728,29 @@
     background: rgba(250, 68, 84, 0.05);
   }
 
+  .stepper-card.is-ace {
+    border-color: rgba(255, 215, 0, 0.6);
+    background: rgba(255, 215, 0, 0.12);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+  }
+
+  .stepper-card.is-clutch {
+    border-color: rgba(62, 207, 142, 0.6);
+    background: rgba(62, 207, 142, 0.12);
+  }
+
   .stepper-card:hover, .stepper-card.active {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   }
 
   .stepper-card.won:hover, .stepper-card.won.active {
-    background: rgba(62, 207, 142, 0.15);
+    background: rgba(62, 207, 142, 0.2);
     border-color: #3ecf8e;
   }
 
   .stepper-card.lost:hover, .stepper-card.lost.active {
-    background: rgba(250, 68, 84, 0.15);
+    background: rgba(250, 68, 84, 0.2);
     border-color: #fa4454;
   }
 
@@ -687,9 +793,138 @@
     flex-shrink: 0;
   }
 
+  /* Highlights Showcase Container */
+  .highlights-showcase-container {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding-top: 14px;
+  }
+
+  .hs-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--muted, #a0a0ab);
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .hs-title-icon {
+    color: #ffd700;
+  }
+
+  .hs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+  }
+
+  .hs-card {
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .hs-card:hover, .hs-card.active {
+    transform: translateY(-2px);
+  }
+
+  .hs-card-ace {
+    border-color: rgba(255, 215, 0, 0.4);
+    background: rgba(255, 215, 0, 0.06);
+    box-shadow: 0 4px 16px rgba(255, 215, 0, 0.1);
+  }
+
+  .hs-card-ace:hover, .hs-card-ace.active {
+    border-color: #ffd700;
+    box-shadow: 0 8px 24px rgba(255, 215, 0, 0.25);
+  }
+
+  .hs-card-clutch {
+    border-color: rgba(62, 207, 142, 0.4);
+    background: rgba(62, 207, 142, 0.06);
+    box-shadow: 0 4px 16px rgba(62, 207, 142, 0.1);
+  }
+
+  .hs-card-clutch:hover, .hs-card-clutch.active {
+    border-color: #3ecf8e;
+    box-shadow: 0 8px 24px rgba(62, 207, 142, 0.25);
+  }
+
+  .hs-card-multikill {
+    border-color: rgba(250, 68, 84, 0.4);
+    background: rgba(250, 68, 84, 0.06);
+    box-shadow: 0 4px 16px rgba(250, 68, 84, 0.1);
+  }
+
+  .hs-card-multikill:hover, .hs-card-multikill.active {
+    border-color: #fa4454;
+    box-shadow: 0 8px 24px rgba(250, 68, 84, 0.25);
+  }
+
+  .hs-badge-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  .hs-icon {
+    font-size: 13px;
+  }
+
+  .hs-type {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+  }
+
+  .hs-card-ace .hs-type { color: #ffd700; }
+  .hs-card-clutch .hs-type { color: #3ecf8e; }
+  .hs-card-multikill .hs-type { color: #fa4454; }
+
+  .hs-round {
+    font-family: 'DM Mono', monospace;
+    font-size: 8.5px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.5);
+    margin-left: auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  .hs-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .hs-score {
+    font-family: 'DM Mono', monospace;
+    font-size: 9.5px;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .hs-desc {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    color: var(--muted, #a0a0ab);
+    line-height: 1.3;
+  }
+
   @media (max-width: 768px) {
     .summary-pills-grid {
       grid-template-columns: repeat(2, 1fr);
+    }
+    .hs-grid {
+      grid-template-columns: 1fr;
     }
   }
 
