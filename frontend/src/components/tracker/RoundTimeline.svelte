@@ -88,20 +88,4 @@
   <div class="no-detail">Your player not found in match data</div>
 {:else}
   <MatchMomentumGraph teamRounds={teamRounds} match={match} />
-
-  <div class="panel-section">
-    <div class="panel-section-title">Clutches & Aces</div>
-    {#if clutches.length === 0 && aces.length === 0}
-      <div class="no-detail">No clutch or ace moments detected this match</div>
-    {:else}
-      <div class="clutch-highlight">
-        {#each clutches as c}
-          <div class="clutch-pill">👑 {c.vsCount} Clutch 🔥 Rnd {c.round}{c.kills ? ` (${c.kills} kills)` : ''}</div>
-        {/each}
-        {#each aces as a}
-          <div class="clutch-pill" style="color:var(--accent);border-color:var(--accentborder)">⭐ ACE ⭐ Rnd {a.round}</div>
-        {/each}
-      </div>
-    {/if}
-  </div>
 {/if}

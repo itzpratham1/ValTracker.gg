@@ -977,6 +977,7 @@
   @media (max-width: 768px) {
     .summary-pills-grid {
       grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
     }
     .hs-grid {
       grid-template-columns: 1fr;
@@ -985,10 +986,71 @@
 
   @media (max-width: 600px) {
     .momentum-wrap {
-      padding: 12px 14px;
+      padding: 12px 10px;
+      border-radius: 8px;
+    }
+    .momentum-header {
+      margin-bottom: 10px;
+    }
+    .momentum-title {
+      font-size: 12px;
+      letter-spacing: 1px;
     }
     .momentum-legend {
       display: none;
+    }
+    .summary-pills-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .spill-card {
+      padding: 6px 8px;
+    }
+    .spill-label {
+      font-size: 7.5px;
+    }
+    .spill-val {
+      font-size: 13px;
+    }
+    .momentum-svg {
+      max-height: 220px;
+      min-height: 150px;
+    }
+    .baseline-text, .lead-text, .trail-text {
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .halftime-label {
+      font-size: 9.5px;
+    }
+    .event-badge {
+      font-size: 9.5px;
+    }
+    .stepper-card {
+      min-width: 32px;
+      padding: 5px 6px;
+    }
+    .sc-rnum {
+      font-size: 9px;
+    }
+    .sc-score {
+      font-size: 12px;
+    }
+    .sc-kills-badge {
+      font-size: 9px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .summary-pills-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 5px;
+    }
+    .stepper-grid {
+      gap: 5px;
+      padding-bottom: 6px;
+      -webkit-overflow-scrolling: touch;
     }
   }
 </style>
