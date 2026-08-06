@@ -64,6 +64,38 @@
     return { matchMVP, teamMVP };
   }
 
+  const tagTimers = new Map();
+
+  function togglePlayerTag(node) {
+    if (!node) return;
+    const isCurrentlyActive = node.classList.contains('active');
+
+    if (tagTimers.has(node)) {
+      clearTimeout(tagTimers.get(node));
+      tagTimers.delete(node);
+    }
+
+    if (!isCurrentlyActive) {
+      node.classList.add('active');
+      const timer = setTimeout(() => {
+        node.classList.remove('active');
+        tagTimers.delete(node);
+      }, 2500);
+      tagTimers.set(node, timer);
+    } else {
+      node.classList.remove('active');
+    }
+  }
+
+  function handleBlurTag(node) {
+    if (!node) return;
+    if (tagTimers.has(node)) {
+      clearTimeout(tagTimers.get(node));
+      tagTimers.delete(node);
+    }
+    node.classList.remove('active');
+  }
+
   function getParties(players) {
     const partiesMap = {};
     if (!Array.isArray(players)) return {};
@@ -395,8 +427,9 @@
                     title={fullRiotId}
                     tabindex="0"
                     role="button"
-                    on:click={(e) => e.currentTarget.classList.toggle('active')}
-                    on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') e.currentTarget.classList.toggle('active'); }}
+                    on:click={(e) => togglePlayerTag(e.currentTarget)}
+                    on:blur={(e) => handleBlurTag(e.currentTarget)}
+                    on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); togglePlayerTag(e.currentTarget); } }}
                   >
                     <span class="sb-player-name">{escapeHtml(p.name || '—')}</span>
                     {#if pTag}
@@ -490,8 +523,9 @@
                     title={fullRiotId}
                     tabindex="0"
                     role="button"
-                    on:click={(e) => e.currentTarget.classList.toggle('active')}
-                    on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') e.currentTarget.classList.toggle('active'); }}
+                    on:click={(e) => togglePlayerTag(e.currentTarget)}
+                    on:blur={(e) => handleBlurTag(e.currentTarget)}
+                    on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); togglePlayerTag(e.currentTarget); } }}
                   >
                     <span class="sb-player-name">{escapeHtml(p.name || '—')}</span>
                     {#if pTag}
