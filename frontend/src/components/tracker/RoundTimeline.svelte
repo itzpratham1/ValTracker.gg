@@ -1,4 +1,6 @@
 <script>
+  import MatchMomentumGraph from './MatchMomentumGraph.svelte';
+
   export let match = null;
   export let playerName = '';
   export let playerTag = '';
@@ -85,6 +87,8 @@
 {#if !me}
   <div class="no-detail">Your player not found in match data</div>
 {:else}
+  <MatchMomentumGraph teamRounds={teamRounds} match={match} />
+
   <div class="panel-section">
     <div class="panel-section-title">Round History Timeline</div>
     <div class="rounds-wrap">
