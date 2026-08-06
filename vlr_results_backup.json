@@ -1,5 +1,135 @@
 [
   {
+    "id": "716633",
+    "date": "Aug 05, 2026 10:45 PM",
+    "state": "completed",
+    "vlr_path": "/716633/fokus-sakura-vs-alternate-attax-ruby-game-changers-2026-emea-stage-3-w3",
+    "league": {
+      "name": "Game Changers 2026: EMEA Stage 3",
+      "region": "Group Stage\u2013Week 3"
+    },
+    "match": {
+      "id": "716633",
+      "teams": [
+        {
+          "name": "FOKUS Sakura",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "ALTERNATE aTTaX Ruby",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "716632",
+    "date": "Aug 05, 2026 10:05 PM",
+    "state": "completed",
+    "vlr_path": "/716632/gentle-mates-gc-vs-twisted-minds-orchid-game-changers-2026-emea-stage-3-w3",
+    "league": {
+      "name": "Game Changers 2026: EMEA Stage 3",
+      "region": "Group Stage\u2013Week 3"
+    },
+    "match": {
+      "id": "716632",
+      "teams": [
+        {
+          "name": "Gentle Mates GC",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "Twisted Minds Orchid",
+          "game_wins": 2,
+          "has_won": true
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "716630",
+    "date": "Aug 05, 2026 8:30 PM",
+    "state": "completed",
+    "vlr_path": "/716630/g2-gozen-vs-giantx-gc-game-changers-2026-emea-stage-3-w3",
+    "league": {
+      "name": "Game Changers 2026: EMEA Stage 3",
+      "region": "Group Stage\u2013Week 3"
+    },
+    "match": {
+      "id": "716630",
+      "teams": [
+        {
+          "name": "G2 Gozen",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "GIANTX GC",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "716631",
+    "date": "Aug 05, 2026 8:30 PM",
+    "state": "completed",
+    "vlr_path": "/716631/sk-nebula-vs-karmine-corp-gc-game-changers-2026-emea-stage-3-w3",
+    "league": {
+      "name": "Game Changers 2026: EMEA Stage 3",
+      "region": "Group Stage\u2013Week 3"
+    },
+    "match": {
+      "id": "716631",
+      "teams": [
+        {
+          "name": "SK Nebula",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "Karmine Corp GC",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "724620",
+    "date": "Aug 05, 2026 3:30 PM",
+    "state": "completed",
+    "vlr_path": "/724620/titan-esports-club-vs-keepbest-gaming-vct-2026-china-stage-2-ur1",
+    "league": {
+      "name": "VCT 2026: China Stage 2",
+      "region": "Play-Ins\u2013Upper Round 1"
+    },
+    "match": {
+      "id": "724620",
+      "teams": [
+        {
+          "name": "Titan Esports Club",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "KeepBest Gaming",
+          "game_wins": 1,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
     "id": "724619",
     "date": "Aug 05, 2026 1:30 PM",
     "state": "completed",
@@ -79,7 +209,7 @@
   },
   {
     "id": "716628",
-    "date": "Aug 04, 2026 10:55 PM",
+    "date": "August 4, 2026 10:55 PM",
     "state": "completed",
     "vlr_path": "/716628/sk-nebula-vs-twisted-minds-orchid-game-changers-2026-emea-stage-3-w3",
     "league": {
@@ -105,7 +235,7 @@
   },
   {
     "id": "716629",
-    "date": "Aug 04, 2026 10:20 PM",
+    "date": "August 4, 2026 10:20 PM",
     "state": "completed",
     "vlr_path": "/716629/alternate-attax-ruby-vs-habos-babos-game-changers-2026-emea-stage-3-w3",
     "league": {
@@ -131,7 +261,7 @@
   },
   {
     "id": "716626",
-    "date": "Aug 04, 2026 8:30 PM",
+    "date": "August 4, 2026 8:30 PM",
     "state": "completed",
     "vlr_path": "/716626/karmine-corp-gc-vs-fokus-sakura-game-changers-2026-emea-stage-3-w3",
     "league": {
@@ -157,7 +287,7 @@
   },
   {
     "id": "716627",
-    "date": "Aug 04, 2026 8:30 PM",
+    "date": "August 4, 2026 8:30 PM",
     "state": "completed",
     "vlr_path": "/716627/g2-gozen-vs-bar-a-esports-gc-game-changers-2026-emea-stage-3-w3",
     "league": {
@@ -183,7 +313,7 @@
   },
   {
     "id": "724889",
-    "date": "Aug 04, 2026 5:40 AM",
+    "date": "August 4, 2026 5:40 AM",
     "state": "completed",
     "vlr_path": "/724889/eternal-focus-amethyst-vs-revitalize-gc-game-changers-2026-north-america-stage-2-swiss-stage-r4",
     "league": {
@@ -209,7 +339,7 @@
   },
   {
     "id": "730317",
-    "date": "Aug 04, 2026 5:30 AM",
+    "date": "August 4, 2026 5:30 AM",
     "state": "completed",
     "vlr_path": "/730317/akave-esports-gc-vs-myvra-gc-game-changers-2026-latam-main-event-ubsf",
     "league": {
@@ -235,7 +365,7 @@
   },
   {
     "id": "730324",
-    "date": "Aug 04, 2026 3:30 AM",
+    "date": "August 4, 2026 3:30 AM",
     "state": "completed",
     "vlr_path": "/730324/kr-blaze-vs-npc-team-game-changers-2026-latam-main-event-ubsf",
     "league": {
@@ -261,7 +391,7 @@
   },
   {
     "id": "724885",
-    "date": "Aug 04, 2026 2:30 AM",
+    "date": "August 4, 2026 2:30 AM",
     "state": "completed",
     "vlr_path": "/724885/flyquest-red-vs-swimtrek-blue-game-changers-2026-north-america-stage-2-swiss-stage-r4-3-0",
     "league": {
@@ -1164,136 +1294,6 @@
           "name": "ALTERNATE aTTaX Ruby",
           "game_wins": 0,
           "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "716588",
-    "date": "July 29, 2026 11:30 PM",
-    "state": "completed",
-    "vlr_path": "/716588/giantx-gc-vs-habos-babos-game-changers-2026-emea-stage-3-w2",
-    "league": {
-      "name": "Game Changers 2026: EMEA Stage 3",
-      "region": "Group Stage\u2013Week 2"
-    },
-    "match": {
-      "id": "716588",
-      "teams": [
-        {
-          "name": "GIANTX GC",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "Habos Babos",
-          "game_wins": 2,
-          "has_won": true
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "712825",
-    "date": "July 29, 2026 10:45 PM",
-    "state": "completed",
-    "vlr_path": "/712825/gentle-mates-vs-team-vitality-vct-2026-emea-stage-2-w3",
-    "league": {
-      "name": "VCT 2026: EMEA Stage 2",
-      "region": "Group Stage\u2013Week 3"
-    },
-    "match": {
-      "id": "712825",
-      "teams": [
-        {
-          "name": "Gentle Mates",
-          "game_wins": 1,
-          "has_won": false
-        },
-        {
-          "name": "Team Vitality",
-          "game_wins": 2,
-          "has_won": true
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "712824",
-    "date": "July 29, 2026 8:30 PM",
-    "state": "completed",
-    "vlr_path": "/712824/giantx-vs-team-liquid-vct-2026-emea-stage-2-w3",
-    "league": {
-      "name": "VCT 2026: EMEA Stage 2",
-      "region": "Group Stage\u2013Week 3"
-    },
-    "match": {
-      "id": "712824",
-      "teams": [
-        {
-          "name": "GIANTX",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "Team Liquid",
-          "game_wins": 2,
-          "has_won": true
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "716585",
-    "date": "July 29, 2026 8:30 PM",
-    "state": "completed",
-    "vlr_path": "/716585/sk-nebula-vs-g2-gozen-game-changers-2026-emea-stage-3-w2",
-    "league": {
-      "name": "Game Changers 2026: EMEA Stage 3",
-      "region": "Group Stage\u2013Week 2"
-    },
-    "match": {
-      "id": "716585",
-      "teams": [
-        {
-          "name": "SK Nebula",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "G2 Gozen",
-          "game_wins": 2,
-          "has_won": true
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "716586",
-    "date": "July 29, 2026 8:30 PM",
-    "state": "completed",
-    "vlr_path": "/716586/gentle-mates-gc-vs-fokus-sakura-game-changers-2026-emea-stage-3-w2",
-    "league": {
-      "name": "Game Changers 2026: EMEA Stage 3",
-      "region": "Group Stage\u2013Week 2"
-    },
-    "match": {
-      "id": "716586",
-      "teams": [
-        {
-          "name": "Gentle Mates GC",
-          "game_wins": 1,
-          "has_won": false
-        },
-        {
-          "name": "FOKUS Sakura",
-          "game_wins": 2,
-          "has_won": true
         }
       ]
     },

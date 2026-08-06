@@ -21,12 +21,28 @@
 
   onMount(() => {
     document.addEventListener('click', handleClickOutside);
+    window.addEventListener('keydown', handleGlobalShortcut);
   });
 
   onDestroy(() => {
     document.removeEventListener('click', handleClickOutside);
+    window.removeEventListener('keydown', handleGlobalShortcut);
     clearTimeout(debounceTimer);
   });
+
+  function handleGlobalShortcut(e) {
+    const isCmdK = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k';
+    const isSlash = e.key === '/' && !['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName);
+
+    if (isCmdK || isSlash) {
+      e.preventDefault();
+      if (inputEl) {
+        inputEl.focus();
+        inputEl.select();
+        showRecommendations();
+      }
+    }
+  }
 
   function handleClickOutside(e) {
     if (dropdownRef && !dropdownRef.contains(e.target)) {

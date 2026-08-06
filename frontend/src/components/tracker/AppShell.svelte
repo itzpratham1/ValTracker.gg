@@ -8,6 +8,7 @@
   import LookupView from './LookupView.svelte';
   import TrackerView from './TrackerView.svelte';
   import LoadingCard from '../landing/LoadingCard.svelte';
+  import NetworkStatus from '../shared/NetworkStatus.svelte';
 
   export let initialView = 'landing';
   let redirecting = false;
@@ -323,6 +324,8 @@
     <LookupView />
   {/if}
 {/if}
+
+<NetworkStatus />
 
 <style>
   .appshell-loading-container {
