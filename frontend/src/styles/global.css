@@ -1437,7 +1437,10 @@ body::before {
   cursor: pointer;
   transition: max-width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.sb-name:hover {
+.sb-name:hover,
+.sb-name:focus,
+.sb-name:active,
+.sb-name.active {
   max-width: 280px;
   overflow: visible;
 }
@@ -1459,7 +1462,10 @@ body::before {
   vertical-align: middle;
   pointer-events: none;
 }
-.sb-name:hover .sb-tag {
+.sb-name:hover .sb-tag,
+.sb-name:focus .sb-tag,
+.sb-name:active .sb-tag,
+.sb-name.active .sb-tag {
   opacity: 1;
   max-width: 120px;
   margin-left: 5px;
@@ -9173,13 +9179,31 @@ body::after {
   .scoreboard td { font-size: 11px !important; padding: 5px 6px !important; }
   .scoreboard th:first-child,
   .scoreboard td:first-child:not(.team-label) {
-    min-width: 130px !important;
-    max-width: 145px !important;
-    width: 135px !important;
+    min-width: 165px !important;
+    max-width: 220px !important;
+    width: 180px !important;
   }
   .sb-name {
     font-size: 12.5px !important;
-    max-width: 95px !important;
+    max-width: 130px !important;
+  }
+  .sb-name:hover,
+  .sb-name:focus,
+  .sb-name:active,
+  .sb-name.active {
+    max-width: 260px !important;
+    overflow: visible !important;
+    position: relative !important;
+    z-index: 20 !important;
+    text-shadow: 0 2px 8px #0b0b13, 0 0 4px #0b0b13;
+  }
+  .sb-name:hover .sb-tag,
+  .sb-name:focus .sb-tag,
+  .sb-name:active .sb-tag,
+  .sb-name.active .sb-tag {
+    opacity: 1 !important;
+    max-width: 140px !important;
+    margin-left: 5px !important;
   }
   body.modal-open { overflow: hidden !important; position: fixed !important; width: 100% !important; top: var(--scroll-y, 0) !important; }
 }
@@ -11422,7 +11446,6 @@ body::after {
 
 /* Scoreboard Party vertical color bar */
 .scoreboard td:first-child {
-  position: relative !important;
   padding-left: 16px !important;
 }
 

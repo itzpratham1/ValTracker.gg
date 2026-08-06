@@ -390,7 +390,14 @@
                   <img src={agentIcon} alt={p.character} style="width:26px;height:26px;object-fit:contain;border-radius:3px;background:var(--surface2);" on:error={(e) => e.target.style.display='none'}>
                 {/if}
                 <div style="min-width:0; flex:1;">
-                  <div class="sb-name" title={fullRiotId}>
+                  <div 
+                    class="sb-name" 
+                    title={fullRiotId}
+                    tabindex="0"
+                    role="button"
+                    on:click={(e) => e.currentTarget.classList.toggle('active')}
+                    on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') e.currentTarget.classList.toggle('active'); }}
+                  >
                     <span class="sb-player-name">{escapeHtml(p.name || '—')}</span>
                     {#if pTag}
                       <span class="sb-tag">{escapeHtml(pTag)}</span>
@@ -478,7 +485,14 @@
                   <img src={agentIcon} alt={p.character} style="width:26px;height:26px;object-fit:contain;border-radius:3px;background:var(--surface2);" on:error={(e) => e.target.style.display='none'}>
                 {/if}
                 <div style="min-width:0; flex:1;">
-                  <div class="sb-name" title={fullRiotId}>
+                  <div 
+                    class="sb-name" 
+                    title={fullRiotId}
+                    tabindex="0"
+                    role="button"
+                    on:click={(e) => e.currentTarget.classList.toggle('active')}
+                    on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') e.currentTarget.classList.toggle('active'); }}
+                  >
                     <span class="sb-player-name">{escapeHtml(p.name || '—')}</span>
                     {#if pTag}
                       <span class="sb-tag">{escapeHtml(pTag)}</span>
