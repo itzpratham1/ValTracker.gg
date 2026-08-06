@@ -26,9 +26,51 @@
     });
   })();
 
+  $: summaryStats = (() => {
+    if (!roundsData || roundsData.length === 0) return null;
+
+    let maxLead = 0;
+    let maxLeadRound = 0;
+    let currentStreak = 0;
+    let maxStreak = 0;
+    let firstHalfWins = 0;
+    let firstHalfLosses = 0;
+    let secondHalfWins = 0;
+    let secondHalfLosses = 0;
+
+    roundsData.forEach((r, i) => {
+      if (r.diff > maxLead) {
+        maxLead = r.diff;
+        maxLeadRound = r.num;
+      }
+      if (r.won) {
+        currentStreak++;
+        if (currentStreak > maxStreak) maxStreak = currentStreak;
+      } else {
+        currentStreak = 0;
+      }
+
+      if (i < 12) {
+        if (r.won) firstHalfWins++;
+        else firstHalfLosses++;
+      } else {
+        if (r.won) secondHalfWins++;
+        else secondHalfLosses++;
+      }
+    });
+
+    return {
+      maxLead,
+      maxLeadRound,
+      maxStreak,
+      firstHalfScore: `${firstHalfWins}-${firstHalfLosses}`,
+      secondHalfScore: `${secondHalfWins}-${secondHalfLosses}`
+    };
+  })();
+
   $: maxDiff = Math.max(3, ...roundsData.map(r => Math.abs(r.diff)));
 
-  // SVG dimensions with proper aspect ratio
+  // SVG dimensions
   const svgWidth = 800;
   const svgHeight = 180;
   const paddingX = 36;
@@ -54,7 +96,6 @@
     }, '');
   })();
 
-  // Separate positive (green) and negative (red) fill paths
   $: greenAreaPath = (() => {
     if (roundsData.length === 0) return '';
     const centerY = svgHeight / 2;
@@ -84,6 +125,7 @@
 
 {#if roundsData.length > 0}
   <div class="momentum-wrap">
+    <!-- Header -->
     <div class="momentum-header">
       <div class="momentum-title">
         <span class="momentum-icon">📈</span>
@@ -95,6 +137,30 @@
         <span class="leg-item leg-half"><span class="leg-line"></span> Side Swap (R12)</span>
       </div>
     </div>
+
+    <!-- Match Summary Analytics Pills -->
+    {#if summaryStats}
+      <div class="summary-pills-grid">
+        <div class="spill-card">
+          <span class="spill-label">MAX LEAD</span>
+          <span class="spill-val green">+{summaryStats.maxLead} <span class="spill-sub">(R{summaryStats.maxLeadRound})</span></span>
+        </div>
+        <div class="spill-card">
+          <span class="spill-label">LONGEST STREAK</span>
+          <span class="spill-val gold">🔥 {summaryStats.maxStreak} <span class="spill-sub">Rounds</span></span>
+        </div>
+        <div class="spill-card">
+          <span class="spill-label">1ST HALF</span>
+          <span class="spill-val">{summaryStats.firstHalfScore}</span>
+        </div>
+        {#if roundsData.length > 12}
+          <div class="spill-card">
+            <span class="spill-label">2ND HALF</span>
+            <span class="spill-val">{summaryStats.secondHalfScore}</span>
+          </div>
+        {/if}
+      </div>
+    {/if}
 
     <!-- Main SVG Graph Container -->
     <div class="momentum-chart-container">
@@ -128,7 +194,7 @@
           class="baseline"
         />
 
-        <!-- Baseline Label -->
+        <!-- Baseline Labels -->
         <text x="{paddingX - 10}" y="{svgHeight / 2 + 3}" class="baseline-text" text-anchor="end">0</text>
         <text x="{paddingX - 10}" y="{paddingY + 6}" class="lead-text" text-anchor="end">+{maxDiff}</text>
         <text x="{paddingX - 10}" y="{svgHeight - paddingY}" class="trail-text" text-anchor="end">-{maxDiff}</text>
@@ -152,14 +218,14 @@
           </text>
         {/if}
 
-        <!-- Lead & Trailing Fills -->
+        <!-- Lead & Trailing Gradient Fills -->
         <path d="{greenAreaPath}" fill="url(#leadGrad)" />
         <path d="{redAreaPath}" fill="url(#trailGrad)" />
 
         <!-- Polyline Sparkline Curve -->
         <path d="{sparklinePath}" class="sparkline-line" filter="url(#glowGreen)" />
 
-        <!-- Interactive Round Nodes & Event Indicators -->
+        <!-- Interactive Round Nodes & Event Badges -->
         {#each roundsData as r, i}
           <g 
             class="node-group" 
@@ -180,11 +246,11 @@
             <circle
               cx="{getX(i)}"
               cy="{getY(r.diff)}"
-              r="{r.isClutch || r.isAce ? 6 : activeHoverRound?.index === i ? 6 : 4}"
+              r="{r.isClutch || r.isAce ? 6.5 : activeHoverRound?.index === i ? 6.5 : 4}"
               class="node-dot {r.diff > 0 ? 'node-lead' : r.diff < 0 ? 'node-trail' : 'node-tie'}"
             />
 
-            <!-- Event Text Labels -->
+            <!-- Event Badges -->
             {#if r.isAce}
               <text x="{getX(i)}" y="{getY(r.diff) - 10}" class="event-badge badge-ace" text-anchor="middle">👑 ACE</text>
             {:else if r.isClutch}
@@ -200,14 +266,14 @@
       {#if activeHoverRound}
         <div 
           class="momentum-tooltip" 
-          style="left: Math.min(85, Math.max(15, (activeHoverRound.index / Math.max(1, roundsData.length - 1)) * 90 + 5))%;"
+          style="left: {Math.min(85, Math.max(15, (activeHoverRound.index / Math.max(1, roundsData.length - 1)) * 90 + 5))}%;"
         >
           <div class="tt-head">ROUND {activeHoverRound.num}</div>
           <div class="tt-score {activeHoverRound.won ? 'win' : 'loss'}">
             {activeHoverRound.won ? 'VICTORY' : 'DEFEAT'} · Score: {activeHoverRound.myScore} - {activeHoverRound.oppScore}
           </div>
           <div class="tt-diff">
-            Diff: {activeHoverRound.diff > 0 ? `+${activeHoverRound.diff} Lead` : activeHoverRound.diff < 0 ? `${activeHoverRound.diff} Trailing` : 'TIED'}
+            Differential: {activeHoverRound.diff > 0 ? `+${activeHoverRound.diff} Lead` : activeHoverRound.diff < 0 ? `${activeHoverRound.diff} Trailing` : 'TIED'}
           </div>
           {#if activeHoverRound.isAce}
             <div class="tt-highlight ace">👑 ACE ({activeHoverRound.myKills} Kills)</div>
@@ -220,7 +286,7 @@
       {/if}
     </div>
 
-    <!-- Clear Round-by-Round Stepper Timeline -->
+    <!-- Stepper Round Timeline Bar -->
     <div class="rounds-stepper-container">
       <div class="stepper-title">ROUND SEQUENCE & PROGRESSION</div>
       <div class="stepper-grid">
@@ -262,7 +328,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
   }
 
   .momentum-title {
@@ -310,6 +376,50 @@
     height: 1.5px;
     background: rgba(255, 255, 255, 0.4);
     border-style: dashed;
+  }
+
+  /* Summary Stat Cards */
+  .summary-pills-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .spill-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .spill-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    font-weight: 700;
+    color: var(--muted, #a0a0ab);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .spill-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    color: #fff;
+  }
+
+  .spill-val.green { color: #3ecf8e; }
+  .spill-val.gold { color: #ffd700; }
+
+  .spill-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
   }
 
   .momentum-chart-container {
@@ -575,6 +685,12 @@
     border-right: 1px dashed rgba(255, 255, 255, 0.2);
     height: 32px;
     flex-shrink: 0;
+  }
+
+  @media (max-width: 768px) {
+    .summary-pills-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 
   @media (max-width: 600px) {
