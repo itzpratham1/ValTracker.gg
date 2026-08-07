@@ -1,14 +1,16 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/itzpratham1/ValTracker.gg/main/public/valorant_v_logo.png" alt="ValTracker.gg Logo" width="80"/>
+<img src="https://raw.githubusercontent.com/itzpratham1/ValTracker.gg/main/public/logo.png" alt="ValTracker.gg Logo" width="100"/>
 
 # ValTracker.gg
 
-**A premium, full-stack Valorant stats tracker.**  
-Real-time match data · Esports coverage · AI coaching · Skins store · Meta analytics
+**A modern, full-stack Valorant stats tracker & esports analytics platform.**  
+Real-time player stats · Astro + Svelte frontend · VCT Esports Hub · AI Coach · Skins Store · Meta comp analytics
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-valtracker--gg.onrender.com-ff4655?style=for-the-badge&logo=render)](https://valtracker-gg.onrender.com)
 [![GitHub](https://img.shields.io/badge/GitHub-itzpratham1%2FValTracker.gg-181717?style=for-the-badge&logo=github)](https://github.com/itzpratham1/ValTracker.gg)
+[![Astro](https://img.shields.io/badge/Astro-5.0+-BC52EE?style=for-the-badge&logo=astro&logoColor=white)](https://astro.build)
+[![Svelte](https://img.shields.io/badge/Svelte-5.0+-FF3E00?style=for-the-badge&logo=svelte&logoColor=white)](https://svelte.dev)
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![Flask](https://img.shields.io/badge/Flask-3.1.3-000000?style=for-the-badge&logo=flask)](https://flask.palletsprojects.com)
 
@@ -16,65 +18,90 @@ Real-time match data · Esports coverage · AI coaching · Skins store · Meta a
 
 ---
 
+## 📸 Interface Preview
+
+<div align="center">
+
+| 🎯 Player Stats & Analytics | 🤖 ValBot AI Coach |
+|---|---|
+| <img src="https://raw.githubusercontent.com/itzpratham1/ValTracker.gg/main/public/stats_tracker_card.webp" alt="Stats Tracker Preview" width="400"/> | <img src="https://raw.githubusercontent.com/itzpratham1/ValTracker.gg/main/public/Val_bot_analysis.webp" alt="AI Coach Preview" width="400"/> |
+
+| 🎮 VCT Esports Hub | 🛒 Live Skins Store |
+|---|---|
+| <img src="https://raw.githubusercontent.com/itzpratham1/ValTracker.gg/main/public/VCT_Esports.webp" alt="VCT Esports Preview" width="400"/> | <img src="https://raw.githubusercontent.com/itzpratham1/ValTracker.gg/main/public/skin_store.webp" alt="Skins Store Preview" width="400"/> |
+
+</div>
+
+---
+
+## ⚡ Overview
+
+**ValTracker.gg** is a high-performance, full-stack web application designed for Valorant players, esports fans, and content creators. Built with an ultra-fast **Astro + Svelte 5** client-island architecture and powered by a robust **Python Flask API** backend, ValTracker.gg offers deep stat tracking, real-time VCT esports coverage, live store bundle showcases, pro meta comp analysis, and interactive streaming overlays.
+
+---
+
 ## ✨ Features
 
-### 🎯 Tracker
+### 🎯 Player Stats & Analytics
 | Feature | Description |
 |---|---|
-| **Combat Stats** | K/D ratio, ACS, headshot %, kills/deaths/assists per game |
-| **Performance Trends** | Win rate over time, rating trends with Chart.js visualization |
-| **Agent Stats** | Win rate, K/D, and pick frequency per agent |
-| **Map Stats** | Win rate and performance breakdown per map |
-| **Weapon Stats** | Most used weapons and their effectiveness metrics |
-| **Match History** | Full per-match breakdown — scoreboard, round timeline, kill feed, duel stats |
-| **ValBot AI Coach** | Client-side AI analysis — strengths, weaknesses, coaching tips, mental game. No API cost. |
-| **Session Tracker** | Track K/D and wins within a play session with Start/Stop/Summary |
-| **Head-to-Head** | Compare two players side by side |
-| **Top 500 Leaderboard** | View ranked leaderboard by region |
-| **Export Stats Card** | Screenshot and share your stats summary card via html2canvas |
-| **Share Profile** | Copy a deep-link URL to any player's profile |
+| **Combat Performance** | Track K/D ratio, ACS, Headshot %, KDA, and score trends |
+| **Visual Charts** | Dynamic win rate and rank rating progression charts via Chart.js |
+| **Agent Bento & Deep Stats** | Comprehensive per-agent win rates, K/D ratios, and pick frequencies |
+| **Map & Weapon Breakdown** | Performance matrix across all competitive maps and weapon classes |
+| **Match History & Breakdown** | Full per-match scoreboards, round timelines, kill feeds, and duel matrices |
+| **Rank Pace Prediction** | Intelligent engine predicting matches needed to reach your next rank based on current pace |
+| **Session Tracker** | Real-time session logger with live K/D tracker and performance summary |
+| **Head-to-Head Comparison** | Side-by-side player stat comparisons |
+| **Leaderboards** | Regional Top 500 leaderboard browsing across AP, NA, EU, KR, BR, LATAM |
+| **⚡ Season Wrapped** | Automatic end-of-act & end-of-month player performance recap engine |
+| **Export & Share** | Generate downloadable image stat cards (html2canvas) or share profile deep links |
 
-### 🎮 Esports
+### 🤖 ValBot AI Coach
+- **Zero-Cost Client-Side AI**: Analyzes fetched match data locally in the browser — no costly LLM API fees.
+- **Actionable Insights**: Evaluates combat performance, agent versatility, headshot accuracy, and mental game consistency.
+- **Customized Tips**: Delivers tailored advice for rank progression based on recent performance metrics.
+
+### 🎮 VCT Esports Hub
 | Feature | Description |
 |---|---|
-| **Live Matches** | Real-time VCT match scores (VLR.gg scraper) |
-| **Upcoming Matches** | Scheduled VCT fixtures with countdown |
-| **Results** | Completed match results |
-| **Rankings** | Regional team standings (VLR.gg scraped) |
-| **News** | Latest esports news — BS4 scrape → public API fallback → cached backup |
-| **VCT 2026 Roadmap** | Interactive season timeline with franchised + ascended teams |
+| **Live Match Tracking** | Real-time VCT match scores scraped from VLR.gg with automatic fallbacks |
+| **Upcoming Fixtures & Results** | Countdown timers for upcoming matches & archived tournament results |
+| **Regional Rankings** | Global & regional VCT team standings updated automatically |
+| **Esports News Feed** | Latest news aggregation with 3-tier fallback (Live Scrape → In-Memory Cache → JSON Backup) |
+| **VCT Season Roadmap** | Interactive season timeline showcasing international leagues and Ascension teams |
 
-### 🛒 Skins Store
+### 🛒 Skins Store & Catalog
 | Feature | Description |
 |---|---|
-| **Featured Bundles** | Live in-game featured store bundles with prices and countdown timers |
-| **Cosmetics Catalog** | Full weapon skins database — filter by name, weapon, tier |
-| **Chroma Swapper** | Swap skin renders in real-time using color variant badges |
-| **Finisher Previews** | Inline video player for VFX/SFX upgrade animations |
+| **Featured Bundles** | Live in-game store showcase with skin bundles, prices, and countdown timers |
+| **Weapon Skin Catalog** | Filterable cosmetics database by tier, weapon category, and skin name |
+| **Dynamic Chroma Swapper** | Interactive color variant badge swapper updating high-res skin renders live |
+| **Finisher & Upgrade Previews** | Inline video player showcasing skin level VFX/SFX animations and finishers |
 
-### 🧠 Meta Comp Architect
-- Pro composition data scraped from VCT match history
-- Per-map agent pick rates and win rates
-- Most played & highest win rate 5-agent lineups per patch
+### 🧠 Meta Comp Architect & Tools
+- **Pro Team Compositions**: Analyze VCT pro team lineups and pick rates per map and patch.
+- **Draft Coach**: Interactive composition evaluation tool to optimize agent synergies.
+- **OBS Stream Overlay**: Customizable transparent overlay for content creators to broadcast live stats in OBS Studio.
 
 ---
 
 ## 🛠 Tech Stack
 
-| Layer | Technology |
-|---|---|
-| **Backend** | Python 3, Flask 3.1.3, Gunicorn |
-| **Frontend** | Vanilla HTML + CSS + JavaScript — single-page app, no framework, no build step |
-| **Styling** | Custom CSS design system — glassmorphism, CSS Grid, Rajdhani/DM Mono fonts |
-| **Valorant API** | [HenrikDev API](https://docs.henrikdev.xyz) — accounts, MMR, match history, store |
-| **Cosmetics** | [valorant-api.com](https://valorant-api.com) — skins database, bundle metadata |
-| **Esports Data** | VLR.gg HTML scraping (BeautifulSoup4) |
-| **Database** | Supabase (PostgreSQL) — player profile cache + match history archive |
-| **Charts** | Chart.js 4.4.1 |
-| **Screenshot** | html2canvas 1.4.1 |
-| **Hosting** | Render (free tier) |
-| **CI/CD** | GitHub → Render auto-deploy on push to `main` |
-| **Uptime** | UptimeRobot 5-minute ping |
+| Component | Technology | Purpose |
+|---|---|---|
+| **Frontend Framework** | [Astro 6](https://astro.build) | Server-side rendering, static site generation, fast page loading |
+| **UI Components** | [Svelte 5](https://svelte.dev) | Interactive client-side islands, reactive stores, and UI state |
+| **Styling** | Vanilla CSS Design System | Custom dark mode palette (`--accent: #fa4454`), glassmorphism, responsive Grid/Flexbox |
+| **Backend API** | Python 3.10+ / Flask 3.1 | RESTful API proxy, CORS management, data caching, VLR scraping |
+| **WSGI Server** | Gunicorn | High-concurrency production server |
+| **Data Sources** | [HenrikDev Valorant API](https://docs.henrikdev.xyz) | Accounts, MMR ratings, match details, leaderboards |
+| **Cosmetics API** | [valorant-api.com](https://valorant-api.com) | Weapon skins, store bundles, agent icons, map assets |
+| **Esports Scraper** | BeautifulSoup4 | Scrapes live match scores, news, and standings from VLR.gg |
+| **Database & Cache** | Supabase (PostgreSQL) | Player profile caching and extended match history storage |
+| **Charts & Visuals** | Chart.js 4.5 | Interactive line charts and stat visualizations |
+| **Export Utility** | html2canvas 1.4 | Client-side stats card image rendering |
+| **Deployment** | Render / Vercel | Multi-service web deployment (Frontend + Flask API) |
 
 ---
 
@@ -82,148 +109,156 @@ Real-time match data · Esports coverage · AI coaching · Skins store · Meta a
 
 ```
 ValTracker.gg/
-├── app.py                  # Flask backend — all API routes, proxy, caching (1,629 lines)
-├── requirements.txt        # 6 Python dependencies
-├── .env                    # Secret keys (NOT in git)
-├── DOCUMENTATION.md        # Full technical documentation
+├── frontend/                   # Modern Astro + Svelte Frontend App
+│   ├── src/
+│   │   ├── components/        # Svelte UI Components
+│   │   │   ├── tracker/       # Topbar, Hero, MatchRow, Bento, ValBot, Charts
+│   │   │   ├── esports/       # Esports Hub, Live Matches, Rankings, News
+│   │   │   ├── store/         # Store Bundles, Cosmetics, Chroma Swapper
+│   │   │   ├── coach/         # Draft Coach & Meta Comp Architect
+│   │   │   ├── overlay/       # OBS Streamer Overlay
+│   │   │   └── shared/        # Toast, Footer, ProfileShare modal
+│   │   ├── layouts/           # Layout.astro base template
+│   │   ├── lib/               # API wrapper, TypeScript types, Svelte stores
+│   │   ├── pages/             # App routing (index.astro, app.astro, overlay.astro, 404)
+│   │   └── styles/            # tokens.css & global.css design tokens (~6,700 lines)
+│   ├── public/                # Static assets, landing animations, fallback images
+│   ├── astro.config.mjs       # Astro configuration & Vite proxy setup
+│   └── package.json           # Frontend dependencies
 │
-└── public/                 # Static files served by Flask
-    ├── index.html          # Complete frontend SPA (~11,500 lines)
-    ├── index.css           # Design system + all styles (~4,400 lines)
-    ├── 404.html            # Custom error page
-    ├── vct_pro_comps.json  # Pre-scraped VCT pro compositions database
-    └── vct_teams.json      # VCT team roster database
+├── api.py                      # Flask API Backend — endpoints, caching, scrapers (~1,600 lines)
+├── gunicorn.conf.py            # Production WSGI server configuration
+├── requirements.txt            # Python backend dependencies
+├── render.yaml                 # Render infrastructure-as-code deployment manifest
+├── Dockerfile                  # Container definition for backend services
+├── DOCUMENTATION.md            # Comprehensive architecture documentation
+└── public/                     # Backend static assets & scraped JSON database backups
 ```
 
 ---
 
-## 🔌 API Endpoints
+## 🔌 API Reference Overview
 
-### Tracker (HenrikDev Proxy)
-| Route | Description |
-|---|---|
-| `GET /api/v1/account/<name>/<tag>` | Player account info |
-| `GET /api/v3/mmr/<region>/pc/<name>/<tag>` | Current rank & MMR |
-| `GET /api/v3/matches/<region>/<name>/<tag>` | Match history (live + archived, unlimited) |
-| `GET /api/v2/match/<match_id>` | Full match detail |
-| `GET /api/v1/stored-mmr-history/<region>/<name>/<tag>` | Act MMR history |
-| `GET /api/v1/leaderboard/<region>` | Top 500 leaderboard |
+The Flask backend provides a centralized CORS-enabled API proxy to securely interface with third-party Valorant endpoints without exposing client-side credentials.
 
-### Esports
-| Route | Description |
-|---|---|
-| `GET /api/esports/live` | Live VCT matches |
-| `GET /api/esports/upcoming` | Upcoming matches |
-| `GET /api/esports/results` | Completed results |
-| `GET /api/esports/news` | Latest VLR.gg news |
-| `GET /api/esports/standings/<region>` | Team rankings |
+### Tracker Endpoints
+- `GET /api/v1/account/<name>/<tag>` — Retrieve player Riot account information
+- `GET /api/v3/mmr/<region>/pc/<name>/<tag>` — Fetch player current rank, RR, and MMR tier
+- `GET /api/v3/matches/<region>/<name>/<tag>` — Fetch recent match history (merged live + archive)
+- `GET /api/v2/match/<match_id>` — Fetch detailed scoreboard, round timeline, and kill feed
+- `GET /api/v1/leaderboard/<region>` — Top 500 leaderboard data by region
 
-### Store & Meta
-| Route | Description |
-|---|---|
-| `GET /api/store/featured` | Featured store bundles |
-| `GET /api/v3/meta-comps?map=<map>` | Pro composition analytics |
+### Esports Endpoints
+- `GET /api/esports/live` — Live VCT match scores
+- `GET /api/esports/upcoming` — Upcoming fixtures calendar
+- `GET /api/esports/results` — Tournament match results
+- `GET /api/esports/news` — Scraped VLR.gg esports news feed
+- `GET /api/esports/standings/<region>` — Team rankings and regional standings
 
-### Utility
-| Route | Description |
-|---|---|
-| `GET /api/image?url=<url>` | Image proxy (bypasses CORS/hotlinks) |
-| `POST /api/feedback` | Submit user feedback |
+### Store & Meta Endpoints
+- `GET /api/store/featured` — Current in-game featured store bundles
+- `GET /api/v3/meta-comps?map=<map>` — Pro team composition win rates and pick rates
 
 ---
 
 ## 🔑 Environment Variables
 
-Create a `.env` file in the root:
+To run ValTracker.gg locally or deploy it to production, set up the following environment variables in a `.env` file in the root directory:
 
 ```env
-HENRIKDEV_API_KEY=your_api_key_here
+# Required — HenrikDev Valorant API key (get free key at https://docs.henrikdev.xyz)
+HENRIKDEV_API_KEY=your_henrikdev_api_key_here
 
-# Optional — enables persistent player cache and unlimited match history
-SUPABASE_URL=https://your-project.supabase.co
+# Optional — Supabase integration for persistent caching and extended match history
+SUPABASE_URL=https://your-supabase-project.supabase.co
 SUPABASE_KEY=your_supabase_service_role_key
-```
 
-Get your free HenrikDev API key at: [docs.henrikdev.xyz](https://docs.henrikdev.xyz)
+# Optional — Production Frontend API URL override
+PUBLIC_API_URL=https://valtracker-api.onrender.com
+```
 
 ---
 
 ## 🚀 Running Locally
 
-```bash
-# 1. Clone the repo
-git clone https://github.com/itzpratham1/ValTracker.gg.git
-cd ValTracker.gg
+### Prerequisites
+- **Node.js**: v18.0.0 or higher
+- **Python**: v3.10 or higher
+- **npm** or **pnpm**
 
-# 2. Install dependencies
-pip install -r requirements.txt
+### Step-by-Step Setup
 
-# 3. Set up environment
-echo HENRIKDEV_API_KEY=your_key_here > .env
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/itzpratham1/ValTracker.gg.git
+   cd ValTracker.gg
+   ```
 
-# 4. Start the server
-python app.py
-```
+2. **Configure Environment Variables**
+   Create a `.env` file in the project root:
+   ```bash
+   echo "HENRIKDEV_API_KEY=your_api_key_here" > .env
+   ```
 
-Open **http://127.0.0.1:5000** in your browser.
+3. **Start the Flask Backend API (Terminal 1)**
+   ```bash
+   # Install Python dependencies
+   pip install -r requirements.txt
+
+   # Run the API server on http://localhost:5000
+   python api.py
+   ```
+
+4. **Start the Astro + Svelte Frontend (Terminal 2)**
+   ```bash
+   cd frontend
+
+   # Install Node dependencies
+   npm install
+
+   # Start the development server on http://localhost:4321
+   npm run dev
+   ```
+
+5. **Access the Application**
+   Open your browser and navigate to:
+   - **Landing Page**: `http://localhost:4321`
+   - **Tracker App**: `http://localhost:4321/app?name=HARSH&tag=khel&region=ap&mode=competitive`
 
 ---
 
-## ☁️ Deployment (Render)
+## ☁️ Deployment
 
-| Setting | Value |
-|---|---|
-| Platform | [Render](https://render.com) Free Tier |
-| Runtime | Python 3 |
-| Build command | `pip install -r requirements.txt` |
-| Start command | `gunicorn -c gunicorn.conf.py app:app` |
-| Auto-deploy | Every push to `main` |
-| Live URL | https://valtracker-gg.onrender.com |
+ValTracker.gg is configured for seamless deployment on **Render** (via `render.yaml`) or **Vercel**:
 
-Add `HENRIKDEV_API_KEY` (and optionally `SUPABASE_URL` / `SUPABASE_KEY`) in Render → Settings → Environment Variables.
+### Render Multi-Service Setup
+- **Backend Service (`valtracker-api`)**: Python runtime running Gunicorn (`gunicorn -c gunicorn.conf.py api:app`).
+- **Frontend Service (`valtracker-frontend`)**: Node runtime building Astro static pages and Svelte client bundles (`npm run build`).
 
 ---
 
-## 🏗 Architecture Highlights
+## 🏗 Key Engineering Highlights
 
-- **Proxy architecture** — all HenrikDev API calls go through Flask to keep the API key server-side
-- **Two-layer caching** — in-memory dict (1–24h TTL) + Supabase DB (15-min TTL) for instant repeat lookups
-- **Match history merging** — combines live API data (20 matches) with Supabase archive for unlimited history
-- **VLR.gg resilience** — 3-layer fallback: live scrape → expired memory cache → persistent backup JSON
-- **Client-side AI** — ValBot analysis runs entirely in the browser using fetched data; zero LLM API cost
-- **No frontend build step** — pure Vanilla JS/CSS, loads instantly with no bundler required
-- **CSS Grid topbar** — mobile layout uses `grid-template-columns: 1fr auto` to guarantee logo + profile pill on the same row regardless of screen width
-- **On-the-fly Gzip** — Flask middleware compresses HTML/CSS/JSON responses for all clients that support it
-
----
-
-## 📱 Mobile Support
-
-- Fully responsive down to 320px width
-- CSS Grid topbar: logo and profile pill always on same row
-- Collapsible filter drawer (AP · Mode · Season) — hidden by default, toggled by red pill button
-- Horizontal scroll tab navigation with touch support
-- Sticky secondary nav bar during scroll
+- **Astro + Svelte Island Architecture**: Delivers near-instant page load times for marketing pages while enabling granular client-side interactivity (`client:only="svelte"`) for player stats.
+- **Dual-Layer Smart Caching**: In-memory dictionary cache (1–24h TTL) combined with Supabase PostgreSQL caching (15-min TTL) reduces external API latency and prevents rate-limiting.
+- **Graceful Fallback Resilience**: Esports and store scrapers employ a 3-stage fallback strategy (Live Scrape → Memory Cache → Scraped JSON Backup) to guarantee 99.9% uptime.
+- **Client-Side AI Coaching**: Operates on structured player data arrays directly within the user's browser, eliminating LLM API invocation costs and preserving user privacy.
 
 ---
 
 ## 📖 Documentation
 
-See [DOCUMENTATION.md](./DOCUMENTATION.md) for the full technical reference:
-- Complete backend architecture & data flow diagrams
-- Every API endpoint with request/response details
-- Caching system design
-- Mobile CSS Grid layout breakdown
-- Supabase integration details
-- Known limitations and gotchas
+For detailed technical specs, API schemas, and architecture diagrams, check out [DOCUMENTATION.md](./DOCUMENTATION.md).
 
 ---
 
 ## 👤 Author
 
 **ItzPratham**  
-Built as a personal project for the Valorant community 🎯
+Website: [ValTracker.gg](https://valtracker-gg.onrender.com) · GitHub: [@itzpratham1](https://github.com/itzpratham1)
 
 ---
 
-*Last updated: May 2026 · v8*
+<div align="center">
+Built with ❤️ for the Valorant Community.
+</div>
