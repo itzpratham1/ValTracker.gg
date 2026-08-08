@@ -114,7 +114,7 @@
     const lx = parseFloat(lp[0]), ly = parseFloat(lp[1]);
     const rising = points[points.length - 1] >= points[points.length - 2];
     const col = rising ? '#3ecf8e' : '#ff4d6d';
-    return `<svg width="100%" height="${h}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible;"><polyline points="${pts.join(' ')}" fill="none" stroke="${col}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/><circle cx="${lx}" cy="${ly}" r="2.5" fill="${col}"/></svg>`;
+    return `<svg width="100%" height="${h}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible;"><defs><linearGradient id="spkfill${w}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${col}" stop-opacity="0.35"/><stop offset="100%" stop-color="${col}" stop-opacity="0.02"/></linearGradient></defs><polygon points="${px},${py + ih} ${pts.join(' ')} ${lx},${py + ih}" fill="url(#spkfill${w})" opacity="0.7"/><polyline points="${pts.join(' ')}" fill="none" stroke="${col}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/><circle cx="${lx}" cy="${ly}" r="3" fill="${col}" stroke="rgba(11,11,15,0.9)" stroke-width="1.5"/></svg>`;
   }
 
   function getHeatmapSvg(hsPct, height = 115, v = null) {
@@ -420,5 +420,13 @@
 {/if}
 
 <style>
-  /* Local component style overrides if needed, leaving empty to match standard conventions */
+  /* Weapon showcase: override olive/dark-green background to match site theme */
+  :global(.top-weapon-showcase) {
+    background: var(--surface2, rgba(255,255,255,0.03)) !important;
+    border: 1px solid var(--border) !important;
+  }
+  /* Ensure sparkline area is visible */
+  .wpn-sparkline-wrap {
+    overflow: visible !important;
+  }
 </style>

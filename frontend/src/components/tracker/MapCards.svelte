@@ -46,11 +46,11 @@
   }
 
   function wrLabel(wr) {
-    if (wr >= 60) return '🟢 Dominant';
-    if (wr >= 55) return '🟢 Strong';
-    if (wr >= 45) return '🟡 Neutral';
-    if (wr >= 38) return '🔴 Weak';
-    return '🔴 Avoid';
+    if (wr >= 60) return 'Dominant';
+    if (wr >= 55) return 'Strong';
+    if (wr >= 45) return 'Neutral';
+    if (wr >= 38) return 'Weak';
+    return 'Avoid';
   }
 
   function wrCls(wr) {
@@ -65,23 +65,23 @@
     const kd = m.deaths ? (m.kills / m.deaths) : m.kills;
 
     if (rrDelta !== null && rrDelta <= -10 && wr < 45) {
-      return `⚠️ Bleeding ${Math.abs(rrDelta)} RR avg on ${name} — consider dodging`;
+      return { icon: 'warn', text: `Bleeding ${Math.abs(rrDelta)} RR avg on ${name} — consider dodging` };
     }
     if (rrDelta !== null && rrDelta >= 15) {
-      return `🏆 High RR earner (+${rrDelta} avg) — queue ${name} more`;
+      return { icon: 'trophy', text: `High RR earner (+${rrDelta} avg) — queue ${name} more` };
     }
     if (wr >= 60 && top3[0]) {
-      return `🔥 Dominant here — keep playing ${top3[0].name}`;
+      return { icon: 'fire', text: `Dominant here — keep playing ${top3[0].name}` };
     }
     if (wr < 45 && top3.length > 0) {
       const bestUnplayed = top3.find(a => a.matches <= 2);
-      if (bestUnplayed) return `💡 Try ${bestUnplayed.name} — high WR in limited games`;
-      return `💡 Stick to ${top3[0].name} on ${name} for best results`;
+      if (bestUnplayed) return { icon: 'tip', text: `Try ${bestUnplayed.name} — high WR in limited games` };
+      return { icon: 'tip', text: `Stick to ${top3[0].name} on ${name} for best results` };
     }
     if (kd >= 1.5) {
-      return `🎯 Great fragging (${kd.toFixed(2)} K/D) — convert more into wins`;
+      return { icon: 'target', text: `Great fragging (${kd.toFixed(2)} K/D) — convert more into wins` };
     }
-    return `📊 ${m.matches} game sample — keep grinding for cleaner data`;
+    return { icon: 'chart', text: `${m.matches} game sample — keep grinding for cleaner data` };
   }
 
   $: sortedMaps = [...maps].sort((a, b) => (b[1].wins / b[1].matches) - (a[1].wins / a[1].matches));
@@ -175,7 +175,7 @@
         <!-- Map splash banner -->
         {#if mapImg}
           <div class="map-splash-wrap">
-            <img class="map-splash" src={mapImg} alt={name} loading="lazy" on:error={(e) => e.target.style.display='none'}>
+            <img class="map-splash" src={mapImg} alt={name} loading="lazy" style="filter: saturate(1.2) brightness(0.65);" on:error={(e) => e.target.style.display='none'}>
             <div class="map-splash-overlay">
               <span class="map-splash-name">{name}</span>
               <span class="map-games-badge">{m.matches}G</span>
@@ -231,8 +231,12 @@
                     <span class="ata-wr {wrCls(agent.wr)}">{agent.wr}%</span>
                   </div>
                   {#if idx === 0}
-                    <span class="ata-crown">👑</span>
-                  {/if}
+                <span class="ata-crown" title="Best agent on this map">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="#ffd700" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2 19h20v2H2v-2zm2-3l3-8 5 4 5-4 3 8H4zm8-10a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
+                  </svg>
+                </span>
+              {/if}
                 </div>
               {/each}
             </div>
@@ -249,9 +253,36 @@
           {/if}
 
           <!-- Smart insight -->
-          <div class="map-insight">{insight}</div>
+          <div class="map-insight">
+            {#if insight.icon === 'warn'}
+              <svg class="map-insight-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            {:else if insight.icon === 'trophy'}
+              <svg class="map-insight-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#e8ff47" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 2 9 2 22 22 22 22 9 18 9"/><path d="M6 9V3h12v6"/><path d="M12 22v-5"/><path d="M9 17h6"/></svg>
+            {:else if insight.icon === 'fire'}
+              <svg class="map-insight-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fa4454" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+            {:else if insight.icon === 'tip'}
+              <svg class="map-insight-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            {:else if insight.icon === 'target'}
+              <svg class="map-insight-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3ecf8e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+            {:else}
+              <svg class="map-insight-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#a0a0ab" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            {/if}
+            {insight.text}
+          </div>
         </div>
       </div>
     {/each}
   </div>
 {/if}
+
+<style>
+  .map-insight {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+  }
+  .map-insight-icon {
+    flex-shrink: 0;
+    vertical-align: middle;
+  }
+</style>

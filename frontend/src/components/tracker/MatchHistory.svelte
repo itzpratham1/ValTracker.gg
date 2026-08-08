@@ -223,7 +223,7 @@
                 <div class="mr-acs-sub">ACS</div>
               </div>
               <div class="mr-grade-wrap">
-                <div class="mr-grade {grade}">{grade}</div>
+                <div class="mr-grade grade-pill {grade}">{grade}</div>
                 <div class="mr-grade-sub">GRADE</div>
               </div>
               <div class="mr-rr">
@@ -235,7 +235,11 @@
                 {/if}
                 <div class="mr-rr-lbl">RR</div>
               </div>
-              <div class="mr-chevron">▼</div>
+              <div class="mr-chevron" class:open={openIdx === idx}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </div>
             </div>
 
             {#if openIdx === idx}
@@ -285,4 +289,100 @@
 {/if}
 
 <style>
+  /* Grade badge pills */
+  .mr-grade-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+  }
+  .mr-grade.grade-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 22px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 800;
+    font-family: 'Barlow Condensed', 'Exo 2', sans-serif;
+    letter-spacing: 0.5px;
+    border: 1px solid;
+    transition: all 0.2s ease;
+  }
+  .mr-grade.grade-pill.S {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.22) 0%, rgba(218, 165, 32, 0.08) 100%);
+    border-color: rgba(255, 215, 0, 0.7);
+    color: #ffd700;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+    text-shadow: 0 0 4px rgba(255, 215, 0, 0.6);
+  }
+  .mr-grade.grade-pill.A {
+    background: rgba(62, 207, 142, 0.15);
+    border-color: rgba(62, 207, 142, 0.5);
+    color: #3ecf8e;
+    box-shadow: 0 0 8px rgba(62, 207, 142, 0.25);
+  }
+  .mr-grade.grade-pill.B {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: rgba(56, 189, 248, 0.5);
+    color: #38bdf8;
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.25);
+  }
+  .mr-grade.grade-pill.C {
+    background: rgba(255, 176, 31, 0.15);
+    border-color: rgba(255, 176, 31, 0.5);
+    color: #ffb01f;
+  }
+  .mr-grade.grade-pill.D, .mr-grade.grade-pill.E, .mr-grade.grade-pill.F {
+    background: rgba(255, 70, 85, 0.15);
+    border-color: rgba(255, 70, 85, 0.5);
+    color: #ff4655;
+  }
+
+  /* SVG chevron with rotation animation */
+  .mr-chevron {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    width: 22px;
+    flex-shrink: 0;
+    transition: transform 0.25s cubic-bezier(0.4,0,0.2,1), color 0.15s;
+  }
+  .mr-chevron.open {
+    transform: rotate(180deg);
+    color: var(--accent);
+  }
+
+  /* Left-border accent on row hover */
+  .match-row {
+    border-left: 3px solid transparent;
+    transition: border-color 0.15s ease, transform 0.2s ease, background 0.15s ease !important;
+  }
+  .match-row:hover {
+    border-left-color: var(--accent, #fa4454) !important;
+  }
+
+  /* Glassmorphism filter search */
+  .filter-search {
+    background: rgba(255,255,255,0.04) !important;
+    border: 1px solid rgba(250,68,84,0.2) !important;
+    border-radius: 20px !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    color: #e2e2e9 !important;
+    padding: 5px 14px !important;
+    font-size: 12px !important;
+    transition: border-color 0.2s, box-shadow 0.2s !important;
+  }
+  .filter-search:focus {
+    outline: none !important;
+    border-color: rgba(250,68,84,0.5) !important;
+    box-shadow: 0 0 0 2px rgba(250,68,84,0.12) !important;
+  }
+  .filter-search::placeholder {
+    color: var(--muted) !important;
+  }
 </style>

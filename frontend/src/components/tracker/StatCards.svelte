@@ -10,14 +10,26 @@
   let canvasEl;
   let chartInstance = null;
 
-  $: kd = stats?.kd?.toFixed(2) ?? '—';
-  $: avgKills = stats?.avgKills?.toFixed(1) ?? '—';
-  $: avgDeaths = stats?.avgDeaths?.toFixed(1) ?? '—';
-  $: avgAssists = stats?.avgAssists?.toFixed(1) ?? '—';
-  $: avgACS = stats?.avgACS ?? '—';
-  $: hsRate = stats?.hsRate != null ? stats.hsRate + '%' : '—%';
+  // Raw numeric values for animation
+  $: rawKd = stats?.kd ?? null;
+  $: rawKills = stats?.avgKills ?? null;
+  $: rawDeaths = stats?.avgDeaths ?? null;
+  $: rawAssists = stats?.avgAssists ?? null;
+  $: rawACS = stats?.avgACS ?? null;
+  $: rawHS = stats?.hsRate ?? null;
 
-  // Secondary stats
+  // Displayed (possibly animated) values
+  let dispKd = '—';
+  let dispKills = '—';
+  let dispDeaths = '—';
+  let dispAssists = '—';
+  let dispACS = '—';
+  let dispHS = '—%';
+
+  // Conditional accent classes
+  $: kdClass = rawKd !== null ? (rawKd >= 1.0 ? 'accent-good' : 'accent-bad') : '';
+  $: hsClass = rawHS !== null ? (rawHS >= 25 ? 'accent-good' : rawHS >= 15 ? 'accent-warn' : 'accent-bad') : '';
+
   $: kast = stats?.kast != null ? stats.kast + '%' : '—%';
   $: damageDeltaPerRound = stats?.damageDeltaPerRound != null ? (stats.damageDeltaPerRound > 0 ? '+' : '') + stats.damageDeltaPerRound : '—';
   $: ddColor = stats?.damageDeltaPerRound >= 0 ? '#3ecf8e' : '#ff5757';
@@ -28,16 +40,71 @@
   $: flawlessRounds = stats?.flawlessRounds ?? '—';
   $: aces = stats?.aces ?? '—';
 
+  // ── Count-up animation ──
+  let animated = false;
+  let cardWrapEl;
+  let countObserver;
+
+  function animateCounter(from, to, decimals, duration, setter) {
+    const start = performance.now();
+    function tick(now) {
+      const t = Math.min((now - start) / duration, 1);
+      const ease = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+      const val = from + (to - from) * ease;
+      setter(val.toFixed(decimals));
+      if (t < 1) requestAnimationFrame(tick);
+      else setter(to.toFixed(decimals));
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function startCountUps() {
+    if (animated || !stats) return;
+    animated = true;
+    if (rawKd !== null)     animateCounter(0, rawKd,      2, 900, v => dispKd      = v);
+    if (rawKills !== null)  animateCounter(0, rawKills,   1, 900, v => dispKills   = v);
+    if (rawDeaths !== null) animateCounter(0, rawDeaths,  1, 900, v => dispDeaths  = v);
+    if (rawAssists !== null)animateCounter(0, rawAssists, 1, 900, v => dispAssists = v);
+    if (rawACS !== null)    animateCounter(0, rawACS,     0, 900, v => dispACS     = v);
+    if (rawHS !== null)     animateCounter(0, rawHS,      0, 900, v => dispHS      = v + '%');
+  }
+
+  // Initialize display from stats on first data load
+  $: if (stats && !animated) {
+    dispKd      = stats.kd?.toFixed(2) ?? '—';
+    dispKills   = stats.avgKills?.toFixed(1) ?? '—';
+    dispDeaths  = stats.avgDeaths?.toFixed(1) ?? '—';
+    dispAssists = stats.avgAssists?.toFixed(1) ?? '—';
+    dispACS     = stats.avgACS?.toString() ?? '—';
+    dispHS      = (stats.hsRate != null ? stats.hsRate + '%' : '—%');
+  }
+
   $: if (stats && canvasEl) {
     renderRadar();
   }
 
   onMount(() => {
     renderRadar();
+    // Set up IntersectionObserver to trigger count-up once
+    if (typeof IntersectionObserver !== 'undefined') {
+      countObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach(e => {
+            if (e.isIntersecting && stats) {
+              startCountUps();
+              countObserver.disconnect();
+            }
+          });
+        },
+        { threshold: 0.2 }
+      );
+      if (cardWrapEl) countObserver.observe(cardWrapEl);
+    }
   });
 
   onDestroy(() => {
     if (chartInstance) chartInstance.destroy();
+    if (countObserver) countObserver.disconnect();
   });
 
   function renderRadar() {
@@ -65,9 +132,9 @@
         datasets: [{
           label: 'Combat Shape',
           data: [kdVal, kastVal, acsVal, hsVal, ddVal, fbVal],
-          backgroundColor: 'rgba(250, 68, 84, 0.18)',
-          borderColor: '#fa4454',
-          borderWidth: 2,
+      backgroundColor: 'rgba(250, 68, 84, 0.38)',
+      borderColor: '#fa4454',
+      borderWidth: 2.5,
           pointBackgroundColor: '#fa4454',
           pointBorderColor: '#ffffff',
           pointHoverBackgroundColor: '#ffffff',
@@ -141,41 +208,41 @@
 
 {#if stats}
   <!-- 6 core stats cards grid -->
-  <div class="stat-cards-wrapper">
-    <button class="card clickable visible" on:click={() => onStatClick('kd')}>
+  <div class="stat-cards-wrapper" bind:this={cardWrapEl}>
+    <button class="card clickable visible {kdClass}" on:click={() => onStatClick('kd')}>
       <div class="card-accent-line"></div>
       <div class="card-label">K/D Ratio</div>
-      <div class="card-val">{kd}</div>
+      <div class="card-val">{dispKd}</div>
       <div class="card-sub">Competitive</div>
     </button>
     <button class="card clickable visible" on:click={() => onStatClick('kills')}>
       <div class="card-accent-line"></div>
       <div class="card-label">Avg Kills</div>
-      <div class="card-val">{avgKills}</div>
+      <div class="card-val">{dispKills}</div>
       <div class="card-sub">Per match</div>
     </button>
     <button class="card clickable visible" on:click={() => onStatClick('deaths')}>
       <div class="card-accent-line"></div>
       <div class="card-label">Avg Deaths</div>
-      <div class="card-val">{avgDeaths}</div>
+      <div class="card-val">{dispDeaths}</div>
       <div class="card-sub">Per match</div>
     </button>
     <button class="card clickable visible" on:click={() => onStatClick('assists')}>
       <div class="card-accent-line"></div>
       <div class="card-label">Avg Assists</div>
-      <div class="card-val">{avgAssists}</div>
+      <div class="card-val">{dispAssists}</div>
       <div class="card-sub">Per match</div>
     </button>
     <button class="card clickable visible" on:click={() => onStatClick('acs')}>
       <div class="card-accent-line"></div>
       <div class="card-label">Avg ACS</div>
-      <div class="card-val">{avgACS}</div>
+      <div class="card-val">{dispACS}</div>
       <div class="card-sub">Combat Score</div>
     </button>
-    <button class="card clickable visible" on:click={() => onStatClick('hs')}>
+    <button class="card clickable visible {hsClass}" on:click={() => onStatClick('hs')}>
       <div class="card-accent-line"></div>
       <div class="card-label">HS Rate</div>
-      <div class="card-val">{hsRate}</div>
+      <div class="card-val">{dispHS}</div>
       <div class="card-sub">Headshots</div>
     </button>
   </div>
@@ -266,6 +333,26 @@
     display: grid !important;
     grid-template-columns: repeat(6, 1fr);
     gap: 12px;
+  }
+
+  /* Conditional accent borders on stat cards */
+  .stat-cards-wrapper .card.accent-good {
+    border-left: 3px solid #3ecf8e !important;
+    box-shadow: inset 3px 0 12px rgba(62,207,142,0.08) !important;
+  }
+  .stat-cards-wrapper .card.accent-bad {
+    border-left: 3px solid #ff5757 !important;
+    box-shadow: inset 3px 0 12px rgba(255,87,87,0.08) !important;
+  }
+  .stat-cards-wrapper .card.accent-warn {
+    border-left: 3px solid #e8ff47 !important;
+    box-shadow: inset 3px 0 12px rgba(232,255,71,0.08) !important;
+  }
+
+  /* Stronger hover glow */
+  .stat-cards-wrapper .card:hover {
+    box-shadow: 0 0 24px rgba(250,68,84,0.22), 0 8px 32px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(250,68,84,0.28) !important;
+    transform: translateY(-5px) !important;
   }
   @media (max-width: 900px) {
     .stat-cards-wrapper {

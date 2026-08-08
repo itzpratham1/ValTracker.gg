@@ -155,10 +155,15 @@ export function getDayLabel(ts: number): string {
 
 export function getGrade(kills: number, deaths: number, assists: number, acs: number, won: boolean): string {
   const kd = deaths ? kills / deaths : kills;
-  if (won && kd >= 1.5 && acs >= 250) return 'S';
-  if (won && kd >= 1.2 && acs >= 200) return 'A';
-  if (kd >= 1.0 || (won && acs >= 150)) return 'B';
-  if (kd >= 0.8) return 'C';
+  let score = 0;
+  if (kd >= 1.5) score += 3; else if (kd >= 1.2) score += 2; else if (kd >= 0.9) score += 1;
+  if (acs >= 250) score += 3; else if (acs >= 200) score += 2; else if (acs >= 150) score += 1;
+  if (won) score += 2;
+  if (kills >= 20) score += 2; else if (kills >= 15) score += 1;
+  if (score >= 9) return 'S';
+  if (score >= 7) return 'A';
+  if (score >= 5) return 'B';
+  if (score >= 3) return 'C';
   return 'D';
 }
 

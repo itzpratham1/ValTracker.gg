@@ -116,7 +116,7 @@
         {:else}
           <div class="agent-portrait-fallback">{name[0] || '?'}</div>
         {/if}
-        <div class="agent-wr-chip {wrCls}">{wr}%</div>
+        <div class="agent-wr-chip" class:wr-good={wr >= 55} class:wr-mid={wr >= 45 && wr < 55} class:wr-bad={wr < 45}>{wr}%</div>
         <div class="agent-info">
           <div class="agent-name">{name}</div>
           <div class="agent-role-chip {role}">{role}</div>
@@ -134,7 +134,56 @@
             </div>
           {/if}
         </div>
+        <!-- SVG crown for best/first agent -->
+        {#if i === 0}
+          <div class="agent-crown-badge" title="Most played agent">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 19h20v2H2v-2zm2-3l3-8 5 4 5-4 3 8H4zm8-10a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
+            </svg>
+          </div>
+        {/if}
       </div>
     {/each}
   </div>
 {/if}
+
+<style>
+  /* Conditional WR badge colors */
+  .agent-wr-chip.wr-good {
+    background: rgba(62,207,142,0.18) !important;
+    border: 1px solid rgba(62,207,142,0.5) !important;
+    color: #3ecf8e !important;
+  }
+  .agent-wr-chip.wr-mid {
+    background: rgba(232,255,71,0.12) !important;
+    border: 1px solid rgba(232,255,71,0.4) !important;
+    color: #e8ff47 !important;
+  }
+  .agent-wr-chip.wr-bad {
+    background: rgba(255,87,87,0.13) !important;
+    border: 1px solid rgba(255,87,87,0.4) !important;
+    color: #ff5757 !important;
+  }
+
+  /* SVG crown badge */
+  .agent-crown-badge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    color: #ffd700;
+    filter: drop-shadow(0 0 6px rgba(255,215,0,0.6));
+    pointer-events: none;
+    z-index: 4;
+  }
+
+  /* Make agent-bento position:relative for crown badge */
+  :global(.agent-bento) {
+    position: relative !important;
+  }
+
+  /* Ensure agent portrait hover glow fires */
+  :global(.agent-bento:hover .agent-portrait) {
+    filter: saturate(1.25) contrast(1.12) drop-shadow(0 0 18px rgba(250, 68, 84, 0.4)) !important;
+    transform: scale(1.06) !important;
+  }
+</style>
