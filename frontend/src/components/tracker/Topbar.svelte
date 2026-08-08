@@ -419,11 +419,11 @@
   .topbar-logo {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 9px;
     font-family: 'Rajdhani', sans-serif;
     font-weight: 800;
-    font-size: 22px;
-    letter-spacing: 3px;
+    font-size: 21px;
+    letter-spacing: 3.5px;
     color: #ffffff;
     text-transform: uppercase;
     text-decoration: none;
@@ -432,7 +432,7 @@
     transition: transform 0.2s ease, opacity 0.2s ease;
   }
   .topbar-logo:hover {
-    opacity: 0.9;
+    opacity: 0.88;
     transform: translateY(-1px);
   }
   .topbar-logo .logo-accent {
@@ -442,15 +442,20 @@
   .topbar-logo-icon {
     height: 26px;
     width: auto;
-    filter: drop-shadow(0 0 8px rgba(250, 68, 84, 0.6));
+    filter: drop-shadow(0 0 10px rgba(250, 68, 84, 0.7)) drop-shadow(0 0 3px rgba(250,68,84,0.4));
+    transition: filter 0.2s ease;
+  }
+  .topbar-logo:hover .topbar-logo-icon {
+    filter: drop-shadow(0 0 14px rgba(250, 68, 84, 0.9)) drop-shadow(0 0 5px rgba(250,68,84,0.5));
   }
   @media (max-width: 800px) {
     .topbar-logo {
-      font-size: 22px !important;
+      font-size: 20px !important;
       letter-spacing: 2.5px !important;
     }
     .topbar-logo-icon {
-      height: 24px !important;
+      height: 22px !important;
     }
   }
 </style>
+
