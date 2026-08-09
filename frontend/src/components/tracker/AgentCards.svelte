@@ -134,12 +134,13 @@
             </div>
           {/if}
         </div>
-        <!-- SVG crown for best/first agent -->
+        <!-- SVG crown badge for best/most played agent -->
         {#if i === 0}
           <div class="agent-crown-badge" title="Most played agent">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
               <path d="M2 19h20v2H2v-2zm2-3l3-8 5 4 5-4 3 8H4zm8-10a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
             </svg>
+            <span>BEST AGENT</span>
           </div>
         {/if}
       </div>
@@ -165,15 +166,31 @@
     color: #ff5757 !important;
   }
 
-  /* SVG crown badge */
+  /* SVG crown badge for top agent */
   .agent-crown-badge {
     position: absolute;
-    top: 6px;
-    right: 6px;
+    top: 10px;
+    left: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(18, 18, 24, 0.88);
+    border: 1px solid rgba(255, 215, 0, 0.6);
     color: #ffd700;
-    filter: drop-shadow(0 0 6px rgba(255,215,0,0.6));
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 10px rgba(255, 215, 0, 0.25);
     pointer-events: none;
-    z-index: 4;
+    z-index: 10;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  .agent-crown-badge svg {
+    filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.7));
   }
 
   /* Make agent-bento position:relative for crown badge */

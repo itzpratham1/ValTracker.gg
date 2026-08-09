@@ -2,7 +2,7 @@
   {
     "id": "698914",
     "date": "Aug 09, 2026 1:30 PM",
-    "state": "unstarted",
+    "state": "in_progress",
     "vlr_path": "/698914/varrel-vs-paper-rex-vct-2026-pacific-stage-2-w4",
     "league": {
       "name": "VCT 2026: Pacific Stage 2",
@@ -13,7 +13,7 @@
       "teams": [
         {
           "name": "VARREL",
-          "game_wins": 0,
+          "game_wins": 1,
           "has_won": false
         },
         {
@@ -28,7 +28,7 @@
   {
     "id": "724627",
     "date": "Aug 09, 2026 1:30 PM",
-    "state": "unstarted",
+    "state": "in_progress",
     "vlr_path": "/724627/edward-gaming-vs-wolves-esports-vct-2026-china-stage-2-lr2",
     "league": {
       "name": "VCT 2026: China Stage 2",
