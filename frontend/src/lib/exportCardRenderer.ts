@@ -167,19 +167,49 @@ export const EXPORT_THEMES: ExportTheme[] = [
   }
 ];
 
-const IMAGE_CACHE: Record<string, HTMLImageElement> = {};
+const IMAGE_CACHE: Record<string, HTMLImageElement | null> = {};
+const FAILED_IMAGE_SET: Set<string> = new Set();
 
-function loadImage(src?: string): Promise<HTMLImageElement | null> {
+function loadImage(src?: string, timeoutMs: number = 1200): Promise<HTMLImageElement | null> {
   if (!src) return Promise.resolve(null);
-  if (IMAGE_CACHE[src]) return Promise.resolve(IMAGE_CACHE[src]);
+  if (FAILED_IMAGE_SET.has(src)) return Promise.resolve(null);
+  if (src in IMAGE_CACHE) return Promise.resolve(IMAGE_CACHE[src]);
+
   return new Promise((resolve) => {
+    let resolved = false;
+    const timer = setTimeout(() => {
+      if (!resolved) {
+        resolved = true;
+        FAILED_IMAGE_SET.add(src);
+        IMAGE_CACHE[src] = null;
+        resolve(null);
+      }
+    }, timeoutMs);
+
     const img = new Image();
-    img.crossOrigin = 'anonymous';
+    if (/^https?:\/\//i.test(src) && typeof window !== 'undefined' && !src.startsWith(window.location.origin)) {
+      img.crossOrigin = 'anonymous';
+    }
+
     img.onload = () => {
-      IMAGE_CACHE[src] = img;
-      resolve(img);
+      if (!resolved) {
+        resolved = true;
+        clearTimeout(timer);
+        IMAGE_CACHE[src] = img;
+        resolve(img);
+      }
     };
-    img.onerror = () => resolve(null);
+
+    img.onerror = () => {
+      if (!resolved) {
+        resolved = true;
+        clearTimeout(timer);
+        FAILED_IMAGE_SET.add(src);
+        IMAGE_CACHE[src] = null;
+        resolve(null);
+      }
+    };
+
     img.src = src;
   });
 }

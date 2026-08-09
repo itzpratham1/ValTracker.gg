@@ -188,27 +188,27 @@
     await tick();
     await reRenderCanvas();
 
-    try {
-      if (imgPreview) {
-        const res = await createShareCard({
-          image: imgPreview,
-          playerName,
-          playerTag,
-          agentName: match.agentName,
-          mapName: match.map,
-          won: match.won,
-          score: match.rounds
-        });
-        if (res.status === 'ok') {
+    // Background share card upload (non-blocking)
+    if (imgPreview) {
+      createShareCard({
+        image: imgPreview,
+        playerName,
+        playerTag,
+        agentName: match.agentName,
+        mapName: match.map,
+        won: match.won,
+        score: match.rounds
+      }).then((res) => {
+        if (res && res.status === 'ok') {
           shareUrl = res.share_url;
           shareId = res.share_id;
-          if (!templateText.includes(res.share_url)) {
+          if (res.share_url && !templateText.includes(res.share_url)) {
             templateText = templateText + ' ' + res.share_url;
           }
         }
-      }
-    } catch (e) {
-      console.error('Share card upload error:', e);
+      }).catch((e) => {
+        console.error('Share card upload error:', e);
+      });
     }
   }
 
