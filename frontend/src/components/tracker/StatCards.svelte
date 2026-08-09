@@ -27,8 +27,12 @@
   let dispHS = '—%';
 
   // Conditional accent classes
-  $: kdClass = rawKd !== null ? (rawKd >= 1.0 ? 'accent-good' : 'accent-bad') : '';
-  $: hsClass = rawHS !== null ? (rawHS >= 25 ? 'accent-good' : rawHS >= 15 ? 'accent-warn' : 'accent-bad') : '';
+  $: kdClass      = rawKd     !== null ? (rawKd     >= 1.0  ? 'accent-good' : 'accent-bad')                              : '';
+  $: killsClass   = rawKills  !== null ? (rawKills  >= 13   ? 'accent-good' : rawKills  >= 10 ? 'accent-warn' : 'accent-bad') : '';
+  $: deathsClass  = rawDeaths !== null ? (rawDeaths <= 13   ? 'accent-good' : rawDeaths <= 16 ? 'accent-warn' : 'accent-bad') : '';
+  $: assistsClass = rawAssists !== null ? (rawAssists >= 5  ? 'accent-good' : rawAssists >= 3 ? 'accent-warn' : 'accent-bad') : '';
+  $: acsClass     = rawACS    !== null ? (rawACS    >= 200  ? 'accent-good' : rawACS    >= 150 ? 'accent-warn' : 'accent-bad') : '';
+  $: hsClass      = rawHS     !== null ? (rawHS     >= 25   ? 'accent-good' : rawHS     >= 15 ? 'accent-warn' : 'accent-bad') : '';
 
   $: kast = stats?.kast != null ? stats.kast + '%' : '—%';
   $: damageDeltaPerRound = stats?.damageDeltaPerRound != null ? (stats.damageDeltaPerRound > 0 ? '+' : '') + stats.damageDeltaPerRound : '—';
@@ -215,25 +219,25 @@
       <div class="card-val">{dispKd}</div>
       <div class="card-sub">Competitive</div>
     </button>
-    <button class="card clickable visible" on:click={() => onStatClick('kills')}>
+    <button class="card clickable visible {killsClass}" on:click={() => onStatClick('kills')}>
       <div class="card-accent-line"></div>
       <div class="card-label">Avg Kills</div>
       <div class="card-val">{dispKills}</div>
       <div class="card-sub">Per match</div>
     </button>
-    <button class="card clickable visible" on:click={() => onStatClick('deaths')}>
+    <button class="card clickable visible {deathsClass}" on:click={() => onStatClick('deaths')}>
       <div class="card-accent-line"></div>
       <div class="card-label">Avg Deaths</div>
       <div class="card-val">{dispDeaths}</div>
       <div class="card-sub">Per match</div>
     </button>
-    <button class="card clickable visible" on:click={() => onStatClick('assists')}>
+    <button class="card clickable visible {assistsClass}" on:click={() => onStatClick('assists')}>
       <div class="card-accent-line"></div>
       <div class="card-label">Avg Assists</div>
       <div class="card-val">{dispAssists}</div>
       <div class="card-sub">Per match</div>
     </button>
-    <button class="card clickable visible" on:click={() => onStatClick('acs')}>
+    <button class="card clickable visible {acsClass}" on:click={() => onStatClick('acs')}>
       <div class="card-accent-line"></div>
       <div class="card-label">Avg ACS</div>
       <div class="card-val">{dispACS}</div>
