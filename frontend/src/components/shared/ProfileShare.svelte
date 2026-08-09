@@ -1,4 +1,6 @@
 <script>
+  import { trackEvent } from '../../lib/analytics';
+
   export let open = false;
   export let playerName = '';
   export let playerTag = '';
@@ -11,17 +13,20 @@
   }
 
   function copyUrl() {
+    trackEvent('profile_share_copy', { playerName, playerTag });
     navigator.clipboard.writeText(shareUrl).then(() => {
       if (window.showToast) window.showToast('Link copied!');
     });
   }
 
   function shareTwitter() {
+    trackEvent('profile_share_social', { platform: 'twitter', playerName, playerTag });
     const text = `Check out my VALORANT stats on ValTracker!`;
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
   }
 
   function shareReddit() {
+    trackEvent('profile_share_social', { platform: 'reddit', playerName, playerTag });
     const title = `My VALORANT Stats — ValTracker`;
     window.open(`https://reddit.com/submit?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(title)}`, '_blank');
   }

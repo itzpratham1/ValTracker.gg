@@ -2,17 +2,19 @@
 import Layout from '../layouts/Layout.astro';
 import '../styles/landing.css';
 
+const siteOrigin = Astro.site ? Astro.site.href.replace(/\/$/, '') : Astro.url.origin;
+
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "ValTracker",
-  "url": "https://valtracker.live",
+  "url": siteOrigin,
   "description": "Free Valorant stats tracker with AI coaching, live OBS overlays, and real-time match analysis.",
   "applicationCategory": "GameApplication",
   "operatingSystem": "Web",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
   "featureList": ["Stats Tracker", "AI Coaching", "OBS Overlays", "VCT Esports Hub", "Meta Comp Architect", "Performance Lab"],
-  "screenshot": "https://valtracker.live/stats_tracker_card.webp"
+  "screenshot": `${siteOrigin}/stats_tracker_card.webp`
 };
 ---
 

@@ -18,13 +18,15 @@ const {
   structuredData
 } = Astro.props;
 
-const canonicalURL = new URL(Astro.url.pathname, 'https://valtracker.live');
+const siteOrigin = Astro.site ? Astro.site.href.replace(/\/$/, '') : Astro.url.origin;
+const canonicalURL = new URL(Astro.url.pathname, siteOrigin);
+const resolvedOgImage = ogImage.startsWith('http') ? ogImage : new URL(ogImage, siteOrigin).href;
 
 const defaultStructuredData = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "ValTracker",
-  "url": "https://valtracker.live",
+  "url": siteOrigin,
   "description": description,
   "applicationCategory": "GameApplication",
   "operatingSystem": "Web",
@@ -37,7 +39,7 @@ const defaultStructuredData = {
     "@type": "Person",
     "name": "Pratham"
   },
-  "screenshot": "https://valtracker.live/stats_tracker_card.webp",
+  "screenshot": `${siteOrigin}/stats_tracker_card.webp`,
   "featureList": [
     "Real-time Valorant stats tracking",
     "AI-powered coaching",
@@ -83,14 +85,14 @@ const jsonLd = structuredData || defaultStructuredData;
   <meta property="og:description" content={description}>
   <meta property="og:type" content="website">
   <meta property="og:url" content={canonicalURL.href}>
-  <meta property="og:image" content={ogImage}>
+  <meta property="og:image" content={resolvedOgImage}>
   <meta property="og:site_name" content="ValTracker">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content={title}>
   <meta name="twitter:description" content={description}>
-  <meta name="twitter:image" content={ogImage}>
+  <meta name="twitter:image" content={resolvedOgImage}>
 
   <!-- Structured Data -->
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
@@ -106,9 +108,6 @@ const jsonLd = structuredData || defaultStructuredData;
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
   <link rel="apple-touch-icon" href="/logo.png">
-
-  <!-- html2canvas for story PNG exports -->
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
   <!-- Google Fonts Preloading & CLS Optimization -->
   <link rel="preconnect" href="https://fonts.googleapis.com">

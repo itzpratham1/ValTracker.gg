@@ -2,13 +2,15 @@
 import Layout from '../layouts/Layout.astro';
 import AppShell from '../components/tracker/AppShell.svelte';
 
+const siteOrigin = Astro.site ? Astro.site.href.replace(/\/$/, '') : Astro.url.origin;
+
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "ValTracker - Valorant Stats Tracker",
   "applicationCategory": "GameApplication",
   "operatingSystem": "Web",
-  "url": "https://valtracker.live/app",
+  "url": `${siteOrigin}/app`,
   "description": "Track your Valorant competitive match history, weapon accuracy, agent performance, and maps. AI-powered coaching included.",
   "offers": {
     "@type": "Offer",
@@ -32,5 +34,9 @@ const structuredData = {
   description="ValTracker is a premium, real-time stats tracker for Valorant. Analyse your competitive match history, weapon accuracy, maps, and agent performance."
   structuredData={structuredData}
 >
+  <div class="sr-only" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;">
+    <h1>Valorant Player Stats Tracker & AI Performance Lab</h1>
+    <p>Track your competitive match history, ACS, headshot percentage, weapon accuracy, agent win rates, and live rank progression. Powered by AI post-match coaching and OBS stream overlays.</p>
+  </div>
   <AppShell client:only="svelte" initialView="tracker" />
 </Layout>

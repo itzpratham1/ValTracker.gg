@@ -8,7 +8,7 @@
   import LookupView from './LookupView.svelte';
   import TrackerView from './TrackerView.svelte';
   import LoadingCard from '../landing/LoadingCard.svelte';
-  import NetworkStatus from '../shared/NetworkStatus.svelte';
+  import { trackEvent } from '../../lib/analytics';
 
   export let initialView = 'landing';
   let redirecting = false;
@@ -169,6 +169,7 @@
     }
 
     console.log('[AppShell] fetchStats starting for', p.name, '#', p.tag, 'region:', p.region, 'mode:', p.mode);
+    trackEvent('player_search', { name: p.name, region: p.region, mode: p.mode });
     startFetch();
 
     if (typeof window !== 'undefined') {

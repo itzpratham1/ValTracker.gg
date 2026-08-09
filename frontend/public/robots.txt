@@ -1,5 +1,9 @@
 User-agent: *
 Allow: /
 Disallow: /api/
+Disallow: /overlay
+Disallow: /share/
+Disallow: /shared/
 
 Sitemap: https://valtracker.live/sitemap-index.xml
+

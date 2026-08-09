@@ -22,7 +22,7 @@ try {
   error = true;
 }
 
-const host = Astro.url.origin;
+const host = Astro.site ? Astro.site.href.replace(/\/$/, '') : Astro.url.origin;
 const ext = meta.ext || 'png';
 imageUrl = `${host}/shared/${id}.${ext}`;
 shareUrl = `${host}/share/${id}`;

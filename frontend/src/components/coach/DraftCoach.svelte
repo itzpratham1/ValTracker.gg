@@ -7,9 +7,9 @@
     MAPS, MAP_DISPLAY, DRAFT_MAP_RECOMMENDATIONS, getAgentDisplayName
   } from '../../lib/draft-engine';
   import ProComps from './ProComps.svelte';
-  import AgentSelectorModal from './AgentSelectorModal.svelte';
   import { createShareCard } from '../../lib/api';
   import { animateAllNumbersInContainer } from '../../lib/aiStreamer';
+  import { trackEvent } from '../../lib/analytics';
 
   const API_BASE = import.meta.env.PUBLIC_API_URL || '';
 
@@ -79,6 +79,9 @@
 
   async function runEvaluation() {
     evaluation = evaluateDraft(draftSlots, selectedMap);
+    if (evaluation && evaluation.score !== undefined) {
+      trackEvent('draft_coach_evaluate', { map: selectedMap, score: evaluation.score });
+    }
     await tick();
     if (draftPanelEl) {
       animateAllNumbersInContainer(draftPanelEl);

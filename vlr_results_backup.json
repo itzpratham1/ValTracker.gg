@@ -1,5 +1,57 @@
 [
   {
+    "id": "698914",
+    "date": "Aug 09, 2026 1:30 PM",
+    "state": "completed",
+    "vlr_path": "/698914/varrel-vs-paper-rex-vct-2026-pacific-stage-2-w4",
+    "league": {
+      "name": "VCT 2026: Pacific Stage 2",
+      "region": "Group Stage\u2013Week 4"
+    },
+    "match": {
+      "id": "698914",
+      "teams": [
+        {
+          "name": "VARREL",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "Paper Rex",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "724627",
+    "date": "Aug 09, 2026 1:30 PM",
+    "state": "completed",
+    "vlr_path": "/724627/edward-gaming-vs-wolves-esports-vct-2026-china-stage-2-lr2",
+    "league": {
+      "name": "VCT 2026: China Stage 2",
+      "region": "Play-Ins\u2013Lower Round 2"
+    },
+    "match": {
+      "id": "724627",
+      "teams": [
+        {
+          "name": "EDward Gaming",
+          "game_wins": 2,
+          "has_won": true
+        },
+        {
+          "name": "Wolves Esports",
+          "game_wins": 1,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
     "id": "706377",
     "date": "Aug 09, 2026 5:50 AM",
     "state": "completed",
@@ -1242,58 +1294,6 @@
           "name": "Sentinels",
           "game_wins": 1,
           "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "706370",
-    "date": "August 3, 2026 2:30 AM",
-    "state": "completed",
-    "vlr_path": "/706370/cloud9-vs-kr-esports-vct-2026-americas-stage-2-w3",
-    "league": {
-      "name": "VCT 2026: Americas Stage 2",
-      "region": "Group Stage\u2013Week 3"
-    },
-    "match": {
-      "id": "706370",
-      "teams": [
-        {
-          "name": "Cloud9",
-          "game_wins": 2,
-          "has_won": true
-        },
-        {
-          "name": "KR\u00dc Esports",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "712833",
-    "date": "August 2, 2026 11:55 PM",
-    "state": "completed",
-    "vlr_path": "/712833/fnatic-vs-team-heretics-vct-2026-emea-stage-2-w3",
-    "league": {
-      "name": "VCT 2026: EMEA Stage 2",
-      "region": "Group Stage\u2013Week 3"
-    },
-    "match": {
-      "id": "712833",
-      "teams": [
-        {
-          "name": "FNATIC",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "Team Heretics",
-          "game_wins": 2,
-          "has_won": true
         }
       ]
     },

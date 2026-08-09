@@ -348,7 +348,11 @@ if not allowed_origins:
     allowed_origins = [
         "https://valtracker-gg.onrender.com",
         "https://valtracker.gg",
-        "https://valtracker.live"
+        "https://valtracker.live",
+        "http://localhost:4321",
+        "http://127.0.0.1:4321",
+        "http://localhost:5000",
+        "http://127.0.0.1:5000"
     ]
 CORS(app, origins=allowed_origins)
 
@@ -452,6 +456,15 @@ def handle_500(e):
     is_prod = os.getenv("RENDER") is not None or os.getenv("FLASK_ENV") == "production"
     err_msg = "Internal Server Error" if is_prod else str(e)
     return jsonify({"status": 500, "error": err_msg, "data": []}), 500
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    import traceback
+    traceback.print_exc()
+    is_prod = os.getenv("RENDER") is not None or os.getenv("FLASK_ENV") == "production"
+    err_msg = "An error occurred" if is_prod else str(e)
+    code = getattr(e, "code", 500)
+    return jsonify({"status": code, "error": err_msg, "data": []}), code
 
 @app.before_request
 def before_request_cleanup():
@@ -600,7 +613,47 @@ def submit_feedback():
         return jsonify({"status": "error", "message": "An error occurred while saving feedback"}), 500
 
 
+@app.route("/api/telemetry", methods=["POST"])
+@rate_limit(requests_per_minute=120)
+def submit_telemetry():
+    try:
+        data = request.get_json(silent=True) or {}
+        event_name = str(data.get("event", "unknown"))[:100]
+        payload = data.get("payload", {})
+        
+        telemetry_record = {
+            "timestamp": datetime.now().isoformat(),
+            "event": event_name,
+            "payload": payload,
+            "ip": request.remote_addr or "127.0.0.1"
+        }
+        
+        print(f"[TELEMETRY EVENT] {event_name}: {payload}")
+        
+        # Append to telemetry.json with file lock
+        filepath = os.path.join(os.path.dirname(__file__), "telemetry.json")
+        with file_lock(filepath):
+            records = []
+            if os.path.exists(filepath):
+                try:
+                    with open(filepath, "r", encoding="utf-8") as f:
+                        records = json.load(f)
+                except Exception:
+                    records = []
+            records.append(telemetry_record)
+            if len(records) > 2000:
+                records = records[-2000:]
+            with open(filepath, "w", encoding="utf-8") as f:
+                json.dump(records, f, indent=2, ensure_ascii=False)
+                
+        return jsonify({"status": "ok"})
+    except Exception as e:
+        print(f"[TELEMETRY ERROR] {e}")
+        return jsonify({"status": "ok"})  # Fail silently for analytics
+
+
 @app.route("/api/admin/feedback", methods=["GET"])
+@rate_limit(requests_per_minute=10)
 def get_feedback():
     token = request.headers.get("X-Admin-Secret")
     if not token or token != ADMIN_SECRET:
@@ -620,6 +673,7 @@ def get_feedback():
 
 
 @app.route("/api/clear-cache", methods=["POST"])
+@rate_limit(requests_per_minute=5)
 def clear_server_cache():
     token = request.headers.get("X-Admin-Secret")
     if not token or token != ADMIN_SECRET:
@@ -670,6 +724,7 @@ def proxy_image():
 
 
 @app.route("/api/share-card", methods=["POST"])
+@rate_limit(requests_per_minute=15)
 def share_card_api():
     try:
         data = request.get_json() or {}
@@ -736,6 +791,7 @@ def share_card_api():
 
 
 @app.route("/api/share-meta/<share_id>", methods=["GET"])
+@rate_limit(requests_per_minute=60)
 def get_share_meta(share_id):
     meta_filepath = os.path.join(os.path.dirname(__file__), "shared_meta.json")
     meta = {}
@@ -758,6 +814,7 @@ def get_share_meta(share_id):
 
 
 @app.route("/api/shared-image/<filename>", methods=["GET"])
+@rate_limit(requests_per_minute=120)
 def get_shared_image(filename):
     # Sanitize to prevent path traversal
     filename = os.path.basename(filename)
@@ -769,6 +826,7 @@ def get_shared_image(filename):
 
 
 @app.route("/api/search")
+@rate_limit(requests_per_minute=60)
 def search_players():
     query = request.args.get("q", "").strip()
     if not query or len(query) < 2:

@@ -2,13 +2,15 @@
 import Layout from '../layouts/Layout.astro';
 import AppShell from '../components/tracker/AppShell.svelte';
 
+const siteOrigin = Astro.site ? Astro.site.href.replace(/\/$/, '') : Astro.url.origin;
+
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "ValTracker — VCT Meta Compositions",
   "applicationCategory": "GameApplication",
   "operatingSystem": "Web",
-  "url": "https://valtracker.live/comp",
+  "url": `${siteOrigin}/comp`,
   "description": "Browse VCT pro team compositions, agent pick rates, and win rates for every map. Data updates weekly from pro tournaments.",
   "featureList": [
     "VCT pro meta compositions",
@@ -24,5 +26,9 @@ const structuredData = {
   description="Browse VCT pro team compositions, agent pick rates, and win rates for every map. Data updates weekly from pro tournaments."
   structuredData={structuredData}
 >
+  <div class="sr-only" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;">
+    <h1>VCT Pro Meta Compositions & Valorant Map Pick Rates</h1>
+    <p>Explore high-tier Valorant esports team compositions, agent pick rates, map win rates, and meta tier lists from VCT tournaments across all regions.</p>
+  </div>
   <AppShell client:only="svelte" />
 </Layout>

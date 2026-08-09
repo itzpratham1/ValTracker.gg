@@ -2,10 +2,13 @@
 import Layout from '../layouts/Layout.astro';
 import LookupView from '../components/tracker/LookupView.svelte';
 
+const siteOrigin = Astro.site ? Astro.site.href.replace(/\/$/, '') : Astro.url.origin;
+
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "WebPage",
   "name": "ValTracker Lookup",
+  "url": `${siteOrigin}/login`,
   "description": "Look up any Valorant player profile, track match statistics, and view analytical insights instantly."
 };
 ---
@@ -15,5 +18,9 @@ const structuredData = {
   description="Look up any Valorant player profile. No account or login required—just enter a Riot ID and tag."
   structuredData={structuredData}
 >
+  <div class="sr-only" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;">
+    <h1>Look Up Valorant Player Profiles & Statistics</h1>
+    <p>Search any Valorant player by Riot ID and Tag. Instant access to match history, ACS, headshot percentage, rank progression, and AI performance coaching.</p>
+  </div>
   <LookupView client:only="svelte" />
 </Layout>
