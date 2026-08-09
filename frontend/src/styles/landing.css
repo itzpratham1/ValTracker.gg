@@ -3363,10 +3363,14 @@ body.nav-menu-open {
   }
 
   /* Mobile Steps Section */
+  #how-it-works div[style*="margin-bottom:72px"],
+  #how-it-works div[style*="margin-bottom: 72px"] {
+    margin-bottom: 28px !important;
+  }
   .steps-wrap {
     display: flex !important;
     flex-direction: column !important;
-    gap: 16px !important;
+    gap: 20px !important;
   }
   .steps-progress-line {
     display: none !important;
@@ -3375,25 +3379,69 @@ body.nav-menu-open {
     border: 1px solid rgba(255, 255, 255, 0.06) !important;
     border-left: 3px solid var(--accent) !important;
     border-radius: 12px !important;
-    padding: 20px 16px 20px !important;
+    padding: 18px 16px 20px !important;
     text-align: center !important;
     background: rgba(255, 255, 255, 0.02) !important;
     margin-top: 0 !important;
+    position: relative !important;
   }
   .step-icon {
-    position: static !important;
-    transform: none !important;
-    margin: 0 auto 6px !important;
-    display: block !important;
+    position: absolute !important;
+    top: -24px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    margin: 0 !important;
+    color: var(--accent) !important;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 3 !important;
+    opacity: 0.9 !important;
   }
   .step-num-wrap {
-    margin: 8px auto 12px !important;
+    width: 52px !important;
+    height: 52px !important;
+    margin: 36px auto 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    background: var(--bg-secondary, #121218) !important;
+    border: 1.5px solid rgba(250, 68, 84, 0.4) !important;
+    box-shadow: 0 0 16px rgba(250, 68, 84, 0.15) !important;
     position: relative !important;
     z-index: 2 !important;
   }
+  .step-num-wrap::before {
+    inset: -3px !important;
+  }
+  .step-num {
+    font-size: 20px !important;
+    line-height: 1 !important;
+    font-family: var(--font-heading) !important;
+    font-weight: 700 !important;
+    color: var(--accent) !important;
+  }
   .step-time-badge {
-    margin-top: 8px !important;
-    margin-bottom: 12px !important;
+    margin-top: 2px !important;
+    margin-bottom: 10px !important;
+    display: inline-block !important;
+  }
+  h3.step-title {
+    font-size: 17px !important;
+    margin-bottom: 6px !important;
+    letter-spacing: 0.8px !important;
+  }
+  .step-body {
+    font-size: 13.5px !important;
+    line-height: 1.55 !important;
+    color: var(--text-secondary, #a0a0ab) !important;
+    max-width: 340px !important;
+    margin: 0 auto !important;
   }
 
   .final-cta-btns {
