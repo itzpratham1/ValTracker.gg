@@ -47,7 +47,16 @@ export function prefetchAccountData(name: string, tag: string, region: string = 
 
   const promise = (async () => {
     try {
-      return await fetchAccountData(name, tag, region);
+      const res = await apiFetch(`/v1/account?name=${encodeURIComponent(name)}&tag=${encodeURIComponent(tag)}&region=${region}`);
+      if (res && (res.data || res.status === 200)) {
+        try {
+          sessionStorage.setItem(`valtracker_prefetch_${key}`, JSON.stringify({
+            timestamp: Date.now(),
+            data: res
+          }));
+        } catch {}
+      }
+      return res;
     } catch {
       prefetchCache.delete(key);
       return null;
@@ -66,9 +75,32 @@ export async function fetchAccountData(name: string, tag: string, region: string
     } catch {}
   }
 
+  // Fallback to sessionStorage cache (persists across page reloads like /login -> /app)
+  try {
+    const sessionItem = sessionStorage.getItem(`valtracker_prefetch_${key}`);
+    if (sessionItem) {
+      const parsed = JSON.parse(sessionItem);
+      if (Date.now() - parsed.timestamp < 180000 && parsed.data) {
+        return parsed.data;
+      }
+    }
+  } catch {}
+
   const encodedName = encodeURIComponent(name);
   const encodedTag = encodeURIComponent(tag);
-  const promise = apiFetch(`/v1/account?name=${encodedName}&tag=${encodedTag}&region=${region}`);
+  const promise = (async () => {
+    const res = await apiFetch(`/v1/account?name=${encodedName}&tag=${encodedTag}&region=${region}`);
+    if (res && (res.data || res.status === 200)) {
+      try {
+        sessionStorage.setItem(`valtracker_prefetch_${key}`, JSON.stringify({
+          timestamp: Date.now(),
+          data: res
+        }));
+      } catch {}
+    }
+    return res;
+  })();
+
   prefetchCache.set(key, promise);
   return promise;
 }
