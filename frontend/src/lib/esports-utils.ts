@@ -261,8 +261,8 @@ export function getEspHTML(m: EsportsMatch, type: string): string {
           <span class="esp-vs-score ${w2}">${score2}</span>
         </div>
         <div class="esp-team esp-team-r">
-          <div class="esp-tname">${t2}</div>
           <div class="esp-tlogo-wrap">${getEsportsTeamLogoHtml(t2).replace('margin-right:8px;', '')}</div>
+          <div class="esp-tname">${t2}</div>
           <div class="esp-tscore ${w2}">${score2}</div>
         </div>
       </div>

@@ -97,19 +97,16 @@
   function getFallbackBundles() {
     return [
       {
-        "bundle_uuid": "602900ed-4e10-d214-acc5-8883ed2430f5",
-        "bundle_price": 8700,
-        "seconds_remaining": 1600000,
-        "expires_at": "2026-06-17T17:59:59.023Z",
+        "bundle_uuid": "4d368017-4f98-1e89-dbec-31abd2533eb9",
+        "bundle_price": 6700,
+        "seconds_remaining": 862496,
+        "expires_at": "2026-08-19T05:04:08.931Z",
         "items": [
-          { "uuid": "b987198e-40da-cbc3-8cd2-1abd36d3a983", "name": "Rogue Buddy", "image": "https://media.valorant-api.com/buddies/b987198e-40da-cbc3-8cd2-1abd36d3a983/displayicon.png", "type": "buddy", "base_price": 475, "discount_percent": 1.0, "discounted_price": 0 },
-          { "uuid": "c429531b-4980-ca36-c3e0-689d1cbcaf6f", "name": "Rogue Card", "image": "https://media.valorant-api.com/playercards/c429531b-4980-ca36-c3e0-689d1cbcaf6f/displayicon.png", "type": "player_card", "base_price": 375, "discount_percent": 1.0, "discounted_price": 0 },
-          { "uuid": "67908139-4960-5f8f-ccbf-d2a96eea1ea8", "name": "Rogue Spray", "image": "https://media.valorant-api.com/sprays/67908139-4960-5f8f-ccbf-d2a96eea1ea8/displayicon.png", "type": "spray", "base_price": 325, "discount_percent": 1.0, "discounted_price": 0 },
-          { "uuid": "1b9b0131-42fe-b6a7-d212-699b342ba642", "name": "Rogue Vandal", "image": "https://media.valorant-api.com/weaponskins/1b9b0131-42fe-b6a7-d212-699b342ba642/displayicon.png", "type": "skin_level", "base_price": 2175, "discount_percent": 0.0, "discounted_price": 2175 },
-          { "uuid": "ea3e6c8a-4e5e-baf9-33c3-7abacf07aaee", "name": "Rogue Bucky", "image": "https://media.valorant-api.com/weaponskins/ea3e6c8a-4e5e-baf9-33c3-7abacf07aaee/displayicon.png", "type": "skin_level", "base_price": 2175, "discount_percent": 0.0, "discounted_price": 2175 },
-          { "uuid": "902a3bcb-4164-3315-fe03-2088fb897ce4", "name": "Rogue Bandit", "image": "https://media.valorant-api.com/weaponskins/902a3bcb-4164-3315-fe03-2088fb897ce4/displayicon.png", "type": "skin_level", "base_price": 2175, "discount_percent": 0.0, "discounted_price": 2175 },
-          { "uuid": "2460c852-4d1b-a9e3-ccda-43a8e30cb739", "name": "Rogue Operator", "image": "https://media.valorant-api.com/weaponskins/2460c852-4d1b-a9e3-ccda-43a8e30cb739/displayicon.png", "type": "skin_level", "base_price": 2175, "discount_percent": 0.0, "discounted_price": 2175 },
-          { "uuid": "1c808469-4aee-ae6c-fcd2-1099e96ac6a0", "name": "Rogue Push Daggers", "image": "https://media.valorant-api.com/weaponskins/1c808469-4aee-ae6c-fcd2-1099e96ac6a0/displayicon.png", "type": "skin_level", "base_price": 4350, "discount_percent": 1.0, "discounted_price": 0 }
+          { "uuid": "38d47ee7-414d-8cee-5bbd-aca16656cda9", "name": "Neo Frontier Lasso", "image": "https://media.valorant-api.com/weaponskins/38d47ee7-414d-8cee-5bbd-aca16656cda9/displayicon.png", "type": "skin_level", "base_price": 4350, "discount_percent": 0.23, "discounted_price": 3350 },
+          { "uuid": "5ef15ada-4332-093f-ea15-8a8891d863d0", "name": "Neo Frontier Vandal", "image": "https://media.valorant-api.com/weaponskins/5ef15ada-4332-093f-ea15-8a8891d863d0/displayicon.png", "type": "skin_level", "base_price": 2175, "discount_percent": 0.23, "discounted_price": 1675 },
+          { "uuid": "de88d366-4d2b-655f-345c-719b97ddf9d9", "name": "Neo Frontier Shorty", "image": "https://media.valorant-api.com/weaponskins/de88d366-4d2b-655f-345c-719b97ddf9d9/displayicon.png", "type": "skin_level", "base_price": 2175, "discount_percent": 0.23, "discounted_price": 1675 },
+          { "uuid": "e9a3d874-4893-b17a-00ca-0b88017f7919", "name": "Neo Frontier Card", "image": "https://media.valorant-api.com/playercards/e9a3d874-4893-b17a-00ca-0b88017f7919/displayicon.png", "type": "player_card", "base_price": 375, "discount_percent": 1.0, "discounted_price": 0 },
+          { "uuid": "5d3cde59-4d50-e54b-9126-d7bfac8d18bc", "name": "Neo Frontier Spray", "image": "https://media.valorant-api.com/sprays/5d3cde59-4d50-e54b-9126-d7bfac8d18bc/displayicon.png", "type": "spray", "base_price": 325, "discount_percent": 1.0, "discounted_price": 0 }
         ]
       }
     ];

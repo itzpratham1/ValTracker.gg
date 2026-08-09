@@ -20,6 +20,8 @@
 
   let liveMatches = [];
   let resultsMatches = [];
+  let highlightMatches = [];
+  let scheduleResultsMatches = [];
   let upcomingMatches = [];
   let newsItems = [];
   let newsLoadError = false;
@@ -110,7 +112,8 @@
       ]);
 
       liveMatches = liveRes?.data || [];
-      resultsMatches = (resultsRes?.data || []).slice(0, 3);
+      resultsMatches = (resultsRes?.data || []).slice(0, 4);
+      highlightMatches = resultsMatches;
 
       if (!newsItems.length || newsLoadError) {
         newsItems = FALLBACK_NEWS;
@@ -140,7 +143,8 @@
         fetchEsportsResults()
       ]);
       upcomingMatches = upRes?.data || [];
-      resultsMatches = resRes?.data || [];
+      scheduleResultsMatches = resRes?.data || [];
+      resultsMatches = scheduleResultsMatches;
       setAllMatchesCache(upcomingMatches);
     } catch (err) {
       console.error("Schedule load failed", err);
@@ -564,12 +568,12 @@
             {/if}
 
             <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:16px; text-transform:uppercase; margin-top:24px; margin-bottom:12px; color:var(--accent);">🏆 Highlight Matches</h4>
-            {#if loading.overview && !resultsMatches.length}
+            {#if loading.overview && !highlightMatches.length}
               <div class="placeholder-txt">Loading highlight results...</div>
-            {:else if resultsMatches.length === 0}
+            {:else if highlightMatches.length === 0}
               <div class="placeholder-txt">No recent results found.</div>
             {:else}
-              {#each resultsMatches as m}
+              {#each highlightMatches as m}
                 <div class:tier-t2={isTier2Match(m)} style={isTier2Match(m) && !showTier2 ? 'display:none' : ''}>
                   {@html getEspHTML(m, 'results')}
                 </div>
@@ -642,10 +646,10 @@
             </div>
             {#if loading.schedule}
               <div class="placeholder-txt">Loading Recent Results...</div>
-            {:else if resultsMatches.length === 0}
+            {:else if scheduleResultsMatches.length === 0}
               <div class="placeholder-txt">No recent results found.</div>
             {:else}
-              {#each resultsMatches.slice(0, 30) as m}
+              {#each scheduleResultsMatches.slice(0, 30) as m}
                 <div class:tier-t2={isTier2Match(m)} style={isTier2Match(m) && !showTier2 ? 'display:none' : ''}>
                   {@html getEspHTML(m, 'results')}
                 </div>

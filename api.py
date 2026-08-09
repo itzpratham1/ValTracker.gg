@@ -1824,17 +1824,27 @@ def esports_team_roster(team_id):
 @rate_limit(requests_per_minute=30)
 def store_featured():
     backup_file = "store_featured_backup.json"
-    cache_duration = 86400
+    cache_duration = 3600  # 1 hour cache TTL
 
-    def bundles_have_expired(data):
+    def bundles_have_expired(data, timestamp=None):
         try:
             bundles = data.get("data", [])
             if not bundles:
-                return False
+                return True
+            
+            now_iso = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
             for b in bundles:
-                secs = b.get("seconds_remaining", 1)
-                if secs is not None and secs <= 0:
-                    return True
+                expires_at = b.get("expires_at")
+                if expires_at:
+                    # ISO string comparison works for standard ISO format
+                    if expires_at <= now_iso:
+                        return True
+                else:
+                    secs = b.get("seconds_remaining")
+                    if secs is not None and timestamp:
+                        elapsed = time.time() - timestamp
+                        if (secs - elapsed) <= 0:
+                            return True
             return False
         except Exception:
             return False
@@ -1842,19 +1852,18 @@ def store_featured():
     mem_store = cache.get("store_featured")
     if mem_store:
         mem_age = time.time() - mem_store.get("timestamp", 0)
-        if mem_age < cache_duration and not bundles_have_expired(mem_store.get("data", {})):
+        if mem_age < cache_duration and not bundles_have_expired(mem_store.get("data", {}), mem_store.get("timestamp", 0)):
             return jsonify(mem_store["data"])
 
     if os.path.exists(backup_file):
         try:
-            file_age = time.time() - os.path.getmtime(backup_file)
+            file_mtime = os.path.getmtime(backup_file)
+            file_age = time.time() - file_mtime
             if file_age < cache_duration:
                 with open(backup_file, "r", encoding="utf-8") as f:
                     data = json.load(f)
-                if bundles_have_expired(data):
-                    pass
-                else:
-                    cache["store_featured"] = {"data": data, "timestamp": time.time()}
+                if not bundles_have_expired(data, file_mtime):
+                    cache["store_featured"] = {"data": data, "timestamp": file_mtime}
                     return jsonify(data)
         except Exception as e:
             print("[WARNING] Failed to read store_featured_backup.json:", e)
@@ -1864,7 +1873,8 @@ def store_featured():
         r = http_session.get("https://api.henrikdev.xyz/valorant/v2/store-featured", headers=headers, timeout=10)
         if r.status_code == 200:
             data = r.json()
-            if data and isinstance(data, dict) and "data" in data:
+            if data and isinstance(data, dict) and "data" in data and len(data["data"]) > 0:
+                data["fetched_at"] = time.time()
                 cache["store_featured"] = {"data": data, "timestamp": time.time()}
                 try:
                     with open(backup_file, "w", encoding="utf-8") as f:
@@ -1879,9 +1889,11 @@ def store_featured():
         try:
             with open(backup_file, "r", encoding="utf-8") as f:
                 data = json.load(f)
-            return jsonify(data)
-        except Exception:
-            pass
+            if data and isinstance(data, dict) and "data" in data and len(data["data"]) > 0:
+                data["is_offline_fallback"] = True
+                return jsonify(data)
+        except Exception as e:
+            print("[WARNING] Failed to read store fallback backup:", e)
 
     return jsonify({"status": 500, "error": "Failed to retrieve store offers"}), 500
 

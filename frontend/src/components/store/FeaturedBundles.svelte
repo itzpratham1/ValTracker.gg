@@ -27,7 +27,14 @@
   function initTimers() {
     clearTimers();
     bundles.forEach((b, idx) => {
-      secondsRemainingMap[idx] = b.seconds_remaining || 0;
+      let initialSecs = b.seconds_remaining || 0;
+      if (b.expires_at) {
+        const expMs = new Date(b.expires_at).getTime();
+        if (!isNaN(expMs)) {
+          initialSecs = Math.max(0, Math.floor((expMs - Date.now()) / 1000));
+        }
+      }
+      secondsRemainingMap[idx] = initialSecs;
       const interval = setInterval(() => {
         if (secondsRemainingMap[idx] <= 0) {
           secondsRemainingMap[idx] = 0;
