@@ -872,11 +872,15 @@
       Rounds
     </button>
     <button
-      class="panel-tab-btn"
+      class="panel-tab-btn panel-tab-btn--ai"
       class:active={activeTab === 'ai'}
       on:click={() => switchTab('ai')}
     >
-      AI Analysis
+      <span class="ai-tab-inner">
+        <span class="ai-tab-spark">✦</span>
+        <span class="ai-tab-label">AI Analysis</span>
+        <span class="ai-tab-badge">AI</span>
+      </span>
     </button>
   </div>
 
