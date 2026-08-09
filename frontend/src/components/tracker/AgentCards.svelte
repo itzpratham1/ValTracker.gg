@@ -112,7 +112,7 @@
       {@const trend = getAgentTrend(name, allMatches)}
       <div class="agent-bento reveal-on-scroll stagger-{i}">
         {#if img}
-          <img class="agent-portrait" src={img} alt={name}>
+          <img class="agent-portrait" src={img} alt={name} loading="lazy" decoding="async" width="160" height="160">
         {:else}
           <div class="agent-portrait-fallback">{name[0] || '?'}</div>
         {/if}

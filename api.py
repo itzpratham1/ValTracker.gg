@@ -398,8 +398,8 @@ def optimize_response(response):
 # Rate limiter
 rate_limit_records = {}
 cache = {}
-CACHE_TTL = 60
-CACHE_MAX_SIZE = 80
+CACHE_TTL = 180
+CACHE_MAX_SIZE = 200
 image_cache = {}
 IMAGE_CACHE_TTL = 600
 IMAGE_CACHE_MAX = 15

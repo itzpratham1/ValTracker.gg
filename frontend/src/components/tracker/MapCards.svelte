@@ -175,7 +175,7 @@
         <!-- Map splash banner -->
         {#if mapImg}
           <div class="map-splash-wrap">
-            <img class="map-splash" src={mapImg} alt={name} loading="lazy" style="filter: saturate(1.2) brightness(0.65);" on:error={(e) => e.target.style.display='none'}>
+            <img class="map-splash" src={mapImg} alt={name} loading="lazy" decoding="async" width="400" height="160" style="filter: saturate(1.2) brightness(0.65);" on:error={(e) => e.target.style.display='none'}>
             <div class="map-splash-overlay">
               <span class="map-splash-name">{name}</span>
               <span class="map-games-badge">{m.matches}G</span>
