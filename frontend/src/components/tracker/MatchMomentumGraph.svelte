@@ -165,6 +165,28 @@
     path += ` L ${getX(roundsData.length - 1)} ${centerY} Z`;
     return path;
   })();
+
+  $: tooltipPos = (() => {
+    if (!activeHoverRound || !roundsData || roundsData.length === 0) return null;
+    const total = Math.max(1, roundsData.length - 1);
+    const index = activeHoverRound.index;
+    const pct = index / total;
+    const xPct = (getX(index) / svgWidth) * 100;
+
+    if (pct > 0.5) {
+      // Right half of graph -> anchor tooltip to the left of the node
+      return {
+        left: `${Math.max(4, xPct - 1.5)}%`,
+        transform: 'translate(-100%, -50%)'
+      };
+    } else {
+      // Left half of graph -> anchor tooltip to the right of the node
+      return {
+        left: `${Math.min(96, xPct + 1.5)}%`,
+        transform: 'translate(0%, -50%)'
+      };
+    }
+  })();
 </script>
 
 {#if roundsData.length > 0}
@@ -280,6 +302,8 @@
             class="node-group" 
             on:mouseenter={() => activeHoverRound = r} 
             on:mouseleave={() => activeHoverRound = null}
+            on:click={() => activeHoverRound = (activeHoverRound?.index === i ? null : r)}
+            on:touchstart|passive={() => activeHoverRound = r}
           >
             <!-- Vertical guide line on hover -->
             {#if activeHoverRound?.index === i}
@@ -312,10 +336,10 @@
       </svg>
 
       <!-- Active Hover Floating Card Tooltip -->
-      {#if activeHoverRound}
+      {#if activeHoverRound && tooltipPos}
         <div 
           class="momentum-tooltip" 
-          style="left: {Math.min(85, Math.max(15, (activeHoverRound.index / Math.max(1, roundsData.length - 1)) * 90 + 5))}%;"
+          style="left: {tooltipPos.left}; transform: {tooltipPos.transform};"
         >
           <div class="tt-head">ROUND {activeHoverRound.num}</div>
           <div class="tt-score {activeHoverRound.won ? 'win' : 'loss'}">
@@ -638,7 +662,6 @@
   .momentum-tooltip {
     position: absolute;
     top: 50%;
-    transform: translateY(-50%);
     background: rgba(16, 16, 22, 0.96);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 8px;
@@ -650,6 +673,8 @@
     white-space: nowrap;
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.75);
     backdrop-filter: blur(12px);
+    transition: left 0.1s ease, transform 0.1s ease;
+    max-width: calc(100% - 16px);
   }
 
   .tt-head {
@@ -1023,6 +1048,20 @@
     }
     .halftime-label {
       font-size: 9.5px;
+    }
+    .momentum-tooltip {
+      padding: 6px 10px;
+      font-size: 9.5px;
+      border-radius: 6px;
+    }
+    .tt-head {
+      font-size: 8px;
+    }
+    .tt-score {
+      font-size: 12px;
+    }
+    .tt-diff, .tt-highlight, .tt-sub {
+      font-size: 8.5px;
     }
     .event-badge {
       font-size: 9.5px;

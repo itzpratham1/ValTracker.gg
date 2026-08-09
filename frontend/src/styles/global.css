@@ -11681,6 +11681,16 @@ body::after {
   transform: translateY(0);
 }
 
+/* Force reveal on mobile screens so content and section labels never disappear */
+@media (max-width: 800px) {
+  .reveal-on-scroll,
+  .section-label.reveal-on-scroll {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
 /* Stagger delays for child cards within a section */
 .reveal-on-scroll.stagger-0 { transition-delay: 0ms; }
 .reveal-on-scroll.stagger-1 { transition-delay: 80ms; }

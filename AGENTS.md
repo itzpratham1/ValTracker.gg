@@ -108,6 +108,7 @@ valtracker/
 35. `HeroSection.svelte` — Added `.hero-tag` CSS rule (was missing — class used in template but never defined)
 36. `global.css` — **Added ALL inline `<style>` overrides from old `index.html`** (lines 17-84 and 1737-1851). This was the ROOT CAUSE of visual differences. See details below.
 37. `wrappedEngine.ts` + `HeroSection.svelte` — Fixed Wrapped badge visibility. `isWrappedSeasonActive` now strictly checks if current date is within the last 7 days of the calendar month OR last 7 days of the Act (using `ACTS_TIMELINE`). Removed `matches.length >= 5` override fallback and wired `HeroSection.svelte` to use `isWrappedSeasonActive(matches, $player.act)` so the `⚡ WRAPPED` badge is only shown during recap windows or when URL explicitly contains `?wrapped=1`.
+38. `MatchMomentumGraph.svelte` — Fixed mobile tooltip overflow in Rounds section graph. Computed dynamic `tooltipPos` (`left` + `transform: translate(-100%, -50%)` when `pct > 0.5` vs `translate(0%, -50%)` when `pct <= 0.5`) so tooltips on the right half of the chart flip to extend left instead of overflowing off-screen. Added touch listeners (`on:click` & `on:touchstart|passive`) for mobile interaction, responsive font sizes, and container safety bounds (`max-width: calc(100% - 16px)`).
 
 ## Inline Overrides Added to global.css (from old index.html `<style>` block)
 These rules existed ONLY in the old `index.html` inline `<style>` and were NEVER copied to `global.css`:

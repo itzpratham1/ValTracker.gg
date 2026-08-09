@@ -114,6 +114,14 @@
       isProgrammaticScroll = true;
       if (programmaticScrollTimer) clearTimeout(programmaticScrollTimer);
 
+      // Force mark element and its next siblings in-view immediately
+      el.classList.add('in-view');
+      let sibling = el.nextElementSibling;
+      while (sibling && !sibling.classList.contains('section-label')) {
+        sibling.classList.add('in-view');
+        sibling = sibling.nextElementSibling;
+      }
+
       const nav = document.querySelector('.tracker-nav');
       const topbar = document.querySelector('.topbar');
       const isMobile = window.innerWidth <= 800;
@@ -268,7 +276,10 @@
   // Card-level components own their own observers (AgentCards, MapCards, MatchHistory)
   let revealObserver;
   function setupRevealObserver() {
-    if (typeof IntersectionObserver === 'undefined') return;
+    if (typeof IntersectionObserver === 'undefined') {
+      document.querySelectorAll('.reveal-on-scroll').forEach(el => el.classList.add('in-view'));
+      return;
+    }
     if (revealObserver) revealObserver.disconnect();
     revealObserver = new IntersectionObserver(
       (entries) => {
@@ -279,10 +290,15 @@
           }
         });
       },
-      { threshold: 0.05, rootMargin: '0px 0px -30px 0px' }
+      { threshold: 0.01, rootMargin: '50px 0px 50px 0px' }
     );
     // Target section labels + any remaining .reveal-on-scroll not yet seen
     document.querySelectorAll('.reveal-on-scroll:not(.in-view)').forEach(el => revealObserver.observe(el));
+
+    // Safety fallback: ensure all reveal elements become visible after 800ms
+    setTimeout(() => {
+      document.querySelectorAll('.reveal-on-scroll:not(.in-view)').forEach(el => el.classList.add('in-view'));
+    }, 800);
   }
 
   // ── Keyboard navigation ──
