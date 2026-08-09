@@ -616,9 +616,13 @@
     <!-- SCHEDULE SECTION -->
     {#if activeTab === 'schedule'}
       <div class="esports-section active">
-        <div class="schedule-tabs" style="display: flex; justify-content: center; gap: 8px; margin-bottom: 20px;">
-          <button class="esports-pill" class:active={scheduleTab === 'upcoming'} on:click={() => switchScheduleTab('upcoming')}>Upcoming</button>
-          <button class="esports-pill" class:active={scheduleTab === 'results'} on:click={() => switchScheduleTab('results')}>Results</button>
+        <div class="schedule-tabs">
+          <button class="esports-pill" class:active={scheduleTab === 'upcoming'} on:click={() => switchScheduleTab('upcoming')}>
+            Upcoming {#if upcomingMatches.length > 0}({upcomingMatches.length}){/if}
+          </button>
+          <button class="esports-pill" class:active={scheduleTab === 'results'} on:click={() => switchScheduleTab('results')}>
+            Results {#if scheduleResultsMatches.length > 0}({scheduleResultsMatches.length}){/if}
+          </button>
         </div>
 
         <div class="esp-schedule-grid">
