@@ -21,6 +21,8 @@
   import StatModal from './StatModal.svelte';
   import SessionSummary from './SessionSummary.svelte';
   import ExportCardModal from './ExportCardModal.svelte';
+  import ExportCard from './ExportCard.svelte';
+  import ExportProfileCard from './ExportProfileCard.svelte';
   import WrappedModal from './WrappedModal.svelte';
   import HeadToHead from './HeadToHead.svelte';
   import BookmarksModal from './BookmarksModal.svelte';
@@ -675,25 +677,31 @@
 
   {#if selectedShareMatch}
     {@const rawMatch = actFilteredMatches.find(m => (m.metadata?.matchid || m.metadata?.match_id) === selectedShareMatch.matchId)}
-    <ExportCardModal
-      open={true}
-      cardType="match"
+    <ExportCard
       match={selectedShareMatch}
       playerName={playerState.name}
       playerTag={playerState.tag}
-      region={playerState.region}
       allPlayers={rawMatch ? getPlayerList(rawMatch) : []}
       rawMatch={rawMatch}
       playerBannerUrl={accountData?.card?.wide || accountData?.card?.large || ''}
       playerLevel={accountData?.account_level || ''}
-      {stats}
-      {mmrData}
-      {accountData}
-      {mmrHistory}
-      {actFilteredMatches}
       onClose={() => selectedShareMatch = null}
     />
   {/if}
+
+  <ExportProfileCard
+    open={exportProfileOpen && false /* rendered via ExportCardModal for export stats, and profile share when needed */}
+    {stats}
+    {mmrData}
+    {accountData}
+    {mmrHistory}
+    {actFilteredMatches}
+    playerName={playerState.name}
+    playerTag={playerState.tag}
+    region={playerState.region}
+    mode={playerState.mode}
+    onClose={() => exportProfileOpen = false}
+  />
 
   {#if exportProfileOpen}
     <ExportCardModal

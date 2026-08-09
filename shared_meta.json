@@ -673,5 +673,14 @@
     "won": true,
     "score": "13-3",
     "timestamp": 1785224330.5144973
+  },
+  "3b2aeeb211f44001": {
+    "playerName": "Harsh",
+    "playerTag": "KHEL",
+    "agentName": "Tejo",
+    "mapName": "Summit",
+    "won": false,
+    "score": "3-13",
+    "timestamp": 1786262129.8585327
   }
 }
