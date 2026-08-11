@@ -8,6 +8,7 @@
   import LookupView from './LookupView.svelte';
   import TrackerView from './TrackerView.svelte';
   import LoadingCard from '../landing/LoadingCard.svelte';
+  import NetworkStatus from '../shared/NetworkStatus.svelte';
   import { trackEvent } from '../../lib/analytics';
 
   export let initialView = 'landing';
