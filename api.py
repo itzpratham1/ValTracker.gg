@@ -159,7 +159,7 @@ def get_cached_player(name, tag):
             return players[0]
     return None
 
-def is_player_fresh(cached_player, ttl_seconds=900):
+def is_player_fresh(cached_player, ttl_seconds=1800):
     if not cached_player:
         return False
     last_updated_str = cached_player.get("last_updated")
@@ -176,7 +176,7 @@ def is_player_fresh(cached_player, ttl_seconds=900):
         print(f"[CACHE TIMESTAMP ERROR] {e}")
         return False
 
-def is_cache_key_fresh(cached_player, cache_key_type, ttl_seconds=900):
+def is_cache_key_fresh(cached_player, cache_key_type, ttl_seconds=1800):
     if not cached_player:
         return False
     stats_cache = cached_player.get("stats_cache") or {}
@@ -429,11 +429,12 @@ def prune_rate_limit_records():
     with cache_lock:
         now = time.time()
         for k in list(rate_limit_records.keys()):
-            history = rate_limit_records.get(k)
-            if not history:
+            history = rate_limit_records.get(k, [])
+            valid_history = [t for t in history if now - t < 60]
+            if not valid_history:
                 rate_limit_records.pop(k, None)
-            elif now - history[0] > 60:
-                rate_limit_records.pop(k, None)
+            else:
+                rate_limit_records[k] = valid_history
         if len(rate_limit_records) > RATE_LIMIT_MAX:
             sorted_keys = sorted(rate_limit_records.keys(), key=lambda k: rate_limit_records[k][-1] if rate_limit_records[k] else 0)
             for k in sorted_keys[:len(rate_limit_records) - RATE_LIMIT_MAX // 2]:
@@ -478,23 +479,40 @@ def before_request_cleanup():
         prune_rate_limit_records()
         prune_image_cache()
 
-def rate_limit(requests_per_minute=30):
+def get_client_ip():
+    """Extract client IP safely taking reverse proxies into account."""
+    if request.remote_addr:
+        return request.remote_addr
+    ff = request.headers.get("X-Forwarded-For")
+    if ff:
+        return ff.split(",")[0].strip()
+    return "127.0.0.1"
+
+def rate_limit(requests_per_minute=60, window_seconds=60):
     def decorator(f):
         @wraps(f)
         def wrapped(*args, **kwargs):
-            ip = request.headers.get("X-Forwarded-For", request.remote_addr or "127.0.0.1").split(",")[0].strip()
+            ip = get_client_ip()
             now = time.time()
-            if ip not in rate_limit_records:
-                rate_limit_records[ip] = []
-            rate_limit_records[ip] = [t for t in rate_limit_records[ip] if now - t < 60]
-            if len(rate_limit_records[ip]) >= requests_per_minute:
-                print(f"[RATE LIMIT] Blocked IP {ip} - exceeded {requests_per_minute}/min")
-                return jsonify({
-                    "status": 429,
-                    "error": "Too Many Requests",
-                    "message": f"Rate limit exceeded. Maximum {requests_per_minute} requests per minute."
-                }), 429
-            rate_limit_records[ip].append(now)
+            with cache_lock:
+                history = rate_limit_records.get(ip, [])
+                valid_history = [t for t in history if now - t < window_seconds]
+                if len(valid_history) >= requests_per_minute:
+                    oldest_ts = valid_history[0]
+                    retry_after = max(1, int(oldest_ts + window_seconds - now))
+                    print(f"[RATE LIMIT 429] Blocked IP {ip} on {request.path} - exceeded {requests_per_minute} req/{window_seconds}s")
+                    response = jsonify({
+                        "status": 429,
+                        "error": "Too Many Requests",
+                        "message": f"Rate limit exceeded. Maximum {requests_per_minute} requests per {window_seconds} seconds.",
+                        "retry_after": retry_after
+                    })
+                    response.status_code = 429
+                    response.headers["Retry-After"] = str(retry_after)
+                    return response
+                
+                valid_history.append(now)
+                rate_limit_records[ip] = valid_history
             return f(*args, **kwargs)
         return wrapped
     return decorator
@@ -1020,7 +1038,7 @@ def _warm_cache_background(data):
 
 
 @app.route("/api/<path:subpath>", methods=["GET", "POST"])
-@rate_limit(requests_per_minute=120)
+@rate_limit(requests_per_minute=60)
 def proxy_api(subpath):
     allowed = any(subpath.startswith(prefix) for prefix in ALLOWED_PROXY_PREFIXES)
     if not allowed:
@@ -1043,10 +1061,10 @@ def proxy_api(subpath):
             cache_key_type = "stored_mmr_history"
 
     if is_profile_route:
-        bypass_cache = "true" in request.args.get("_nocache", "").lower() or len(request.args.get("_nocache", "")) > 0
+        bypass_cache = request.args.get("_nocache", "").lower() in ["true", "1", "force"]
         if not bypass_cache:
             cached_player = get_cached_player(name, tag)
-            if cached_player and is_cache_key_fresh(cached_player, cache_key_type, ttl_seconds=900):
+            if cached_player and is_cache_key_fresh(cached_player, cache_key_type, ttl_seconds=1800):
                 stats_cache = cached_player.get("stats_cache") or {}
                 cached_data = stats_cache.get(cache_key_type)
                 if cached_data:
@@ -1060,7 +1078,7 @@ def proxy_api(subpath):
     if is_matches_route:
         encoded_subpath = urllib.parse.quote(subpath, safe='/')
         target_url = f"https://api.henrikdev.xyz/valorant/{encoded_subpath}"
-        bypass_cache = "true" in request.args.get("_nocache", "").lower() or len(request.args.get("_nocache", "")) > 0
+        bypass_cache = request.args.get("_nocache", "").lower() in ["true", "1", "force"]
         
         params_cache = request.args.to_dict()
         params_cache.pop('_nocache', None)

@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { player, currentView, setPlayer, startFetch, endFetch } from '../../lib/appStore';
+  import { player, currentView, setPlayer, startFetch, endFetch, purgeObsoleteCacheIfNeeded } from '../../lib/appStore';
   import { processMatches } from '../../lib/processMatches';
   import { saveMatches } from '../../lib/indexeddb';
   import { getRankImgUrl } from '../../lib/constants';
@@ -35,6 +35,7 @@
   const API_BASE = import.meta.env.PUBLIC_API_URL || '';
 
   onMount(() => {
+    purgeObsoleteCacheIfNeeded();
     console.log('[AppShell] mounted. API_BASE:', API_BASE || '(relative /api)');
     console.log('[AppShell] URL:', window.location.href);
 
