@@ -1,6 +1,7 @@
 // ValTracker — App State Store
 
 import { writable, derived } from 'svelte/store';
+import { getCurrentActId } from './constants';
 
 export interface PlayerState {
   name: string;
@@ -17,7 +18,7 @@ export const player = writable<PlayerState>({
   tag: '',
   region: 'ap',
   mode: 'competitive',
-  act: 'v26a4',
+  act: getCurrentActId(),
   loaded: false,
   fetching: false
 });

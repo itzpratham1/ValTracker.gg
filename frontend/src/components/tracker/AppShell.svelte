@@ -148,14 +148,23 @@
     return fetch(`${API_BASE}${url}`, { ...opts, signal: controller.signal }).finally(() => clearTimeout(timer));
   }
 
-  async function fetchWithRetry(url, opts = {}, timeoutMs = 30000, retries = 2) {
+  async function fetchWithRetry(url, opts = {}, timeoutMs = 30000, retries = 3) {
     for (let i = 0; i <= retries; i++) {
       try {
-        return await fetchWithTimeout(url, opts, timeoutMs);
+        const res = await fetchWithTimeout(url, opts, timeoutMs);
+        if (res.status === 429 || res.status === 502 || res.status === 503 || res.status === 504) {
+          if (i === retries) return res;
+          const delay = Math.pow(2, i) * 1500 + Math.floor(Math.random() * 500);
+          console.warn(`[AppShell] HTTP ${res.status} for ${url}, retrying in ${delay}ms (attempt ${i + 1}/${retries})...`);
+          await new Promise(r => setTimeout(r, delay));
+          continue;
+        }
+        return res;
       } catch (e) {
         if (i === retries) throw e;
-        console.warn(`[AppShell] Fetch attempt ${i + 1} failed, retrying...`, e.message);
-        await new Promise(r => setTimeout(r, 3000 * (i + 1)));
+        const delay = (i + 1) * 2000;
+        console.warn(`[AppShell] Fetch attempt ${i + 1} failed for ${url}, retrying in ${delay}ms...`, e.message);
+        await new Promise(r => setTimeout(r, delay));
       }
     }
   }
@@ -184,23 +193,34 @@
     const nc = Date.now();
 
     try {
-      console.log('[AppShell] Fetching API data...');
-      const [mmrRes, matchRes, accountRes, mmrHistRes] = await Promise.all([
+      console.log('[AppShell] Fetching API data in staggered sequence...');
+      
+      // Step 1: Fetch account details first (lightest & fastest)
+      const accountRes = await fetchWithRetry(`/api/v1/account/${enc}/${encTag}?_nocache=${nc}`);
+      
+      // Stagger slightly (150ms) to avoid triggering upstream API 429 burst limits
+      await new Promise(r => setTimeout(r, 150));
+
+      // Step 2: Fetch MMR & Match History concurrently
+      const [mmrRes, matchRes] = await Promise.all([
         isRanked
           ? fetchWithRetry(`/api/v3/mmr/${p.region}/pc/${enc}/${encTag}?_nocache=${nc}`)
           : Promise.resolve(null),
-        fetchWithRetry(`/api/v3/matches/${p.region}/${enc}/${encTag}?mode=${p.mode}&size=20&_nocache=${nc}`),
-        fetchWithRetry(`/api/v1/account/${enc}/${encTag}?_nocache=${nc}`),
-        fetchWithRetry(`/api/v1/stored-mmr-history/${p.region}/${enc}/${encTag}?_nocache=${nc}`)
+        fetchWithRetry(`/api/v3/matches/${p.region}/${enc}/${encTag}?mode=${p.mode}&size=20&_nocache=${nc}`)
       ]);
 
-      console.log('[AppShell] API responses:', { mmr: mmrRes?.status, match: matchRes?.status, account: accountRes?.status, hist: mmrHistRes?.status });
-      console.log('[AppShell] matchRes.ok:', matchRes?.ok, 'status:', matchRes?.status);
+      // Stagger slightly before background history fetch
+      await new Promise(r => setTimeout(r, 150));
 
-      const mmrResData = mmrRes?.ok ? await mmrRes.json() : null;
-      let matchResData = matchRes?.ok ? await matchRes.json() : null;
-      const accountResData = accountRes?.ok ? await accountRes.json() : null;
-      const mmrHistResData = mmrHistRes?.ok ? await mmrHistRes.json() : null;
+      // Step 3: Fetch stored MMR history (non-blocking)
+      const mmrHistRes = await fetchWithRetry(`/api/v1/stored-mmr-history/${p.region}/${enc}/${encTag}?_nocache=${nc}`).catch(() => null);
+
+      console.log('[AppShell] API responses:', { mmr: mmrRes?.status, match: matchRes?.status, account: accountRes?.status, hist: mmrHistRes?.status });
+
+      const accountResData = accountRes?.ok ? await accountRes.json().catch(() => null) : null;
+      const mmrResData = mmrRes?.ok ? await mmrRes.json().catch(() => null) : null;
+      let matchResData = matchRes?.ok ? await matchRes.json().catch(() => null) : null;
+      const mmrHistResData = mmrHistRes?.ok ? await mmrHistRes.json().catch(() => null) : null;
 
       if ((!matchResData || !matchResData.data) && accountResData?.data) {
         matchResData = { status: 200, data: [] };

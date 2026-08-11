@@ -13,6 +13,15 @@ export const ACTS_TIMELINE: Record<string, { name: string; start: number; end: n
   'v25a1': { name: 'V25 Act 1', start: new Date('2025-01-08T00:00:00Z').getTime(), end: new Date('2025-03-05T00:00:00Z').getTime() }
 };
 
+export function getCurrentActId(timestamp = Date.now()): string {
+  for (const [id, meta] of Object.entries(ACTS_TIMELINE)) {
+    if (timestamp >= meta.start && timestamp <= meta.end) {
+      return id;
+    }
+  }
+  return 'v26a4';
+}
+
 export const SEASONS_MAP: Record<string, string> = {
   'v26a4': 'e12a4', 'v26a3': 'e12a3', 'v26a2': 'e12a2', 'v26a1': 'e12a1',
   'v25a6': 'e11a3', 'v25a5': 'e11a2', 'v25a4': 'e11a1',

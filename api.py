@@ -117,13 +117,13 @@ def supabase_request(method, table, data=None, params=None, headers=None):
         
     try:
         if method.upper() == "GET":
-            r = http_session.get(url, headers=default_headers, params=params, timeout=8)
+            r = http_session.get(url, headers=default_headers, params=params, timeout=3)
         elif method.upper() == "POST":
-            r = http_session.post(url, headers=default_headers, json=data, timeout=8)
+            r = http_session.post(url, headers=default_headers, json=data, timeout=5)
         elif method.upper() == "PATCH":
-            r = http_session.patch(url, headers=default_headers, json=data, params=params, timeout=8)
+            r = http_session.patch(url, headers=default_headers, json=data, params=params, timeout=5)
         elif method.upper() == "DELETE":
-            r = http_session.delete(url, headers=default_headers, params=params, timeout=8)
+            r = http_session.delete(url, headers=default_headers, params=params, timeout=5)
         else:
             return None
         return r
@@ -370,7 +370,9 @@ def optimize_response(response):
     
     # Cache API responses
     if path.startswith('/api/'):
-        if path.startswith('/api/v3/meta-comps') or path.startswith('/api/v2/') or path.endswith('.json'):
+        if response.status_code >= 400 or '_nocache' in request.args:
+            response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        elif path.startswith('/api/v3/meta-comps') or path.startswith('/api/v2/') or path.endswith('.json'):
             response.headers['Cache-Control'] = 'public, max-age=600'
         else:
             response.headers['Cache-Control'] = 'public, max-age=30, must-revalidate'
