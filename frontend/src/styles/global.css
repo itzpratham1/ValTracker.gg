@@ -3071,6 +3071,22 @@ body::before {
   color: #5cf2f2;
   background: rgba(92, 242, 242, 0.08);
 }
+.active-pill-btn.tour-guide-btn {
+  border-radius: 12px;
+  padding: 3px 8px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: #ffffff;
+  background: rgba(250, 68, 84, 0.15);
+  border: 1px solid rgba(250, 68, 84, 0.35);
+  margin-left: 4px;
+}
+.active-pill-btn.tour-guide-btn:hover {
+  background: rgba(250, 68, 84, 0.3);
+  border-color: rgba(250, 68, 84, 0.6);
+  box-shadow: 0 0 10px rgba(250, 68, 84, 0.3);
+}
 
 /* ── FILTER SUMMARY TEXT (region · mode · act) ── */
 .filter-summary-text {

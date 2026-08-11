@@ -14,6 +14,7 @@ export const PRESERVED_USER_PREFERENCES = new Set<string>([
   'valtracker_recent_searches',
   'valtracker_muted',
   'valtracker_comps',
+  'valtracker_tour_completed',
   BUILD_VERSION_KEY
 ]);
 

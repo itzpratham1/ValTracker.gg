@@ -212,7 +212,7 @@
 
 {#if stats}
   <!-- 6 core stats cards grid -->
-  <div class="stat-cards-wrapper" bind:this={cardWrapEl}>
+  <div class="stat-cards-wrapper" bind:this={cardWrapEl} data-tour="stat-cards">
     <button class="card clickable visible {kdClass}" on:click={() => onStatClick('kd')}>
       <div class="card-accent-line"></div>
       <div class="card-label">K/D Ratio</div>

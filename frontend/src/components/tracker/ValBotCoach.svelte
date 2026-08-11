@@ -224,7 +224,7 @@
   })();
 </script>
 
-<div class="ai-card" class:mode-summary={mode === 'summary'} class:mode-action={mode === 'action'} bind:this={cardEl}>
+<div class="ai-card" class:mode-summary={mode === 'summary'} class:mode-action={mode === 'action'} bind:this={cardEl} data-tour="valbot-coach">
   <div class="ai-card-header">
     <div class="ai-header-left">
       <div class="ai-icon-glow-wrap">

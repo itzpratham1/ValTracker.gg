@@ -58,7 +58,7 @@
 
 <svelte:window on:click={closeTools} />
 
-<div class="tracker-nav" id="tracker-nav" role="navigation" aria-label="Section navigation">
+<div class="tracker-nav" id="tracker-nav" role="navigation" aria-label="Section navigation" data-tour="tracker-nav">
   <div class="tracker-nav-left" bind:this={navLeftEl}>
     {#each SECTIONS as section}
       <a
@@ -75,7 +75,7 @@
     {/each}
   </div>
   
-  <div class="tracker-nav-right">
+  <div class="tracker-nav-right" data-tour="utilities">
     <div class="session-group">
       <button class="nav-btn" class:action={!sessionActive} class:stop={sessionActive} on:click={onToggleSession}>
         {sessionActive ? '⏹ End Session' : '▶ Start Session'}
@@ -93,6 +93,9 @@
         <span class="dropdown-arrow">▼</span>
       </button>
       <div class="dropdown-menu" on:click|stopPropagation>
+        <button class="dropdown-item" on:click={() => { toolsOpen = false; dispatch('openTour'); }}>
+          <span class="dropdown-item-icon">🧭</span> Navigation Guide
+        </button>
         <button class="dropdown-item" on:click={() => { toolsOpen = false; dispatch('openWrapped'); }}>
           <span class="dropdown-item-icon">🎁</span> Valorant Wrapped
         </button>

@@ -15,6 +15,7 @@
   export let onOpenLeaderboard = () => {};
   export let onOpenFeedback = () => {};
   export let onOpenBookmarks = () => {};
+  export let onOpenTour = () => {};
 
   let utilitiesOpen = false;
   let copied = false;
@@ -267,7 +268,7 @@
       VALTRACKER
     </a>
     
-    <div class="topbar-tabs">
+    <div class="topbar-tabs" data-tour="nav-tabs">
       {#each TABS as tab}
         <button
           class="topbar-tab"
@@ -296,7 +297,7 @@
   
   <!-- Row 2: Sub Header (Search Controls & Filters) — tracker view only -->
   {#if subRowVisible && $currentView === 'tracker'}
-    <div class="topbar-sub-row">
+    <div class="topbar-sub-row" data-tour="search-filters">
       <div class="topbar-sub-left">
         <div class="player-active-pill">
           <div class="active-pill-avatar-wrap">

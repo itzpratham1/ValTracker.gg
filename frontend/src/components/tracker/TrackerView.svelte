@@ -28,6 +28,7 @@
   import BookmarksModal from './BookmarksModal.svelte';
   import LeaderboardModal from './LeaderboardModal.svelte';
   import FeedbackModal from './FeedbackModal.svelte';
+  import OnboardingGuide from '../shared/OnboardingGuide.svelte';
   import Toast from '../shared/Toast.svelte';
   import Footer from '../shared/Footer.svelte';
   import ProfileShare from '../shared/ProfileShare.svelte';
@@ -74,6 +75,7 @@
   let exportProfileOpen = false;
   let bookmarksOpen = false;
   let wrappedOpen = false;
+  let tourOpen = false;
   let activeSection = 'sec-combat';
   let activeAiTab = 'valbot';
 
@@ -324,6 +326,7 @@
     }
     // Escape closes open modals
     if (e.key === 'Escape') {
+      if (tourOpen)           tourOpen = false;
       if (h2hOpen)           h2hOpen = false;
       if (leaderboardOpen)   leaderboardOpen = false;
       if (feedbackOpen)      feedbackOpen = false;
@@ -346,6 +349,24 @@
     setupScrollTracker();
     setTimeout(setupRevealObserver, 120);
     window.addEventListener('keydown', handleKeydown);
+
+    if (typeof localStorage !== 'undefined') {
+      const tourDone = localStorage.getItem('valtracker_tour_completed');
+      const hasVisited = localStorage.getItem('valtracker_has_visited');
+      let recent = [];
+      try {
+        const raw = localStorage.getItem('valtracker_recent_searches');
+        if (raw) recent = JSON.parse(raw);
+      } catch {}
+
+      // Auto-show ONLY for fresh/new devices that haven't searched player IDs before
+      if (!hasVisited && !tourDone && (!recent || recent.length <= 1)) {
+        localStorage.setItem('valtracker_has_visited', 'true');
+        setTimeout(() => {
+          tourOpen = true;
+        }, 700);
+      }
+    }
   });
 
   onDestroy(() => {
@@ -364,6 +385,7 @@
     onOpenH2H={() => h2hOpen = true}
     onOpenLeaderboard={() => leaderboardOpen = true}
     onOpenFeedback={() => feedbackOpen = true}
+    onOpenTour={() => tourOpen = true}
   />
 
   {#if $currentView === 'tracker'}
@@ -376,6 +398,7 @@
     onToggleSession={toggleSession}
     onShowSessionSummary={showSessionSummary}
     onScrollTo={scrollToSection}
+    on:openTour={() => tourOpen = true}
     on:openWrapped={() => wrappedOpen = true}
     on:openLeaderboard={() => leaderboardOpen = true}
     on:openH2H={() => h2hOpen = true}
@@ -746,6 +769,8 @@
     isOpen={wrappedOpen}
     on:close={() => wrappedOpen = false}
   />
+
+  <OnboardingGuide bind:open={tourOpen} onClose={() => tourOpen = false} />
 
   <BackToTop />
 </div>

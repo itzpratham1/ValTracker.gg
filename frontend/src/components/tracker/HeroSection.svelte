@@ -89,7 +89,7 @@
   }
 </script>
 
-<div class="hero">
+<div class="hero" data-tour="hero-overview">
   <div id="player-card-bg" style="background-image: url('{cardUrl || ''}'); opacity: {cardUrl ? 0.42 : 0}; filter: saturate(1.3) brightness(0.72);"></div>
   <div class="hero-content">
     <div class="hero-left">
