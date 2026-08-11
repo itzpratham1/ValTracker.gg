@@ -7,6 +7,7 @@
     MAPS, MAP_DISPLAY, DRAFT_MAP_RECOMMENDATIONS, getAgentDisplayName
   } from '../../lib/draft-engine';
   import ProComps from './ProComps.svelte';
+  import AgentSelectorModal from './AgentSelectorModal.svelte';
   import { createShareCard } from '../../lib/api';
   import { animateAllNumbersInContainer } from '../../lib/aiStreamer';
   import { trackEvent } from '../../lib/analytics';
