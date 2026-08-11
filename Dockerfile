@@ -2,6 +2,11 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
+# Set production environment variables
+ENV FLASK_ENV=production
+ENV FLASK_DEBUG=0
+ENV PYTHONUNBUFFERED=1
+
 # Install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt

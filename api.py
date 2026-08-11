@@ -342,6 +342,14 @@ def compress_match_json(match_data):
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 
+# Enforce debug mode disabled in production
+is_production = os.getenv("RENDER") is not None or os.getenv("FLASK_ENV") == "production"
+if is_production:
+    app.config["DEBUG"] = False
+    app.config["TESTING"] = False
+    app.config["ENV"] = "production"
+    app.debug = False
+
 allowed_origins = os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
 allowed_origins = [o.strip() for o in allowed_origins if o.strip()]
 if not allowed_origins:
@@ -564,7 +572,14 @@ def root_health():
 
 @app.route("/api/health")
 def health_check():
-    return jsonify({"status": "ok", "service": "valtracker-api"})
+    is_prod = os.getenv("RENDER") is not None or os.getenv("FLASK_ENV") == "production"
+    current_env = os.getenv("FLASK_ENV", "production" if is_prod else "development")
+    return jsonify({
+        "status": "ok",
+        "service": "valtracker-api",
+        "env": current_env,
+        "debug": app.debug
+    })
 
 
 @app.route("/api/landing-stats")
