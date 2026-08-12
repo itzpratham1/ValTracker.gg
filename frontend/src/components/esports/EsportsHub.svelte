@@ -6,9 +6,12 @@
   import { VCT_STAGE_DATA, VCT_VLR_EVENTS } from '../../lib/esports-vct';
   import { escapeHtml } from '../../lib/utils';
 
+  import OnboardingGuide from '../shared/OnboardingGuide.svelte';
+
   let activeTab = 'overview';
   let showTier2 = true;
   let liveInterval = null;
+  let tourOpen = false;
 
   const TABS = [
     { id: 'overview', label: 'Overview' },
@@ -57,6 +60,15 @@
   $: isVisible = $currentView === 'esports';
   $: groupedRoster = getGroupedRoster(selectedTeam?.roster || []);
 
+  $: if (isVisible) {
+    if (typeof localStorage !== 'undefined' && !localStorage.getItem('valtracker_tour_esports')) {
+      localStorage.setItem('valtracker_tour_esports', 'true');
+      setTimeout(() => {
+        tourOpen = true;
+      }, 700);
+    }
+  }
+
   $: if (isVisible && activeTab === 'overview') {
     loadOverview();
   }
@@ -82,6 +94,19 @@
   function switchTab(tab) {
     activeTab = tab;
     if (liveInterval) { clearInterval(liveInterval); liveInterval = null; }
+  }
+
+  function handleTourStepChange(stepIdx, step) {
+    if (!step) return;
+    if (step.id === 'esports-header' || step.id === 'esports-tabs' || step.id === 'esports-live' || step.id === 'esports-news') {
+      if (activeTab !== 'overview') switchTab('overview');
+    } else if (step.id === 'esports-schedule') {
+      if (activeTab !== 'schedule') switchTab('schedule');
+    } else if (step.id === 'esports-roadmap') {
+      if (activeTab !== 'vct26') switchTab('vct26');
+    } else if (step.id === 'esports-teams-sidebar' || step.id === 'esports-teams-roster') {
+      if (activeTab !== 'teams') switchTab('teams');
+    }
   }
 
   function switchScheduleTab(tab) {
@@ -145,7 +170,7 @@
       upcomingMatches = upRes?.data || [];
       scheduleResultsMatches = resRes?.data || [];
       resultsMatches = scheduleResultsMatches;
-      setAllMatchesCache(upcomingMatches);
+      setAllMatchesCache([...upcomingMatches, ...scheduleResultsMatches]);
     } catch (err) {
       console.error("Schedule load failed", err);
     }
@@ -283,13 +308,9 @@
     vctModalStage = stage;
     const isInternational = stage.includes('masters') || stage === 'champions';
 
-    if (stage === 'masters_london') {
-      vctModalTabList = ['playoffs', 'swiss', 'teams', 'americas', 'pacific', 'emea', 'china'];
-    } else {
-      vctModalTabList = isInternational
-        ? ['global', 'americas', 'pacific', 'emea', 'china']
-        : Object.keys(data.regions);
-    }
+    vctModalTabList = isInternational
+      ? ['global', 'americas', 'pacific', 'emea', 'china']
+      : Object.keys(data.regions);
 
     switchVctModalTab(stage, vctModalTabList[0]);
     vctModalOpen = true;
@@ -305,13 +326,6 @@
     vctModalRegion = region;
     const data = VCT_STAGE_DATA[stage];
     if (!data) return;
-
-    if (stage === 'masters_london' && (region === 'playoffs' || region === 'swiss')) {
-      vctModalWinners = [];
-      vctModalTeams = [];
-      vctModalLoading = false;
-      return;
-    }
 
     let lookupRegion = region;
     if (region === 'teams') lookupRegion = 'global';
@@ -495,6 +509,16 @@
     return author.toUpperCase();
   }
 
+  function getFirstVisibleIndex(list) {
+    if (!list || !Array.isArray(list)) return -1;
+    return list.findIndex(m => showTier2 || !isTier2Match(m));
+  }
+
+  $: firstLiveIdx = getFirstVisibleIndex(liveMatches);
+  $: firstHighIdx = getFirstVisibleIndex(highlightMatches);
+  $: firstUpIdx = getFirstVisibleIndex(upcomingMatches);
+  $: firstResIdx = getFirstVisibleIndex(scheduleResultsMatches);
+
   function getSidebarTeamLogo(region, teamId) {
     if (!franchiseData || !franchiseData[region]) return null;
     const team = franchiseData[region].find(t => t.id === teamId);
@@ -523,8 +547,8 @@
 
 {#if isVisible}
 <div class="esports-view">
-  <div class="esports-subnav">
-    <div class="esports-pills-scroll">
+  <div class="esports-subnav" data-tour="esports-header">
+    <div class="esports-pills-scroll" data-tour="esports-tabs">
       {#each TABS as tab}
         <button
           class="esports-pill"
@@ -533,12 +557,17 @@
         >{tab.label}</button>
       {/each}
     </div>
-    <div class="tier-toggle-wrapper">
-      <span style="font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); text-transform:uppercase;">Tier 2/3</span>
-      <label class="switch">
-        <input type="checkbox" checked={showTier2} on:change={toggleTier2}>
-        <span class="slider round"></span>
-      </label>
+    <div class="esports-subnav-actions">
+      <button class="tour-btn-trigger" on:click={() => tourOpen = true} title="Launch Feature Tour">
+        <span style="color:var(--accent,#fa4454);">⚡</span> Feature Tour
+      </button>
+      <div class="tier-toggle-wrapper">
+        <span style="font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); text-transform:uppercase;">Tier 2/3</span>
+        <label class="switch">
+          <input type="checkbox" checked={showTier2} on:change={toggleTier2}>
+          <span class="slider round"></span>
+        </label>
+      </div>
     </div>
   </div>
 
@@ -553,15 +582,15 @@
         </div>
 
         <div class="esp-overview-grid">
-          <div>
+          <div class="esp-overview-col-matches">
             <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:16px; text-transform:uppercase; margin-bottom:12px; color:var(--accent);">🔴 Active Matches</h4>
             {#if loading.overview && !liveMatches.length}
               <div class="placeholder-txt">Loading Active matches...</div>
             {:else if liveMatches.length === 0}
               <div class="placeholder-txt">No live matches right now.</div>
             {:else}
-              {#each liveMatches as m}
-                <div class:tier-t2={isTier2Match(m)} style={isTier2Match(m) && !showTier2 ? 'display:none' : ''}>
+              {#each liveMatches as m, i}
+                <div class:tier-t2={isTier2Match(m)} style={isTier2Match(m) && !showTier2 ? 'display:none' : ''} data-tour={i === firstLiveIdx ? 'esports-live' : undefined}>
                   {@html getEspHTML(m, 'live')}
                 </div>
               {/each}
@@ -573,14 +602,14 @@
             {:else if highlightMatches.length === 0}
               <div class="placeholder-txt">No recent results found.</div>
             {:else}
-              {#each highlightMatches as m}
-                <div class:tier-t2={isTier2Match(m)} style={isTier2Match(m) && !showTier2 ? 'display:none' : ''}>
+              {#each highlightMatches as m, i}
+                <div class:tier-t2={isTier2Match(m)} style={isTier2Match(m) && !showTier2 ? 'display:none' : ''} data-tour={firstLiveIdx === -1 && i === firstHighIdx ? 'esports-live' : undefined}>
                   {@html getEspHTML(m, 'results')}
                 </div>
               {/each}
             {/if}
           </div>
-          <div>
+          <div class="esp-overview-col-news">
             <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:16px; text-transform:uppercase; margin-bottom:12px; color:var(--accent);">📰 Latest Headlines</h4>
             <div style="display:flex; flex-direction:column; gap:10px;">
               {#if loading.overview && !newsItems.length}
@@ -588,9 +617,9 @@
               {:else if newsItems.length === 0}
                 <div class="placeholder-txt">No news headlines found.</div>
               {:else}
-                {#each newsItems as n}
+                {#each newsItems as n, i}
                   {@const cat = getNewsCategory(n.title)}
-                  <a href={n.url_path ? 'https://vlr.gg' + n.url_path : '#'} target="_blank" class="esp-news-card-rich">
+                  <a href={n.url_path ? 'https://vlr.gg' + n.url_path : '#'} target="_blank" class="esp-news-card-rich" data-tour={i === 0 ? 'esports-news' : undefined}>
                     <div class="enc-accent-bar" style="background:{cat.color};"></div>
                     <div class="enc-body">
                       <div class="enc-meta-top">
@@ -636,8 +665,8 @@
             {:else if upcomingMatches.length === 0}
               <div class="placeholder-txt">No upcoming matches scheduled.</div>
             {:else}
-              {#each upcomingMatches.slice(0, 30) as m}
-                <div class:tier-t2={isTier2Match(m)} style={isTier2Match(m) && !showTier2 ? 'display:none' : ''}>
+              {#each upcomingMatches.slice(0, 30) as m, i}
+                <div class:tier-t2={isTier2Match(m)} style={isTier2Match(m) && !showTier2 ? 'display:none' : ''} data-tour={i === firstUpIdx ? 'esports-schedule' : undefined}>
                   {@html getEspHTML(m, 'upcoming')}
                 </div>
               {/each}
@@ -653,8 +682,8 @@
             {:else if scheduleResultsMatches.length === 0}
               <div class="placeholder-txt">No recent results found.</div>
             {:else}
-              {#each scheduleResultsMatches.slice(0, 30) as m}
-                <div class:tier-t2={isTier2Match(m)} style={isTier2Match(m) && !showTier2 ? 'display:none' : ''}>
+              {#each scheduleResultsMatches.slice(0, 30) as m, i}
+                <div class:tier-t2={isTier2Match(m)} style={isTier2Match(m) && !showTier2 ? 'display:none' : ''} data-tour={firstUpIdx === -1 && i === firstResIdx ? 'esports-schedule' : undefined}>
                   {@html getEspHTML(m, 'results')}
                 </div>
               {/each}
@@ -679,7 +708,7 @@
               <div class="vct-roadmap-title">VCT Kickoff</div>
               <div class="vct-roadmap-subtitle" style="color:var(--loss)">Concluded</div>
               <div class="vct-roadmap-subtitle" style="font-size: 9px; margin-top: 4px; line-height: 1.3;">
-                AMER: SEN | PAC: GEN<br>EMEA: KC | CN: EDG
+                AMER: FUR | PAC: NS<br>EMEA: BBL | CN: AG
               </div>
             </button>
           </div>
@@ -688,7 +717,7 @@
             <button class="vct-roadmap-card concluded tall" on:click={() => openVctTournamentModal('masters_santiago')}>
               <div class="vct-roadmap-title" style="color: #c084fc;">Masters Santiago</div>
               <div class="vct-roadmap-subtitle" style="color:var(--loss)">Concluded</div>
-              <div class="vct-roadmap-dates">Feb 28 - Mar 16, 2026</div>
+              <div class="vct-roadmap-dates">Feb 28 - Mar 15, 2026</div>
               <div class="vct-roadmap-subtitle" style="font-size: 9px; margin-top: 12px; color:#c084fc;">Winner: Nongshim RedForce</div>
             </button>
           </div>
@@ -697,26 +726,30 @@
             <button class="vct-roadmap-card concluded" on:click={() => openVctTournamentModal('stage1')}>
               <div class="vct-roadmap-title">VCT Stage 1</div>
               <div class="vct-roadmap-subtitle" style="color:var(--loss)">Concluded</div>
-              <div class="vct-roadmap-dates">Apr 11 - May 25, 2026</div>
+              <div class="vct-roadmap-dates">Apr 10 - May 24, 2026</div>
               <div class="vct-roadmap-subtitle" style="font-size: 9px; margin-top: 4px; line-height: 1.3;">
                 AMER: LEV | PAC: PRX<br>EMEA: TH | CN: EDG
               </div>
             </button>
           </div>
           <div class="vct-roadmap-col">
-            <div class="vct-roadmap-header ongoing">Global Event</div>
-            <button class="vct-roadmap-card ongoing tall" on:click={() => openVctTournamentModal('masters_london')}>
+            <div class="vct-roadmap-header concluded">Global Event</div>
+            <button class="vct-roadmap-card concluded tall" on:click={() => openVctTournamentModal('masters_london')}>
               <div class="vct-roadmap-title" style="color: #a855f7;">Masters London</div>
-              <div class="vct-roadmap-subtitle" style="color:var(--win)">Ongoing</div>
+              <div class="vct-roadmap-subtitle" style="color:var(--loss)">Concluded</div>
               <div class="vct-roadmap-dates">June 6 - June 21, 2026</div>
+              <div class="vct-roadmap-subtitle" style="font-size: 9px; margin-top: 12px; color:#a855f7;">Winner: Leviatán</div>
             </button>
           </div>
           <div class="vct-roadmap-col">
-            <div class="vct-roadmap-header">International League</div>
-            <button class="vct-roadmap-card" on:click={() => openVctTournamentModal('stage2')}>
+            <div class="vct-roadmap-header ongoing">International League</div>
+            <button class="vct-roadmap-card ongoing" data-tour="esports-roadmap" on:click={() => openVctTournamentModal('stage2')}>
               <div class="vct-roadmap-title">VCT Stage 2</div>
-              <div class="vct-roadmap-subtitle" style="color:var(--muted)">Upcoming</div>
-              <div class="vct-roadmap-dates">July 2026</div>
+              <div class="vct-roadmap-subtitle" style="color:var(--win)">Ongoing</div>
+              <div class="vct-roadmap-dates">July 9 - Sept 6, 2026</div>
+              <div class="vct-roadmap-subtitle" style="font-size: 9px; margin-top: 4px; line-height: 1.3; color:var(--win);">
+                Regional Roadshows & Playoffs
+              </div>
             </button>
           </div>
           <div class="vct-roadmap-col">
@@ -724,7 +757,8 @@
             <button class="vct-roadmap-card tall champions" on:click={() => openVctTournamentModal('champions')}>
               <div class="vct-roadmap-title" style="color: #fbbf24;">Champions Shanghai</div>
               <div class="vct-roadmap-subtitle" style="color:var(--muted)">Upcoming</div>
-              <div class="vct-roadmap-dates">September 2026</div>
+              <div class="vct-roadmap-dates">Sept 24 - Oct 18, 2026</div>
+              <div class="vct-roadmap-subtitle" style="font-size: 9px; margin-top: 12px; color:#fbbf24;">Prize Pool: $2.25M</div>
             </button>
           </div>
         </div>
@@ -733,8 +767,8 @@
           <div class="vct-roadmap-node active" title="Kickoff - Concluded"></div>
           <div class="vct-roadmap-node active" title="Masters Santiago - Concluded"></div>
           <div class="vct-roadmap-node active" title="Stage 1 - Concluded"></div>
-          <div class="vct-roadmap-node active" title="Masters London - Ongoing"></div>
-          <div class="vct-roadmap-node" title="Stage 2 - Upcoming"></div>
+          <div class="vct-roadmap-node active" title="Masters London - Concluded"></div>
+          <div class="vct-roadmap-node active ongoing" title="Stage 2 - Ongoing"></div>
           <div class="vct-roadmap-node" title="Champions Shanghai - Upcoming"></div>
         </div>
       </div>
@@ -755,6 +789,7 @@
                   <button
                     class="esp-sidebar-team-btn"
                     class:active={selectedTeamId === team.id}
+                    data-tour={selectedTeamId === team.id ? 'esports-teams-sidebar' : undefined}
                     on:click={() => selectFranchiseTeam(region, team.id)}
                   >
                     <span class="esp-sidebar-team-logo-wrap">{@html getEsportsTeamLogoHtml(team.name)}</span>
@@ -766,43 +801,43 @@
           </div>
 
           <div class="esp-team-dashboard">
-            <div id="esp-team-main-area">
-              <div class="esp-team-hero">
-                <div class="esp-team-title-row">
-                  <div style="display: flex; align-items: center; margin-bottom: 16px;">
-                    {#key selectedTeamId}
-                      {#if selectedTeam}
-                        <div style="margin-right: 16px; font-size: 24px;">{@html getEsportsTeamLogoHtml(selectedTeam.name)}</div>
-                      {/if}
-                    {/key}
-                    <div class="esp-team-name-lg" style="margin-bottom: 0;">
-                      {selectedTeam?.name || 'Select a Team'}
+              <div id="esp-team-main-area">
+                <div class="esp-team-hero">
+                  <div class="esp-team-title-row">
+                    <div style="display: flex; align-items: center; margin-bottom: 16px;">
+                      {#key selectedTeamId}
+                        {#if selectedTeam}
+                          <div style="margin-right: 16px; font-size: 24px;">{@html getEsportsTeamLogoHtml(selectedTeam.name)}</div>
+                        {/if}
+                      {/key}
+                      <div class="esp-team-name-lg" style="margin-bottom: 0;">
+                        {selectedTeam?.name || 'Select a Team'}
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="esp-team-desc">
-                  {selectedTeam?.description || 'Select a VCT Franchise team from the left sidebar to explore their full roster players, coach staff, and capsule skin details.'}
-                </div>
-
-                {#if selectedTeam?.capsule_image}
-                  <div class="capsule-promo-card">
-                    <img class="capsule-promo-img" src={selectedTeam.capsule_image} alt="VCT Capsule" />
-                    <div class="capsule-promo-info">
-                      <div class="capsule-promo-title">{selectedTeam.capsule_title || 'VCT Capsule'}</div>
-                      <div class="capsule-promo-desc">{selectedTeam.capsule_desc || 'Support your team'}</div>
-                    </div>
+                  <div class="esp-team-desc">
+                    {selectedTeam?.description || 'Select a VCT Franchise team from the left sidebar to explore their full roster players, coach staff, and capsule skin details.'}
                   </div>
-                {/if}
-              </div>
 
-              {#if groupedRoster.players.length > 0}
-                <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:16px; text-transform:uppercase; margin-top:24px; color:#fff; display:flex; align-items:center; gap:8px;">
-                  <span>🎮 Active Players</span>
-                  <span style="font-size:11px; color:var(--muted); font-family:'DM Mono',monospace;">({groupedRoster.players.length})</span>
-                </h4>
-                <div class="player-card-grid">
-                  {#each groupedRoster.players as p (selectedTeamId + '_' + p.name)}
-                    <div class="player-card">
+                  {#if selectedTeam?.capsule_image}
+                    <div class="capsule-promo-card">
+                      <img class="capsule-promo-img" src={selectedTeam.capsule_image} alt="VCT Capsule" />
+                      <div class="capsule-promo-info">
+                        <div class="capsule-promo-title">{selectedTeam.capsule_title || 'VCT Capsule'}</div>
+                        <div class="capsule-promo-desc">{selectedTeam.capsule_desc || 'Support your team'}</div>
+                      </div>
+                    </div>
+                  {/if}
+                </div>
+
+                {#if groupedRoster.players.length > 0}
+                  <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:16px; text-transform:uppercase; margin-top:24px; color:#fff; display:flex; align-items:center; gap:8px;">
+                    <span>🎮 Active Players</span>
+                    <span style="font-size:11px; color:var(--muted); font-family:'DM Mono',monospace;">({groupedRoster.players.length})</span>
+                  </h4>
+                  <div class="player-card-grid">
+                    {#each groupedRoster.players as p, i (selectedTeamId + '_' + p.name)}
+                      <div class="player-card" data-tour={i === 0 ? 'esports-teams-roster' : undefined}>
                       <span
                         class="player-card-role"
                         class:coach={p.role.toLowerCase().includes('coach')}
@@ -958,6 +993,7 @@
     {/if}
 
   </div>
+  <OnboardingGuide section="esports" bind:open={tourOpen} onClose={() => tourOpen = false} onStepChange={handleTourStepChange} />
 </div>
 
 <!-- VCT Tournament Modal -->

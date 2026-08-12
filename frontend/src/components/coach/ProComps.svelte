@@ -59,7 +59,7 @@
   <span class="sl-text">Compare Against the Pros</span>
   <div class="sl-line"></div>
 </div>
-<div class="card pro-comps-card">
+<div class="card pro-comps-card" data-tour="coach-vct-meta">
   {#if loading}
     <div class="pro-comps-loading">Loading pro data...</div>
   {:else if error}

@@ -4,6 +4,7 @@
   import { fetchStoreFeatured } from '../../lib/api';
   import FeaturedBundles from './FeaturedBundles.svelte';
   import SkinModal from './SkinModal.svelte';
+  import OnboardingGuide from '../shared/OnboardingGuide.svelte';
 
   let featuredBundles = [];
   let bundleMeta = [];
@@ -12,6 +13,7 @@
   let loadingBundles = true;
   let loadingSkins = true;
   let error = null;
+  let tourOpen = false;
 
   let searchQuery = '';
   let weaponFilter = 'all';
@@ -26,6 +28,12 @@
   $: isVisible = $currentView === 'store';
 
   $: if (isVisible) {
+    if (typeof localStorage !== 'undefined' && !localStorage.getItem('valtracker_tour_store')) {
+      localStorage.setItem('valtracker_tour_store', 'true');
+      setTimeout(() => {
+        tourOpen = true;
+      }, 700);
+    }
     initStore();
   }
 
@@ -175,8 +183,13 @@
 
 <div class="store-view">
   <!-- Banner Header -->
-  <div class="store-banner">
-    <h2 class="store-banner-title">Valorant Store & Cosmetics Explorer</h2>
+  <div class="store-banner" style="position:relative;" data-tour="store-header">
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+      <h2 class="store-banner-title" style="margin:0;">Valorant Store & Cosmetics Explorer</h2>
+      <button class="tour-btn-trigger" on:click={() => tourOpen = true} title="Launch Feature Tour">
+        <span style="color:var(--accent,#fa4454);">⚡</span> Feature Tour
+      </button>
+    </div>
     <p class="store-banner-desc">
       Track global featured bundles with pricing in VP, live countdown timers, and browse the complete Valorant weapon skins database. Click on any skin to explore chroma color variants and watch high-definition video finisher previews inline.
     </p>
@@ -215,7 +228,7 @@
 
       <!-- Search & Filters Bar -->
       <div class="card store-filters">
-        <div class="store-search-wrap">
+        <div class="store-search-wrap" data-tour="store-catalog">
           <input
             type="text"
             placeholder="Search weapon skins (e.g. Prime, Reaver, RGX)..."
@@ -225,7 +238,7 @@
           />
         </div>
 
-        <div class="store-filter-selects">
+        <div class="store-filter-selects" data-tour="store-rarity">
           <select bind:value={weaponFilter} on:change={handleSearch} class="store-select">
             <option value="all">All Weapons</option>
             <option value="vandal">Vandal</option>
@@ -270,11 +283,12 @@
         <div class="store-error">{error}</div>
       {:else}
         <div class="skin-catalog-grid">
-          {#each visibleSkins as skin (skin.uuid)}
+          {#each visibleSkins as skin, idx (skin.uuid)}
             {@const tier = getSkinRarityTier(skin.contentTierUuid)}
             {@const isMelee = skin.displayName.toLowerCase().includes('melee') || skin.displayName.toLowerCase().includes('knife') || skin.displayName.toLowerCase().includes('axe')}
             <div
               class="card skin-catalog-card"
+              data-tour={idx === 0 ? 'store-card' : undefined}
               style="border-left: 3px solid {tier.color};"
               on:click={() => openSkinModal(skin)}
               on:mouseover={(e) => e.currentTarget.style.borderColor = tier.color}
@@ -322,6 +336,8 @@
 
 <SkinModal skin={selectedSkin} open={modalOpen} onClose={closeModal} />
 
+<OnboardingGuide section="store" bind:open={tourOpen} onClose={() => tourOpen = false} />
+
 <style>
   .store-view {
     padding: 24px;
@@ -365,7 +381,13 @@
     margin-bottom: 30px;
   }
 
-  .store-left-panel,
+  .store-left-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-self: flex-start;
+  }
+
   .store-right-panel {
     display: flex;
     flex-direction: column;

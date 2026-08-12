@@ -9,5 +9,59 @@
       "timestamp": "2026-08-11T16:44:58.419Z"
     },
     "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-08-11T22:47:32.154950",
+    "event": "player_search",
+    "payload": {
+      "name": "Harsh",
+      "region": "ap",
+      "mode": "competitive",
+      "timestamp": "2026-08-11T17:17:32.128Z"
+    },
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-08-11T22:54:18.762725",
+    "event": "player_search",
+    "payload": {
+      "name": "Harsh",
+      "region": "ap",
+      "mode": "competitive",
+      "timestamp": "2026-08-11T17:24:18.734Z"
+    },
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-08-11T23:56:32.104349",
+    "event": "draft_coach_evaluate",
+    "payload": {
+      "map": "haven",
+      "score": 0,
+      "timestamp": "2026-08-11T18:26:32.089Z"
+    },
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-08-12T14:11:40.503598",
+    "event": "player_search",
+    "payload": {
+      "name": "Harsh",
+      "region": "ap",
+      "mode": "competitive",
+      "timestamp": "2026-08-12T08:41:40.494Z"
+    },
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-08-12T14:12:36.558810",
+    "event": "player_search",
+    "payload": {
+      "name": "Harsh",
+      "region": "ap",
+      "mode": "competitive",
+      "timestamp": "2026-08-12T08:42:36.522Z"
+    },
+    "ip": "127.0.0.1"
   }
 ]

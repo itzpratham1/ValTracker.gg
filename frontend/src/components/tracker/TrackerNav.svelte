@@ -94,7 +94,7 @@
       </button>
       <div class="dropdown-menu" on:click|stopPropagation>
         <button class="dropdown-item" on:click={() => { toolsOpen = false; dispatch('openTour'); }}>
-          <span class="dropdown-item-icon">🧭</span> Navigation Guide
+          <span class="dropdown-item-icon">⚡</span> Feature Tour
         </button>
         <button class="dropdown-item" on:click={() => { toolsOpen = false; dispatch('openWrapped'); }}>
           <span class="dropdown-item-icon">🎁</span> Valorant Wrapped

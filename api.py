@@ -40,6 +40,7 @@ cache_lock = threading.Lock()
 
 
 def safe_print(*args, **kwargs):
+    kwargs.setdefault('flush', True)
     try:
         builtins.print(*args, **kwargs)
     except (UnicodeEncodeError, AttributeError, TypeError):
@@ -143,11 +144,21 @@ def extract_player_params(subpath):
         return parts[3], parts[4]
     return None, None
 
+_player_db_cache = {}
+_PLAYER_DB_CACHE_TTL = 300  # 5 minutes in-memory cache for Supabase player lookup
+
 def get_cached_player(name, tag):
-    if not SUPABASE_URL or not SUPABASE_KEY:
+    if not SUPABASE_URL or not SUPABASE_KEY or not name or not tag:
         return None
     safe_name = sanitize_postgrest_value(name)
     safe_tag = sanitize_postgrest_value(tag)
+    cache_key = f"{safe_name.lower()}#{safe_tag.lower()}"
+    
+    with cache_lock:
+        entry = _player_db_cache.get(cache_key)
+        if entry and (time.time() - entry["ts"]) < _PLAYER_DB_CACHE_TTL:
+            return entry["data"]
+
     params = {
         "name": f"ilike.{safe_name}",
         "tag": f"ilike.{safe_tag}"
@@ -156,7 +167,10 @@ def get_cached_player(name, tag):
     if r and r.status_code == 200:
         players = r.json()
         if players and len(players) > 0:
-            return players[0]
+            player_obj = players[0]
+            with cache_lock:
+                _player_db_cache[cache_key] = {"ts": time.time(), "data": player_obj}
+            return player_obj
     return None
 
 def is_player_fresh(cached_player, ttl_seconds=1800):
@@ -252,6 +266,9 @@ def upsert_player(puuid, name, tag, region, level=None, card_id=None, current_ti
         payload["stats_cache"] = stats_cache
     headers = {"Prefer": "resolution=merge-duplicates"}
     supabase_request("POST", "players_cache", data=payload, headers=headers)
+    with cache_lock:
+        key_db = f"{sanitize_postgrest_value(name).lower()}#{sanitize_postgrest_value(tag).lower()}"
+        _player_db_cache.pop(key_db, None)
 
 def compress_match_json(match_data):
     if not match_data:
@@ -503,12 +520,13 @@ def rate_limit(requests_per_minute=60, window_seconds=60):
             ip = get_client_ip()
             now = time.time()
             with cache_lock:
-                history = rate_limit_records.get(ip, [])
+                key = f"{f.__name__}:{ip}"
+                history = rate_limit_records.get(key, [])
                 valid_history = [t for t in history if now - t < window_seconds]
                 if len(valid_history) >= requests_per_minute:
                     oldest_ts = valid_history[0]
                     retry_after = max(1, int(oldest_ts + window_seconds - now))
-                    print(f"[RATE LIMIT 429] Blocked IP {ip} on {request.path} - exceeded {requests_per_minute} req/{window_seconds}s")
+                    print(f"[RATE LIMIT 429] Blocked IP {ip} on {request.path} ({f.__name__}) - exceeded {requests_per_minute} req/{window_seconds}s")
                     response = jsonify({
                         "status": 429,
                         "error": "Too Many Requests",
@@ -520,7 +538,7 @@ def rate_limit(requests_per_minute=60, window_seconds=60):
                     return response
                 
                 valid_history.append(now)
-                rate_limit_records[ip] = valid_history
+                rate_limit_records[key] = valid_history
             return f(*args, **kwargs)
         return wrapped
     return decorator
@@ -648,7 +666,7 @@ def submit_feedback():
         return jsonify({"status": "error", "message": "An error occurred while saving feedback"}), 500
 
 
-@app.route("/api/telemetry", methods=["POST"])
+@app.route("/api/events", methods=["POST"])
 @rate_limit(requests_per_minute=120)
 def submit_telemetry():
     try:
@@ -718,44 +736,6 @@ def clear_server_cache():
     return jsonify({"status": "ok", "message": "Server cache cleared"})
 
 
-ALLOWED_IMAGE_DOMAINS = {"owcdn.net", "vlr.gg", "valorant-api.com", "rstatic.net"}
-
-@app.route("/api/image")
-@rate_limit(requests_per_minute=300)
-def proxy_image():
-    url = request.args.get("url")
-    if not url:
-        return "No url provided", 400
-    try:
-        parsed_url = urllib.parse.urlparse(url)
-        domain = parsed_url.netloc.lower()
-        if not domain:
-            return "Invalid URL", 400
-        valid_domain = any(domain == allowed or domain.endswith("." + allowed) for allowed in ALLOWED_IMAGE_DOMAINS)
-        if not valid_domain:
-            return "Forbidden image domain", 403
-
-        now = time.time()
-        cached = image_cache.get(url)
-        if cached and now - cached["timestamp"] < IMAGE_CACHE_TTL:
-            return send_file(io.BytesIO(cached["content"]), mimetype=cached["mimetype"])
-
-        r = requests.get(url, headers={'User-Agent': 'Mozilla/5.0', 'Referer': 'https://www.vlr.gg/'}, timeout=8, allow_redirects=False)
-        if r.status_code in (301, 302, 307, 308) and 'Location' in r:
-            redirect_url = r.headers['Location']
-            parsed_redirect = urllib.parse.urlparse(redirect_url)
-            redirect_domain = parsed_redirect.netloc.lower()
-            valid_redirect = any(redirect_domain == a or redirect_domain.endswith('.' + a) for a in ALLOWED_IMAGE_DOMAINS)
-            if valid_redirect:
-                r = requests.get(redirect_url, headers={'User-Agent': 'Mozilla/5.0', 'Referer': 'https://www.vlr.gg/'}, timeout=8, allow_redirects=False)
-        if r.status_code != 200:
-            return "Failed to load image from upstream", r.status_code
-
-        image_cache[url] = {"content": r.content, "mimetype": r.headers.get('Content-Type', 'image/png'), "timestamp": now}
-        return send_file(io.BytesIO(r.content), mimetype=r.headers.get('Content-Type', 'image/png'))
-    except Exception as e:
-        print(f"[PROXY IMAGE ERROR] {e}")
-        return "Failed to load image", 500
 
 
 @app.route("/api/share-card", methods=["POST"])
@@ -1077,6 +1057,19 @@ def proxy_api(subpath):
 
     if is_profile_route:
         bypass_cache = request.args.get("_nocache", "").lower() in ["true", "1", "force"]
+        encoded_subpath = urllib.parse.quote(subpath, safe='/')
+        target_url = f"https://api.henrikdev.xyz/valorant/{encoded_subpath}"
+        params_cache = request.args.to_dict()
+        params_cache.pop('_nocache', None)
+        qs = urllib.parse.urlencode(sorted(params_cache.items()))
+        cache_key = f"{target_url}?{qs}" if qs else target_url
+
+        if not bypass_cache and cache_key in cache:
+            cache_entry = cache[cache_key]
+            if time.time() - cache_entry["timestamp"] < CACHE_TTL:
+                print(f"[MEMORY CACHE HIT] Serving {cache_key_type} for {name}#{tag} instantly from memory cache!")
+                return jsonify(cache_entry["data"])
+
         if not bypass_cache:
             cached_player = get_cached_player(name, tag)
             if cached_player and is_cache_key_fresh(cached_player, cache_key_type, ttl_seconds=1800):
@@ -1084,6 +1077,8 @@ def proxy_api(subpath):
                 cached_data = stats_cache.get(cache_key_type)
                 if cached_data:
                     print(f"[DB CACHE HIT] Serving {cache_key_type} for {name}#{tag} instantly from Supabase!")
+                    with cache_lock:
+                        cache[cache_key] = {"data": cached_data, "timestamp": time.time()}
                     return jsonify(cached_data)
 
     is_matches_route = False
@@ -1109,54 +1104,33 @@ def proxy_api(subpath):
         params = request.args.to_dict()
         params.pop('_nocache', None)
         mode = normalize_mode(params.get("mode", "competitive").lower())
-        
-        live_matches_data = None
-        live_status_code = 200
-        try:
-            print(f"[MATCH INTERCEPT] Fetching live matches for {name}#{tag} from HenrikDev...")
-            encoded_subpath = urllib.parse.quote(subpath, safe='/')
-            target_url = f"https://api.henrikdev.xyz/valorant/{encoded_subpath}"
-            headers = {"Authorization": API_KEY, "Content-Type": "application/json"}
-            response = http_session.get(target_url, headers=headers, params=params, timeout=8)
-            live_status_code = response.status_code
-            if response.status_code == 200:
-                live_matches_data = response.json()
-            else:
-                try:
-                    live_matches_data = response.json()
-                except Exception:
-                    live_matches_data = {"status": response.status_code, "error": "Unknown API error"}
-        except Exception as e:
-            print(f"[MATCH INTERCEPT ERROR] Failed to fetch live matches: {e}")
-            live_status_code = 500
-            live_matches_data = {"status": 500, "error": "Internal server error while fetching live matches"}
-            
+
         puuid = None
         cached_player = get_cached_player(name, tag)
         if cached_player:
             puuid = cached_player.get("puuid")
-            
-        if not puuid and live_matches_data and isinstance(live_matches_data.get("data"), list):
-            for m in live_matches_data["data"]:
-                if not m: continue
-                players = m.get("players", {})
-                raw_players = []
-                if isinstance(players, dict):
-                    raw_players = players.get("all_players", []) or players.get("allPlayers", [])
-                elif isinstance(players, list):
-                    raw_players = players
-                for p in raw_players:
-                    if p.get("name", "").lower() == name.lower() and p.get("tag", "").lower() == tag.lower():
-                        puuid = p.get("puuid")
-                        break
-                if puuid:
-                    break
-            if puuid:
-                region = subpath.split("/")[2] if len(subpath.split("/")) >= 3 else "ap"
-                upsert_player(puuid, name, tag, region)
 
-        db_matches = []
-        if puuid:
+        def _fetch_live():
+            print(f"[MATCH INTERCEPT] Fetching live matches for {name}#{tag} from HenrikDev...")
+            encoded_subpath = urllib.parse.quote(subpath, safe='/')
+            target_url_inner = f"https://api.henrikdev.xyz/valorant/{encoded_subpath}"
+            headers = {"Authorization": API_KEY, "Content-Type": "application/json"}
+            try:
+                res = http_session.get(target_url_inner, headers=headers, params=params, timeout=8)
+                if res.status_code == 200:
+                    return res.status_code, res.json()
+                else:
+                    try:
+                        return res.status_code, res.json()
+                    except Exception:
+                        return res.status_code, {"status": res.status_code, "error": "Unknown API error"}
+            except Exception as e:
+                print(f"[MATCH INTERCEPT ERROR] Failed to fetch live matches: {e}")
+                return 500, {"status": 500, "error": "Internal server error while fetching live matches"}
+
+        def _fetch_db():
+            if not puuid:
+                return []
             params_db = {
                 "puuid": f"eq.{puuid}",
                 "mode": f"eq.{mode}",
@@ -1166,7 +1140,14 @@ def proxy_api(subpath):
             r_db = supabase_request("GET", "matches_cache", params=params_db)
             if r_db and r_db.status_code == 200:
                 rows = r_db.json()
-                db_matches = [row["stripped_raw_match"] for row in rows if "stripped_raw_match" in row]
+                return [row["stripped_raw_match"] for row in rows if "stripped_raw_match" in row]
+            return []
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+            fut_live = executor.submit(_fetch_live)
+            fut_db = executor.submit(_fetch_db)
+            live_status_code, live_matches_data = fut_live.result()
+            db_matches = fut_db.result()
 
         _cache_background_data = {
             "puuid": puuid,
@@ -1209,14 +1190,13 @@ def proxy_api(subpath):
                 cache[cache_key] = {"data": res_data, "timestamp": time.time()}
             return jsonify(res_data)
         else:
-            if not bypass_cache:
-                cache[cache_key] = {"data": live_matches_data, "timestamp": time.time()}
-            return jsonify(live_matches_data), live_status_code
+            return jsonify(live_matches_data or {"status": 200, "data": []}), live_status_code
 
     # Fallback
     encoded_subpath = urllib.parse.quote(subpath, safe='/')
     target_url = f"https://api.henrikdev.xyz/valorant/{encoded_subpath}"
-    cache_key = f"{target_url}?{request.query_string.decode('utf-8')}"
+    qs = request.query_string.decode('utf-8').strip('&?')
+    cache_key = f"{target_url}?{qs}" if qs else target_url
     
     is_detail_route = subpath.startswith("v2/match/") or subpath.startswith("v3/match/")
     detail_ttl = 86400
@@ -1255,17 +1235,27 @@ def proxy_api(subpath):
                     puuid = a.get("puuid")
                     p_name = a.get("name")
                     p_tag = a.get("tag")
-                    p_region = a.get("region") or subpath.split("/")[2] if len(subpath.split("/")) >= 3 else "ap"
+                    p_region = a.get("region") or (subpath.split("/")[2] if len(subpath.split("/")) >= 3 else "ap")
                     p_level = a.get("account_level")
                     p_card_id = a.get("card", {}).get("id") or (a.get("card") if isinstance(a.get("card"), str) else None)
                     if puuid:
-                        print(f"[WRITE THROUGH] Caching account details for {p_name}#{p_tag} to database...")
-                        upsert_player(puuid, p_name, p_tag, p_region, level=p_level, card_id=p_card_id, cache_key="account", cache_val=data)
+                        print(f"[WRITE THROUGH] Caching account details for {p_name}#{p_tag} (background)...")
+                        threading.Thread(
+                            target=upsert_player,
+                            args=(puuid, p_name, p_tag, p_region),
+                            kwargs={"level": p_level, "card_id": p_card_id, "cache_key": "account", "cache_val": data},
+                            daemon=True
+                        ).start()
                 elif cache_key_type == "mmr":
                     d = data.get("data", {})
-                    puuid = d.get("puuid")
-                    p_name = d.get("name")
-                    p_tag = d.get("tag")
+                    acct = d.get("account", {}) or {}
+                    puuid = acct.get("puuid") or d.get("puuid")
+                    if not puuid:
+                        cached_p = get_cached_player(name, tag)
+                        if cached_p:
+                            puuid = cached_p.get("puuid")
+                    p_name = acct.get("name") or d.get("name") or name
+                    p_tag = acct.get("tag") or d.get("tag") or tag
                     p_region = subpath.split("/")[2] if len(subpath.split("/")) >= 3 else "ap"
                     current_tier = d.get("current", {}).get("tier", {}).get("id", 0)
                     current_tier_patched = d.get("current", {}).get("tier", {}).get("name", "Unranked")
@@ -1274,15 +1264,29 @@ def proxy_api(subpath):
                     rr = d.get("current", {}).get("rr", 0)
                     elo = d.get("current", {}).get("elo", 0)
                     if puuid:
-                        print(f"[WRITE THROUGH] Caching MMR details for {p_name}#{p_tag} to database...")
-                        upsert_player(puuid, p_name, p_tag, p_region, current_tier=current_tier, current_tier_patched=current_tier_patched, peak_tier_patched=peak_tier_patched, peak_tier=peak_tier, rr=rr, elo=elo, cache_key="mmr", cache_val=data)
+                        print(f"[WRITE THROUGH] Caching MMR details for {p_name}#{p_tag} (background)...")
+                        threading.Thread(
+                            target=upsert_player,
+                            args=(puuid, p_name, p_tag, p_region),
+                            kwargs={
+                                "current_tier": current_tier, "current_tier_patched": current_tier_patched,
+                                "peak_tier_patched": peak_tier_patched, "peak_tier": peak_tier,
+                                "rr": rr, "elo": elo, "cache_key": "mmr", "cache_val": data
+                            },
+                            daemon=True
+                        ).start()
                 elif cache_key_type == "stored_mmr_history":
                     cached_p = get_cached_player(name, tag)
                     if cached_p:
                         puuid = cached_p.get("puuid")
                         p_region = subpath.split("/")[2] if len(subpath.split("/")) >= 3 else "ap"
-                        print(f"[WRITE THROUGH] Caching MMR stored history for {name}#{tag} to database...")
-                        upsert_player(puuid, name, tag, p_region, cache_key="stored_mmr_history", cache_val=data)
+                        print(f"[WRITE THROUGH] Caching MMR stored history for {name}#{tag} (background)...")
+                        threading.Thread(
+                            target=upsert_player,
+                            args=(puuid, name, tag, p_region),
+                            kwargs={"cache_key": "stored_mmr_history", "cache_val": data},
+                            daemon=True
+                        ).start()
             except Exception as e_write:
                 print(f"[WRITE THROUGH ERROR] Failed to cache profile: {e_write}")
 
@@ -1820,19 +1824,36 @@ def parse_vlr_role(role_txt):
     return role_txt.upper()
 
 
+TRANSPARENT_1X1_PNG = base64.b64decode("iVBORw0KGgoAAAANSU5EUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=")
+
+
+
+
 @app.route("/api/image")
-@rate_limit(requests_per_minute=240)
+@rate_limit(requests_per_minute=300)
 def image_proxy():
     url = request.args.get("url")
     if not url:
         return jsonify({"error": "Missing url"}), 400
+    
+    url = url.strip()
+    if not url or 'tmp/vlr.png' in url or 'ghost' in url or 'sil.png' in url or 'ph/sil' in url:
+        return Response(TRANSPARENT_1X1_PNG, content_type='image/png', headers={
+            'Cache-Control': 'public, max-age=86400',
+            'Access-Control-Allow-Origin': '*'
+        })
+
+    if url.startswith('//'):
+        url = 'https:' + url
+
     if url.startswith('/'):
         rel_path = url.lstrip('/')
         if os.path.exists(os.path.join('public', rel_path)):
             return send_from_directory('public', rel_path)
         if os.path.exists(os.path.join('frontend', 'public', rel_path)):
             return send_from_directory(os.path.join('frontend', 'public'), rel_path)
-        return jsonify({"error": "File not found"}), 404
+        url = 'https://www.vlr.gg' + url
+
     try:
         cache_key = f"img_proxy_{url}"
         if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < 86400:
@@ -1842,9 +1863,11 @@ def image_proxy():
                 'Access-Control-Allow-Origin': '*'
             })
 
+        parsed = urllib.parse.urlparse(url)
+        referer = f"{parsed.scheme}://{parsed.netloc}/" if parsed.netloc else 'https://www.vlr.gg/'
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Referer': 'https://www.vlr.gg/',
+            'Referer': referer,
             'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
         }
         r = http_session.get(url, headers=headers, timeout=8, stream=True)
@@ -1856,14 +1879,21 @@ def image_proxy():
                 'Cache-Control': 'public, max-age=86400',
                 'Access-Control-Allow-Origin': '*'
             })
-        return jsonify({"error": "Failed to fetch image", "status": r.status_code}), 404
+        print(f"[WARN] Image proxy fetch {url} returned status {r.status_code}")
+        return Response(TRANSPARENT_1X1_PNG, content_type='image/png', headers={
+            'Cache-Control': 'public, max-age=3600',
+            'Access-Control-Allow-Origin': '*'
+        })
     except Exception as e:
         print(f"[ERROR] Image proxy failed for {url}:", e)
-        return jsonify({"error": str(e)}), 500
+        return Response(TRANSPARENT_1X1_PNG, content_type='image/png', headers={
+            'Cache-Control': 'public, max-age=600',
+            'Access-Control-Allow-Origin': '*'
+        })
 
 
 @app.route("/api/esports/team-roster/<team_id>")
-@rate_limit(requests_per_minute=30)
+@rate_limit(requests_per_minute=120)
 def esports_team_roster(team_id):
     cache_key = f"vlr_roster_v10_{team_id}"
     if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < 1800:
@@ -1914,7 +1944,7 @@ def esports_team_roster(team_id):
 
 
 @app.route("/api/store/featured")
-@rate_limit(requests_per_minute=30)
+@rate_limit(requests_per_minute=120)
 def store_featured():
     backup_file = "store_featured_backup.json"
     cache_duration = 3600  # 1 hour cache TTL

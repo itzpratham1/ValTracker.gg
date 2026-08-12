@@ -1,6 +1,7 @@
 <script>
   import { player } from '../../lib/appStore';
   import { onMount } from 'svelte';
+  import OnboardingGuide from '../shared/OnboardingGuide.svelte';
 
   let name = '';
   let tag = '';
@@ -9,6 +10,7 @@
   let scale = 1.0;
   let copied = false;
   let obsGuideOpen = false;
+  let tourOpen = false;
 
   let monitorEl;
   let showScrollToPreview = false;
@@ -47,6 +49,13 @@
   let containerHeight = 480;
 
   onMount(() => {
+    if (typeof localStorage !== 'undefined' && !localStorage.getItem('valtracker_tour_overlay')) {
+      localStorage.setItem('valtracker_tour_overlay', 'true');
+      setTimeout(() => {
+        tourOpen = true;
+      }, 700);
+    }
+
     if ($player.name && $player.tag) {
       name = $player.name;
       tag  = $player.tag;
@@ -197,21 +206,26 @@
 <div class="ost-container">
 
   <!-- ═══ HEADER BANNER ═══ -->
-  <div class="ost-header">
-    <div class="ost-header-main">
-      <div class="ost-header-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M15 10l4.553-2.277A1 1 0 0121 8.723v6.554a1 1 0 01-1.447.894L15 14"/>
-          <rect x="2" y="7" width="13" height="10" rx="2"/>
-          <circle cx="5.5" cy="12" r="1.5" fill="currentColor" stroke="none" opacity="0.5"/>
-        </svg>
-      </div>
-      <div class="ost-header-title-wrap">
-        <h2>OBS Stream Overlay Studio</h2>
-        <div class="ost-header-badge">
-          <span class="ost-live-dot"></span>LIVE DATA
+  <div class="ost-header" style="position:relative;" data-tour="overlay-studio">
+    <div class="ost-header-top-row">
+      <div class="ost-header-left">
+        <div class="ost-header-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 10l4.553-2.277A1 1 0 0121 8.723v6.554a1 1 0 01-1.447.894L15 14"/>
+            <rect x="2" y="7" width="13" height="10" rx="2"/>
+            <circle cx="5.5" cy="12" r="1.5" fill="currentColor" stroke="none" opacity="0.5"/>
+          </svg>
+        </div>
+        <div class="ost-header-title-group">
+          <h2>OBS Stream Overlay Studio</h2>
+          <div class="ost-header-badge">
+            <span class="ost-live-dot"></span>LIVE DATA
+          </div>
         </div>
       </div>
+      <button class="tour-btn-trigger" on:click={() => tourOpen = true} title="Launch Feature Tour">
+        <span style="color:var(--accent,#fa4454);">⚡</span> Feature Tour
+      </button>
     </div>
     <p class="ost-header-desc">Design real-time telemetry overlays for your stream. Configure layouts, color themes, and stats — then drop the generated URL into an OBS Browser Source.</p>
   </div>
@@ -342,7 +356,7 @@
 
       <!-- ── STEP 3 (flexible only): Select Stats ── -->
       {#if variant === 'flexible'}
-        <div class="ost-step">
+        <div class="ost-step" data-tour="overlay-stats">
           <div class="ost-step-head">
             <span class="ost-step-num">03</span>
             <h3>Select Display Stats</h3>
@@ -360,7 +374,7 @@
       {/if}
 
       <!-- ── STEP 3/4: Colors & Scale ── -->
-      <div class="ost-step">
+      <div class="ost-step" data-tour="overlay-themes">
         <div class="ost-step-head">
           <span class="ost-step-num">{colorStepNum < 10 ? '0' + colorStepNum : colorStepNum}</span>
           <h3>Colors &amp; Scale</h3>
@@ -434,7 +448,7 @@
       </div>
 
       <!-- ── STEP 4/5: Generate URL ── -->
-      <div class="ost-step ost-step-url">
+      <div class="ost-step ost-step-url" data-tour="overlay-url">
         <div class="ost-step-head">
           <span class="ost-step-num">{urlStepNum < 10 ? '0' + urlStepNum : urlStepNum}</span>
           <h3>Generate OBS URL</h3>
@@ -525,6 +539,8 @@
   </div>
 </div>
 
+<OnboardingGuide section="overlay" bind:open={tourOpen} onClose={() => tourOpen = false} />
+
 <!-- Mobile Floating Jump to Preview Button -->
 {#if showScrollToPreview}
   <button class="ost-floating-preview-btn" on:click={scrollToMonitor} type="button" aria-label="Jump to preview">
@@ -542,9 +558,10 @@
   ═══════════════════════════════════════ */
   .ost-container {
     width: 100%;
-    max-width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
     box-sizing: border-box;
-    padding: 16px 16px 110px;
+    padding: 20px 24px 110px;
     overflow-x: hidden;
   }
 
@@ -573,11 +590,22 @@
     background: linear-gradient(90deg, transparent, rgba(250,68,84,0.6), transparent);
   }
 
-  .ost-header-main {
+  .ost-header-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+    width: 100%;
+  }
+
+  .ost-header-left {
     display: flex;
     align-items: center;
     gap: 14px;
-    width: 100%;
+    flex: 1;
+    min-width: 0;
   }
 
   .ost-header-icon {
@@ -593,17 +621,15 @@
     color: #fa4454;
   }
 
-  .ost-header-title-wrap {
-    flex: 1;
-    min-width: 0;
+  .ost-header-title-group {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 10px;
+    gap: 12px;
     flex-wrap: wrap;
+    min-width: 0;
   }
 
-  .ost-header-title-wrap h2 {
+  .ost-header-title-group h2 {
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 24px;
     font-weight: 900;
@@ -1460,7 +1486,7 @@
       width: 38px;
       height: 38px;
     }
-    .ost-header-title-wrap h2 {
+    .ost-header-title-group h2 {
       font-size: 20px;
     }
     .ost-header-desc {

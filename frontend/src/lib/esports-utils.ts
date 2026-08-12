@@ -44,7 +44,7 @@ let _franchiseData: FranchiseData | null = null;
 let _allMatchesCache: EsportsMatch[] = [];
 
 export function getProxiedImageUrl(logoUrl: string): string {
-  if (!logoUrl || logoUrl.includes('/img/base/ph/sil.png') || logoUrl.includes('ghost')) return '';
+  if (!logoUrl || logoUrl.includes('/img/base/ph/sil.png') || logoUrl.includes('ghost') || logoUrl.includes('tmp/vlr.png') || logoUrl.includes('sil.png')) return '';
   const API_BASE = import.meta.env.PUBLIC_API_URL || '';
   if (logoUrl.startsWith('/api/image')) {
     return logoUrl.startsWith('http') ? logoUrl : `${API_BASE}${logoUrl}`;

@@ -194,27 +194,17 @@
     const nc = Date.now();
 
     try {
-      console.log('[AppShell] Fetching API data in staggered sequence...');
+      console.log('[AppShell] Fetching API data in parallel...');
       
-      // Step 1: Fetch account details first (lightest & fastest)
-      const accountRes = await fetchWithRetry(`/api/v1/account/${enc}/${encTag}?_nocache=${nc}`);
-      
-      // Stagger slightly (150ms) to avoid triggering upstream API 429 burst limits
-      await new Promise(r => setTimeout(r, 150));
-
-      // Step 2: Fetch MMR & Match History concurrently
-      const [mmrRes, matchRes] = await Promise.all([
+      // Fetch all profile details concurrently for maximum speed
+      const [accountRes, mmrRes, matchRes, mmrHistRes] = await Promise.all([
+        fetchWithRetry(`/api/v1/account/${enc}/${encTag}`),
         isRanked
-          ? fetchWithRetry(`/api/v3/mmr/${p.region}/pc/${enc}/${encTag}?_nocache=${nc}`)
+          ? fetchWithRetry(`/api/v3/mmr/${p.region}/pc/${enc}/${encTag}`)
           : Promise.resolve(null),
-        fetchWithRetry(`/api/v3/matches/${p.region}/${enc}/${encTag}?mode=${p.mode}&size=20&_nocache=${nc}`)
+        fetchWithRetry(`/api/v3/matches/${p.region}/${enc}/${encTag}?mode=${p.mode}&size=20`),
+        fetchWithRetry(`/api/v1/stored-mmr-history/${p.region}/${enc}/${encTag}`).catch(() => null)
       ]);
-
-      // Stagger slightly before background history fetch
-      await new Promise(r => setTimeout(r, 150));
-
-      // Step 3: Fetch stored MMR history (non-blocking)
-      const mmrHistRes = await fetchWithRetry(`/api/v1/stored-mmr-history/${p.region}/${enc}/${encTag}?_nocache=${nc}`).catch(() => null);
 
       console.log('[AppShell] API responses:', { mmr: mmrRes?.status, match: matchRes?.status, account: accountRes?.status, hist: mmrHistRes?.status });
 

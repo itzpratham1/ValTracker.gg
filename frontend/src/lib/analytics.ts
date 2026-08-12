@@ -35,9 +35,9 @@ export function trackEvent(eventName: string, payload: EventPayload = {}): void 
     // Ignore unsupported environments
   }
 
-  // 5. Send non-blocking beacon to self-hosted /api/telemetry endpoint
+  // 5. Send non-blocking beacon to self-hosted /api/events endpoint
   try {
-    const telemetryUrl = `${API_BASE}/api/telemetry`;
+    const telemetryUrl = `${API_BASE}/api/events`;
     const bodyStr = JSON.stringify({ event: eventName, payload: eventData });
     if (navigator.sendBeacon) {
       const blob = new Blob([bodyStr], { type: 'application/json' });

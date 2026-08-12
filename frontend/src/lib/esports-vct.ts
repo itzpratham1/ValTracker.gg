@@ -190,11 +190,12 @@ export const VCT_STAGE_DATA: Record<string, VCTStage> = {
     regions: {
       global: {
         winners: [
-          { region: "Status", team: "Playoffs Ongoing", tag: "LIVE", logo: "", color: "#22c55e" }
+          { region: "Champion", team: "Leviatán", tag: "LEV", logo: "https://owcdn.net/img/61b8888cc3860.png", color: "#fa4454" },
+          { region: "Runner-up", team: "Paper Rex", tag: "PRX", logo: "https://owcdn.net/img/62bbeba74d5cb.png", color: "#db2777" }
         ],
         teams: [
-          { name: "Paper Rex", tag: "PRX", region: "ov-pacific", id: "624" },
           { name: "Leviatán", tag: "LEV", region: "ov-americas", id: "2359" },
+          { name: "Paper Rex", tag: "PRX", region: "ov-pacific", id: "624" },
           { name: "Team Heretics", tag: "TH", region: "ov-emea", id: "1001" },
           { name: "EDward Gaming", tag: "EDG", region: "ov-china", id: "1120" },
           { name: "G2 Esports", tag: "G2", region: "ov-americas", id: "11058" },
@@ -211,11 +212,11 @@ export const VCT_STAGE_DATA: Record<string, VCTStage> = {
   },
   stage2: {
     title: "VCT Stage 2 2026",
-    dates: "June - September 2026",
+    dates: "July 9 - Sept 6, 2026",
     regions: {
       global: {
         winners: [
-          { region: "Status", team: "Upcoming Regional Splits", tag: "TBD", logo: "", color: "#3b82f6" }
+          { region: "Status", team: "Playoffs & Roadshows Ongoing", tag: "LIVE", logo: "", color: "#22c55e" }
         ],
         teams: [
           { name: "Paper Rex", tag: "PRX", region: "ov-pacific", id: "624" },
@@ -226,7 +227,7 @@ export const VCT_STAGE_DATA: Record<string, VCTStage> = {
       },
       americas: {
         winners: [
-          { region: "Status", team: "Upcoming regional split", tag: "TBD", logo: "", color: "#3b82f6" }
+          { region: "Roadshow", team: "São Paulo, Brazil", tag: "JUL-SEP", logo: "", color: "#3b82f6" }
         ],
         teams: [
           { name: "Leviatán", tag: "LEV", region: "ov-americas", id: "2359" },
@@ -236,7 +237,7 @@ export const VCT_STAGE_DATA: Record<string, VCTStage> = {
       },
       pacific: {
         winners: [
-          { region: "Status", team: "Upcoming regional split", tag: "TBD", logo: "", color: "#ef4444" }
+          { region: "Roadshow", team: "Busan, South Korea", tag: "JUL-SEP", logo: "", color: "#ef4444" }
         ],
         teams: [
           { name: "Paper Rex", tag: "PRX", region: "ov-pacific", id: "624" },
@@ -246,7 +247,7 @@ export const VCT_STAGE_DATA: Record<string, VCTStage> = {
       },
       emea: {
         winners: [
-          { region: "Status", team: "Upcoming regional split", tag: "TBD", logo: "", color: "#fbbf24" }
+          { region: "Roadshow", team: "Badalona, Spain", tag: "JUL-AUG", logo: "", color: "#fbbf24" }
         ],
         teams: [
           { name: "Team Heretics", tag: "TH", region: "ov-emea", id: "1001" },
@@ -256,7 +257,7 @@ export const VCT_STAGE_DATA: Record<string, VCTStage> = {
       },
       china: {
         winners: [
-          { region: "Status", team: "Upcoming regional split", tag: "TBD", logo: "", color: "#a855f7" }
+          { region: "Roadshow", team: "Chengdu, China", tag: "JUL-AUG", logo: "", color: "#a855f7" }
         ],
         teams: [
           { name: "EDward Gaming", tag: "EDG", region: "ov-china", id: "1120" },
@@ -272,7 +273,7 @@ export const VCT_STAGE_DATA: Record<string, VCTStage> = {
     regions: {
       global: {
         winners: [
-          { region: "Status", team: "The Ultimate Crown", tag: "TBD", logo: "", color: "#fbbf24" }
+          { region: "Host City", team: "Shanghai, China ($2.25M)", tag: "SEP-OCT", logo: "", color: "#fbbf24" }
         ],
         teams: [
           { name: "TBD - Qualified Teams", tag: "VAL", region: "ov-pacific", id: "624" }

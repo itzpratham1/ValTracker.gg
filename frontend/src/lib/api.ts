@@ -109,36 +109,52 @@ export async function fetchMatchDetails(matchId: string, region: string) {
   return apiFetch(`/v2/match/${matchId}?region=${region}`);
 }
 
+const esportsCache = new Map<string, { timestamp: number; promise: Promise<any> }>();
+
+export async function fetchCachedEsports<T = any>(path: string, ttlMs = 45000): Promise<T> {
+  const now = Date.now();
+  const cached = esportsCache.get(path);
+  if (cached && now - cached.timestamp < ttlMs) {
+    return cached.promise;
+  }
+  const promise = apiFetch<T>(path).catch(err => {
+    esportsCache.delete(path);
+    throw err;
+  });
+  esportsCache.set(path, { timestamp: now, promise });
+  return promise;
+}
+
 export async function fetchEsportsLive() {
-  return apiFetch('/esports/live');
+  return fetchCachedEsports('/esports/live', 30000);
 }
 
 export async function fetchEsportsResults() {
-  return apiFetch('/esports/results');
+  return fetchCachedEsports('/esports/results', 60000);
 }
 
 export async function fetchEsportsUpcoming() {
-  return apiFetch('/esports/upcoming');
+  return fetchCachedEsports('/esports/upcoming', 60000);
 }
 
 export async function fetchEsportsNews() {
-  return apiFetch('/esports/news');
+  return fetchCachedEsports('/esports/news', 120000);
 }
 
 export async function fetchEsportsTeamRoster(teamId: string) {
-  return apiFetch(`/esports/team-roster/${teamId}`);
+  return fetchCachedEsports(`/esports/team-roster/${teamId}`, 180000);
 }
 
 export async function fetchEsportsStandings(region: string) {
-  return apiFetch(`/esports/standings/${region}`);
+  return fetchCachedEsports(`/esports/standings/${region}`, 300000);
 }
 
 export async function fetchEsportsEvent(eventId: string) {
-  return apiFetch(`/esports/event/${eventId}`);
+  return fetchCachedEsports(`/esports/event/${eventId}`, 300000);
 }
 
 export async function fetchStoreFeatured() {
-  return apiFetch('/store/featured');
+  return fetchCachedEsports('/store/featured', 120000);
 }
 
 export async function fetchMetaComps(map?: string, patch?: string) {

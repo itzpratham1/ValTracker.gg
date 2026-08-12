@@ -8,6 +8,7 @@
   } from '../../lib/draft-engine';
   import ProComps from './ProComps.svelte';
   import AgentSelectorModal from './AgentSelectorModal.svelte';
+  import OnboardingGuide from '../shared/OnboardingGuide.svelte';
   import { createShareCard } from '../../lib/api';
   import { animateAllNumbersInContainer } from '../../lib/aiStreamer';
   import { trackEvent } from '../../lib/analytics';
@@ -24,6 +25,7 @@
   let selectorOpen = false;
   let selectedPatch = 'latest';
   let draftPanelEl = null;
+  let tourOpen = false;
 
   let exportOpen = false;
   let exportLoading = false;
@@ -37,6 +39,12 @@
   $: isVisible = $currentView === 'coach';
 
   $: if (isVisible) {
+    if (typeof localStorage !== 'undefined' && !localStorage.getItem('valtracker_tour_coach')) {
+      localStorage.setItem('valtracker_tour_coach', 'true');
+      setTimeout(() => {
+        tourOpen = true;
+      }, 700);
+    }
     loadSavedDrafts();
   }
 
@@ -378,8 +386,13 @@
 
 <div class="coach-view">
   <!-- Banner Header -->
-  <div class="coach-banner">
-    <h2 class="coach-banner-title">VCT Meta <span>Comp Architect</span></h2>
+  <div class="coach-banner" style="position:relative;" data-tour="coach-header">
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+      <h2 class="coach-banner-title" style="margin:0;">VCT Meta <span>Comp Architect</span></h2>
+      <button class="tour-btn-trigger" on:click={() => tourOpen = true} title="Launch Feature Tour">
+        <span style="color:var(--accent,#fa4454);">⚡</span> Feature Tour
+      </button>
+    </div>
     <p class="coach-banner-desc">
       Draft 5-agent team compositions for any active Valorant map. Our real-time coaching heuristics engine evaluates role balances, map suitability, and triggers synergies to flag tactical vulnerabilities before you queue.
     </p>
@@ -395,7 +408,7 @@
 
       <div class="card coach-draft-card">
         <!-- Map & Patch Selectors -->
-        <div class="coach-select-row">
+        <div class="coach-select-row" data-tour="coach-map">
           <div style="flex:1; min-width:0;">
             <label class="coach-label">Map</label>
             <select bind:value={selectedMap} on:change={handleMapChange} class="coach-select">
@@ -420,7 +433,7 @@
 
         <!-- 5 Agent Slots -->
         <div class="coach-slots-header">Selected Agent Draft</div>
-        <div class="coach-team-slots">
+        <div class="coach-team-slots" data-tour="coach-slots">
           {#each draftSlots as slot, i}
             <div class="dc-slot-card" class:filled={!!slot} on:click={() => openSelector(i)}>
               <div class="dc-slot-avatar">
@@ -491,7 +504,7 @@
         <div class="sl-line"></div>
       </div>
 
-      <div class="card coach-verdict-card" bind:this={draftPanelEl}>
+      <div class="card coach-verdict-card" bind:this={draftPanelEl} data-tour="coach-rating">
         {#if evaluation}
           {@const r = 36}
           {@const circ = 2 * Math.PI * r}
@@ -613,6 +626,8 @@
   onSelect={handleSelectAgent}
   onClose={closeSelector}
 />
+
+<OnboardingGuide section="coach" bind:open={tourOpen} onClose={() => tourOpen = false} />
 
 <!-- Export Modal -->
 {#if exportOpen}

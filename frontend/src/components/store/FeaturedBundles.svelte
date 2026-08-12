@@ -114,7 +114,7 @@
 </script>
 
 {#each bundles as bundle, idx}
-  <div class="card featured-bundle">
+  <div class="card featured-bundle" data-tour={idx === 0 ? 'store-bundles' : undefined}>
     <div class="featured-bundle-header">
       <div>
         <div class="featured-bundle-name">
