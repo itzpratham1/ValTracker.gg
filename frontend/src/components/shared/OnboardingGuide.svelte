@@ -310,19 +310,57 @@
     }
   }
 
+  function renderHighlight(targetEl) {
+    if (!targetEl || !open) return;
+    const step = TOUR_STEPS[currentStep];
+    if (!step) return;
+
+    const r = targetEl.getBoundingClientRect();
+    if (r.width === 0 || r.height === 0) {
+      highlightStyle = `display: none;`;
+      popoverStyle = `
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        position: fixed;
+        z-index: 100002;
+      `;
+      return;
+    }
+
+    const isMobile = window.innerWidth <= 768;
+    const pad = isMobile ? 4 : 8;
+
+    highlightStyle = `
+      top: ${Math.max(0, r.top - pad)}px;
+      left: ${Math.max(0, r.left - pad)}px;
+      width: ${r.width + pad * 2}px;
+      height: ${r.height + pad * 2}px;
+    `;
+
+    calculatePopoverPosition(r, step.position);
+  }
+
+  function handlePassiveScroll() {
+    if (!open || isScrollingAuto) return;
+    if (activeElement) {
+      renderHighlight(activeElement);
+    }
+  }
+
   onMount(() => {
     window.addEventListener('keydown', handleKeydown);
-    window.addEventListener('resize', updateHighlight);
-    window.addEventListener('scroll', updateHighlight, { passive: true });
+    window.addEventListener('resize', handlePassiveScroll);
+    window.addEventListener('scroll', handlePassiveScroll, { passive: true });
 
     return () => {
       window.removeEventListener('keydown', handleKeydown);
-      window.removeEventListener('resize', updateHighlight);
-      window.removeEventListener('scroll', updateHighlight);
+      window.removeEventListener('resize', handlePassiveScroll);
+      window.removeEventListener('scroll', handlePassiveScroll);
     };
   });
 
-  async function waitForTarget(selector, maxRetries = 12, delayMs = 40) {
+  async function waitForTarget(selector, maxRetries = 10, delayMs = 30) {
     if (!selector) return null;
     for (let i = 0; i < maxRetries; i++) {
       const el = document.querySelector(selector);
@@ -337,7 +375,9 @@
     return document.querySelector(selector);
   }
 
-  async function updateHighlight() {
+  let isScrollingAuto = false;
+
+  async function updateHighlight(shouldScroll = true) {
     if (!open) return;
     const step = TOUR_STEPS[currentStep];
     if (!step) return;
@@ -348,17 +388,24 @@
     }
 
     let target = await waitForTarget(step.selector);
-    
-    // Fallback search if selector isn't found
+
+    if (target) {
+      const r = target.getBoundingClientRect();
+      if (r.width === 0 || r.height === 0) {
+        target = null;
+      }
+    }
+
+    // Fallback search if selector isn't found or is hidden on current screen size
     if (!target) {
       if (step.id === 'search-filters') target = document.querySelector('.topbar-sub-row') || document.querySelector('.player-search-wrap');
       else if (step.id === 'nav-tabs') target = document.querySelector('.topbar-tabs');
-      else if (step.id === 'hero-overview') target = document.querySelector('.hero-section') || document.querySelector('.hero-left');
-      else if (step.id === 'stat-cards') target = document.querySelector('.stat-cards-grid') || document.querySelector('.stat-card');
-      else if (step.id === 'tracker-nav') target = document.querySelector('.tracker-nav');
-      else if (step.id === 'valbot-coach') target = document.querySelector('#sec-ai-tools') || document.querySelector('.ai-coach-card');
-      else if (step.id === 'match-history') target = document.querySelector('#sec-matches') || document.querySelector('.match-row');
-      else if (step.id === 'utilities') target = document.querySelector('.tracker-nav-right') || document.querySelector('.active-pill-btn');
+      else if (step.id === 'hero-overview') target = document.querySelector('.hero-section') || document.querySelector('.hero');
+      else if (step.id === 'stat-cards') target = document.querySelector('.stat-cards-wrapper') || document.querySelector('.stat-cards-grid') || document.querySelector('.stat-card');
+      else if (step.id === 'tracker-nav') target = document.querySelector('#tracker-nav') || document.querySelector('.tracker-nav');
+      else if (step.id === 'valbot-coach') target = document.querySelector('[data-tour="valbot-coach"]') || document.querySelector('#sec-ai-tools') || document.querySelector('.ai-coach-card');
+      else if (step.id === 'match-history') target = document.querySelector('#sec-matches') || document.querySelector('#filter-bar') || document.querySelector('.match-row');
+      else if (step.id === 'utilities') target = document.querySelector('#tracker-nav') || document.querySelector('.tracker-nav') || document.querySelector('.topbar-sub-row');
       else if (step.id === 'store-bundles') target = document.querySelector('.store-featured-container') || document.querySelector('.featured-bundle');
       else if (step.id === 'store-catalog') target = document.querySelector('.store-search-wrap') || document.querySelector('.store-filters');
       else if (step.id === 'store-rarity') target = document.querySelector('.store-filter-selects');
@@ -372,35 +419,52 @@
     activeElement = target;
 
     if (target) {
-      const rect = target.getBoundingClientRect();
       const isMobile = window.innerWidth <= 768;
-      const headerOffset = isMobile ? 80 : 120;
-      const bottomThreshold = isMobile ? window.innerHeight - 290 : window.innerHeight - 80;
+      const initialRect = target.getBoundingClientRect();
 
-      const isCramped = rect.top < headerOffset || rect.bottom > bottomThreshold;
+      if (initialRect.width > 0 && initialRect.height > 0) {
+        // Determine target position relative to viewport
+        const targetCenterY = initialRect.top + (initialRect.height / 2);
+        const isTargetInLowerHalf = isMobile && targetCenterY > window.innerHeight * 0.48;
 
-      if (isCramped) {
-        const targetDocTop = window.scrollY + rect.top;
-        const desiredScrollY = Math.max(0, targetDocTop - headerOffset);
-        window.scrollTo({
-          top: desiredScrollY,
-          behavior: 'smooth'
-        });
-        await new Promise(r => setTimeout(r, 320));
+        // Smart offset: position target in screen area that doesn't overlap popover card
+        const headerOffset = isMobile ? (isTargetInLowerHalf ? 260 : 70) : 110;
+        const bottomThreshold = isMobile ? (window.innerHeight - (isTargetInLowerHalf ? 60 : 260)) : (window.innerHeight - 80);
+
+        const isCramped = initialRect.top < headerOffset || initialRect.bottom > bottomThreshold;
+
+        if (isCramped && shouldScroll && !isScrollingAuto) {
+          isScrollingAuto = true;
+          const targetDocTop = window.scrollY + initialRect.top;
+          const desiredScrollY = Math.max(0, targetDocTop - headerOffset);
+
+          window.scrollTo({
+            top: desiredScrollY,
+            behavior: 'smooth'
+          });
+
+          // Smoothly animate spotlight during smooth scroll duration
+          const startTime = Date.now();
+          const animInterval = setInterval(() => {
+            if (!target || !open) {
+              clearInterval(animInterval);
+              isScrollingAuto = false;
+              return;
+            }
+            renderHighlight(target);
+            if (Date.now() - startTime > 420) {
+              clearInterval(animInterval);
+              isScrollingAuto = false;
+            }
+          }, 16);
+
+          await new Promise(r => setTimeout(r, 440));
+        }
+
+        renderHighlight(target);
+      } else {
+        renderHighlight(null);
       }
-
-      const updatedRect = target.getBoundingClientRect();
-      const pad = 8;
-      
-      highlightStyle = `
-        top: ${Math.max(0, updatedRect.top - pad)}px;
-        left: ${Math.max(0, updatedRect.left - pad)}px;
-        width: ${updatedRect.width + pad * 2}px;
-        height: ${updatedRect.height + pad * 2}px;
-      `;
-
-      await tick();
-      calculatePopoverPosition(updatedRect, step.position);
     } else {
       // Fallback: center modal if target component is not visible on page
       highlightStyle = `display: none;`;
@@ -409,6 +473,7 @@
         left: 50%;
         transform: translate(-50%, -50%);
         position: fixed;
+        z-index: 100002;
       `;
     }
   }
@@ -417,24 +482,43 @@
 
   function calculatePopoverPosition(targetRect, preferredPos) {
     const isMobile = window.innerWidth <= 768;
-    
+
     if (isMobile) {
-      popoverStyle = `
-        position: fixed;
-        bottom: max(16px, env(safe-area-inset-bottom, 16px));
-        left: 50%;
-        transform: translateX(-50%);
-        width: calc(100vw - 24px);
-        max-width: 440px;
-        max-height: calc(100vh - 60px);
-        overflow-y: auto;
-        z-index: 100002;
-      `;
+      const targetCenterY = targetRect.top + (targetRect.height / 2);
+      const isTargetInLowerHalf = targetCenterY > window.innerHeight * 0.48;
+
+      if (isTargetInLowerHalf) {
+        // Target is in bottom half -> Place card at TOP of viewport (no overlap)
+        popoverStyle = `
+          position: fixed;
+          top: max(12px, env(safe-area-inset-top, 12px));
+          left: 50%;
+          transform: translateX(-50%);
+          width: calc(100vw - 20px);
+          max-width: 440px;
+          max-height: calc(48vh - 10px);
+          overflow-y: auto;
+          z-index: 100002;
+        `;
+      } else {
+        // Target is in top half -> Place card at BOTTOM of viewport (no overlap)
+        popoverStyle = `
+          position: fixed;
+          bottom: max(12px, env(safe-area-inset-bottom, 12px));
+          left: 50%;
+          transform: translateX(-50%);
+          width: calc(100vw - 20px);
+          max-width: 440px;
+          max-height: calc(48vh - 10px);
+          overflow-y: auto;
+          z-index: 100002;
+        `;
+      }
       return;
     }
 
     const cardWidth = 420;
-    const measuredHeight = cardEl ? cardEl.offsetHeight : 360;
+    const measuredHeight = cardEl ? cardEl.offsetHeight : 340;
     const gap = 16;
 
     let top = targetRect.bottom + gap;
@@ -890,70 +974,92 @@
 
   /* Mobile Responsive Enhancements */
   @media (max-width: 768px) {
+    .tour-spotlight-box {
+      border-radius: 10px;
+      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.76), 0 0 20px rgba(250, 68, 84, 0.85);
+    }
     .tour-card {
-      padding: 14px 16px;
-      border-radius: 18px 18px 14px 14px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.9), 0 0 20px rgba(250, 68, 84, 0.2);
     }
     .tour-card-header {
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
     .tour-step-icon {
-      width: 36px;
-      height: 36px;
-      font-size: 20px;
-      border-radius: 10px;
+      width: 34px;
+      height: 34px;
+      font-size: 18px;
+      border-radius: 8px;
     }
     .tour-step-title {
-      font-size: 16px;
+      font-size: 15px;
       line-height: 1.2;
     }
     .tour-step-badge {
       font-size: 10px;
     }
+    .tour-card-body {
+      margin-bottom: 10px;
+    }
     .tour-desc {
-      font-size: 12.5px;
-      line-height: 1.45;
-      margin-bottom: 8px;
+      font-size: 12px;
+      line-height: 1.4;
+      margin-bottom: 6px;
     }
     .tour-tip-box {
-      padding: 7px 10px;
+      padding: 6px 9px;
       font-size: 11px;
       border-radius: 6px;
+      line-height: 1.35;
     }
     .tour-dots {
-      margin-bottom: 10px;
-      gap: 5px;
+      margin-bottom: 8px;
+      gap: 4px;
     }
     .tour-dot {
-      width: 6px;
-      height: 6px;
+      width: 5px;
+      height: 5px;
     }
     .tour-dot.active {
-      width: 18px;
+      width: 16px;
     }
     .tour-card-footer {
-      padding-top: 10px;
-      gap: 8px;
-      flex-wrap: wrap;
+      padding-top: 8px;
+      gap: 6px;
+      flex-direction: column;
+      align-items: stretch;
     }
     .tour-dont-show {
       font-size: 10.5px;
+      margin-bottom: 2px;
     }
     .tour-nav-btns {
       gap: 6px;
       width: 100%;
-      justify-content: flex-end;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
     .tour-btn {
-      font-size: 11.5px;
-      padding: 8px 12px;
-      min-height: 38px;
+      font-size: 11px;
+      padding: 7px 10px;
+      min-height: 36px;
+      border-radius: 8px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      box-sizing: border-box;
+    }
+    .tour-btn-skip {
+      padding: 7px 8px;
+    }
+    .tour-btn-secondary {
+      padding: 7px 10px;
     }
     .tour-btn-primary {
       flex: 1;
+      text-align: center;
     }
   }
 </style>
