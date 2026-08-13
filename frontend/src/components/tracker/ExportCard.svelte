@@ -23,6 +23,7 @@
   let shareUrl = '';
   let shareId = '';
   let copyFeedback = false;
+  let copyFeedbackMsg = '';
   let canvasEl;
 
   // Luxury Themes
@@ -185,6 +186,15 @@
     loaded = false;
     loadingTxt = 'COMPILING FLEX CARD...';
 
+    // Pre-populate tweet template text
+    const outcome = match.won ? 'VICTORY' : 'DEFEAT';
+    const outcomeIcon = match.won ? '🏆' : '💀';
+    const kills = match.kills || 0;
+    const deaths = match.deaths || 0;
+    const assists = match.assists || 0;
+    const kda = `${kills}/${deaths}/${assists}`;
+    templateText = `${outcomeIcon} Secured an epic ${outcome} (${match.rounds || '13-6'}) as ${match.agentName?.toUpperCase() || 'Agent'} on ${match.map?.toUpperCase() || 'Valorant'} (KDA: ${kda})! #VALORANT @ValTracker`;
+
     await tick();
     await reRenderCanvas();
 
@@ -200,10 +210,11 @@
         score: match.rounds
       }).then((res) => {
         if (res && res.status === 'ok') {
-          shareUrl = res.share_url;
           shareId = res.share_id;
-          if (res.share_url && !templateText.includes(res.share_url)) {
-            templateText = templateText + ' ' + res.share_url;
+          const origin = typeof window !== 'undefined' ? window.location.origin : '';
+          shareUrl = origin ? `${origin}/share/${res.share_id}` : res.share_url;
+          if (shareUrl && !templateText.includes(shareUrl)) {
+            templateText = templateText + '\n\nView details: ' + shareUrl;
           }
         }
       }).catch((e) => {
@@ -402,15 +413,36 @@
   async function copyImageToClipboard() {
     try {
       if (!canvasEl) return;
+      if (!navigator.clipboard || !window.ClipboardItem) {
+        copyFeedbackMsg = "⚠️ Clipboard write not supported in this browser. Please use the 'Download HD PNG' button.";
+        copyFeedback = true;
+        setTimeout(() => { copyFeedback = false; }, 5000);
+        return;
+      }
       canvasEl.toBlob(async (blob) => {
-        if (blob && navigator.clipboard && window.ClipboardItem) {
-          await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+        if (blob) {
+          try {
+            await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+            copyFeedbackMsg = "✨ High-Res PNG Image copied to Clipboard! Ready to paste into Discord/X.";
+            copyFeedback = true;
+            setTimeout(() => { copyFeedback = false; }, 4000);
+          } catch (writeErr) {
+            console.error('Clipboard write error:', writeErr);
+            copyFeedbackMsg = "⚠️ Browser blocked clipboard access. Right-click the preview and choose 'Copy Image', or download.";
+            copyFeedback = true;
+            setTimeout(() => { copyFeedback = false; }, 5000);
+          }
+        } else {
+          copyFeedbackMsg = "⚠️ Failed to create image blob.";
           copyFeedback = true;
           setTimeout(() => { copyFeedback = false; }, 3000);
         }
       }, 'image/png');
     } catch (e) {
       console.error('Clipboard copy failed:', e);
+      copyFeedbackMsg = "⚠️ Clipboard copy failed. Please use download.";
+      copyFeedback = true;
+      setTimeout(() => { copyFeedback = false; }, 3000);
     }
   }
 
@@ -519,7 +551,9 @@
             </div>
 
             {#if copyFeedback}
-              <div class="share-clipboard-status">✨ High-Res PNG Image copied to Clipboard! Ready to paste into Discord/X.</div>
+              <div class="share-clipboard-status" class:warning={copyFeedbackMsg.includes('⚠️')}>
+                {copyFeedbackMsg}
+              </div>
             {/if}
 
             <div>
@@ -760,6 +794,11 @@
     border: 1px solid rgba(62, 207, 142, 0.3);
     padding: 8px;
     border-radius: 8px;
+  }
+  .share-clipboard-status.warning {
+    color: #ff5757;
+    background: rgba(255, 87, 87, 0.1);
+    border-color: rgba(255, 87, 87, 0.3);
   }
 
   .share-label {

@@ -210,20 +210,28 @@
   async function copyImageToClipboard() {
     if (!canvasEl) return;
     try {
+      if (!navigator.clipboard || !window.ClipboardItem) {
+        showToast("⚠️ Clipboard copy not supported by your browser. Please use the Download button!");
+        return;
+      }
       canvasEl.toBlob(async (blob) => {
-        if (!blob) return;
-        if (navigator.clipboard && navigator.clipboard.write) {
+        if (!blob) {
+          showToast("⚠️ Failed to generate image blob.");
+          return;
+        }
+        try {
           await navigator.clipboard.write([
             new ClipboardItem({ 'image/png': blob })
           ]);
-          showToast('Image copied to clipboard!');
-        } else {
-          showToast('Direct clipboard copy not supported by browser.');
+          showToast('✨ Image copied to clipboard!');
+        } catch (writeErr) {
+          console.error('Clipboard write error:', writeErr);
+          showToast("⚠️ Browser blocked clipboard write. Try downloading the image.");
         }
       }, 'image/png');
     } catch (e) {
       console.error('Copy to clipboard failed:', e);
-      showToast('Failed to copy image.');
+      showToast('⚠️ Copy failed. Please use download.');
     }
   }
 
@@ -249,13 +257,17 @@
   }
 
   function shareTwitter() {
-    const txt = encodeURIComponent(`Check out my ${cardType === 'match' ? 'Match Performance' : 'Valorant Profile Stats'} on ValTracker.gg! 🔥 #VALORANT @ValTracker`);
-    window.open(`https://twitter.com/intent/tweet?text=${txt}`, '_blank');
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const shareUrl = origin ? `${origin}/app?name=${encodeURIComponent(playerName)}&tag=${encodeURIComponent(playerTag)}` : '';
+    const text = `Check out my ${cardType === 'match' ? 'Match Performance' : 'Valorant Profile Stats'} on ValTracker.gg! 🔥 #VALORANT @ValTracker`;
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
   }
 
   function shareReddit() {
-    const title = encodeURIComponent(`[ValTracker] ${playerName}#${playerTag} ${cardType === 'match' ? 'Match Highlight' : 'Profile Stats'}`);
-    window.open(`https://www.reddit.com/submit?title=${title}`, '_blank');
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const shareUrl = origin ? `${origin}/app?name=${encodeURIComponent(playerName)}&tag=${encodeURIComponent(playerTag)}` : '';
+    const title = `[ValTracker] ${playerName}#${playerTag} ${cardType === 'match' ? 'Match Highlight' : 'Profile Stats'}`;
+    window.open(`https://www.reddit.com/submit?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(title)}`, '_blank');
   }
 
   function showToast(msg) {

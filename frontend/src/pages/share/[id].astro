@@ -24,7 +24,8 @@ try {
 
 const host = Astro.site ? Astro.site.href.replace(/\/$/, '') : Astro.url.origin;
 const ext = meta.ext || 'png';
-imageUrl = `${host}/shared/${id}.${ext}`;
+const relativeImageUrl = `/shared/${id}.${ext}`;
+imageUrl = `${host}${relativeImageUrl}`;
 shareUrl = `${host}/share/${id}`;
 
 const playerName = meta.playerName || 'ValTracker Player';
@@ -102,10 +103,7 @@ const ogDesc = isDraftCoach
   ) : (
     <div style="max-width:900px; width:95%; margin:20px auto; text-align:center; display:flex; flex-direction:column; align-items:center; gap:20px;">
       <a href="/" style="display:flex; align-items:center; gap:8px; text-decoration:none; margin-bottom:5px;">
-        <svg viewBox="0 0 24 24" style="width:24px; height:24px; fill:none; filter:drop-shadow(0 0 6px rgba(255, 70, 85, 0.6));">
-          <path d="M2,2 L10.5,22 L13.5,22 L22,2 L17.5,2 L12,13 L6.5,2 Z" fill="#ff4655" />
-          <polygon points="12,2 15.5,6 12,10 8.5,6" fill="#e8ff47" />
-        </svg>
+        <img src="/logo.png" alt="" style="height:26px; width:auto; filter:drop-shadow(0 0 10px rgba(250, 68, 84, 0.7));" />
         <span style="font-family:'Barlow Condensed',sans-serif; font-size:22px; font-weight:900; letter-spacing:1px; color:#fff; text-transform:uppercase;">ValTracker</span>
       </a>
 
@@ -114,7 +112,7 @@ const ogDesc = isDraftCoach
       </div>
 
       <img
-        src={imageUrl}
+        src={relativeImageUrl}
         alt={isDraftCoach ? 'Valorant VCT Draft Coach Card' : 'Valorant Performance Flex Card'}
         style="width:100%; max-width:850px; border-radius:16px; border:1px solid rgba(255, 70, 85, 0.3); box-shadow:0 16px 48px rgba(0,0,0,0.8), 0 0 15px rgba(255, 70, 85, 0.15); background:#0b0b0e; display:block; transition:transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);"
         onmouseover="this.style.transform='scale(1.01) translateY(-2px)'"
