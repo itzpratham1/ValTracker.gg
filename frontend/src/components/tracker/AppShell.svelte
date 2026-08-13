@@ -1,5 +1,6 @@
 <script>
   import { onMount } from 'svelte';
+  import { navigate } from 'astro:transitions/client';
   import { player, currentView, setPlayer, startFetch, endFetch, purgeObsoleteCacheIfNeeded } from '../../lib/appStore';
   import { processMatches } from '../../lib/processMatches';
   import { saveMatches } from '../../lib/indexeddb';
@@ -64,7 +65,11 @@
   function handleCancelFetch() {
     endFetch($player.name, $player.tag);
     setPlayer({ name: '', tag: '', fetching: false, loaded: false });
-    window.location.href = '/login';
+    if (typeof navigate === 'function') {
+      navigate('/login');
+    } else {
+      window.location.href = '/login';
+    }
   }
 
   function handlePopState() {
@@ -136,9 +141,9 @@
       cleanParams.set('mode', mode || 'competitive');
       window.history.replaceState({}, '', `/app?${cleanParams.toString()}`);
     } else {
-      // No name/tag in URL — redirect to /login (the standalone lookup page)
-      redirecting = true;
-      window.location.href = '/login';
+      // No name/tag in URL — render LookupView in-place smoothly
+      setPlayer({ name: '', tag: '', fetching: false, loaded: false });
+      redirecting = false;
       return;
     }
   }

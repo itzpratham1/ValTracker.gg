@@ -6,6 +6,9 @@
   import Footer from '../shared/Footer.svelte';
   import { playSound, getMuted, setMuted } from '../../lib/audio';
 
+  import { navigate } from 'astro:transitions/client';
+  import { setPlayer } from '../../lib/appStore';
+
   let canvasRef;
   let animationId;
   let isMuted = false;
@@ -15,9 +18,13 @@
 
   function handleSelect(name, tag, region, mode) {
     playSound('submit');
-    setTimeout(() => {
-      window.location.href = `/app?name=${encodeURIComponent(name)}&tag=${encodeURIComponent(tag)}&region=${region}&mode=${mode}`;
-    }, 150);
+    setPlayer({ name, tag, region, mode, fetching: true, loaded: false });
+    const targetUrl = `/app?name=${encodeURIComponent(name)}&tag=${encodeURIComponent(tag)}&region=${region}&mode=${mode}`;
+    if (typeof navigate === 'function') {
+      navigate(targetUrl);
+    } else {
+      window.location.href = targetUrl;
+    }
   }
 
   function toggleMute() {

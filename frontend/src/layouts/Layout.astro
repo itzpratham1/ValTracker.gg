@@ -1,6 +1,7 @@
 ---
 import '../styles/tokens.css';
 import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
 
 interface Props {
   title: string;
@@ -63,6 +64,7 @@ const jsonLd = structuredData || defaultStructuredData;
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer">
   <meta name="theme-color" content="#030304">
+  <ClientRouter />
 
   <!-- Performance & Pre-connect Directives -->
   <link rel="dns-prefetch" href="https://media.valorant-api.com">
@@ -129,15 +131,6 @@ const jsonLd = structuredData || defaultStructuredData;
             if (success) console.log('[ValTracker] Unregistered active service worker.');
           });
         }
-      });
-    }
-    if ('caches' in window) {
-      caches.keys().then(function(keys) {
-        keys.forEach(function(key) {
-          caches.delete(key).then(function() {
-            console.log('[ValTracker] Cleared cache storage:', key);
-          });
-        });
       });
     }
   </script>
