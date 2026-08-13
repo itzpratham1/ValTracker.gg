@@ -77,8 +77,10 @@
     loadSchedule();
   }
 
-  $: if (isVisible && activeTab === 'teams' && !franchiseData) {
-    loadTeams();
+  $: if (isVisible && activeTab === 'teams') {
+    if (!franchiseData || !selectedTeamId) {
+      loadTeams();
+    }
   }
 
   $: if (isVisible && activeTab === 'news') {
@@ -218,17 +220,21 @@
   async function loadTeams() {
     loading.teams = true;
     try {
-      const res = await fetch('/vct_teams.json?v=10');
-      const rawData = await res.json();
-      franchiseData = applyLocalStorageRosters(rawData);
-      setFranchiseData(franchiseData);
+      if (!franchiseData) {
+        const res = await fetch('/vct_teams.json?v=10');
+        const rawData = await res.json();
+        franchiseData = applyLocalStorageRosters(rawData);
+        setFranchiseData(franchiseData);
+      }
 
       if (!getAllMatchesCache().length) {
         const matchesRes = await fetchEsportsUpcoming();
         setAllMatchesCache(matchesRes?.data || []);
       }
 
-      await selectFranchiseTeam('pacific', '918');
+      if (!selectedTeamId) {
+        await selectFranchiseTeam('pacific', '918');
+      }
     } catch (e) {
       console.error("Teams loader error:", e);
     }
