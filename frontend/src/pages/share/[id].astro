@@ -10,7 +10,8 @@ let shareUrl = '';
 let error = false;
 
 try {
-  const backendUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:5000';
+  const isDev = import.meta.env.DEV;
+  const backendUrl = import.meta.env.PUBLIC_API_URL || (isDev ? 'http://localhost:5000' : 'https://valtracker-api.onrender.com');
   const res = await fetch(`${backendUrl}/api/share-meta/${id}`);
   if (res.ok) {
     const data = await res.json();

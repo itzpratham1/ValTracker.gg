@@ -8,8 +8,8 @@ export const GET: APIRoute = async ({ params }) => {
     return new Response('Not Found', { status: 404 });
   }
 
-  // Use the production or development API base URL
-  const backendUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:5000';
+  const isDev = import.meta.env.DEV;
+  const backendUrl = import.meta.env.PUBLIC_API_URL || (isDev ? 'http://localhost:5000' : 'https://valtracker-api.onrender.com');
   
   try {
     const res = await fetch(`${backendUrl}/api/shared-image/${filename}`);
