@@ -140,7 +140,7 @@
     if (typeof onCancel === 'function') {
       onCancel();
     } else {
-      window.location.href = '/login';
+      window.location.href = '/app';
     }
   }
 

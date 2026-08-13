@@ -96,5 +96,27 @@
       "timestamp": "2026-08-12T18:57:01.243Z"
     },
     "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-08-13T17:12:37.292507",
+    "event": "player_search",
+    "payload": {
+      "name": "HARSH",
+      "region": "ap",
+      "mode": "competitive",
+      "timestamp": "2026-08-13T11:42:37.250Z"
+    },
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-08-13T17:12:37.516435",
+    "event": "player_search",
+    "payload": {
+      "name": "HARSH",
+      "region": "ap",
+      "mode": "competitive",
+      "timestamp": "2026-08-13T11:42:37.510Z"
+    },
+    "ip": "127.0.0.1"
   }
 ]

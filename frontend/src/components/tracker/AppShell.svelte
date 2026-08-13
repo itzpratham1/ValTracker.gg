@@ -66,9 +66,9 @@
     endFetch($player.name, $player.tag);
     setPlayer({ name: '', tag: '', fetching: false, loaded: false });
     if (typeof navigate === 'function') {
-      navigate('/login');
+      navigate('/app');
     } else {
-      window.location.href = '/login';
+      window.location.href = '/app';
     }
   }
 

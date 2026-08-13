@@ -78,7 +78,7 @@
       <p class="landing-subtitle">
         Real-time Valorant stats, AI coaching, and live OBS overlays.
       </p>
-      <a href="/login" class="landing-hero-btn" on:click={scrollToSearch}>
+      <a href="/app" class="landing-hero-btn" on:click={scrollToSearch}>
         Track Your Stats
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
       </a>
@@ -240,7 +240,7 @@
     <div class="landing-cta-card">
       <h2 class="landing-cta-title">Ready To See Your Real Stats?</h2>
       <p class="landing-cta-sub">No sign-up. Free forever. Built by a Valorant player.</p>
-      <a href="/login" class="landing-hero-btn" on:click={scrollToSearch}>Track Now — It's Free</a>
+      <a href="/app" class="landing-hero-btn" on:click={scrollToSearch}>Track Now — It's Free</a>
     </div>
   </section>
 
@@ -253,7 +253,7 @@
         <p class="landing-footer-credit">Built by Pratham</p>
       </div>
       <nav class="landing-footer-nav">
-        <a href="/login" class="landing-footer-nav-link" on:click={scrollToSearch}>Tracker</a>
+        <a href="/app" class="landing-footer-nav-link" on:click={scrollToSearch}>Tracker</a>
         <a href="/app#esports" on:click={(e) => navigateToTab('esports', e)}>VCT</a>
         <a href="/app#skins" on:click={(e) => navigateToTab('store', e)}>Skins</a>
         <a href="/app#meta" on:click={(e) => navigateToTab('coach', e)}>Meta Comp</a>
