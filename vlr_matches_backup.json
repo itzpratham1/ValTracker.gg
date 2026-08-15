@@ -1,24 +1,24 @@
 [
   {
-    "id": "729672",
+    "id": "729673",
     "date": "Aug 15, 2026 8:30 PM",
-    "state": "unstarted",
-    "vlr_path": "/729672/fut-esports-vs-eternal-fire-vct-2026-emea-stage-2-ubsf",
+    "state": "in_progress",
+    "vlr_path": "/729673/fire-flux-esports-vs-enterprise-esports-vct-2026-emea-stage-2-ubsf",
     "league": {
       "name": "VCT 2026: EMEA Stage 2",
       "region": "Play-Ins\u2013Upper Semifinals"
     },
     "match": {
-      "id": "729672",
+      "id": "729673",
       "teams": [
         {
-          "name": "FUT Esports",
+          "name": "Fire Flux Esports",
           "game_wins": 0,
           "has_won": false
         },
         {
-          "name": "Eternal Fire",
-          "game_wins": 0,
+          "name": "Enterprise Esports",
+          "game_wins": 1,
           "has_won": false
         }
       ]
@@ -28,7 +28,7 @@
   {
     "id": "732794",
     "date": "Aug 15, 2026 8:30 PM",
-    "state": "unstarted",
+    "state": "in_progress",
     "vlr_path": "/732794/alternate-attax-ruby-vs-fokus-sakura-game-changers-2026-emea-stage-3-lr1",
     "league": {
       "name": "Game Changers 2026: EMEA Stage 3",
@@ -78,24 +78,24 @@
     "vod": null
   },
   {
-    "id": "729673",
+    "id": "729672",
     "date": "Aug 15, 2026 11:30 PM",
     "state": "unstarted",
-    "vlr_path": "/729673/fire-flux-esports-vs-enterprise-esports-vct-2026-emea-stage-2-ubsf",
+    "vlr_path": "/729672/fut-esports-vs-eternal-fire-vct-2026-emea-stage-2-ubsf",
     "league": {
       "name": "VCT 2026: EMEA Stage 2",
       "region": "Play-Ins\u2013Upper Semifinals"
     },
     "match": {
-      "id": "729673",
+      "id": "729672",
       "teams": [
         {
-          "name": "Fire Flux Esports",
+          "name": "FUT Esports",
           "game_wins": 0,
           "has_won": false
         },
         {
-          "name": "Enterprise Esports",
+          "name": "Eternal Fire",
           "game_wins": 0,
           "has_won": false
         }

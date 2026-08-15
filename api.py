@@ -1235,6 +1235,24 @@ def proxy_api(subpath):
         if time.time() - cache_entry["timestamp"] < ttl:
             print(f"[CACHE HIT] Serving detailed match {subpath} instantly from memory cache!")
             return jsonify(cache_entry["data"])
+
+    # Check Supabase first for already-upgraded full match detail
+    if is_detail_route and SUPABASE_URL and SUPABASE_KEY and request.method == "GET":
+        target_match_id = subpath.split("/")[-1]
+        if target_match_id:
+            safe_mid = sanitize_postgrest_value(target_match_id)
+            params_db = {"match_id": f"eq.{safe_mid}", "select": "stripped_raw_match"}
+            r_db = supabase_request("GET", "matches_cache", params=params_db)
+            if r_db and r_db.status_code == 200:
+                rows = r_db.json()
+                if rows and isinstance(rows, list) and len(rows) > 0:
+                    srm = rows[0].get("stripped_raw_match") or {}
+                    players_list = (srm.get("players") or {}).get("all_players") or []
+                    if len(players_list) > 1:
+                        print(f"[DB MATCH HIT] Serving full scorecard for {target_match_id} instantly from Supabase!")
+                        res_data = {"status": 200, "data": srm}
+                        cache[cache_key] = {"data": res_data, "timestamp": time.time()}
+                        return jsonify(res_data)
             
     headers = {"Authorization": API_KEY, "Content-Type": "application/json"}
     params = request.args.to_dict()
@@ -1248,6 +1266,19 @@ def proxy_api(subpath):
             response = http_session.post(target_url, headers=headers, json=request.json, timeout=10)
         
         if response.status_code != 200:
+            if is_detail_route and SUPABASE_URL and SUPABASE_KEY:
+                target_match_id = subpath.split("/")[-1]
+                if target_match_id:
+                    safe_mid = sanitize_postgrest_value(target_match_id)
+                    params_db = {"match_id": f"eq.{safe_mid}", "select": "stripped_raw_match"}
+                    r_db = supabase_request("GET", "matches_cache", params=params_db)
+                    if r_db and r_db.status_code == 200:
+                        rows = r_db.json()
+                        if rows and isinstance(rows, list) and len(rows) > 0:
+                            srm = rows[0].get("stripped_raw_match") or {}
+                            if srm:
+                                print(f"[DB FALLBACK] HenrikDev returned {response.status_code}. Serving cached match for {target_match_id} from Supabase.")
+                                return jsonify({"status": 200, "data": srm})
             if is_profile_route:
                 cached_p = get_cached_player(name, tag)
                 if cached_p:

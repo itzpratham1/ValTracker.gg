@@ -1,5 +1,11 @@
+<script context="module">
+  // Module-level caches shared across all MatchPanel instances
+  const matchDetailCache = new Map();
+  const inFlightDetailPromises = new Map();
+</script>
+
 <script>
-    import { onMount, tick } from 'svelte';
+  import { onMount, tick } from 'svelte';
   import { streamHtmlReactive, animateAllNumbersInContainer } from '../../lib/aiStreamer';
   import MatchScoreboard from './MatchScoreboard.svelte';
   import MatchPerformance from './MatchPerformance.svelte';
@@ -82,21 +88,43 @@
       detailError = 'Match detail not available';
       return;
     }
+
+    if (matchDetailCache.has(targetMatchId)) {
+      detailData = matchDetailCache.get(targetMatchId);
+      detailLoaded = true;
+      detailLoading = false;
+      return;
+    }
+
     detailLoading = true;
     detailError = null;
 
     try {
-      const res = await fetch(`${API_BASE}/api/v2/match/${encodeURIComponent(targetMatchId)}`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data?.data) {
-          detailData = data.data;
-          detailLoaded = true;
-        } else {
-          detailError = 'Match detail not available';
-        }
+      let promise = inFlightDetailPromises.get(targetMatchId);
+      if (!promise) {
+        promise = fetch(`${API_BASE}/api/v2/match/${encodeURIComponent(targetMatchId)}`)
+          .then(async (res) => {
+            if (res.ok) {
+              const data = await res.json();
+              return { ok: true, data: data?.data };
+            }
+            return { ok: false, status: res.status };
+          })
+          .catch((err) => ({ ok: false, error: err }));
+        inFlightDetailPromises.set(targetMatchId, promise);
+      }
+
+      const result = await promise;
+      inFlightDetailPromises.delete(targetMatchId);
+
+      if (result.ok && result.data) {
+        detailData = result.data;
+        matchDetailCache.set(targetMatchId, result.data);
+        detailLoaded = true;
+      } else if (result.status === 429) {
+        detailError = 'Rate limited by Riot API — click to retry';
       } else {
-        detailError = `Fetch error ${res.status}`;
+        detailError = result.status ? `Fetch error ${result.status}` : 'Network error — click to retry';
       }
     } catch (e) {
       detailError = 'Network error — click to retry';
