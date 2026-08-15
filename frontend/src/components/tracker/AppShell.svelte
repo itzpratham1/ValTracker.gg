@@ -35,10 +35,18 @@
 
   const API_BASE = import.meta.env.PUBLIC_API_URL || '';
 
+  // Active in-flight request tracking & cancellation
+  let activeAbortController = null;
+  let activeFetchPromise = null;
+  let activeFetchKey = '';
+
   onMount(() => {
     purgeObsoleteCacheIfNeeded();
     console.log('[AppShell] mounted. API_BASE:', API_BASE || '(relative /api)');
     console.log('[AppShell] URL:', window.location.href);
+
+    // Warm up Render backend immediately to minimize cold start latency
+    fetch(`${API_BASE}/api/health`).catch(() => {});
 
     initAssetCache().then(() => {
       console.log('[AppShell] Asset cache initialized');
@@ -51,19 +59,22 @@
       let p;
       player.subscribe(v => p = v)();
       if (p.fetching && !p.loaded) {
-        console.warn('[AppShell] Safety timeout: forcing endFetch after 60s');
-        endFetch(p.name, p.tag);
+        console.warn('[AppShell] Safety timeout: fetch took longer than 60s, resetting state');
+        if (activeAbortController) activeAbortController.abort();
+        setPlayer({ fetching: false, loaded: false });
+        if (window.showToast) window.showToast('Connection timed out. Please check your network and try again.');
       }
     }, 60000);
 
     return () => {
       window.removeEventListener('popstate', handlePopState);
       clearTimeout(safetyTimeout);
+      if (activeAbortController) activeAbortController.abort();
     };
   });
 
   function handleCancelFetch() {
-    endFetch($player.name, $player.tag);
+    if (activeAbortController) activeAbortController.abort();
     setPlayer({ name: '', tag: '', fetching: false, loaded: false });
     if (typeof navigate === 'function') {
       navigate('/app');
@@ -148,16 +159,24 @@
     }
   }
 
-  function fetchWithTimeout(url, opts = {}, timeoutMs = 30000) {
+  function fetchWithTimeout(url, opts = {}, timeoutMs = 45000, signal = null) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs);
-    return fetch(`${API_BASE}${url}`, { ...opts, signal: controller.signal }).finally(() => clearTimeout(timer));
+    
+    // If an external signal was passed, propagate its abort
+    if (signal) {
+      signal.addEventListener('abort', () => controller.abort());
+    }
+
+    return fetch(`${API_BASE}${url}`, { ...opts, signal: controller.signal })
+      .finally(() => clearTimeout(timer));
   }
 
-  async function fetchWithRetry(url, opts = {}, timeoutMs = 30000, retries = 3) {
+  async function fetchWithRetry(url, opts = {}, timeoutMs = 45000, retries = 2, signal = null) {
     for (let i = 0; i <= retries; i++) {
+      if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
       try {
-        const res = await fetchWithTimeout(url, opts, timeoutMs);
+        const res = await fetchWithTimeout(url, opts, timeoutMs, signal);
         if (res.status === 429 || res.status === 502 || res.status === 503 || res.status === 504) {
           if (i === retries) return res;
           const delay = Math.pow(2, i) * 1500 + Math.floor(Math.random() * 500);
@@ -167,6 +186,7 @@
         }
         return res;
       } catch (e) {
+        if (signal?.aborted || e.name === 'AbortError') throw e;
         if (i === retries) throw e;
         const delay = (i + 1) * 2000;
         console.warn(`[AppShell] Fetch attempt ${i + 1} failed for ${url}, retrying in ${delay}ms...`, e.message);
@@ -184,129 +204,161 @@
       return;
     }
 
-    console.log('[AppShell] fetchStats starting for', p.name, '#', p.tag, 'region:', p.region, 'mode:', p.mode);
-    trackEvent('player_search', { name: p.name, region: p.region, mode: p.mode });
-    startFetch();
+    const currentKey = `${p.name.toLowerCase()}#${p.tag.toLowerCase()}#${p.region}#${p.mode}`;
 
-    if (typeof window !== 'undefined') {
-      document.body.classList.remove('scrolled-down', 'scrolled-up');
-      window.scrollTo({ top: 0 });
+    // Return existing in-flight request if identical to avoid duplicate network load
+    if (activeFetchPromise && activeFetchKey === currentKey) {
+      return activeFetchPromise;
     }
 
-    const enc = encodeURIComponent(p.name);
-    const encTag = encodeURIComponent(p.tag);
-    const isRanked = p.mode === 'competitive';
-    const nc = Date.now();
+    // Cancel any previous in-flight request for different target
+    if (activeAbortController) {
+      activeAbortController.abort();
+    }
+    activeAbortController = new AbortController();
+    const abortSignal = activeAbortController.signal;
+    activeFetchKey = currentKey;
 
-    try {
-      console.log('[AppShell] Fetching API data in parallel...');
-      
-      // Fetch all profile details concurrently for maximum speed
-      const [accountRes, mmrRes, matchRes, mmrHistRes] = await Promise.all([
-        fetchWithRetry(`/api/v1/account/${enc}/${encTag}`),
-        isRanked
-          ? fetchWithRetry(`/api/v3/mmr/${p.region}/pc/${enc}/${encTag}`)
-          : Promise.resolve(null),
-        fetchWithRetry(`/api/v3/matches/${p.region}/${enc}/${encTag}?mode=${p.mode}&size=20`),
-        fetchWithRetry(`/api/v1/stored-mmr-history/${p.region}/${enc}/${encTag}`).catch(() => null)
-      ]);
+    activeFetchPromise = (async () => {
+      console.log('[AppShell] fetchStats starting for', p.name, '#', p.tag, 'region:', p.region, 'mode:', p.mode);
+      trackEvent('player_search', { name: p.name, region: p.region, mode: p.mode });
+      startFetch();
 
-      console.log('[AppShell] API responses:', { mmr: mmrRes?.status, match: matchRes?.status, account: accountRes?.status, hist: mmrHistRes?.status });
-
-      const accountResData = accountRes?.ok ? await accountRes.json().catch(() => null) : null;
-      const mmrResData = mmrRes?.ok ? await mmrRes.json().catch(() => null) : null;
-      let matchResData = matchRes?.ok ? await matchRes.json().catch(() => null) : null;
-      const mmrHistResData = mmrHistRes?.ok ? await mmrHistRes.json().catch(() => null) : null;
-
-      if ((!matchResData || !matchResData.data) && accountResData?.data) {
-        matchResData = { status: 200, data: [] };
-      }
-      if (!matchResData && !accountResData) {
-        throw new Error('Invalid Riot ID or player not found.');
+      if (typeof window !== 'undefined') {
+        document.body.classList.remove('scrolled-down', 'scrolled-up');
+        window.scrollTo({ top: 0 });
       }
 
-      mmrData = mmrResData?.data || null;
-      accountData = accountResData?.data || null;
-      allMatches = matchResData?.data || [];
+      const enc = encodeURIComponent(p.name);
+      const encTag = encodeURIComponent(p.tag);
+      const isRanked = p.mode === 'competitive';
 
-      // Save matches to IndexedDB for Performance Lab and other local features
-      saveMatches(allMatches, p.name, p.tag, p.mode).catch(e => {
-        console.warn('[AppShell] Failed to save matches to IndexedDB:', e);
-      });
+      try {
+        console.log('[AppShell] Fetching API data in parallel...');
+        
+        // Fetch all profile details concurrently with resilience
+        const results = await Promise.allSettled([
+          fetchWithRetry(`/api/v1/account/${enc}/${encTag}`, {}, 45000, 2, abortSignal),
+          isRanked
+            ? fetchWithRetry(`/api/v3/mmr/${p.region}/pc/${enc}/${encTag}`, {}, 45000, 2, abortSignal)
+            : Promise.resolve(null),
+          fetchWithRetry(`/api/v3/matches/${p.region}/${enc}/${encTag}?mode=${p.mode}&size=20`, {}, 45000, 2, abortSignal),
+          fetchWithRetry(`/api/v1/stored-mmr-history/${p.region}/${enc}/${encTag}`, {}, 30000, 1, abortSignal)
+        ]);
 
-      const hist = {};
-      if (mmrHistResData?.data?.length) {
-        mmrHistResData.data.forEach(e => {
-          const rrVal = e.last_mmr_change !== undefined && e.last_mmr_change !== null
-            ? e.last_mmr_change
-            : e.mmr_change_to_last_game;
-          if (e.match_id && rrVal !== undefined && rrVal !== null) {
-            hist[e.match_id] = rrVal;
-          }
+        if (abortSignal.aborted) return;
+
+        const accountRes = results[0].status === 'fulfilled' ? results[0].value : null;
+        const mmrRes = results[1].status === 'fulfilled' ? results[1].value : null;
+        const matchRes = results[2].status === 'fulfilled' ? results[2].value : null;
+        const mmrHistRes = results[3].status === 'fulfilled' ? results[3].value : null;
+
+        console.log('[AppShell] API responses:', { 
+          account: accountRes?.status, 
+          mmr: mmrRes?.status, 
+          match: matchRes?.status, 
+          hist: mmrHistRes?.status 
         });
+
+        const accountResData = accountRes?.ok ? await accountRes.json().catch(() => null) : null;
+        const mmrResData = mmrRes?.ok ? await mmrRes.json().catch(() => null) : null;
+        let matchResData = matchRes?.ok ? await matchRes.json().catch(() => null) : null;
+        const mmrHistResData = mmrHistRes?.ok ? await mmrHistRes.json().catch(() => null) : null;
+
+        if ((!matchResData || !matchResData.data) && accountResData?.data) {
+          matchResData = { status: 200, data: [] };
+        }
+        if (!matchResData && !accountResData) {
+          throw new Error('Player profile not found. Please verify the Riot ID and Tag.');
+        }
+
+        const resolvedMmrData = mmrResData?.data || null;
+        const resolvedAccountData = accountResData?.data || null;
+        const resolvedAllMatches = matchResData?.data || [];
+
+        // Save matches to IndexedDB for Performance Lab and other local features
+        saveMatches(resolvedAllMatches, p.name, p.tag, p.mode).catch(e => {
+          console.warn('[AppShell] Failed to save matches to IndexedDB:', e);
+        });
+
+        const hist = {};
+        if (mmrHistResData?.data?.length) {
+          mmrHistResData.data.forEach(e => {
+            const rrVal = e.last_mmr_change !== undefined && e.last_mmr_change !== null
+              ? e.last_mmr_change
+              : e.mmr_change_to_last_game;
+            if (e.match_id && rrVal !== undefined && rrVal !== null) {
+              hist[e.match_id] = rrVal;
+            }
+          });
+        }
+
+        let computedStats = null;
+        try {
+          computedStats = processMatches(resolvedAllMatches, p.name, p.tag, p.act);
+        } catch (e) {
+          console.error('processMatches error:', e);
+          computedStats = { matchesCount: 0, kd: 0, avgKills: 0, avgDeaths: 0, avgAssists: 0, avgACS: 0, hsRate: 0, winRate: 0, wins: 0, losses: 0, agentMap: {}, mapData: {}, rrHistory: [], recentMatches: [], precomputedWeapons: {} };
+        }
+
+        // Atomically assign all data before switching loaded state
+        mmrData = resolvedMmrData;
+        accountData = resolvedAccountData;
+        allMatches = resolvedAllMatches;
+        mmrHistory = hist;
+        stats = computedStats;
+
+        console.log('[AppShell] Data loaded successfully. Calling endFetch. matches:', allMatches.length);
+        endFetch(p.name, p.tag);
+
+        const searchParams = new URLSearchParams();
+        searchParams.set('name', p.name);
+        searchParams.set('tag', p.tag);
+        searchParams.set('region', p.region);
+        searchParams.set('mode', p.mode);
+        window.history.pushState({}, '', `/app?${searchParams.toString()}`);
+
+        try {
+          const rankName = mmrData?.current?.tier?.name || 'UNRANKED';
+          const entry = {
+            name: p.name,
+            tag: p.tag,
+            region: p.region,
+            mode: p.mode,
+            rankName,
+            rankImg: getRankImgUrl(rankName),
+            timestamp: Date.now()
+          };
+          const raw = localStorage.getItem('valtracker_recent_searches');
+          let recent = raw ? JSON.parse(raw) : [];
+          recent = recent.filter(r => !(r.name.toLowerCase() === p.name.toLowerCase() && r.tag.toLowerCase() === p.tag.toLowerCase()));
+          recent.unshift(entry);
+          recent = recent.slice(0, 6);
+          localStorage.setItem('valtracker_recent_searches', JSON.stringify(recent));
+        } catch {}
+
+      } catch (err) {
+        if (abortSignal.aborted || err.name === 'AbortError') {
+          console.log('[AppShell] Fetch was aborted.');
+          return;
+        }
+        console.error('Fetch error:', err);
+        setPlayer({ fetching: false, loaded: false });
+        if (window.showToast) {
+          window.showToast(err.message || 'Failed to fetch stats. Check the Riot ID.');
+        }
+      } finally {
+        activeFetchPromise = null;
       }
-      mmrHistory = hist;
+    })();
 
-      try {
-        stats = processMatches(allMatches, p.name, p.tag, p.act);
-      } catch (e) {
-        console.error('processMatches error:', e);
-        stats = { matchesCount: 0, kd: 0, avgKills: 0, avgDeaths: 0, avgAssists: 0, avgACS: 0, hsRate: 0, winRate: 0, wins: 0, losses: 0, agentMap: {}, mapData: {}, rrHistory: [], recentMatches: [], precomputedWeapons: {} };
-      }
-
-      console.log('[AppShell] Data loaded. Calling endFetch. matches:', allMatches.length);
-      endFetch(p.name, p.tag);
-
-      const searchParams = new URLSearchParams();
-      searchParams.set('name', p.name);
-      searchParams.set('tag', p.tag);
-      searchParams.set('region', p.region);
-      searchParams.set('mode', p.mode);
-      window.history.pushState({}, '', `/app?${searchParams.toString()}`);
-
-      try {
-        const rankName = mmrData?.current?.tier?.name || 'UNRANKED';
-        const entry = {
-          name: p.name,
-          tag: p.tag,
-          region: p.region,
-          mode: p.mode,
-          rankName,
-          rankImg: getRankImgUrl(rankName),
-          timestamp: Date.now()
-        };
-        const raw = localStorage.getItem('valtracker_recent_searches');
-        let recent = raw ? JSON.parse(raw) : [];
-        recent = recent.filter(r => !(r.name.toLowerCase() === p.name.toLowerCase() && r.tag.toLowerCase() === p.tag.toLowerCase()));
-        recent.unshift(entry);
-        recent = recent.slice(0, 6);
-        localStorage.setItem('valtracker_recent_searches', JSON.stringify(recent));
-      } catch {}
-
-    } catch (err) {
-      console.error('Fetch error:', err);
-      endFetch(p.name, p.tag);
-      if (window.showToast) {
-        window.showToast(err.message || 'Failed to fetch stats. Check the Riot ID.');
-      }
-    }
+    return activeFetchPromise;
   }
 
-  // Use a module-level lock to prevent any concurrent fetches regardless of reactivity batching
-  let fetchLock = false;
-  let lastFetchKey = '';
-
-  $: if ($player.fetching && !$player.loaded) {
-    const currentKey = `${$player.name}|${$player.tag}|${$player.region}|${$player.mode}`;
-    if (currentKey === lastFetchKey) {
-      // Already have cached data for this exact player/config, no re-fetch needed
-      endFetch($player.name, $player.tag);
-    } else if (!fetchLock) {
-      fetchLock = true;
-      fetchStats().finally(() => {
-        lastFetchKey = currentKey;
-        fetchLock = false;
-      });
+  $: if ($player.fetching && !$player.loaded && $player.name && $player.tag) {
+    const currentKey = `${$player.name.toLowerCase()}#${$player.tag.toLowerCase()}#${$player.region}#${$player.mode}`;
+    if (!activeFetchPromise || activeFetchKey !== currentKey) {
+      fetchStats();
     }
   }
 

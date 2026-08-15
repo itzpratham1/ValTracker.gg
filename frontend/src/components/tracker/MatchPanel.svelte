@@ -22,9 +22,11 @@
   export let mmrHistory = {};
   export let onShare = () => {};
 
+  $: effectiveMatch = (detailData && getPlayerList(detailData).length > 1) ? detailData : rawMatch;
+  $: hasFullScorecard = (detailData && getPlayerList(detailData).length > 1) || (rawMatch && getPlayerList(rawMatch).length > 1);
   $: rrChange = mmrHistory ? mmrHistory[m.matchId] : null;
-  $: allPlayers = rawMatch ? getPlayerList(rawMatch) : [];
-  $: lobbyInfo = rawMatch ? getLobbyRankInfo(allPlayers, m.myTeamId) : null;
+  $: allPlayers = effectiveMatch ? getPlayerList(effectiveMatch) : [];
+  $: lobbyInfo = effectiveMatch ? getLobbyRankInfo(allPlayers, m.myTeamId) : null;
   $: lobbyRankName = lobbyInfo?.overall?.name || '';
   $: lobbyRankImg = lobbyRankName ? getRankImgUrl(lobbyRankName) : '';
 
@@ -57,7 +59,8 @@
   }
 
   onMount(() => {
-    if (!rawMatch) {
+    // If we don't have the full 10-player match detail, auto-fetch it on mount
+    if (!rawMatch || getPlayerList(rawMatch).length <= 1) {
       loadFullDetail();
     }
   });
@@ -74,11 +77,16 @@
 
   async function loadFullDetail() {
     if (detailLoaded || detailLoading) return;
+    const targetMatchId = m.matchId || rawMatch?.metadata?.matchid || rawMatch?.metadata?.match_id;
+    if (!targetMatchId) {
+      detailError = 'Match detail not available';
+      return;
+    }
     detailLoading = true;
     detailError = null;
 
     try {
-      const res = await fetch(`${API_BASE}/api/v2/match/${m.matchId}`);
+      const res = await fetch(`${API_BASE}/api/v2/match/${encodeURIComponent(targetMatchId)}`);
       if (res.ok) {
         const data = await res.json();
         if (data?.data) {
@@ -91,7 +99,7 @@
         detailError = `Fetch error ${res.status}`;
       }
     } catch (e) {
-      detailError = 'Network error — click again to retry';
+      detailError = 'Network error — click to retry';
     } finally {
       detailLoading = false;
     }
@@ -754,10 +762,11 @@
   }
 
   function getMvpInfo() {
-    if (!rawMatch) return { isMatchMVP: false, isTeamMVP: false };
-    const allPlayers = getPlayerList(rawMatch);
-    const totalRounds = (rawMatch.rounds || []).length || Math.max(1,
-      Object.values(rawMatch.teams || {}).reduce((s, t) => s + (t.rounds_won || 0), 0)
+    const targetMatch = effectiveMatch || rawMatch;
+    if (!targetMatch) return { isMatchMVP: false, isTeamMVP: false };
+    const allPlayers = getPlayerList(targetMatch);
+    const totalRounds = (targetMatch.rounds || []).length || Math.max(1,
+      Object.values(targetMatch.teams || {}).reduce((s, t) => s + (t.rounds_won || 0), 0)
     );
     const getACS = p => Math.round((p.stats?.score || 0) / totalRounds);
     const matchMVPPlayer = allPlayers.length
@@ -885,14 +894,19 @@
   </div>
 
   <div class="panel-tab-content" class:active={activeTab === 'scoreboard'}>
-    {#if rawMatch || detailData}
-      <MatchScoreboard match={rawMatch || detailData} myTeamId={m.myTeamId} {playerName} />
+    {#if hasFullScorecard}
+      <MatchScoreboard match={effectiveMatch} myTeamId={m.myTeamId} {playerName} />
+    {:else if detailLoading}
+      <div style="padding: 36px 16px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; width: 100%;">
+        <div style="width: 24px; height: 24px; border: 2px solid var(--accent); border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+        <span style="font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 0.5px;">Loading full 10-player match details from Riot API...</span>
+      </div>
     {:else}
-      <div style="padding: 24px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%;">
-        <span class="detail-loading" style="font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted);">{detailLoading ? 'Loading scoreboard details...' : 'Scoreboard data not loaded'}</span>
-        {#if !detailLoading}
-          <button class="filter-btn" style="padding: 6px 16px; font-size: 11px;" on:click={loadFullDetail}>Load Scoreboard</button>
-        {/if}
+      <div style="padding: 32px 16px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; width: 100%;">
+        <span style="font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted);">{detailError || 'Full scoreboard data not cached'}</span>
+        <button class="filter-btn" style="padding: 7px 18px; font-size: 11px; background: rgba(250,68,84,0.15); border: 1px solid var(--accent);" on:click={loadFullDetail}>
+          Load Scoreboard
+        </button>
       </div>
     {/if}
   </div>

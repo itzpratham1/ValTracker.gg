@@ -374,12 +374,15 @@ if not allowed_origins:
         "https://valtracker-gg.onrender.com",
         "https://valtracker.gg",
         "https://valtracker.live",
+        "https://val-tracker-gg.vercel.app",
+        r"^https:\/\/.*\.vercel\.app$",
+        r"^https:\/\/.*\.onrender\.com$",
         "http://localhost:4321",
         "http://127.0.0.1:4321",
         "http://localhost:5000",
         "http://127.0.0.1:5000"
     ]
-CORS(app, origins=allowed_origins)
+CORS(app, origins=allowed_origins, supports_credentials=True)
 
 @app.after_request
 def optimize_response(response):
@@ -666,9 +669,11 @@ def submit_feedback():
         return jsonify({"status": "error", "message": "An error occurred while saving feedback"}), 500
 
 
-@app.route("/api/events", methods=["POST"])
+@app.route("/api/events", methods=["POST", "OPTIONS"])
 @rate_limit(requests_per_minute=120)
 def submit_telemetry():
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"})
     try:
         data = request.get_json(silent=True) or {}
         event_name = str(data.get("event", "unknown"))[:100]
@@ -1300,6 +1305,25 @@ def proxy_api(subpath):
 
         if response.status_code == 200 and request.method == "GET":
             cache[cache_key] = {"data": data, "timestamp": time.time()}
+            
+            # If a full match detail was fetched, upgrade the Supabase cache permanently
+            if is_detail_route and isinstance(data, dict) and data.get("data"):
+                def _write_through_match_detail(m_detail):
+                    try:
+                        m_id = m_detail.get("metadata", {}).get("matchid") or m_detail.get("metadata", {}).get("match_id")
+                        if m_id and SUPABASE_URL and SUPABASE_KEY:
+                            compressed = compress_match_json(m_detail)
+                            supabase_request(
+                                "PATCH",
+                                "matches_cache",
+                                data={"stripped_raw_match": compressed},
+                                params={"match_id": f"eq.{m_id}"}
+                            )
+                            print(f"[DB UPGRADE] Permanently upgraded match {m_id} with full 10-player scorecard in Supabase.")
+                    except Exception as e_mu:
+                        print(f"[DB UPGRADE ERROR] Failed to update match in Supabase: {e_mu}")
+
+                threading.Thread(target=_write_through_match_detail, args=(data["data"],), daemon=True).start()
             
         return jsonify(data), response.status_code
     except Exception as e:
