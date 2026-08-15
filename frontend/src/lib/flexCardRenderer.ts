@@ -456,6 +456,7 @@ export async function renderFlexCardToCanvas(
   ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
   ctx.fillText('LOBBY AVG', lobbyX + 44, 199);
 
+
   ctx.font = '800 13px "Barlow Condensed", sans-serif';
   ctx.fillStyle = '#ffffff';
   ctx.fillText(data.lobbyRank.toUpperCase(), lobbyX + 44, 214);
@@ -464,12 +465,12 @@ export async function renderFlexCardToCanvas(
   const tileW = (leftW - 12) / 3;
   const tileH = 48;
   const metrics = [
-    { label: 'K / D / A', val: `${data.kills}/${data.deaths}/${data.assists}`, color: '#ffffff' },
-    { label: 'K/D RATIO', val: data.kd, color: Number(data.kd) >= 1.0 ? '#3ecf8e' : '#fa4454' },
-    { label: 'ACS SCORE', val: `${data.acs}`, color: data.acs >= 240 ? '#ffd700' : '#ffffff' },
-    { label: 'HS %', val: `${data.hsPct}%`, color: data.hsPct >= 22 ? '#3ecf8e' : data.hsPct >= 14 ? '#ffb01f' : '#fa4454' },
-    { label: 'ADR', val: `${data.adr}`, color: '#ffffff' },
-    { label: 'FK / FD DIFF', val: data.fkFdDiff, color: data.fkFdDiff.startsWith('+') ? '#3ecf8e' : '#fa4454' }
+    { label: 'K / D / A', val: `${data.kills}/${data.deaths}/${data.assists}`, color: '#ffffff', pct: 0 },
+    { label: 'K/D RATIO', val: data.kd, color: Number(data.kd) >= 1.0 ? '#3ecf8e' : '#fa4454', pct: Math.min(100, Math.round((Number(data.kd) / 3.0) * 100)) },
+    { label: 'ACS SCORE', val: `${data.acs}`, color: data.acs >= 240 ? '#ffd700' : '#ffffff', pct: Math.min(100, Math.round((data.acs / 300) * 100)) },
+    { label: 'HS %', val: `${data.hsPct}%`, color: data.hsPct >= 22 ? '#3ecf8e' : data.hsPct >= 14 ? '#ffb01f' : '#fa4454', pct: Math.min(100, Math.round((data.hsPct / 35) * 100)) },
+    { label: 'ADR', val: `${data.adr}`, color: '#ffffff', pct: Math.min(100, Math.round((data.adr / 200) * 100)) },
+    { label: 'FK / FD DIFF', val: data.fkFdDiff, color: data.fkFdDiff.startsWith('+') ? '#3ecf8e' : '#fa4454', pct: 0 }
   ];
 
   metrics.forEach((m, idx) => {
@@ -478,22 +479,60 @@ export async function renderFlexCardToCanvas(
     const mx = leftX + c * (tileW + 6);
     const my = 240 + r * (tileH + 8);
 
-    ctx.fillStyle = 'rgba(15, 15, 22, 0.75)';
+    // Tile background
+    ctx.fillStyle = 'rgba(12, 12, 19, 0.82)';
     ctx.beginPath();
     if (ctx.roundRect) ctx.roundRect(mx, my, tileW, tileH, 10);
     ctx.fill();
-    ctx.strokeStyle = m.color !== '#ffffff' ? m.color + '40' : 'rgba(255, 255, 255, 0.09)';
+
+    // Accent top border (2px)
+    ctx.fillStyle = theme.accent + 'cc';
+    ctx.fillRect(mx + 10, my, tileW - 20, 2);
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(mx + 10, my, tileW - 20, 2, 1);
+    ctx.fill();
+
+    // Border stroke
+    ctx.strokeStyle = theme.accent + '28';
     ctx.lineWidth = 1;
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(mx, my, tileW, tileH, 10);
     ctx.stroke();
 
-    ctx.font = '700 8px "DM Mono", monospace';
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+    // Glass inset highlight
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(mx + 1, my + 1, tileW - 2, 12, [9, 9, 0, 0]);
+    ctx.fill();
+
+    ctx.font = '700 7.5px "DM Mono", monospace';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.42)';
     ctx.textAlign = 'center';
-    ctx.fillText(m.label, mx + tileW / 2, my + 14);
+    ctx.fillText(m.label, mx + tileW / 2, my + 15);
 
     ctx.font = '900 19px "Barlow Condensed", sans-serif';
     ctx.fillStyle = m.color;
-    ctx.fillText(m.val, mx + tileW / 2, my + 34);
+    ctx.fillText(m.val, mx + tileW / 2, my + 33);
+
+    // Progress bar (4px, at bottom of tile)
+    if (m.pct > 0) {
+      const barPad = 8;
+      const barW = tileW - barPad * 2;
+      const barY = my + tileH - 7;
+      ctx.fillStyle = 'rgba(255,255,255,0.07)';
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(mx + barPad, barY, barW, 3, 2);
+      ctx.fill();
+
+      const fillW = Math.max(4, (m.pct / 100) * barW);
+      const barGrad = ctx.createLinearGradient(mx + barPad, 0, mx + barPad + fillW, 0);
+      barGrad.addColorStop(0, theme.accent + '88');
+      barGrad.addColorStop(1, theme.accent);
+      ctx.fillStyle = barGrad;
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(mx + barPad, barY, fillW, 3, 2);
+      ctx.fill();
+    }
   });
 
   // Row 5: Round Timeline Dots (Y: 356px)

@@ -103,6 +103,15 @@
   let selectedThemeId = 'champions';
   $: activeTheme = FLEX_THEMES.find(t => t.id === selectedThemeId) || FLEX_THEMES[0];
 
+  // Pill gradient for each theme (for swatch preview)
+  const THEME_PILL_GRADS = {
+    champions: 'linear-gradient(135deg, rgba(255,215,0,0.6), rgba(255,215,0,0.15))',
+    obsidian:  'linear-gradient(135deg, rgba(250,68,84,0.6), rgba(250,68,84,0.15))',
+    cyberpunk: 'linear-gradient(135deg, rgba(0,243,255,0.6), rgba(0,243,255,0.15))',
+    icebox:    'linear-gradient(135deg, rgba(56,189,248,0.6), rgba(56,189,248,0.15))',
+    sovereign: 'linear-gradient(135deg, rgba(226,232,240,0.5), rgba(226,232,240,0.1))'
+  };
+
   // Customizer Toggles
   let showScoreboard = true;
   let showTimeline = true;
@@ -483,8 +492,11 @@
 <div class="share-modal-overlay" class:open={match} on:click|self={onClose}>
   {#if match}
     <div class="share-modal">
+      <!-- Top accent strip -->
+      <div class="share-accent-bar" style="background:linear-gradient(90deg, {activeTheme.accent}, {activeTheme.accent}44);"></div>
+
       <!-- Modal Header -->
-      <div class="share-modal-header">
+      <div class="share-modal-header" style="background:linear-gradient(135deg, {activeTheme.bgGradStart || activeTheme.accent + '12'} 0%, rgba(0,0,0,0) 100%);">
         <div class="share-modal-title">
           <img src="/logo.png" style="height:22px; width:auto;" alt="Logo" />
           Flex Card Customizer
@@ -495,16 +507,16 @@
       <div class="share-modal-body">
         <!-- Interactive Theme Bar -->
         <div class="theme-bar-wrap">
-          <div class="theme-bar-label">SELECT LUXURY THEME:</div>
+          <div class="theme-bar-label">SELECT THEME</div>
           <div class="theme-pills">
             {#each FLEX_THEMES as theme}
               <button 
                 class="theme-pill" 
                 class:active={selectedThemeId === theme.id}
-                style="--t-accent:{theme.accent}; --t-border:{theme.border}"
+                style="--t-accent:{theme.accent}; --t-border:{theme.border}; --t-glow:{theme.accentShadow}; --t-grad:{THEME_PILL_GRADS[theme.id] || 'rgba(255,255,255,0.1)'}"
                 on:click={() => selectTheme(theme.id)}
               >
-                <span class="theme-dot" style="background:{theme.accent}"></span>
+                <span class="theme-dot" style="background:{THEME_PILL_GRADS[theme.id]};"></span>
                 {theme.name}
               </button>
             {/each}
@@ -513,24 +525,26 @@
 
         <!-- Interactive Section Toggles -->
         <div class="toggle-bar-wrap">
-          <div class="theme-bar-label">LAYOUT CONTROLS:</div>
+          <div class="theme-bar-label">LAYOUT CONTROLS</div>
           <div class="toggle-pills">
             <button class="toggle-btn" class:active={showScoreboard} on:click={() => toggleOption('scoreboard')}>
-              {showScoreboard ? '✓ Scoreboard' : '+ Add Scoreboard'}
+              {showScoreboard ? '✓ Scoreboard' : '+ Scoreboard'}
             </button>
             <button class="toggle-btn" class:active={showTimeline} on:click={() => toggleOption('timeline')}>
-              {showTimeline ? '✓ Timeline' : '+ Add Timeline'}
+              {showTimeline ? '✓ Timeline' : '+ Timeline'}
             </button>
             <button class="toggle-btn" class:active={showFeats} on:click={() => toggleOption('feats')}>
-              {showFeats ? '✓ Feats' : '+ Add Feats'}
+              {showFeats ? '✓ Feats' : '+ Feats'}
             </button>
           </div>
         </div>
 
         {#if loading}
           <div class="share-loading">
-            <div class="share-spinner" style="border-top-color:{activeTheme.accent}"></div>
-            <div class="share-loading-txt">{loadingTxt}</div>
+            <div class="share-loading-bar">
+              <div class="share-loading-fill" style="background:linear-gradient(90deg, {activeTheme.accent}cc, {activeTheme.accent}); box-shadow:0 0 12px {activeTheme.accentShadow};"></div>
+            </div>
+            <div class="share-loading-txt" style="color:{activeTheme.accent};">{loadingTxt}</div>
           </div>
         {/if}
 
@@ -542,11 +556,11 @@
               class="share-preview-wrap" 
               on:mousemove={handleMouseMove} 
               on:mouseleave={handleMouseLeave}
-              style="transform: perspective(1000px) rotateX({rotateX}deg) rotateY({rotateY}deg);"
+              style="border-color:{activeTheme.border}; box-shadow:0 16px 50px rgba(0,0,0,0.8), 0 0 40px {activeTheme.accentShadow}22; transform:perspective(1000px) rotateX({rotateX}deg) rotateY({rotateY}deg);"
             >
               <img class="share-preview-img" src={imgPreview} alt="Flex Card Preview" />
-              <div class="share-preview-badge" style="border: 1px solid {activeTheme.accent}50; color:{activeTheme.accent};">
-                {activeTheme.badge} PREVIEW (3D INTERACTIVE)
+              <div class="share-preview-badge" style="border-color:{activeTheme.accent}55; color:{activeTheme.accent};">
+                {activeTheme.badge} · 3D PREVIEW
               </div>
             </div>
 
@@ -563,13 +577,15 @@
 
             <!-- Action Grid -->
             <div class="share-buttons">
-              <button class="share-btn share-btn-copy" on:click={copyImageToClipboard}>
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+              <button class="share-btn share-btn-copy"
+                style="background:linear-gradient(135deg,{activeTheme.accent},{activeTheme.accent}cc); box-shadow:0 4px 22px {activeTheme.accentShadow}; color:{activeTheme.id === 'champions' || activeTheme.id === 'sovereign' ? '#000' : '#fff'};"
+                on:click={copyImageToClipboard}>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
                 Copy Image
               </button>
               <button class="share-btn share-btn-download" on:click={() => shareToPlatform('download')}>
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-                Download HD PNG
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                Download HD
               </button>
               <button class="share-btn share-btn-twitter" on:click={() => shareToPlatform('twitter')}>
                 <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
@@ -588,6 +604,11 @@
 </div>
 
 <style>
+  .share-accent-bar {
+    height: 2px;
+    width: 100%;
+  }
+
   .share-modal-overlay {
     display: none;
     position: fixed;
@@ -601,13 +622,15 @@
   .share-modal-overlay.open { display: flex; }
 
   .share-modal {
-    max-width: 720px;
-    width: 95%;
-    background: linear-gradient(180deg, #0d0d12 0%, #050508 100%);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 20px;
+    max-width: 740px;
+    width: 96%;
+    background: rgba(8, 8, 14, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 22px;
     overflow: hidden;
-    box-shadow: 0 25px 70px rgba(0,0,0,0.9);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.95), inset 0 1px 0 rgba(255,255,255,0.06);
   }
 
   .share-modal-header {
@@ -675,35 +698,40 @@
   .theme-pill {
     background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,255,255,0.08);
-    color: rgba(255,255,255,0.7);
-    padding: 6px 12px;
-    border-radius: 8px;
+    color: rgba(255,255,255,0.65);
+    padding: 6px 14px 6px 8px;
+    border-radius: 30px;
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 12px;
     font-weight: 800;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 6px;
-    transition: all 0.2s ease;
+    gap: 8px;
+    transition: all 0.22s ease;
+    letter-spacing: 0.3px;
   }
 
   .theme-pill:hover {
     background: rgba(255,255,255,0.08);
     color: #fff;
+    border-color: var(--t-border);
   }
 
   .theme-pill.active {
-    background: rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.1);
     border-color: var(--t-border);
     color: #fff;
-    box-shadow: 0 0 12px var(--t-accent);
+    box-shadow: 0 0 14px var(--t-glow), inset 0 0 0 1px var(--t-border);
   }
 
   .theme-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    border: 1px solid rgba(255,255,255,0.15);
   }
 
   .toggle-pills {
@@ -735,15 +763,38 @@
     align-items: center;
     justify-content: center;
     padding: 40px 0;
-    gap: 16px;
+    gap: 14px;
+  }
+
+  .share-loading-bar {
+    width: 220px;
+    height: 5px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 4px;
+    overflow: hidden;
+    transform: skewX(-10deg);
+  }
+
+  .share-loading-fill {
+    width: 60%;
+    height: 100%;
+    border-radius: 4px;
+    animation: share-load-pulse 1.4s ease-in-out infinite;
+    background: repeating-linear-gradient(90deg, currentColor 0px, currentColor 6px, transparent 6px, transparent 9px);
+  }
+  @keyframes share-load-pulse {
+    0%,100% { opacity: 1; transform: scaleX(1); }
+    50% { opacity: 0.5; transform: scaleX(0.92); }
   }
 
   .share-loading-txt {
     font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    color: #fa4454;
-    letter-spacing: 1px;
+    font-size: 10px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    animation: share-txt-pulse 1.4s ease-in-out infinite;
   }
+  @keyframes share-txt-pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
 
   .share-loaded {
     display: flex;
@@ -757,10 +808,10 @@
     border-radius: 14px;
     overflow: hidden;
     border: 1px solid rgba(255,255,255,0.12);
-    background: rgba(0,0,0,0.4);
-    box-shadow: 0 12px 40px rgba(0,0,0,0.7);
-    transition: transform 0.15s ease-out;
+    background: rgba(0,0,0,0.5);
+    transition: transform 0.15s ease-out, box-shadow 0.3s ease;
     transform-style: preserve-3d;
+    cursor: grab;
   }
 
   .share-preview-img {
@@ -773,15 +824,16 @@
     position: absolute;
     bottom: 10px;
     right: 10px;
-    padding: 4px 10px;
-    border-radius: 6px;
-    background: rgba(0,0,0,0.8);
-    backdrop-filter: blur(6px);
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: rgba(0,0,0,0.82);
+    backdrop-filter: blur(8px);
     font-family: 'DM Mono', monospace;
     font-size: 9px;
     font-weight: 700;
     letter-spacing: 0.8px;
     text-transform: uppercase;
+    border: 1px solid;
   }
 
   .share-clipboard-status {
@@ -836,33 +888,29 @@
 
   .share-btn {
     border: none;
-    border-radius: 8px;
-    padding: 11px 8px;
+    border-radius: 10px;
+    padding: 12px 8px;
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 900;
     font-size: 13px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    transition: all 0.2s;
+    gap: 7px;
+    transition: all 0.22s ease;
   }
-  .share-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .share-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+  .share-btn:active { transform: translateY(0); }
 
-  .share-btn-copy { background: linear-gradient(135deg, #3ecf8e 0%, #10b981 100%); color: #000; }
-  .share-btn-download { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff; }
+  /* Copy button color applied via inline (theme-reactive) */
+  .share-btn-copy { font-weight: 900; }
+  .share-btn-download { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); color: #fff; }
+  .share-btn-download:hover { background: rgba(255,255,255,0.1); }
   .share-btn-twitter { background: #1d9bf0; color: #fff; }
   .share-btn-reddit { background: #ff4500; color: #fff; }
 
-  .share-spinner {
-    width: 34px;
-    height: 34px;
-    border: 2.5px solid rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
-    animation: share-spin 0.7s linear infinite;
-  }
-  @keyframes share-spin { to { transform: rotate(360deg); } }
+  /* Spinner removed — replaced with loading bar */
 </style>

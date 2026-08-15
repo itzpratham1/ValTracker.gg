@@ -380,8 +380,235 @@ function drawBottomRadialGlow(ctx: CanvasRenderingContext2D, width: number, heig
   ctx.restore();
 }
 
+// ─── Hex color → "r, g, b" string ───────────────────────────────────────────
+function hexToRgb(hex: string): string {
+  const clean = hex.replace('#', '');
+  if (clean.length < 6) return '255, 255, 255';
+  const r = parseInt(clean.slice(0, 2), 16);
+  const g = parseInt(clean.slice(2, 4), 16);
+  const b = parseInt(clean.slice(4, 6), 16);
+  return `${r}, ${g}, ${b}`;
+}
+
+// ─── Draw a premium stat card ─────────────────────────────────────────────────
+function drawStatCard(
+  ctx: CanvasRenderingContext2D,
+  x: number, y: number, w: number, h: number,
+  label: string, value: string, sub: string,
+  color: string, pct: number,
+  isRank = false
+) {
+  const rgb = hexToRgb(color);
+
+  // Card background
+  ctx.save();
+  drawRoundRect(ctx, x, y, w, h, 16);
+  const bg = ctx.createLinearGradient(x, y, x, y + h);
+  bg.addColorStop(0, `rgba(${rgb}, 0.09)`);
+  bg.addColorStop(0.4, 'rgba(8, 8, 16, 0.96)');
+  bg.addColorStop(1, 'rgba(4, 4, 10, 0.99)');
+  ctx.fillStyle = bg;
+  ctx.fill();
+
+  // Outer border
+  ctx.strokeStyle = `rgba(${rgb}, 0.22)`;
+  ctx.lineWidth = 1.5;
+  drawRoundRect(ctx, x, y, w, h, 16);
+  ctx.stroke();
+
+  // Top-edge highlight
+  ctx.beginPath();
+  ctx.moveTo(x + 16, y + 1);
+  ctx.lineTo(x + w - 16, y + 1);
+  ctx.strokeStyle = `rgba(${rgb}, 0.35)`;
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  ctx.restore();
+
+  // Inner left glow strip
+  ctx.save();
+  const innerGlow = ctx.createLinearGradient(x, y, x + w * 0.5, y);
+  innerGlow.addColorStop(0, `rgba(${rgb}, 0.14)`);
+  innerGlow.addColorStop(1, 'transparent');
+  drawRoundRect(ctx, x, y, w * 0.5, h, [16, 0, 0, 16]);
+  ctx.fillStyle = innerGlow;
+  ctx.fill();
+  ctx.restore();
+
+  // Left accent bar (8 px, full glow)
+  ctx.save();
+  ctx.shadowColor = color;
+  ctx.shadowBlur = 20;
+  const barGrad = ctx.createLinearGradient(x, y, x, y + h);
+  barGrad.addColorStop(0, color);
+  barGrad.addColorStop(0.6, color);
+  barGrad.addColorStop(1, `rgba(${rgb}, 0.3)`);
+  drawRoundRect(ctx, x, y + 12, 7, h - 24, 3);
+  ctx.fillStyle = barGrad;
+  ctx.fill();
+  ctx.restore();
+
+  // Label
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.52)';
+  ctx.font = `700 10px 'DM Mono', 'Courier New', monospace`;
+  ctx.letterSpacing = '1.6px';
+  ctx.textAlign = 'center';
+  ctx.fillText(label, x + w / 2, y + 26);
+  ctx.letterSpacing = '0px';
+
+  // Value (massive glowing number)
+  ctx.save();
+  ctx.shadowColor = color;
+  ctx.shadowBlur = 28;
+  ctx.fillStyle = color;
+  if (isRank) {
+    const fz = value.length > 11 ? 20 : value.length > 8 ? 24 : 28;
+    ctx.font = `900 ${fz}px 'Barlow Condensed', 'Arial Narrow', Impact, sans-serif`;
+    ctx.fillText(value, x + w / 2, y + h * 0.57);
+  } else {
+    ctx.font = `900 62px 'Barlow Condensed', 'Arial Narrow', Impact, sans-serif`;
+    ctx.fillText(value, x + w / 2, y + h * 0.63);
+  }
+  ctx.restore();
+
+  // Progress bar (skip for rank)
+  if (!isRank && pct > 0) {
+    const bx = x + 18, by = y + h - 28, bw = w - 36, bh = 6;
+    drawRoundRect(ctx, bx, by, bw, bh, 3);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.07)';
+    ctx.fill();
+    const fw = Math.max(6, Math.round(bw * pct / 100));
+    ctx.save();
+    const fg = ctx.createLinearGradient(bx, by, bx + fw, by);
+    fg.addColorStop(0, `rgba(${rgb}, 0.55)`);
+    fg.addColorStop(1, color);
+    drawRoundRect(ctx, bx, by, fw, bh, 3);
+    ctx.fillStyle = fg;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 10;
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // Sub-label
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.48)';
+  ctx.font = `600 10px 'DM Mono', 'Courier New', monospace`;
+  ctx.letterSpacing = '0.5px';
+  ctx.textAlign = 'center';
+  ctx.fillText(sub, x + w / 2, y + h - 10);
+  ctx.letterSpacing = '0px';
+}
+
+// ─── Draw an agent card ───────────────────────────────────────────────────────
+function drawAgentCard(
+  ctx: CanvasRenderingContext2D,
+  x: number, y: number, w: number, h: number,
+  agent: { name: string; iconUrl?: string; matches: number; winRate: number },
+  icon: HTMLImageElement | null
+) {
+  const wrColor = getWRColor(agent.winRate);
+  const roleColor = getRoleColor(getAgentRoleName(agent.name));
+  const rgb = hexToRgb(wrColor);
+
+  // Card bg
+  ctx.save();
+  drawRoundRect(ctx, x, y, w, h, 16);
+  const bg = ctx.createLinearGradient(x, y, x, y + h);
+  bg.addColorStop(0, `rgba(${rgb}, 0.1)`);
+  bg.addColorStop(1, 'rgba(5, 5, 12, 0.97)');
+  ctx.fillStyle = bg;
+  ctx.fill();
+  ctx.strokeStyle = `rgba(${rgb}, 0.2)`;
+  ctx.lineWidth = 1.5;
+  drawRoundRect(ctx, x, y, w, h, 16);
+  ctx.stroke();
+  ctx.restore();
+
+  // Avatar
+  const avR = h * 0.36;
+  const avCX = x + 14 + avR;
+  const avCY = y + h / 2;
+
+  ctx.save();
+  ctx.shadowColor = roleColor;
+  ctx.shadowBlur = 18;
+  ctx.beginPath();
+  ctx.arc(avCX, avCY, avR + 3, 0, Math.PI * 2);
+  ctx.strokeStyle = roleColor;
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+  ctx.restore();
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(avCX, avCY, avR, 0, Math.PI * 2);
+  ctx.clip();
+  if (icon) {
+    ctx.drawImage(icon, avCX - avR, avCY - avR, avR * 2, avR * 2);
+  } else {
+    ctx.fillStyle = `rgba(${hexToRgb(roleColor)}, 0.3)`;
+    ctx.fill();
+  }
+  ctx.restore();
+
+  // Agent name & matches
+  const textX = x + 14 + avR * 2 + 14;
+  ctx.fillStyle = '#FFFFFF';
+  ctx.font = `900 16px 'Barlow Condensed', 'Arial Narrow', sans-serif`;
+  ctx.letterSpacing = '0.5px';
+  ctx.textAlign = 'left';
+  ctx.fillText(agent.name.toUpperCase(), textX, y + h * 0.38);
+  ctx.letterSpacing = '0px';
+
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.48)';
+  ctx.font = `600 11px 'DM Mono', 'Courier New', monospace`;
+  ctx.fillText(`${agent.matches} MATCHES`, textX, y + h * 0.58);
+
+  // WR badge
+  const bW = 72, bH = 22;
+  const bX = x + w - bW - 12, bY = y + 10;
+  ctx.save();
+  ctx.shadowColor = wrColor;
+  ctx.shadowBlur = 8;
+  drawRoundRect(ctx, bX, bY, bW, bH, 8);
+  const wrBgColor = agent.winRate >= 50
+    ? 'rgba(34,197,94,0.18)'
+    : agent.winRate >= 40
+      ? 'rgba(245,158,11,0.18)'
+      : 'rgba(239,68,68,0.18)';
+  ctx.fillStyle = wrBgColor;
+  ctx.fill();
+  ctx.strokeStyle = wrColor;
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  ctx.fillStyle = wrColor;
+  ctx.font = `800 11px 'DM Mono', 'Courier New', monospace`;
+  ctx.textAlign = 'center';
+  ctx.fillText(`${agent.winRate}% WR`, bX + bW / 2, bY + 15);
+  ctx.restore();
+
+  // Progress bar
+  const pX = textX, pY = y + h - 14;
+  const pW = w - (textX - x) - 14;
+  const pH = 7;
+  drawRoundRect(ctx, pX, pY, pW, pH, 3);
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.07)';
+  ctx.fill();
+  const fw = Math.max(6, Math.round(pW * Math.min(100, agent.winRate) / 100));
+  ctx.save();
+  const pg = ctx.createLinearGradient(pX, pY, pX + fw, pY);
+  pg.addColorStop(0, `rgba(${rgb}, 0.55)`);
+  pg.addColorStop(1, wrColor);
+  drawRoundRect(ctx, pX, pY, fw, pH, 3);
+  ctx.fillStyle = pg;
+  ctx.shadowColor = wrColor;
+  ctx.shadowBlur = 9;
+  ctx.fill();
+  ctx.restore();
+}
+
 /**
- * Render Match Export Card to HTMLCanvasElement
+ * Render Profile / Act Stats Card — Premium Redesign
  */
 export async function renderMatchCardToCanvas(
   canvas: HTMLCanvasElement,
@@ -664,79 +891,66 @@ export async function renderMatchCardToCanvas(
     ctx.restore();
   }
 
-  // Stat Grid (Requirements 2, 3, 6)
+  // Stat Grid — using premium drawStatCard helper
   const gridY = leftPanelY + 125;
-  const cols = isSquare ? 3 : 3;
-  const statBoxW = (bannerW - (cols - 1) * 20) / cols;
-  const statBoxH = 115;
+  const cols = 3;
+  const statBoxW = (bannerW - (cols - 1) * 16) / cols;
+  const statBoxH = isSquare ? 118 : 125;
 
   const matchKdNum = parseFloat(data.kd) || 1.0;
   const statsList = [
-    { label: 'K / D / A', val: `${data.kills} / ${data.deaths} / ${data.assists}`, color: '#FFFFFF', accentColor: '#38BDF8', pct: 85 },
-    { label: 'K/D RATIO', val: data.kd, color: getKDColor(matchKdNum), accentColor: getKDColor(matchKdNum), pct: Math.min(100, Math.max(10, Math.round((matchKdNum / 2.0) * 100))) },
-    { label: 'AVG ACS', val: `${data.acs}`, color: theme.accent, accentColor: theme.accent, pct: Math.min(100, Math.max(10, Math.round(((data.acs || 0) / 350) * 100))) },
-    { label: 'HEADSHOT %', val: `${data.hsPct}%`, color: data.hsPct >= 20 ? '#22C55E' : data.hsPct >= 15 ? '#F59E0B' : '#FFFFFF', accentColor: data.hsPct >= 20 ? '#22C55E' : data.hsPct >= 15 ? '#F59E0B' : '#00F3FF', pct: Math.min(100, Math.max(10, Math.round((data.hsPct / 45) * 100))) },
-    { label: 'ADR', val: `${data.adr}`, color: '#FFFFFF', accentColor: '#A855F7', pct: Math.min(100, Math.max(10, Math.round(((data.adr || 0) / 200) * 100))) },
-    { label: 'PERF GRADE', val: data.perfGrade || 'S', color: theme.accent, accentColor: theme.accent, pct: 100 }
+    {
+      label: 'K / D / A',
+      val: `${data.kills}/${data.deaths}/${data.assists}`,
+      sub: 'ELIMINATIONS',
+      color: '#38BDF8',
+      pct: 85
+    },
+    {
+      label: 'K/D RATIO',
+      val: data.kd,
+      sub: matchKdNum >= 1.05 ? 'HIGH IMPACT' : matchKdNum >= 0.85 ? 'AVERAGE' : 'LOW',
+      color: getKDColor(matchKdNum),
+      pct: Math.min(100, Math.max(8, Math.round((matchKdNum / 2.0) * 100)))
+    },
+    {
+      label: 'AVG ACS',
+      val: `${data.acs}`,
+      sub: 'COMBAT SCORE',
+      color: theme.accent,
+      pct: Math.min(100, Math.max(8, Math.round(((data.acs || 0) / 350) * 100)))
+    },
+    {
+      label: 'HEADSHOT %',
+      val: `${data.hsPct}%`,
+      sub: 'ACCURACY',
+      color: data.hsPct >= 20 ? '#22C55E' : data.hsPct >= 15 ? '#F59E0B' : '#94A3B8',
+      pct: Math.min(100, Math.max(8, Math.round((data.hsPct / 45) * 100)))
+    },
+    {
+      label: 'ADR',
+      val: `${data.adr}`,
+      sub: 'DAMAGE / ROUND',
+      color: '#A855F7',
+      pct: Math.min(100, Math.max(8, Math.round(((data.adr || 0) / 200) * 100)))
+    },
+    {
+      label: 'PERF GRADE',
+      val: data.perfGrade || 'S',
+      sub: 'RATING',
+      color: theme.accent,
+      pct: 100
+    }
   ];
 
   statsList.forEach((st, idx) => {
     const col = idx % cols;
     const row = Math.floor(idx / cols);
-    const sx = paddingX + col * (statBoxW + 20);
-    const sy = gridY + row * (statBoxH + 20);
-
-    const glowC = st.accentColor;
-    drawGlassCard(ctx, sx, sy, statBoxW, statBoxH, 14, 'rgba(255, 255, 255, 0.14)', glowC);
-
-    // Left Border Accent (Requirement 2)
-    ctx.save();
-    ctx.fillStyle = st.accentColor;
-    ctx.shadowColor = st.accentColor;
-    ctx.shadowBlur = 10;
-    drawRoundRect(ctx, sx, sy + 10, 4, statBoxH - 20, 2);
-    ctx.fill();
-    ctx.restore();
-
-    // Label
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-    ctx.font = '700 11px "Inter", sans-serif';
-    ctx.letterSpacing = '1.5px';
-    ctx.textAlign = 'center';
-    ctx.fillText(st.label, sx + statBoxW / 2, sy + 28);
-
-    // Value
-    ctx.save();
-    if (glowC) {
-      ctx.shadowColor = glowC;
-      ctx.shadowBlur = 16;
-    }
-    ctx.fillStyle = st.color;
-    ctx.font = '900 40px "DM Mono", "Tungsten", sans-serif';
-    ctx.fillText(st.val, sx + statBoxW / 2, sy + 74);
-    ctx.restore();
-
-    // Micro Progress Bar under stat (Requirement 2)
-    if (st.pct) {
-      const mBarX = sx + 20;
-      const mBarY = sy + statBoxH - 18;
-      const mBarW = statBoxW - 40;
-      const mBarH = 4;
-
-      ctx.save();
-      drawRoundRect(ctx, mBarX, mBarY, mBarW, mBarH, 2);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
-      ctx.fill();
-
-      const mFillW = Math.max(4, Math.round((mBarW * st.pct) / 100));
-      drawRoundRect(ctx, mBarX, mBarY, mFillW, mBarH, 2);
-      ctx.fillStyle = st.accentColor;
-      ctx.shadowColor = st.accentColor;
-      ctx.shadowBlur = 8;
-      ctx.fill();
-      ctx.restore();
-    }
+    const sx = paddingX + col * (statBoxW + 16);
+    const sy = gridY + row * (statBoxH + 16);
+    drawStatCard(ctx, sx, sy, statBoxW, statBoxH, st.label, st.val, st.sub, st.color, st.pct);
   });
+
 
   // Timeline & Scoreboard
   let timelineY = gridY + 2 * (statBoxH + 20) + 15;
@@ -796,7 +1010,7 @@ export async function renderMatchCardToCanvas(
 }
 
 /**
- * Render Profile / Act Stats Card to HTMLCanvasElement (Full-Width Geometry & High Contrast)
+ * Render Profile / Act Stats Card — Premium Redesign
  */
 export async function renderProfileCardToCanvas(
   canvas: HTMLCanvasElement,
@@ -805,32 +1019,28 @@ export async function renderProfileCardToCanvas(
   options: { format?: '16:9' | '1:1' } = {}
 ): Promise<void> {
   const isSquare = options.format === '1:1';
-  const logicalWidth = isSquare ? 1080 : 1920;
-  const logicalHeight = 1080;
+  const W = isSquare ? 1080 : 1920;
+  const H = 1080;
   const dpr = 1.5;
 
-  canvas.width = logicalWidth * dpr;
-  canvas.height = logicalHeight * dpr;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
 
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
-
   ctx.scale(dpr, dpr);
-  ctx.clearRect(0, 0, logicalWidth, logicalHeight);
+  ctx.clearRect(0, 0, W, H);
 
-  // Precise layout padding & full content width calculation
-  const paddingX = isSquare ? 40 : 60;
-  const contentWidth = logicalWidth - paddingX * 2; // 1800px on 16:9, 1000px on 1:1
+  // ── Layout constants ──────────────────────────────────────────────────────
+  const PAD = isSquare ? 44 : 60;
+  const CW = W - PAD * 2;
+  const GAP = 16;
 
-  // Preload images
-  const logoUrl = typeof window !== 'undefined' ? `${window.location.origin}/logo.png` : '/logo.png';
-  const [
-    logoImg,
-    currentRankImg,
-    peakRankImg,
-    playerBannerImg,
-    ...agentIcons
-  ] = await Promise.all([
+  // ── Preload images ────────────────────────────────────────────────────────
+  const logoUrl = typeof window !== 'undefined'
+    ? `${window.location.origin}/logo.png`
+    : '/logo.png';
+  const [logoImg, curRankImg, peakRankImg, bannerImg, ...agentImgs] = await Promise.all([
     loadImage(logoUrl),
     loadImage(data.currentRankImgUrl),
     loadImage(data.peakRankImgUrl),
@@ -838,449 +1048,361 @@ export async function renderProfileCardToCanvas(
     ...(data.topAgents || []).map(a => loadImage(a.iconUrl))
   ]);
 
-  // 1. BASE BACKGROUND, TACTICAL MESH & AMBIENT RADIAL GLOW
-  drawRoundRect(ctx, 0, 0, logicalWidth, logicalHeight, 28);
-  ctx.fillStyle = '#06070B';
-  ctx.fill();
+  // ── BACKGROUND ────────────────────────────────────────────────────────────
+  // Base fill
+  ctx.fillStyle = '#040408';
+  ctx.fillRect(0, 0, W, H);
 
-  // Tactical dot-grid background mesh (Requirement 1 & 7)
-  drawTacticalMeshPattern(ctx, logicalWidth, logicalHeight);
+  // Dot grid
+  drawTacticalMeshPattern(ctx, W, H);
 
-  // Radial Vignette
-  const bgGrad = ctx.createRadialGradient(
-    logicalWidth * 0.5,
-    logicalHeight * 0.35,
-    100,
-    logicalWidth * 0.5,
-    logicalHeight * 0.5,
-    1200
-  );
-  bgGrad.addColorStop(0, 'rgba(20, 16, 28, 0.85)');
-  bgGrad.addColorStop(0.55, 'rgba(10, 10, 16, 0.95)');
-  bgGrad.addColorStop(1, 'rgba(4, 4, 8, 0.99)');
-  ctx.fillStyle = bgGrad;
-  ctx.fill();
-
-  // Center-Bottom Ambient Glow emanating in rank/accent color (Requirement 7)
+  // Rank-color ambient bottom glow
   const rankRgb = getRankRgb(data.currentRank);
-  drawBottomRadialGlow(ctx, logicalWidth, logicalHeight, rankRgb);
+  {
+    const glow = ctx.createRadialGradient(W / 2, H + 80, 60, W / 2, H + 80, isSquare ? 820 : 1100);
+    glow.addColorStop(0, `rgba(${rankRgb}, 0.28)`);
+    glow.addColorStop(0.45, `rgba(${rankRgb}, 0.07)`);
+    glow.addColorStop(1, 'transparent');
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, W, H);
+  }
 
-  // Thin Luminous Outer Border (Requirement 7)
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
-  ctx.stroke();
+  // Theme-color top-left radial
+  {
+    const tGlow = ctx.createRadialGradient(0, 0, 0, 0, 0, isSquare ? 500 : 700);
+    tGlow.addColorStop(0, `rgba(${hexToRgb(theme.accent)}, 0.12)`);
+    tGlow.addColorStop(1, 'transparent');
+    ctx.fillStyle = tGlow;
+    ctx.fillRect(0, 0, W, H);
+  }
 
-  // Left Accent Stripe
+  // Vignette
+  {
+    const vig = ctx.createRadialGradient(W / 2, H / 2, H * 0.2, W / 2, H / 2, Math.max(W, H) * 0.78);
+    vig.addColorStop(0, 'rgba(0,0,0,0)');
+    vig.addColorStop(1, 'rgba(0,0,0,0.62)');
+    ctx.fillStyle = vig;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  // Left accent stripe
   ctx.save();
   ctx.shadowColor = theme.accent;
-  ctx.shadowBlur = 24;
-  ctx.fillStyle = theme.accent;
-  drawRoundRect(ctx, 20, 28, 8, logicalHeight - 56, 4);
-  ctx.fill();
+  ctx.shadowBlur = 32;
+  const stripeGrad = ctx.createLinearGradient(0, 0, 0, H);
+  stripeGrad.addColorStop(0, theme.accent);
+  stripeGrad.addColorStop(0.5, theme.accent);
+  stripeGrad.addColorStop(1, `rgba(${hexToRgb(theme.accent)}, 0.3)`);
+  ctx.fillStyle = stripeGrad;
+  ctx.fillRect(0, 28, 6, H - 56);
   ctx.restore();
 
-  // 2. HEADER BRANDING & BADGE
-  const brandX = paddingX;
-  const brandY = 40;
+  // ── HEADER ────────────────────────────────────────────────────────────────
+  const HY = 38;
+
   if (logoImg) {
-    ctx.drawImage(logoImg, brandX, brandY, 40, 40);
+    ctx.save();
+    ctx.shadowColor = 'rgba(255,255,255,0.25)';
+    ctx.shadowBlur = 10;
+    ctx.drawImage(logoImg, PAD, HY, 36, 36);
+    ctx.restore();
   }
-  ctx.fillStyle = '#FFFFFF';
-  ctx.font = '900 24px "Orbitron", "Rajdhani", sans-serif';
-  ctx.letterSpacing = '2px';
-  ctx.fillText('VALTRACKER.GG', brandX + (logoImg ? 50 : 0), brandY + 30);
 
-  // Badge (Right aligned)
+  ctx.fillStyle = '#FFFFFF';
+  ctx.font = `900 20px 'Barlow Condensed', 'Arial Narrow', Impact, sans-serif`;
+  ctx.letterSpacing = '3px';
+  ctx.textAlign = 'left';
+  ctx.fillText('VALTRACKER.GG', PAD + (logoImg ? 46 : 0), HY + 26);
+  ctx.letterSpacing = '0px';
+
+  // Theme badge
+  const bdW = isSquare ? 172 : 195;
+  const bdH = 34;
+  const bdX = W - PAD - bdW;
+  const bdY = HY + 1;
   ctx.save();
-  const badgeW = 210;
-  const badgeH = 40;
-  const badgeX = logicalWidth - paddingX - badgeW;
-  drawGlassCard(ctx, badgeX, brandY, badgeW, badgeH, 20, theme.border);
+  ctx.shadowColor = theme.accent;
+  ctx.shadowBlur = 18;
+  drawRoundRect(ctx, bdX, bdY, bdW, bdH, 17);
+  const bdGrad = ctx.createLinearGradient(bdX, bdY, bdX + bdW, bdY);
+  bdGrad.addColorStop(0, `rgba(${hexToRgb(theme.accent)}, 0.22)`);
+  bdGrad.addColorStop(1, `rgba(${hexToRgb(theme.accent)}, 0.06)`);
+  ctx.fillStyle = bdGrad;
+  ctx.fill();
+  ctx.strokeStyle = theme.border;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
   ctx.fillStyle = theme.accent;
-  ctx.font = '800 13px "Orbitron", "Rajdhani", sans-serif';
+  ctx.font = `800 11px 'DM Mono', 'Courier New', monospace`;
+  ctx.letterSpacing = '1.2px';
   ctx.textAlign = 'center';
-  ctx.fillText(theme.badge, badgeX + badgeW / 2, brandY + 25);
+  ctx.fillText(theme.badge, bdX + bdW / 2, bdY + 22);
+  ctx.letterSpacing = '0px';
   ctx.restore();
 
-  // 3. PLAYER HERO BANNER (With Rank Color Fan Overlay - Requirement 1)
-  const bannerY = 100;
-  const bannerW = contentWidth;
-  const bannerH = isSquare ? 135 : 150;
+  // ── HERO BANNER ───────────────────────────────────────────────────────────
+  const bnrY = 90;
+  const bnrH = isSquare ? 158 : 172;
+  const bnrR = 20;
 
+  // Clip + draw banner image
   ctx.save();
-  drawRoundRect(ctx, paddingX, bannerY, bannerW, bannerH, 20);
+  drawRoundRect(ctx, PAD, bnrY, CW, bnrH, bnrR);
   ctx.clip();
 
-  if (playerBannerImg) {
-    ctx.drawImage(playerBannerImg, paddingX, bannerY, bannerW, bannerH);
-  } else {
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-    ctx.fill();
+  if (bannerImg) {
+    const bAsp = bannerImg.width / bannerImg.height;
+    const bDH = bnrH;
+    const bDW = bDH * bAsp;
+    ctx.globalAlpha = 0.55;
+    ctx.drawImage(bannerImg, PAD + (CW - bDW) / 2, bnrY, bDW, bDH);
+    ctx.globalAlpha = 1;
   }
 
-  // Dark linear base overlay
-  const bannerGrad = ctx.createLinearGradient(paddingX, bannerY, paddingX + bannerW, bannerY);
-  bannerGrad.addColorStop(0, 'rgba(8, 8, 14, 0.96)');
-  bannerGrad.addColorStop(0.35, 'rgba(8, 8, 14, 0.65)');
-  bannerGrad.addColorStop(0.7, 'rgba(8, 8, 14, 0.45)');
-  bannerGrad.addColorStop(1, 'rgba(8, 8, 14, 0.95)');
-  ctx.fillStyle = bannerGrad;
+  // Dark overlay gradient left-to-right
+  const bnrOvl = ctx.createLinearGradient(PAD, bnrY, PAD + CW, bnrY);
+  bnrOvl.addColorStop(0, 'rgba(3, 3, 8, 0.97)');
+  bnrOvl.addColorStop(0.38, 'rgba(3, 3, 8, 0.78)');
+  bnrOvl.addColorStop(0.68, 'rgba(3, 3, 8, 0.5)');
+  bnrOvl.addColorStop(1, 'rgba(3, 3, 8, 0.96)');
+  ctx.fillStyle = bnrOvl;
   ctx.fill();
 
-  // Rank Color Fan-Out Radial Overlay (Requirement 1)
-  const rankFanGrad = ctx.createRadialGradient(
-    paddingX + bannerW - 100, bannerY + bannerH / 2, 20,
-    paddingX + bannerW - 100, bannerY + bannerH / 2, bannerW * 0.65
+  // Rank color fan from right edge
+  const rkFan = ctx.createRadialGradient(
+    PAD + CW - 60, bnrY + bnrH / 2, 10,
+    PAD + CW - 60, bnrY + bnrH / 2, CW * 0.72
   );
-  rankFanGrad.addColorStop(0, `rgba(${rankRgb}, 0.38)`);
-  rankFanGrad.addColorStop(0.5, `rgba(${rankRgb}, 0.12)`);
-  rankFanGrad.addColorStop(1, 'transparent');
-  ctx.fillStyle = rankFanGrad;
+  rkFan.addColorStop(0, `rgba(${rankRgb}, 0.38)`);
+  rkFan.addColorStop(0.45, `rgba(${rankRgb}, 0.1)`);
+  rkFan.addColorStop(1, 'transparent');
+  ctx.fillStyle = rkFan;
   ctx.fill();
-
   ctx.restore();
 
-  drawRoundRect(ctx, paddingX, bannerY, bannerW, bannerH, 20);
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+  // Banner border
+  drawRoundRect(ctx, PAD, bnrY, CW, bnrH, bnrR);
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.14)';
   ctx.lineWidth = 1.5;
   ctx.stroke();
 
-  // Current Rank Icon inside Hero Banner
-  const rankIconSize = isSquare ? 90 : 105;
-  if (currentRankImg) {
+  // Top highlight line on banner
+  ctx.beginPath();
+  ctx.moveTo(PAD + bnrR, bnrY + 1);
+  ctx.lineTo(PAD + CW - bnrR, bnrY + 1);
+  ctx.strokeStyle = 'rgba(255,255,255,0.22)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // Current rank icon
+  const rkSz = isSquare ? 94 : 108;
+  const rkX = PAD + 18;
+  const rkY = bnrY + (bnrH - rkSz) / 2;
+
+  if (curRankImg) {
     ctx.save();
     ctx.shadowColor = getRankColor(data.currentRank);
     ctx.shadowBlur = 28;
-    ctx.drawImage(currentRankImg, paddingX + 20, bannerY + (bannerH - rankIconSize) / 2, rankIconSize, rankIconSize);
+    ctx.drawImage(curRankImg, rkX, rkY, rkSz, rkSz);
     ctx.restore();
   }
 
-  // Player Name & Tag
-  const textX = paddingX + (currentRankImg ? rankIconSize + 35 : 24);
+  const nameX = PAD + (curRankImg ? rkSz + 26 : 18);
+  const nameMidY = bnrY + bnrH / 2;
+
+  // Player name
+  ctx.save();
+  ctx.shadowColor = 'rgba(255,255,255,0.28)';
+  ctx.shadowBlur = 18;
   ctx.fillStyle = '#FFFFFF';
-  ctx.font = '900 38px "Orbitron", "Rajdhani", "Barlow Condensed", sans-serif';
+  ctx.font = `900 ${isSquare ? 50 : 58}px 'Barlow Condensed', 'Arial Narrow', Impact, sans-serif`;
   ctx.textAlign = 'left';
-  ctx.fillText(data.playerName, textX, bannerY + (bannerH / 2) - 6);
+  ctx.fillText(data.playerName.toUpperCase(), nameX, nameMidY - 4);
+  ctx.restore();
 
+  // Tag
   ctx.fillStyle = theme.accent;
-  ctx.font = '800 20px "Teko", "Rajdhani", "DM Mono", sans-serif';
-  ctx.fillText(`#${data.playerTag}`, textX, bannerY + (bannerH / 2) + 26);
+  ctx.font = `700 ${isSquare ? 20 : 23}px 'DM Mono', 'Courier New', monospace`;
+  ctx.fillText(`#${data.playerTag.toUpperCase()}`, nameX, nameMidY + (isSquare ? 30 : 36));
 
-  // Peak Rank Badge on Banner Right Edge (Requirement 8)
-  if (peakRankImg || data.peakRank) {
+  // Peak rank badge
+  if (data.peakRank && data.peakRank.toLowerCase() !== 'unranked') {
+    const prW = isSquare ? 206 : 246;
+    const prH = isSquare ? 84 : 96;
+    const prX = PAD + CW - prW - 16;
+    const prY2 = bnrY + (bnrH - prH) / 2;
+
     ctx.save();
-    const prW = isSquare ? 210 : 250;
-    const prH = isSquare ? 80 : 92;
-    const prX = paddingX + bannerW - prW - 20;
-    const prY = bannerY + (bannerH - prH) / 2;
+    ctx.shadowColor = 'rgba(255,215,0,0.45)';
+    ctx.shadowBlur = 22;
+    drawRoundRect(ctx, prX, prY2, prW, prH, 16);
+    const prBg = ctx.createLinearGradient(prX, prY2, prX, prY2 + prH);
+    prBg.addColorStop(0, 'rgba(255,215,0,0.2)');
+    prBg.addColorStop(1, 'rgba(255,215,0,0.06)');
+    ctx.fillStyle = prBg;
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,215,0,0.52)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
 
-    drawGlassCard(ctx, prX, prY, prW, prH, 16, 'rgba(255, 255, 255, 0.22)', '#FFD700');
-
-    const pIconSize = isSquare ? 56 : 68;
+    const pIconSz = isSquare ? 58 : 68;
     if (peakRankImg) {
       ctx.save();
       ctx.shadowColor = '#FFD700';
-      ctx.shadowBlur = 22; // Prominent soft gold glow
-      ctx.drawImage(peakRankImg, prX + 14, prY + (prH - pIconSize) / 2, pIconSize, pIconSize);
+      ctx.shadowBlur = 26;
+      ctx.drawImage(peakRankImg, prX + 12, prY2 + (prH - pIconSz) / 2, pIconSz, pIconSz);
       ctx.restore();
     }
 
-    const prTextX = prX + (peakRankImg ? pIconSize + 22 : 16);
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
-    ctx.font = '800 11px "Orbitron", "Rajdhani", sans-serif';
+    const prTX = prX + (peakRankImg ? pIconSz + 18 : 14);
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.font = `700 10px 'DM Mono', 'Courier New', monospace`;
     ctx.letterSpacing = '1.5px';
     ctx.textAlign = 'left';
-    ctx.fillText('PEAK RANK', prTextX, prY + (isSquare ? 32 : 36));
+    ctx.fillText('PEAK RANK', prTX, prY2 + (isSquare ? 30 : 34));
+    ctx.letterSpacing = '0px';
 
     ctx.fillStyle = '#FFD700';
-    ctx.font = '900 17px "Orbitron", "Rajdhani", sans-serif';
-    ctx.shadowColor = 'rgba(255, 215, 0, 0.5)';
-    ctx.shadowBlur = 10;
-    ctx.fillText((data.peakRank || 'UNRANKED').toUpperCase(), prTextX, prY + (isSquare ? 56 : 64));
+    ctx.shadowColor = 'rgba(255,215,0,0.7)';
+    ctx.shadowBlur = 14;
+    ctx.font = `900 ${isSquare ? 16 : 18}px 'Barlow Condensed', 'Arial Narrow', sans-serif`;
+    ctx.fillText((data.peakRank || '').toUpperCase(), prTX, prY2 + (isSquare ? 54 : 62));
     ctx.restore();
   }
 
-  // 4. BENTO BOX STATS SUMMARY CARDS (Requirements 2, 3, 5, 6)
-  let contentY = bannerY + bannerH + 24;
+  // ── CUSTOM HEADLINE ───────────────────────────────────────────────────────
+  let contentY = bnrY + bnrH + 22;
 
   if (data.customHeadline) {
     ctx.save();
-    drawGlassCard(ctx, paddingX, contentY, bannerW, 48, 12, theme.titleBorder);
+    drawRoundRect(ctx, PAD, contentY, CW, 46, 12);
+    const hlBg = ctx.createLinearGradient(PAD, contentY, PAD + CW, contentY);
+    hlBg.addColorStop(0, `rgba(${hexToRgb(theme.accent)}, 0.22)`);
+    hlBg.addColorStop(1, `rgba(${hexToRgb(theme.accent)}, 0.06)`);
+    ctx.fillStyle = hlBg;
+    ctx.fill();
+    ctx.strokeStyle = theme.titleBorder;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
 
+    ctx.shadowColor = theme.accent;
+    ctx.shadowBlur = 14;
     ctx.fillStyle = theme.titleColor;
-    ctx.font = '900 19px "Orbitron", "Rajdhani", sans-serif';
+    ctx.font = `900 18px 'Barlow Condensed', 'Arial Narrow', sans-serif`;
+    ctx.letterSpacing = '1px';
     ctx.textAlign = 'left';
-    ctx.fillText(data.customHeadline.toUpperCase(), paddingX + 20, contentY + 31);
+    ctx.fillText(data.customHeadline.toUpperCase(), PAD + 18, contentY + 30);
+    ctx.letterSpacing = '0px';
     ctx.restore();
 
-    contentY += 66;
+    contentY += 62;
   }
 
-  const colsPerLine = isSquare ? 2 : 3;
-  const cardGap = 20;
-  const cardW = (contentWidth - (colsPerLine - 1) * cardGap) / colsPerLine;
-  const cardH = isSquare ? 135 : 160;
+  // ── STAT CARDS GRID ───────────────────────────────────────────────────────
+  const cols = isSquare ? 2 : 3;
+  const cardW = (CW - (cols - 1) * GAP) / cols;
+  const cardH = isSquare ? 130 : 155;
 
-  const kdNum = typeof data.kdRatio === 'number' ? data.kdRatio : parseFloat(data.kdRatio) || 1.0;
+  const kdNum = typeof data.kdRatio === 'number'
+    ? data.kdRatio
+    : parseFloat(String(data.kdRatio)) || 1.0;
+
   const profileStats = [
     {
       label: 'MATCHES PLAYED',
       val: `${data.matchesPlayed}`,
-      sub: `${data.wins}W - ${data.losses}L`,
-      color: '#FFFFFF',
-      accentColor: '#38BDF8',
-      pct: Math.min(100, Math.max(12, Math.round((data.matchesPlayed / 50) * 100)))
+      sub: `${data.wins}W · ${data.losses}L`,
+      color: '#38BDF8',
+      pct: Math.min(100, Math.max(8, Math.round((data.matchesPlayed / 50) * 100)))
     },
     {
       label: 'WIN RATE',
       val: `${data.winRate}%`,
-      sub: data.winRate >= 50 ? 'POSITIVE' : data.winRate >= 40 ? 'BELOW AVG' : 'CRITICAL LOW',
-      color: getWRColor(data.winRate), // Soft Amber for 40-49% (Requirement 3)
-      accentColor: getWRColor(data.winRate),
-      pct: Math.min(100, Math.max(12, data.winRate))
+      sub: data.winRate >= 50 ? 'POSITIVE' : data.winRate >= 40 ? 'BELOW AVG' : 'CRITICAL',
+      color: getWRColor(data.winRate),
+      pct: Math.min(100, Math.max(8, data.winRate))
     },
     {
       label: 'K/D RATIO',
       val: typeof data.kdRatio === 'number' ? data.kdRatio.toFixed(2) : `${data.kdRatio}`,
       sub: kdNum >= 1.05 ? 'HIGH IMPACT' : kdNum >= 0.85 ? 'AVERAGE' : 'LOW',
-      color: getKDColor(kdNum), // Soft Amber for 0.85-1.04 (Requirement 3)
-      accentColor: getKDColor(kdNum),
-      pct: Math.min(100, Math.max(12, Math.round((kdNum / 2.0) * 100)))
+      color: getKDColor(kdNum),
+      pct: Math.min(100, Math.max(8, Math.round((kdNum / 2.0) * 100)))
     },
     {
       label: 'AVG ACS',
       val: `${Math.round(data.avgAcs || 0)}`,
       sub: 'COMBAT SCORE',
       color: theme.accent,
-      accentColor: theme.accent,
-      pct: Math.min(100, Math.max(12, Math.round(((data.avgAcs || 0) / 350) * 100)))
+      pct: Math.min(100, Math.max(8, Math.round(((data.avgAcs || 0) / 350) * 100)))
     },
     {
       label: 'HEADSHOT %',
       val: `${data.hsPct}%`,
       sub: 'ACCURACY',
-      color: data.hsPct >= 20 ? '#22C55E' : data.hsPct >= 15 ? '#F59E0B' : '#FFFFFF',
-      accentColor: data.hsPct >= 20 ? '#22C55E' : data.hsPct >= 15 ? '#F59E0B' : '#00F3FF',
-      pct: Math.min(100, Math.max(12, Math.round((data.hsPct / 45) * 100)))
+      color: data.hsPct >= 20 ? '#22C55E' : data.hsPct >= 15 ? '#F59E0B' : '#94A3B8',
+      pct: Math.min(100, Math.max(8, Math.round((data.hsPct / 45) * 100)))
     },
     {
       label: 'CURRENT RANK',
-      val: data.currentRank,
+      val: (data.currentRank || 'UNRANKED').toUpperCase(),
       sub: data.currentRR != null ? `${data.currentRR} RR` : 'RATING',
       color: getRankColor(data.currentRank),
-      accentColor: getRankColor(data.currentRank),
-      isRank: true,
-      pct: 100
+      pct: 100,
+      isRank: true
     }
   ];
 
   profileStats.forEach((st, idx) => {
-    const col = idx % colsPerLine;
-    const row = Math.floor(idx / colsPerLine);
-    const cx = paddingX + col * (cardW + cardGap);
-    const cy = contentY + row * (cardH + cardGap);
-
-    const glowC = st.accentColor;
-    drawGlassCard(ctx, cx, cy, cardW, cardH, 16, 'rgba(255, 255, 255, 0.14)', glowC);
-
-    // Colored Left-Border Accent (Requirement 2)
-    ctx.save();
-    ctx.fillStyle = st.accentColor;
-    ctx.shadowColor = st.accentColor;
-    ctx.shadowBlur = 12;
-    drawRoundRect(ctx, cx, cy + 12, 4, cardH - 24, 2);
-    ctx.fill();
-    ctx.restore();
-
-    // Label (tiny + uppercase + tracking - Requirement 2 & 6)
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-    ctx.font = '800 11px "Orbitron", "Rajdhani", sans-serif';
-    ctx.letterSpacing = '1.5px';
-    ctx.textAlign = 'center';
-    ctx.fillText(st.label, cx + cardW / 2, cy + 28);
-
-    // Value (Massive + Glowing shadow - Requirement 2 & 6)
-    ctx.save();
-    if (glowC) {
-      ctx.shadowColor = glowC;
-      ctx.shadowBlur = 16;
-    }
-
-    if (st.isRank) {
-      const rankStr = (st.val || 'UNRANKED').toUpperCase();
-      const fontSize = rankStr.length > 10 ? 20 : 24;
-      ctx.fillStyle = st.color;
-      ctx.font = `900 ${fontSize}px "Orbitron", "Rajdhani", sans-serif`;
-      ctx.fillText(rankStr, cx + cardW / 2, cy + (isSquare ? 68 : 78));
-    } else {
-      ctx.fillStyle = st.color;
-      ctx.font = `900 ${isSquare ? 40 : 46}px "Teko", "Bebas Neue", "DM Mono", "Barlow Condensed", sans-serif`;
-      ctx.fillText(st.val, cx + cardW / 2, cy + (isSquare ? 68 : 78));
-    }
-    ctx.restore();
-
-    // Micro Progress Bar under stat value (Requirement 2)
-    if (!st.isRank && st.pct) {
-      const mBarX = cx + 24;
-      const mBarY = cy + (isSquare ? 82 : 94);
-      const mBarW = cardW - 48;
-      const mBarH = 4;
-
-      ctx.save();
-      drawRoundRect(ctx, mBarX, mBarY, mBarW, mBarH, 2);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
-      ctx.fill();
-
-      const mFillW = Math.max(4, Math.round((mBarW * st.pct) / 100));
-      drawRoundRect(ctx, mBarX, mBarY, mFillW, mBarH, 2);
-      ctx.fillStyle = st.accentColor;
-      ctx.shadowColor = st.accentColor;
-      ctx.shadowBlur = 8;
-      ctx.fill();
-      ctx.restore();
-    }
-
-    // Sub-label Pill Badge
-    ctx.save();
-    const pillW = Math.min(160, cardW - 40);
-    const pillH = 24;
-    const pillX = cx + (cardW - pillW) / 2;
-    const pillY = cy + (isSquare ? 96 : 116);
-
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-    drawRoundRect(ctx, pillX, pillY, pillW, pillH, 12);
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
-    ctx.lineWidth = 1;
-    ctx.stroke();
-
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-    ctx.font = '700 11px "Orbitron", "Rajdhani", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(st.sub, cx + cardW / 2, pillY + 16);
-    ctx.restore();
+    const col = idx % cols;
+    const row = Math.floor(idx / cols);
+    const cx = PAD + col * (cardW + GAP);
+    const cy = contentY + row * (cardH + GAP);
+    drawStatCard(ctx, cx, cy, cardW, cardH, st.label, st.val, st.sub, st.color, st.pct, st.isRank);
   });
 
-  const totalStatRows = Math.ceil(profileStats.length / colsPerLine);
-  let nextSectionY = contentY + totalStatRows * (cardH + cardGap) + 15;
+  const totalRows = Math.ceil(profileStats.length / cols);
+  let nextY = contentY + totalRows * (cardH + GAP) - GAP + 22;
 
-  // 5. MOST PLAYED AGENTS SECTION (Requirement 4)
+  // ── AGENTS SECTION ────────────────────────────────────────────────────────
   if (data.topAgents && data.topAgents.length > 0) {
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
-    ctx.font = '900 15px "Orbitron", "Rajdhani", sans-serif';
-    ctx.letterSpacing = '1.5px';
+    // Section header
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.72)';
+    ctx.font = `900 12px 'Barlow Condensed', 'Arial Narrow', sans-serif`;
+    ctx.letterSpacing = '2.8px';
     ctx.textAlign = 'left';
-    ctx.fillText('MOST PLAYED AGENTS', paddingX, nextSectionY);
+    ctx.fillText('MOST PLAYED AGENTS', PAD, nextY + 13);
+    ctx.letterSpacing = '0px';
+    nextY += 24;
 
-    nextSectionY += 22;
-    const agentCols = 3;
-    const agentGap = 20;
-    const agentCardW = (contentWidth - (agentCols - 1) * agentGap) / agentCols;
-    const agentCardH = isSquare ? 90 : 100;
+    const agCols = 3;
+    const agGap = GAP;
+    const agW = (CW - (agCols - 1) * agGap) / agCols;
+    const agH = isSquare ? 96 : 108;
 
     data.topAgents.slice(0, 3).forEach((ag, idx) => {
-      const ax = paddingX + idx * (agentCardW + agentGap);
-      const ay = nextSectionY;
-
-      const wrColor = getWRColor(ag.winRate);
-      const roleName = getAgentRoleName(ag.name);
-      const roleColor = getRoleColor(roleName);
-
-      drawGlassCard(ctx, ax, ay, agentCardW, agentCardH, 16, 'rgba(255, 255, 255, 0.12)', wrColor);
-
-      // Circular Agent Avatar with Role Border Ring (Requirement 4)
-      const icon = agentIcons[idx];
-      const avatarSize = isSquare ? 56 : 64;
-      const avatarX = ax + 14;
-      const avatarY = ay + (agentCardH - avatarSize) / 2;
-
-      if (icon) {
-        ctx.save();
-        // Role Ring Glow & Border
-        ctx.shadowColor = roleColor;
-        ctx.shadowBlur = 14;
-        ctx.lineWidth = 2.5;
-        ctx.strokeStyle = roleColor;
-
-        ctx.beginPath();
-        ctx.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2);
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, (avatarSize / 2) - 1, 0, Math.PI * 2);
-        ctx.clip();
-
-        ctx.drawImage(icon, avatarX, avatarY, avatarSize, avatarSize);
-        ctx.restore();
-      }
-
-      // Agent Name & Matches
-      const agentTextX = ax + avatarSize + 26;
-      ctx.fillStyle = '#FFFFFF';
-      ctx.font = `900 ${isSquare ? 16 : 18}px "Orbitron", "Rajdhani", sans-serif`;
-      ctx.textAlign = 'left';
-      ctx.fillText(ag.name.toUpperCase(), agentTextX, ay + (isSquare ? 30 : 34));
-
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
-      ctx.font = '600 12px "Inter", sans-serif';
-      ctx.fillText(`${ag.matches} Matches`, agentTextX, ay + (isSquare ? 48 : 54));
-
-      // Win Rate Tag
-      ctx.save();
-      const wrTagW = isSquare ? 64 : 76;
-      const wrTagH = 26;
-      const wrTagX = ax + agentCardW - wrTagW - 14;
-      const wrTagY = ay + 14;
-
-      ctx.fillStyle = ag.winRate >= 50 ? 'rgba(34, 197, 94, 0.16)' : ag.winRate >= 40 ? 'rgba(245, 158, 11, 0.16)' : 'rgba(239, 68, 68, 0.16)';
-      drawRoundRect(ctx, wrTagX, wrTagY, wrTagW, wrTagH, 8);
-      ctx.fill();
-      ctx.strokeStyle = wrColor;
-      ctx.lineWidth = 1;
-      ctx.stroke();
-
-      ctx.fillStyle = wrColor;
-      ctx.font = '800 13px "Teko", "Orbitron", "Rajdhani", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(`${ag.winRate}% WR`, wrTagX + wrTagW / 2, wrTagY + 17);
-      ctx.restore();
-
-      // Thick Glowing Win Rate Progress Bar (Requirement 4)
-      const barX = agentTextX;
-      const barY = ay + agentCardH - 16;
-      const barW = agentCardW - (agentTextX - ax) - 14;
-      const barH = 8; // Thicker progress bar
-
-      ctx.save();
-      drawRoundRect(ctx, barX, barY, barW, barH, 4);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-      ctx.fill();
-
-      const fillW = Math.max(6, Math.round((barW * Math.min(100, Math.max(0, ag.winRate))) / 100));
-      drawRoundRect(ctx, barX, barY, fillW, barH, 4);
-      ctx.fillStyle = wrColor;
-      ctx.shadowColor = wrColor;
-      ctx.shadowBlur = 10; // Glowing fill
-      ctx.fill();
-      ctx.restore();
+      const ax = PAD + idx * (agW + agGap);
+      drawAgentCard(ctx, ax, nextY, agW, agH, ag, agentImgs[idx] || null);
     });
+
+    nextY += agH;
   }
 
-  // 6. FOOTER WATERMARK WITH LOGO ICON (Clean Dynamic Placement)
-  const footerText = 'VALTRACKER.GG  •  TRACK YOUR VALORANT STATS';
-  ctx.font = '700 12px "Orbitron", "Rajdhani", sans-serif';
-  const textWidth = ctx.measureText(footerText).width;
-  const iconSize = 18;
-  const iconGap = 8;
-  const totalFooterW = (logoImg ? iconSize + iconGap : 0) + textWidth;
-  const footerStartX = logicalWidth - paddingX - totalFooterW;
-
+  // ── FOOTER ───────────────────────────────────────────────────────────────
+  const footY = H - 34;
   if (logoImg) {
-    ctx.drawImage(logoImg, footerStartX, logicalHeight - 44, iconSize, iconSize);
+    ctx.globalAlpha = 0.5;
+    ctx.drawImage(logoImg, PAD, footY - 14, 16, 16);
+    ctx.globalAlpha = 1;
   }
-
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-  ctx.font = '700 12px "Orbitron", "Rajdhani", sans-serif';
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.32)';
+  ctx.font = `600 11px 'DM Mono', 'Courier New', monospace`;
+  ctx.letterSpacing = '0.5px';
   ctx.textAlign = 'left';
-  ctx.fillText(footerText, footerStartX + (logoImg ? iconSize + iconGap : 0), logicalHeight - 30);
+  ctx.fillText(
+    'VALTRACKER.GG  ·  TRACK YOUR VALORANT STATS',
+    PAD + (logoImg ? 24 : 0),
+    footY
+  );
+  ctx.letterSpacing = '0px';
 }

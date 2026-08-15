@@ -1220,6 +1220,14 @@ def proxy_api(subpath):
             response = http_session.post(target_url, headers=headers, json=request.json, timeout=10)
         
         if response.status_code != 200:
+            if is_profile_route:
+                cached_p = get_cached_player(name, tag)
+                if cached_p:
+                    stats_cache = cached_p.get("stats_cache") or {}
+                    cached_data = stats_cache.get(cache_key_type)
+                    if cached_data:
+                        print(f"[DB CACHE FALLBACK] HenrikDev returned {response.status_code}. Serving stale {cache_key_type} cache for {name}#{tag} from Supabase.")
+                        return jsonify(cached_data)
             try:
                 err_data = response.json()
             except Exception:
@@ -1296,6 +1304,14 @@ def proxy_api(subpath):
         return jsonify(data), response.status_code
     except Exception as e:
         print(f"[ERROR] Proxy API failure: {e}")
+        if is_profile_route:
+            cached_p = get_cached_player(name, tag)
+            if cached_p:
+                stats_cache = cached_p.get("stats_cache") or {}
+                cached_data = stats_cache.get(cache_key_type)
+                if cached_data:
+                    print(f"[DB CACHE FALLBACK EXCEPTION] Serving stale {cache_key_type} cache for {name}#{tag} due to exception: {e}")
+                    return jsonify(cached_data)
         return jsonify({"status": 500, "errors": [{"message": "Internal server error"}]}), 500
 
 
