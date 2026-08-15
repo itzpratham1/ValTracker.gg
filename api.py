@@ -603,13 +603,20 @@ def health_check():
     })
 
 
+_landing_stats_cache = {"data": None, "ts": 0}
+
 @app.route("/api/landing-stats")
 @rate_limit(requests_per_minute=60)
 def get_landing_stats():
+    now = time.time()
+    if _landing_stats_cache["data"] and (now - _landing_stats_cache["ts"]) < 3600:
+        return jsonify(_landing_stats_cache["data"])
+
     total_matches = 530
     try:
         if SUPABASE_URL and SUPABASE_KEY:
-            headers = {"Prefer": "count=exact"}
+            # Use planned count to avoid scanning entire table off disk
+            headers = {"Prefer": "count=planned"}
             params = {"select": "match_id", "limit": 1}
             r = supabase_request("GET", "matches_cache", params=params, headers=headers)
             if r and r.status_code in (200, 206):
@@ -620,11 +627,14 @@ def get_landing_stats():
     except Exception as e:
         print(f"[LANDING STATS ERROR] Failed to fetch matches count: {e}")
 
-    return jsonify({
+    result = {
         "matches_analysed": total_matches,
         "features_count": 12,
         "free_forever": 100
-    })
+    }
+    _landing_stats_cache["data"] = result
+    _landing_stats_cache["ts"] = now
+    return jsonify(result)
 
 
 @app.route("/api/feedback", methods=["POST"])
@@ -892,7 +902,7 @@ def search_players():
 
 
 def _warm_cache_background(data):
-    """Background thread: upsert live matches + fetch lifetime matches for cache warming.
+    """Background thread: upsert ONLY truly new matches + fetch lifetime matches for cache warming.
     Runs after the response is sent so it never blocks the request."""
     puuid = data.get("puuid")
     name = data.get("name")
@@ -901,6 +911,7 @@ def _warm_cache_background(data):
     subpath = data.get("subpath", "")
     live_matches_data = data.get("live_matches_data")
     db_empty = data.get("db_matches_empty", True)
+    existing_ids = set(data.get("existing_match_ids") or [])
     if not puuid or not live_matches_data or not isinstance(live_matches_data.get("data"), list):
         return
     try:
@@ -908,7 +919,9 @@ def _warm_cache_background(data):
         for m in live_matches_data["data"]:
             if not m: continue
             match_id = (m.get("metadata") or {}).get("matchid") or (m.get("metadata") or {}).get("match_id")
-            if not match_id: continue
+            if not match_id or match_id in existing_ids:
+                continue
+
             me = None
             players = m.get("players", {})
             raw_players = []
@@ -953,15 +966,15 @@ def _warm_cache_background(data):
                     "stripped_raw_match": stripped_raw_match
                 }
                 payloads_to_insert.append(match_payload)
+                existing_ids.add(match_id)
+
         if payloads_to_insert:
-            print(f"[BACKGROUND CACHE] Upserting {len(payloads_to_insert)} matches concurrently to Supabase...")
-            with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-                futures = [
-                    executor.submit(supabase_request, "POST", "matches_cache", data=payload,
-                                    headers={"Prefer": "resolution=merge-duplicates"})
-                    for payload in payloads_to_insert
-                ]
-                concurrent.futures.wait(futures)
+            print(f"[BACKGROUND CACHE] Inserting {len(payloads_to_insert)} NEW match(es) in 1 batch to Supabase...")
+            supabase_request("POST", "matches_cache", data=payloads_to_insert,
+                             headers={"Prefer": "resolution=merge-duplicates"})
+        else:
+            print(f"[BACKGROUND CACHE] 0 new matches to write for {name}#{tag}. Supabase write skipped.")
+
         if db_empty:
             try:
                 print(f"[BACKGROUND CACHE] DB was empty. Fetching lifetime matches for {name}#{tag} (mode: {mode})...")
@@ -973,12 +986,15 @@ def _warm_cache_background(data):
                 r_lt = http_session.get(lifetime_url, headers=headers_lt, params=lifetime_params, timeout=10)
                 if r_lt.status_code == 200:
                     lt_data = r_lt.json().get("data", [])
+                    lifetime_payloads = []
                     for lm in lt_data:
                         try:
                             meta = lm.get("meta", {}) or {}
                             stats = lm.get("stats", {}) or {}
                             t_scores = lm.get("teams", {}) or {}
                             m_id = meta.get("id")
+                            if not m_id or m_id in existing_ids:
+                                continue
                             map_name = meta.get("map", {}).get("name", "Unknown")
                             started_at_str = meta.get("started_at")
                             clean_date = started_at_str.replace("Z", "+00:00")
@@ -995,8 +1011,6 @@ def _warm_cache_background(data):
                             opp_score = t_scores.get(opp_color, 0)
                             won = my_score > opp_score
                             rounds_str = f"{my_score}-{opp_score}"
-                            if stats.get("puuid"):
-                                upsert_player(stats["puuid"], name, tag, region_lt)
                             c_match = {
                                 "metadata": {
                                     "map": map_name, "game_start": game_start, "matchid": m_id,
@@ -1021,16 +1035,20 @@ def _warm_cache_background(data):
                                 },
                                 "rounds": []
                             }
-                            supabase_request("POST", "matches_cache", data={
+                            lifetime_payloads.append({
                                 "puuid": puuid, "match_id": m_id, "mode": mode,
                                 "map_name": map_name, "game_start": game_start, "agent_name": char_name,
                                 "kills": kills, "deaths": deaths, "assists": assists, "score": score,
                                 "won": won, "team": my_team, "rounds_summary": rounds_str,
                                 "stripped_raw_match": c_match
-                            }, headers={"Prefer": "resolution=merge-duplicates"})
+                            })
+                            existing_ids.add(m_id)
                         except Exception as e_lm:
                             print(f"[BACKGROUND LIFETIME ERROR] Failed to map lifetime match: {e_lm}")
-                    print(f"[BACKGROUND CACHE] Seeded {len(lt_data)} lifetime matches for {name}#{tag}")
+                    if lifetime_payloads:
+                        print(f"[BACKGROUND CACHE] Bulk inserting {len(lifetime_payloads)} lifetime matches in 1 batch to Supabase...")
+                        supabase_request("POST", "matches_cache", data=lifetime_payloads,
+                                         headers={"Prefer": "resolution=merge-duplicates"})
             except Exception as e_lt:
                 print(f"[BACKGROUND LIFETIME FETCH ERROR] {e_lt}")
     except Exception as e:
@@ -1154,6 +1172,10 @@ def proxy_api(subpath):
             live_status_code, live_matches_data = fut_live.result()
             db_matches = fut_db.result()
 
+        existing_ids = [
+            dm.get("metadata", {}).get("matchid") or dm.get("metadata", {}).get("match_id")
+            for dm in db_matches if isinstance(dm, dict) and (dm.get("metadata", {}).get("matchid") or dm.get("metadata", {}).get("match_id"))
+        ]
         _cache_background_data = {
             "puuid": puuid,
             "name": name,
@@ -1161,7 +1183,8 @@ def proxy_api(subpath):
             "mode": mode,
             "subpath": subpath,
             "live_matches_data": live_matches_data,
-            "db_matches_empty": len(db_matches) == 0
+            "db_matches_empty": len(db_matches) == 0,
+            "existing_match_ids": existing_ids
         }
         threading.Thread(target=_warm_cache_background, args=(_cache_background_data,), daemon=True).start()
 
