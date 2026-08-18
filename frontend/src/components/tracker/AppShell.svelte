@@ -210,39 +210,9 @@
       cleanParams.set('mode', mode || 'competitive');
       window.history.replaceState({}, '', `/app?${cleanParams.toString()}`);
     } else {
-      // No name/tag in URL — check if there is a saved or recently viewed profile
-      const saved = loadMyProfile();
-      let activeName = saved?.name;
-      let activeTag = saved?.tag;
-      let activeRegion = saved?.region || 'ap';
-      let activeMode = saved?.mode || 'competitive';
-
-      if (!activeName || !activeTag) {
-        try {
-          const raw = localStorage.getItem('valtracker_recent_searches');
-          const recent = raw ? JSON.parse(raw) : [];
-          if (recent.length > 0 && recent[0].name && recent[0].tag) {
-            activeName = recent[0].name;
-            activeTag = recent[0].tag;
-            activeRegion = recent[0].region || 'ap';
-            activeMode = recent[0].mode || 'competitive';
-          }
-        } catch {}
-      }
-
-      if (activeName && activeTag) {
-        const cleanParams = new URLSearchParams();
-        cleanParams.set('name', activeName);
-        cleanParams.set('tag', activeTag);
-        cleanParams.set('region', activeRegion);
-        cleanParams.set('mode', activeMode);
-        window.history.replaceState({}, '', `/app?${cleanParams.toString()}`);
-        applyPlayerData(activeName, activeTag, activeRegion, activeMode);
-        return;
-      }
-
-      // No profile found — render LookupView in-place smoothly
+      // No name/tag in URL (e.g. clicked "Track Now" on landing page) — render LookupView
       setPlayer({ name: '', tag: '', fetching: false, loaded: false });
+      currentView.set('tracker');
       redirecting = false;
       return;
     }
