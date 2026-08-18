@@ -184,12 +184,8 @@
       return;
     }
     if (id === 'overlay') {
-      if (window.location.pathname !== '/app') {
-        history.pushState({}, '', '/app#overlay');
-      } else {
-        history.replaceState({}, '', '/app#overlay');
-      }
-      $currentView = id;
+      history.pushState({}, '', '/overlay');
+      $currentView = 'overlay';
       return;
     }
     if (id === 'tracker') {

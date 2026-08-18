@@ -60,6 +60,14 @@
       name = $player.name;
       tag  = $player.tag;
       region = $player.region || 'ap';
+    } else if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const qName = urlParams.get('name') || urlParams.get('player');
+      const qTag = urlParams.get('tag');
+      const qRegion = urlParams.get('region');
+      if (qName) name = qName;
+      if (qTag) tag = qTag;
+      if (qRegion) region = qRegion;
     }
 
     if (typeof window !== 'undefined' && 'IntersectionObserver' in window && monitorEl) {
@@ -144,7 +152,7 @@
   $: generatedUrl = (() => {
     if (!name || !tag) return '';
     const host = typeof window !== 'undefined' ? window.location.origin : 'https://valtracker.live';
-    let url = `${host}/overlay?name=${encodeURIComponent(name)}&tag=${encodeURIComponent(tag)}&region=${region}&variant=${variant}`;
+    let url = `${host}/overlay/widget?name=${encodeURIComponent(name)}&tag=${encodeURIComponent(tag)}&region=${region}&variant=${variant}`;
     if (colors.accent.text) url += `&accent=${encodeURIComponent(colors.accent.text)}`;
     if (colors.bg.text)     url += `&bg=${encodeURIComponent(colors.bg.text)}`;
     if (colors.text.text)   url += `&text=${encodeURIComponent(colors.text.text)}`;

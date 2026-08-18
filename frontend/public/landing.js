@@ -180,10 +180,10 @@
 
   const tabConfig = {
     'hero-stats-tab': { imgId: 'hero-stats-img', url: 'valtracker.live/app?mode=competitive' },
-    'hero-ai-tab':    { imgId: 'hero-ai-img',    url: 'valtracker.live/app#coach' },
+    'hero-ai-tab':    { imgId: 'hero-ai-img',    url: 'valtracker.live/app' },
     'hero-comp-tab':  { imgId: 'hero-comp-img',  url: 'valtracker.live/comp' },
-    'hero-vct-tab':   { imgId: 'hero-vct-img',   url: 'valtracker.live/app#esports' },
-    'hero-obs-tab':   { imgId: 'hero-obs-img',   url: 'valtracker.live/app#overlay' }
+    'hero-vct-tab':   { imgId: 'hero-vct-img',   url: 'valtracker.live/esports' },
+    'hero-obs-tab':   { imgId: 'hero-obs-img',   url: 'valtracker.live/overlay' }
   };
 
   // Set up all images with CSS transitions instead of display:none

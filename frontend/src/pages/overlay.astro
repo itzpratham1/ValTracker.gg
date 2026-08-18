@@ -1,38 +1,35 @@
 ---
-import Overlay from '../components/overlay/Overlay.svelte';
+import Layout from '../layouts/Layout.astro';
+import AppShell from '../components/tracker/AppShell.svelte';
+
+const siteOrigin = Astro.site ? Astro.site.href.replace(/\/$/, '') : Astro.url.origin;
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "ValTracker — Live OBS Stream Overlay Studio",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Web",
+  "url": `${siteOrigin}/overlay`,
+  "description": "Customizable, transparent live Valorant stream overlay for OBS Studio and Twitch streaming with live rank, RR, K/D, ACS, and match telemetry.",
+  "featureList": [
+    "Real-time Valorant stream overlay for OBS Studio",
+    "Customizable themes, colors, and layout presets",
+    "Live rank badge, RR progression, and K/D tracking",
+    "Transparent browser source integration",
+    "Automatic session win/loss and ACS tracking"
+  ]
+};
 ---
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="robots" content="noindex, nofollow">
-  <title>Stream Overlay — ValTracker</title>
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-  <link rel="apple-touch-icon" href="/logo.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;0,900;1,800&family=DM+Mono:wght@500;700&family=Rajdhani:wght@600;700&display=swap">
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;0,900;1,800&family=DM+Mono:wght@500;700&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <noscript>
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;0,900;1,800&family=DM+Mono:wght@500;700&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
-  </noscript>
-  <style>
-    html, body {
-      margin: 0 !important;
-      padding: 0 !important;
-      background: transparent !important;
-      color: #f4f4f7;
-      font-family: 'Rajdhani', sans-serif;
-      overflow: hidden !important;
-      width: 100% !important;
-      height: 100% !important;
-    }
-  </style>
-</head>
-<body>
-  <h1 style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;">ValTracker Live OBS Stream Overlay</h1>
-  <Overlay client:only="svelte" />
-</body>
-</html>
+
+<Layout
+  title="OBS Stream Overlay Studio — Valorant Live Stats Overlay | ValTracker"
+  description="Create custom, real-time Valorant stream overlays for OBS Studio and Streamlabs. Display live rank, RR, win rate, K/D, and session stats with transparent styling."
+  structuredData={structuredData}
+>
+  <div class="sr-only" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;">
+    <h1>Valorant OBS Stream Overlay Studio & Live Broadcaster HUD</h1>
+    <p>Design transparent live stream overlays for Valorant broadcasting on Twitch, YouTube, and Kick. Customize accent colors, metrics, and compact HUD widgets for OBS Studio.</p>
+  </div>
+  <AppShell client:only="svelte" initialView="overlay" />
+</Layout>

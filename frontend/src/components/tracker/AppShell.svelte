@@ -157,6 +157,12 @@
       setPlayer({ loaded: true, fetching: false });
       return;
     }
+    // /overlay page: always show stream overlay studio view (OverlayStudio works standalone)
+    if (window.location.pathname === '/overlay' || initialView === 'overlay') {
+      currentView.set('overlay');
+      setPlayer({ loaded: true, fetching: false });
+      return;
+    }
     const rawName = params.get('name');
     const rawTag = params.get('tag');
     const rawRegion = params.get('region');
