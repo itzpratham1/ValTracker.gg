@@ -414,17 +414,38 @@
     text-align: center;
   }
 
-  @media (max-width: 480px) {
+  @media (max-width: 600px) {
+    .modal-overlay {
+      padding: 12px;
+    }
+    .modal-card {
+      max-width: calc(100vw - 24px);
+      border-radius: 12px;
+      max-height: 90vh;
+    }
+    .modal-header {
+      padding: 14px 16px;
+    }
+    .modal-title {
+      font-size: 19px;
+    }
     .modal-filters {
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       padding: 12px 16px;
     }
     .modal-body {
-      padding: 8px 16px;
+      padding: 8px 12px;
     }
     .lb-select {
       min-width: 100%;
+    }
+    .player-row {
+      padding: 8px 10px;
+      gap: 8px;
+    }
+    .player-tag {
+      display: none;
     }
   }
 </style>

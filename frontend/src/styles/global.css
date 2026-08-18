@@ -3191,18 +3191,22 @@ body::before {
 
 /* ── STICKY HUD OR OVERLAYS ── */
 .toast {
-  position: fixed; bottom: 30px; right: 24px;
-  font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 1.5px;
+  position: fixed !important; bottom: 28px !important; left: 50% !important; right: auto !important;
+  font-family: 'DM Mono', monospace; font-size: 11.5px; letter-spacing: 0.5px;
   padding: 10px 20px; border-radius: 30px;
-  background: rgba(15, 15, 18, 0.85); color: var(--accent);
-  border: 1px solid rgba(232, 255, 71, 0.2);
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-  transform: translateY(100px); opacity: 0;
-  transition: all 0.35s cubic-bezier(.16, 1, 0.3, 1);
-  z-index: 9999; pointer-events: none;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+  background: rgba(14, 14, 18, 0.95); color: #fff;
+  border: 1px solid rgba(250, 68, 84, 0.4);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  transform: translate3d(-50%, 30px, 0) !important; opacity: 0 !important;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease !important;
+  z-index: 999999 !important; pointer-events: none !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(250, 68, 84, 0.25);
+  max-width: calc(100vw - 32px) !important; box-sizing: border-box !important;
+  display: inline-flex !important; align-items: center !important; justify-content: center !important;
+  gap: 8px !important; white-space: nowrap !important; text-align: center !important;
 }
-.toast.show { transform: translateY(0); opacity: 1; }
+.toast.show { transform: translate3d(-50%, 0, 0) !important; opacity: 1 !important; pointer-events: auto !important; }
+
 
 #back-to-top {
   position: fixed; bottom: 20px; right: 20px; z-index: 900;
@@ -5132,13 +5136,19 @@ input:checked + .slider:before {
   
   /* Mobile centering & sizing for Toast notifications */
   .toast {
-    left: 20px !important;
-    right: 20px !important;
-    bottom: 30px !important;
+    left: 50% !important;
+    right: auto !important;
+    bottom: 20px !important;
+    max-width: calc(100vw - 24px) !important;
     text-align: center !important;
     justify-content: center !important;
-    display: flex !important;
+    display: inline-flex !important;
     align-items: center !important;
+    font-size: 11px !important;
+    padding: 9px 16px !important;
+  }
+  .toast.show {
+    transform: translate3d(-50%, 0, 0) !important;
   }
 }
 
@@ -13762,8 +13772,20 @@ a:focus-visible {
 }
 
 @media (max-width: 768px) {
+  .tracker-layout .ai-premium-wrapper,
   .ai-premium-wrapper {
-    padding: 14px 10px !important;
+    padding: 6px 4px !important;
+    border-radius: 12px !important;
+    margin: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  .ai-tools-container {
+    width: 100% !important;
+    gap: 8px !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
   
   .ai-tools-nav {
@@ -13777,7 +13799,8 @@ a:focus-visible {
     gap: 6px !important;
     padding: 4px !important;
     border-radius: 20px !important;
-    margin-bottom: 14px !important;
+    margin-bottom: 8px !important;
+    box-sizing: border-box !important;
   }
   .ai-tools-nav::-webkit-scrollbar {
     display: none;
@@ -13785,57 +13808,130 @@ a:focus-visible {
 
   .ai-nav-tab {
     flex: 0 0 auto !important;
-    padding: 8px 14px !important;
+    padding: 8px 12px !important;
     font-size: 11px !important;
     gap: 5px !important;
     border-radius: 16px !important;
+    white-space: nowrap !important;
+  }
+
+  .ai-tools-content {
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .ai-card {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    border-radius: 10px !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+
+  .ai-card-header {
+    padding: 12px 10px !important;
+    gap: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .ai-body {
-    padding: 14px 10px !important;
+    padding: 10px 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .ai-summary-banner {
+    padding: 12px 12px !important;
+    margin-bottom: 10px !important;
+    border-radius: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .ai-tilt-alert {
+    padding: 10px 12px !important;
+    margin-bottom: 10px !important;
+    border-radius: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .ai-readiness-wrapper {
     grid-template-columns: 1fr !important;
-    gap: 12px !important;
-    margin-top: 14px !important;
+    gap: 10px !important;
+    margin-top: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .ai-readiness-ring {
-    padding: 14px 12px !important;
+    padding: 12px 12px !important;
     gap: 12px !important;
+    border-radius: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .ai-session-card {
-    padding: 14px 12px !important;
+    padding: 12px 12px !important;
+    border-radius: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .ai-strengths-wrapper {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    margin-top: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .ai-bento-card {
+    padding: 12px 12px !important;
+    border-radius: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .ai-action-bento-grid {
     grid-template-columns: 1fr !important;
-    gap: 12px !important;
-    margin-top: 14px !important;
+    gap: 10px !important;
+    margin-top: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .ai-warmup-container,
   .ai-aimlab-wrapper {
-    padding: 14px 12px !important;
-    margin-top: 14px !important;
+    padding: 12px 12px !important;
+    margin-top: 10px !important;
+    border-radius: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .ai-warmup-grid {
     grid-template-columns: 1fr !important;
-    gap: 10px !important;
+    gap: 8px !important;
+    width: 100% !important;
   }
 
   .ai-aimlab-grid {
     grid-template-columns: 1fr !important;
-    gap: 10px !important;
+    gap: 8px !important;
+    width: 100% !important;
   }
 
   .ai-sections-grid {
     grid-template-columns: 1fr !important;
     gap: 10px !important;
-    margin-top: 14px !important;
+    margin-top: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .ai-tip-block.full {
@@ -13843,17 +13939,22 @@ a:focus-visible {
   }
 
   .deep-wrap {
-    padding: 12px 10px !important;
+    padding: 10px 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
   .deep-grid {
     grid-template-columns: 1fr !important;
     gap: 10px !important;
+    width: 100% !important;
   }
   .deep-trigger-card {
     flex-direction: column !important;
     align-items: stretch !important;
-    gap: 14px !important;
-    padding: 16px 14px !important;
+    gap: 12px !important;
+    padding: 14px 12px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
   .deep-trigger-info {
     flex-direction: column !important;
@@ -15837,13 +15938,18 @@ a:focus-visible {
 
 @media (max-width: 600px) {
   .ai-card {
-    padding: 14px 12px !important;
+    padding: 0 !important;
     border-radius: 12px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
   .ai-card-header {
     flex-direction: column !important;
     align-items: stretch !important;
-    gap: 12px !important;
+    gap: 10px !important;
+    padding: 12px 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
   .ai-header-left {
     gap: 10px !important;
@@ -15862,27 +15968,113 @@ a:focus-visible {
   }
   .ai-header-actions {
     width: 100% !important;
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
+    display: flex !important;
+    flex-direction: row !important;
     gap: 8px !important;
   }
   .ai-share-btn, .ai-analyse-btn {
-    width: 100% !important;
+    flex: 1 !important;
     justify-content: center !important;
-    padding: 8px 8px !important;
+    padding: 8px 6px !important;
     font-size: 11px !important;
     letter-spacing: 0.5px !important;
   }
-  .ai-warmup-grid {
+  .ai-body {
+    padding: 10px 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .ai-summary-banner {
+    padding: 12px 12px !important;
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+    border-radius: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-bottom: 10px !important;
+  }
+  .ai-tilt-alert {
+    padding: 10px 12px !important;
+    border-radius: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-bottom: 10px !important;
+  }
+  .ai-readiness-wrapper {
     grid-template-columns: 1fr !important;
     gap: 10px !important;
+    margin-top: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .ai-readiness-ring {
+    padding: 12px 12px !important;
+    border-radius: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .ai-session-card {
+    padding: 12px 12px !important;
+    border-radius: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .ai-strengths-wrapper {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    margin-top: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .ai-bento-card {
+    padding: 12px 12px !important;
+    border-radius: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .ai-tip-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+  .ai-tip-item {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+    font-size: 12px !important;
+    line-height: 1.45 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .ai-warmup-container,
+  .ai-aimlab-wrapper {
+    padding: 12px 12px !important;
+    margin-top: 10px !important;
+    border-radius: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .ai-warmup-grid {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    width: 100% !important;
   }
   .ai-warmup-item {
-    padding: 10px 12px !important;
+    padding: 10px 10px !important;
+  }
+  .ai-action-bento-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    margin-top: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
   .ai-grid {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
   .ai-stat-pill {
     padding: 10px 8px !important;
@@ -15893,27 +16085,29 @@ a:focus-visible {
 
   /* Deep Telemetry Header Mobile Adjustments */
   .deep-clarification-banner {
-    padding: 14px 14px !important;
-    gap: 12px !important;
-    border-radius: 12px !important;
+    padding: 12px 12px !important;
+    gap: 10px !important;
+    border-radius: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
   .deep-clar-top-row {
     flex-direction: column !important;
     align-items: stretch !important;
-    gap: 12px !important;
+    gap: 10px !important;
   }
   .deep-clar-left {
     gap: 10px !important;
   }
   .deep-clar-icon {
-    font-size: 24px !important;
+    font-size: 22px !important;
   }
   .deep-clar-title {
-    font-size: 17px !important;
+    font-size: 16px !important;
   }
   .deep-clar-desc {
-    font-size: 11.5px !important;
-    line-height: 1.5 !important;
+    font-size: 11px !important;
+    line-height: 1.45 !important;
   }
   .deep-run-btn {
     width: 100% !important;
@@ -15921,33 +16115,110 @@ a:focus-visible {
     padding: 10px 16px !important;
     font-size: 12px !important;
   }
-}
 
-@media (max-width: 480px) {
-  .ai-summary-banner {
-    padding: 12px 14px !important;
-    font-size: 13px !important;
+  /* Per-Match ValBot Analysis Mobile Optimizations */
+  .match-ai-wrap {
+    margin: 6px 0 0 0 !important;
+    border-radius: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
-  .ai-tilt-alert {
-    padding: 12px 14px !important;
+  .match-ai-header {
+    padding: 8px 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
-  .ai-readiness-ring {
-    padding: 12px !important;
+  .match-ai-body {
+    padding: 8px 6px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
-  .ai-session-card {
-    padding: 12px !important;
+  .match-ai-summary-v2 {
+    padding: 10px 10px !important;
+    gap: 8px !important;
+    border-radius: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-bottom: 8px !important;
   }
-  .ai-focus-block {
-    padding: 14px 16px !important;
+  .match-ai-intel-banner {
+    padding: 8px 10px !important;
+    gap: 8px !important;
+    border-radius: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-bottom: 8px !important;
   }
-  .ai-focus-title {
-    font-size: 18px !important;
+  .match-ai-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-bottom: 8px !important;
   }
-  .ai-aimlab-card {
-    padding: 12px !important;
+  .match-ai-pill {
+    padding: 8px 8px !important;
+    border-radius: 6px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
+  .match-ai-pill-val {
+    font-size: 17px !important;
+  }
+  .match-ai-verdict,
+  .match-ai-verdict-v2,
+  .match-ai-key-moments {
+    padding: 10px 10px !important;
+    margin-bottom: 8px !important;
+    border-radius: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .match-ai-verdict-v2-text {
+    font-size: 12.5px !important;
+    line-height: 1.5 !important;
+  }
+  .match-ai-sections {
+    margin-top: 10px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+  .match-ai-block {
+    padding: 10px 10px !important;
+    border-radius: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .match-ai-items {
+    gap: 6px !important;
+  }
+  .match-ai-item {
+    font-size: 11.5px !important;
+    line-height: 1.4 !important;
+  }
+  .match-ai-stats-grid {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+  .match-ai-stat-card {
+    padding: 10px !important;
+    border-radius: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .match-ai-timeline-wrap {
+    padding: 8px !important;
+    gap: 4px !important;
+    border-radius: 8px !important;
+  }
+
   .ai-drill-modal {
     margin: 10px !important;
+    max-width: calc(100vw - 20px) !important;
     max-height: 90vh !important;
     overflow-y: auto !important;
   }

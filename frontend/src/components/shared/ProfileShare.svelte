@@ -177,4 +177,18 @@
     border: 1px solid rgba(255,69,0,0.3);
   }
   .share-btn.reddit:hover { background: rgba(255,69,0,0.25); }
+
+  @media (max-width: 600px) {
+    .share-overlay {
+      padding: 12px;
+    }
+    .share-modal {
+      padding: 16px 14px;
+      border-radius: 12px;
+      max-width: calc(100vw - 24px);
+    }
+    .share-actions {
+      flex-direction: column;
+    }
+  }
 </style>

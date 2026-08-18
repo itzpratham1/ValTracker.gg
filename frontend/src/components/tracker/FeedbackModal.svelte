@@ -298,4 +298,24 @@
     color: var(--muted2);
     text-align: center;
   }
+
+  @media (max-width: 600px) {
+    .modal-overlay {
+      padding: 12px;
+    }
+    .modal-card {
+      max-width: calc(100vw - 24px);
+      border-radius: 12px;
+    }
+    .modal-header {
+      padding: 14px 16px;
+    }
+    .modal-title {
+      font-size: 18px;
+    }
+    .modal-body {
+      padding: 16px;
+      gap: 12px;
+    }
+  }
 </style>
