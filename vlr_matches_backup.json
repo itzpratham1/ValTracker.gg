@@ -1,356 +1,18 @@
 [
   {
-    "id": "729673",
-    "date": "Aug 15, 2026 8:30 PM",
-    "state": "in_progress",
-    "vlr_path": "/729673/fire-flux-esports-vs-enterprise-esports-vct-2026-emea-stage-2-ubsf",
-    "league": {
-      "name": "VCT 2026: EMEA Stage 2",
-      "region": "Play-Ins\u2013Upper Semifinals"
-    },
-    "match": {
-      "id": "729673",
-      "teams": [
-        {
-          "name": "Fire Flux Esports",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "Enterprise Esports",
-          "game_wins": 1,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "732794",
-    "date": "Aug 15, 2026 8:30 PM",
-    "state": "in_progress",
-    "vlr_path": "/732794/alternate-attax-ruby-vs-fokus-sakura-game-changers-2026-emea-stage-3-lr1",
+    "id": "732792",
+    "date": "Aug 18, 2026 8:30 PM",
+    "state": "unstarted",
+    "vlr_path": "/732792/gentle-mates-gc-vs-sk-nebula-game-changers-2026-emea-stage-3-ubf",
     "league": {
       "name": "Game Changers 2026: EMEA Stage 3",
-      "region": "Playoffs\u2013Lower Round 1"
+      "region": "Playoffs\u2013Upper Final"
     },
     "match": {
-      "id": "732794",
+      "id": "732792",
       "teams": [
-        {
-          "name": "ALTERNATE aTTaX Ruby",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "FOKUS Sakura",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "732795",
-    "date": "Aug 15, 2026 10:30 PM",
-    "state": "unstarted",
-    "vlr_path": "/732795/habos-babos-vs-twisted-minds-orchid-game-changers-2026-emea-stage-3-lr1",
-    "league": {
-      "name": "Game Changers 2026: EMEA Stage 3",
-      "region": "Playoffs\u2013Lower Round 1"
-    },
-    "match": {
-      "id": "732795",
-      "teams": [
-        {
-          "name": "Habos Babos",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "Twisted Minds Orchid",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "729672",
-    "date": "Aug 15, 2026 11:30 PM",
-    "state": "unstarted",
-    "vlr_path": "/729672/fut-esports-vs-eternal-fire-vct-2026-emea-stage-2-ubsf",
-    "league": {
-      "name": "VCT 2026: EMEA Stage 2",
-      "region": "Play-Ins\u2013Upper Semifinals"
-    },
-    "match": {
-      "id": "729672",
-      "teams": [
-        {
-          "name": "FUT Esports",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "Eternal Fire",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "729746",
-    "date": "August 16, 2026 2:30 AM",
-    "state": "unstarted",
-    "vlr_path": "/729746/mibr-vs-kr-esports-vct-2026-americas-stage-2-ubqf",
-    "league": {
-      "name": "VCT 2026: Americas Stage 2",
-      "region": "Play-Ins\u2013Upper Quarterfinals"
-    },
-    "match": {
-      "id": "729746",
-      "teams": [
-        {
-          "name": "MIBR",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "KR\u00dc Esports",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "729747",
-    "date": "August 16, 2026 5:30 AM",
-    "state": "unstarted",
-    "vlr_path": "/729747/sentinels-vs-envy-vct-2026-americas-stage-2-ubqf",
-    "league": {
-      "name": "VCT 2026: Americas Stage 2",
-      "region": "Play-Ins\u2013Upper Quarterfinals"
-    },
-    "match": {
-      "id": "729747",
-      "teams": [
-        {
-          "name": "Sentinels",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "ENVY",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "724646",
-    "date": "August 16, 2026 1:30 PM",
-    "state": "unstarted",
-    "vlr_path": "/724646/titan-esports-club-vs-nova-esports-vct-2026-china-stage-2-lr1",
-    "league": {
-      "name": "VCT 2026: China Stage 2",
-      "region": "Playoffs\u2013Lower Round 1"
-    },
-    "match": {
-      "id": "724646",
-      "teams": [
-        {
-          "name": "Titan Esports Club",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "Nova Esports",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "730541",
-    "date": "August 16, 2026 1:30 PM",
-    "state": "unstarted",
-    "vlr_path": "/730541/t1-vs-full-sense-vct-2026-pacific-stage-2-ubqf",
-    "league": {
-      "name": "VCT 2026: Pacific Stage 2",
-      "region": "Play-Ins\u2013Upper Quarterfinals"
-    },
-    "match": {
-      "id": "730541",
-      "teams": [
-        {
-          "name": "T1",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "FULL SENSE",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "724647",
-    "date": "August 16, 2026 3:30 PM",
-    "state": "unstarted",
-    "vlr_path": "/724647/all-gamers-vs-trace-esports-vct-2026-china-stage-2-lr1",
-    "league": {
-      "name": "VCT 2026: China Stage 2",
-      "region": "Playoffs\u2013Lower Round 1"
-    },
-    "match": {
-      "id": "724647",
-      "teams": [
-        {
-          "name": "All Gamers",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "Trace Esports",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "730542",
-    "date": "August 16, 2026 4:30 PM",
-    "state": "unstarted",
-    "vlr_path": "/730542/nongshim-redforce-vs-team-secret-vct-2026-pacific-stage-2-ubqf",
-    "league": {
-      "name": "VCT 2026: Pacific Stage 2",
-      "region": "Play-Ins\u2013Upper Quarterfinals"
-    },
-    "match": {
-      "id": "730542",
-      "teams": [
-        {
-          "name": "Nongshim RedForce",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "Team Secret",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "729681",
-    "date": "August 16, 2026 6:30 PM",
-    "state": "unstarted",
-    "vlr_path": "/729681/eintracht-frankfurt-vs-tbd-vct-2026-emea-stage-2-lr3",
-    "league": {
-      "name": "VCT 2026: EMEA Stage 2",
-      "region": "Play-Ins\u2013Lower Round 3"
-    },
-    "match": {
-      "id": "729681",
-      "teams": [
-        {
-          "name": "TBD",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "Eintracht Frankfurt",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "732790",
-    "date": "August 16, 2026 8:30 PM",
-    "state": "unstarted",
-    "vlr_path": "/732790/g2-gozen-vs-gentle-mates-gc-game-changers-2026-emea-stage-3-ubsf",
-    "league": {
-      "name": "Game Changers 2026: EMEA Stage 3",
-      "region": "Playoffs\u2013Upper Semifinals"
-    },
-    "match": {
-      "id": "732790",
-      "teams": [
-        {
-          "name": "G2 Gozen",
-          "game_wins": 0,
-          "has_won": false
-        },
         {
           "name": "Gentle Mates GC",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "729682",
-    "date": "August 16, 2026 9:30 PM",
-    "state": "unstarted",
-    "vlr_path": "/729682/joblife-vs-tbd-vct-2026-emea-stage-2-lr3",
-    "league": {
-      "name": "VCT 2026: EMEA Stage 2",
-      "region": "Play-Ins\u2013Lower Round 3"
-    },
-    "match": {
-      "id": "729682",
-      "teams": [
-        {
-          "name": "TBD",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "Joblife",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "732791",
-    "date": "August 16, 2026 10:30 PM",
-    "state": "unstarted",
-    "vlr_path": "/732791/giantx-gc-vs-sk-nebula-game-changers-2026-emea-stage-3-ubsf",
-    "league": {
-      "name": "Game Changers 2026: EMEA Stage 3",
-      "region": "Playoffs\u2013Upper Semifinals"
-    },
-    "match": {
-      "id": "732791",
-      "teams": [
-        {
-          "name": "GIANTX GC",
           "game_wins": 0,
           "has_won": false
         },
@@ -364,270 +26,10 @@
     "vod": null
   },
   {
-    "id": "729748",
-    "date": "August 17, 2026 2:30 AM",
-    "state": "unstarted",
-    "vlr_path": "/729748/g2-esports-vs-furia-vct-2026-americas-stage-2-ubqf",
-    "league": {
-      "name": "VCT 2026: Americas Stage 2",
-      "region": "Play-Ins\u2013Upper Quarterfinals"
-    },
-    "match": {
-      "id": "729748",
-      "teams": [
-        {
-          "name": "G2 Esports",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "FURIA",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "729749",
-    "date": "August 17, 2026 5:30 AM",
-    "state": "unstarted",
-    "vlr_path": "/729749/evil-geniuses-vs-cloud9-vct-2026-americas-stage-2-ubqf",
-    "league": {
-      "name": "VCT 2026: Americas Stage 2",
-      "region": "Play-Ins\u2013Upper Quarterfinals"
-    },
-    "match": {
-      "id": "729749",
-      "teams": [
-        {
-          "name": "Evil Geniuses",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "Cloud9",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "732796",
-    "date": "August 17, 2026 8:30 PM",
-    "state": "unstarted",
-    "vlr_path": "/732796/tbd-game-changers-2026-emea-stage-3-lr2",
-    "league": {
-      "name": "Game Changers 2026: EMEA Stage 3",
-      "region": "Playoffs\u2013Lower Round 2"
-    },
-    "match": {
-      "id": "732796",
-      "teams": [
-        {
-          "name": "TBD",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "TBD",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "732797",
-    "date": "August 17, 2026 10:30 PM",
-    "state": "unstarted",
-    "vlr_path": "/732797/tbd-game-changers-2026-emea-stage-3-lr2",
-    "league": {
-      "name": "Game Changers 2026: EMEA Stage 3",
-      "region": "Playoffs\u2013Lower Round 2"
-    },
-    "match": {
-      "id": "732797",
-      "teams": [
-        {
-          "name": "TBD",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "TBD",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "730329",
-    "date": "August 18, 2026 12:30 AM",
-    "state": "unstarted",
-    "vlr_path": "/730329/looking-for-laburo-vs-npc-team-game-changers-2026-latam-main-event-lbf",
-    "league": {
-      "name": "Game Changers 2026: LATAM Main Event",
-      "region": "South\u2013Lower Final"
-    },
-    "match": {
-      "id": "730329",
-      "teams": [
-        {
-          "name": "Looking For Laburo",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "NPC TEAM",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "731776",
-    "date": "August 18, 2026 1:30 AM",
-    "state": "unstarted",
-    "vlr_path": "/731776/gato-pensante-vs-7ven-stars-game-changers-2026-brazil-finals-lr1",
-    "league": {
-      "name": "Game Changers 2026: Brazil Finals",
-      "region": "Main Event\u2013Lower Round 1"
-    },
-    "match": {
-      "id": "731776",
-      "teams": [
-        {
-          "name": "GATO PENSANTE",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "7VEN STARS",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "735387",
-    "date": "August 18, 2026 2:30 AM",
-    "state": "unstarted",
-    "vlr_path": "/735387/cloud9-gc-vs-sen-otters-game-changers-2026-north-america-stage-2-swiss-stage-r7-3-3",
-    "league": {
-      "name": "Game Changers 2026: North America Stage 2",
-      "region": "Swiss Stage\u2013Round 7 (3-3)"
-    },
-    "match": {
-      "id": "735387",
-      "teams": [
-        {
-          "name": "Cloud9 GC",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "SEN Otters",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "731777",
-    "date": "August 18, 2026 4:30 AM",
-    "state": "unstarted",
-    "vlr_path": "/731777/evils-of-delusion-vs-arashi-gc-game-changers-2026-brazil-finals-lr1",
-    "league": {
-      "name": "Game Changers 2026: Brazil Finals",
-      "region": "Main Event\u2013Lower Round 1"
-    },
-    "match": {
-      "id": "731777",
-      "teams": [
-        {
-          "name": "Evils of Delusion",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "Arashi GC",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "735388",
-    "date": "August 18, 2026 5:00 AM",
-    "state": "unstarted",
-    "vlr_path": "/735388/mvsk-secret-vs-3-game-changers-2026-north-america-stage-2-swiss-stage-r7-3-3",
-    "league": {
-      "name": "Game Changers 2026: North America Stage 2",
-      "region": "Swiss Stage\u2013Round 7 (3-3)"
-    },
-    "match": {
-      "id": "735388",
-      "teams": [
-        {
-          "name": "MVSK Secret",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": ":3",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
-    "id": "732792",
-    "date": "August 18, 2026 8:30 PM",
-    "state": "unstarted",
-    "vlr_path": "/732792/tbd-game-changers-2026-emea-stage-3-ubf",
-    "league": {
-      "name": "Game Changers 2026: EMEA Stage 3",
-      "region": "Playoffs\u2013Upper Final"
-    },
-    "match": {
-      "id": "732792",
-      "teams": [
-        {
-          "name": "TBD",
-          "game_wins": 0,
-          "has_won": false
-        },
-        {
-          "name": "TBD",
-          "game_wins": 0,
-          "has_won": false
-        }
-      ]
-    },
-    "vod": null
-  },
-  {
     "id": "732798",
-    "date": "August 18, 2026 10:30 PM",
+    "date": "Aug 18, 2026 10:30 PM",
     "state": "unstarted",
-    "vlr_path": "/732798/tbd-game-changers-2026-emea-stage-3-lr3",
+    "vlr_path": "/732798/fokus-sakura-vs-g2-gozen-game-changers-2026-emea-stage-3-lr3",
     "league": {
       "name": "Game Changers 2026: EMEA Stage 3",
       "region": "Playoffs\u2013Lower Round 3"
@@ -636,12 +38,12 @@
       "id": "732798",
       "teams": [
         {
-          "name": "TBD",
+          "name": "FOKUS Sakura",
           "game_wins": 0,
           "has_won": false
         },
         {
-          "name": "TBD",
+          "name": "G2 Gozen",
           "game_wins": 0,
           "has_won": false
         }
@@ -757,7 +159,7 @@
     "id": "730545",
     "date": "August 19, 2026 1:30 PM",
     "state": "unstarted",
-    "vlr_path": "/730545/onside-gaming-vs-tbd-vct-2026-pacific-stage-2-lr1",
+    "vlr_path": "/730545/team-secret-vs-onside-gaming-vct-2026-pacific-stage-2-lr1",
     "league": {
       "name": "VCT 2026: Pacific Stage 2",
       "region": "Play-Ins\u2013Lower Round 1"
@@ -766,7 +168,7 @@
       "id": "730545",
       "teams": [
         {
-          "name": "TBD",
+          "name": "Team Secret",
           "game_wins": 0,
           "has_won": false
         },
@@ -809,7 +211,7 @@
     "id": "730546",
     "date": "August 19, 2026 4:30 PM",
     "state": "unstarted",
-    "vlr_path": "/730546/rex-regum-qeon-vs-tbd-vct-2026-pacific-stage-2-lr1",
+    "vlr_path": "/730546/full-sense-vs-rex-regum-qeon-vct-2026-pacific-stage-2-lr1",
     "league": {
       "name": "VCT 2026: Pacific Stage 2",
       "region": "Play-Ins\u2013Lower Round 1"
@@ -818,7 +220,7 @@
       "id": "730546",
       "teams": [
         {
-          "name": "TBD",
+          "name": "FULL SENSE",
           "game_wins": 0,
           "has_won": false
         },
@@ -861,7 +263,7 @@
     "id": "729752",
     "date": "August 20, 2026 2:30 AM",
     "state": "unstarted",
-    "vlr_path": "/729752/bestia-vs-tbd-vct-2026-americas-stage-2-lr1",
+    "vlr_path": "/729752/cloud9-vs-bestia-vct-2026-americas-stage-2-lr1",
     "league": {
       "name": "VCT 2026: Americas Stage 2",
       "region": "Play-Ins\u2013Lower Round 1"
@@ -870,7 +272,7 @@
       "id": "729752",
       "teams": [
         {
-          "name": "TBD",
+          "name": "Cloud9",
           "game_wins": 0,
           "has_won": false
         },
@@ -887,7 +289,7 @@
     "id": "729753",
     "date": "August 20, 2026 5:30 AM",
     "state": "unstarted",
-    "vlr_path": "/729753/m80-vs-tbd-vct-2026-americas-stage-2-lr1",
+    "vlr_path": "/729753/g2-esports-vs-m80-vct-2026-americas-stage-2-lr1",
     "league": {
       "name": "VCT 2026: Americas Stage 2",
       "region": "Play-Ins\u2013Lower Round 1"
@@ -896,7 +298,7 @@
       "id": "729753",
       "teams": [
         {
-          "name": "TBD",
+          "name": "G2 Esports",
           "game_wins": 0,
           "has_won": false
         },
@@ -913,7 +315,7 @@
     "id": "724648",
     "date": "August 20, 2026 1:30 PM",
     "state": "unstarted",
-    "vlr_path": "/724648/tbd-vct-2026-china-stage-2-lr2",
+    "vlr_path": "/724648/nova-esports-vs-tbd-vct-2026-china-stage-2-lr2",
     "league": {
       "name": "VCT 2026: China Stage 2",
       "region": "Playoffs\u2013Lower Round 2"
@@ -927,7 +329,7 @@
           "has_won": false
         },
         {
-          "name": "TBD",
+          "name": "Nova Esports",
           "game_wins": 0,
           "has_won": false
         }
@@ -965,7 +367,7 @@
     "id": "724649",
     "date": "August 20, 2026 3:30 PM",
     "state": "unstarted",
-    "vlr_path": "/724649/tbd-vct-2026-china-stage-2-lr2",
+    "vlr_path": "/724649/all-gamers-vs-tbd-vct-2026-china-stage-2-lr2",
     "league": {
       "name": "VCT 2026: China Stage 2",
       "region": "Playoffs\u2013Lower Round 2"
@@ -979,7 +381,7 @@
           "has_won": false
         },
         {
-          "name": "TBD",
+          "name": "All Gamers",
           "game_wins": 0,
           "has_won": false
         }
@@ -1017,7 +419,7 @@
     "id": "731396",
     "date": "August 20, 2026 8:30 PM",
     "state": "unstarted",
-    "vlr_path": "/731396/team-liquid-vs-tbd-vct-2026-emea-stage-2-ur1",
+    "vlr_path": "/731396/team-liquid-vs-fut-esports-vct-2026-emea-stage-2-ur1",
     "league": {
       "name": "VCT 2026: EMEA Stage 2",
       "region": "Playoffs\u2013Upper Round 1"
@@ -1031,7 +433,7 @@
           "has_won": false
         },
         {
-          "name": "TBD",
+          "name": "FUT Esports",
           "game_wins": 0,
           "has_won": false
         }
@@ -1043,7 +445,7 @@
     "id": "731397",
     "date": "August 20, 2026 11:30 PM",
     "state": "unstarted",
-    "vlr_path": "/731397/team-vitality-vs-tbd-vct-2026-emea-stage-2-ur1",
+    "vlr_path": "/731397/team-vitality-vs-enterprise-esports-vct-2026-emea-stage-2-ur1",
     "league": {
       "name": "VCT 2026: EMEA Stage 2",
       "region": "Playoffs\u2013Upper Round 1"
@@ -1057,7 +459,7 @@
           "has_won": false
         },
         {
-          "name": "TBD",
+          "name": "Enterprise Esports",
           "game_wins": 0,
           "has_won": false
         }
@@ -1069,7 +471,7 @@
     "id": "729754",
     "date": "August 21, 2026 2:30 AM",
     "state": "unstarted",
-    "vlr_path": "/729754/2game-esports-vs-tbd-vct-2026-americas-stage-2-lr1",
+    "vlr_path": "/729754/sentinels-vs-2game-esports-vct-2026-americas-stage-2-lr1",
     "league": {
       "name": "VCT 2026: Americas Stage 2",
       "region": "Play-Ins\u2013Lower Round 1"
@@ -1078,7 +480,7 @@
       "id": "729754",
       "teams": [
         {
-          "name": "TBD",
+          "name": "Sentinels",
           "game_wins": 0,
           "has_won": false
         },
@@ -1095,7 +497,7 @@
     "id": "729755",
     "date": "August 21, 2026 5:30 AM",
     "state": "unstarted",
-    "vlr_path": "/729755/fluxo-w7m-vs-tbd-vct-2026-americas-stage-2-lr1",
+    "vlr_path": "/729755/kr-esports-vs-fluxo-w7m-vct-2026-americas-stage-2-lr1",
     "league": {
       "name": "VCT 2026: Americas Stage 2",
       "region": "Play-Ins\u2013Lower Round 1"
@@ -1104,7 +506,7 @@
       "id": "729755",
       "teams": [
         {
-          "name": "TBD",
+          "name": "KR\u00dc Esports",
           "game_wins": 0,
           "has_won": false
         },
@@ -1199,7 +601,7 @@
     "id": "730544",
     "date": "August 21, 2026 4:30 PM",
     "state": "unstarted",
-    "vlr_path": "/730544/tbd-vct-2026-pacific-stage-2-ubsf",
+    "vlr_path": "/730544/t1-vs-nongshim-redforce-vct-2026-pacific-stage-2-ubsf",
     "league": {
       "name": "VCT 2026: Pacific Stage 2",
       "region": "Play-Ins\u2013Upper Semifinals"
@@ -1208,12 +610,12 @@
       "id": "730544",
       "teams": [
         {
-          "name": "TBD",
+          "name": "T1",
           "game_wins": 0,
           "has_won": false
         },
         {
-          "name": "TBD",
+          "name": "Nongshim RedForce",
           "game_wins": 0,
           "has_won": false
         }
@@ -1277,13 +679,611 @@
     "id": "729750",
     "date": "August 22, 2026 2:30 AM",
     "state": "unstarted",
-    "vlr_path": "/729750/tbd-vct-2026-americas-stage-2-ubsf",
+    "vlr_path": "/729750/mibr-vs-envy-vct-2026-americas-stage-2-ubsf",
     "league": {
       "name": "VCT 2026: Americas Stage 2",
       "region": "Play-Ins\u2013Upper Semifinals"
     },
     "match": {
       "id": "729750",
+      "teams": [
+        {
+          "name": "MIBR",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "ENVY",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "729751",
+    "date": "August 22, 2026 5:30 AM",
+    "state": "unstarted",
+    "vlr_path": "/729751/furia-vs-evil-geniuses-vct-2026-americas-stage-2-ubsf",
+    "league": {
+      "name": "VCT 2026: Americas Stage 2",
+      "region": "Play-Ins\u2013Upper Semifinals"
+    },
+    "match": {
+      "id": "729751",
+      "teams": [
+        {
+          "name": "FURIA",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "Evil Geniuses",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "724651",
+    "date": "August 22, 2026 1:30 PM",
+    "state": "unstarted",
+    "vlr_path": "/724651/tbd-vct-2026-china-stage-2-lbf",
+    "league": {
+      "name": "VCT 2026: China Stage 2",
+      "region": "Playoffs\u2013Lower Final"
+    },
+    "match": {
+      "id": "724651",
+      "teams": [
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "730549",
+    "date": "August 22, 2026 1:30 PM",
+    "state": "unstarted",
+    "vlr_path": "/730549/tbd-vct-2026-pacific-stage-2-lr2",
+    "league": {
+      "name": "VCT 2026: Pacific Stage 2",
+      "region": "Play-Ins\u2013Lower Round 2"
+    },
+    "match": {
+      "id": "730549",
+      "teams": [
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "730550",
+    "date": "August 22, 2026 4:30 PM",
+    "state": "unstarted",
+    "vlr_path": "/730550/tbd-vct-2026-pacific-stage-2-lr2",
+    "league": {
+      "name": "VCT 2026: Pacific Stage 2",
+      "region": "Play-Ins\u2013Lower Round 2"
+    },
+    "match": {
+      "id": "730550",
+      "teams": [
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "731402",
+    "date": "August 22, 2026 8:30 PM",
+    "state": "unstarted",
+    "vlr_path": "/731402/eintracht-frankfurt-vs-tbd-vct-2026-emea-stage-2-lr1",
+    "league": {
+      "name": "VCT 2026: EMEA Stage 2",
+      "region": "Playoffs\u2013Lower Round 1"
+    },
+    "match": {
+      "id": "731402",
+      "teams": [
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "Eintracht Frankfurt",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "731403",
+    "date": "August 22, 2026 11:30 PM",
+    "state": "unstarted",
+    "vlr_path": "/731403/fire-flux-esports-vs-tbd-vct-2026-emea-stage-2-lr1",
+    "league": {
+      "name": "VCT 2026: EMEA Stage 2",
+      "region": "Playoffs\u2013Lower Round 1"
+    },
+    "match": {
+      "id": "731403",
+      "teams": [
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "Fire Flux Esports",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "729756",
+    "date": "August 23, 2026 2:30 AM",
+    "state": "unstarted",
+    "vlr_path": "/729756/tbd-vct-2026-americas-stage-2-lr2",
+    "league": {
+      "name": "VCT 2026: Americas Stage 2",
+      "region": "Play-Ins\u2013Lower Round 2"
+    },
+    "match": {
+      "id": "729756",
+      "teams": [
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "729757",
+    "date": "August 23, 2026 5:30 AM",
+    "state": "unstarted",
+    "vlr_path": "/729757/tbd-vct-2026-americas-stage-2-lr2",
+    "league": {
+      "name": "VCT 2026: Americas Stage 2",
+      "region": "Play-Ins\u2013Lower Round 2"
+    },
+    "match": {
+      "id": "729757",
+      "teams": [
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "724645",
+    "date": "August 23, 2026 1:30 PM",
+    "state": "unstarted",
+    "vlr_path": "/724645/tbd-vct-2026-china-stage-2-gf",
+    "league": {
+      "name": "VCT 2026: China Stage 2",
+      "region": "Playoffs\u2013Grand Final"
+    },
+    "match": {
+      "id": "724645",
+      "teams": [
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "730551",
+    "date": "August 23, 2026 1:30 PM",
+    "state": "unstarted",
+    "vlr_path": "/730551/tbd-vct-2026-pacific-stage-2-lr3",
+    "league": {
+      "name": "VCT 2026: Pacific Stage 2",
+      "region": "Play-Ins\u2013Lower Round 3"
+    },
+    "match": {
+      "id": "730551",
+      "teams": [
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "730552",
+    "date": "August 23, 2026 4:30 PM",
+    "state": "unstarted",
+    "vlr_path": "/730552/tbd-vct-2026-pacific-stage-2-lr3",
+    "league": {
+      "name": "VCT 2026: Pacific Stage 2",
+      "region": "Play-Ins\u2013Lower Round 3"
+    },
+    "match": {
+      "id": "730552",
+      "teams": [
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "731404",
+    "date": "August 23, 2026 8:30 PM",
+    "state": "unstarted",
+    "vlr_path": "/731404/tbd-vct-2026-emea-stage-2-lr2",
+    "league": {
+      "name": "VCT 2026: EMEA Stage 2",
+      "region": "Playoffs\u2013Lower Round 2"
+    },
+    "match": {
+      "id": "731404",
+      "teams": [
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "731406",
+    "date": "August 23, 2026 11:30 PM",
+    "state": "unstarted",
+    "vlr_path": "/731406/tbd-vct-2026-emea-stage-2-lr2",
+    "league": {
+      "name": "VCT 2026: EMEA Stage 2",
+      "region": "Playoffs\u2013Lower Round 2"
+    },
+    "match": {
+      "id": "731406",
+      "teams": [
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "729758",
+    "date": "August 24, 2026 2:30 AM",
+    "state": "unstarted",
+    "vlr_path": "/729758/tbd-vct-2026-americas-stage-2-lr3",
+    "league": {
+      "name": "VCT 2026: Americas Stage 2",
+      "region": "Play-Ins\u2013Lower Round 3"
+    },
+    "match": {
+      "id": "729758",
+      "teams": [
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "729759",
+    "date": "August 24, 2026 5:30 AM",
+    "state": "unstarted",
+    "vlr_path": "/729759/tbd-vct-2026-americas-stage-2-lr3",
+    "league": {
+      "name": "VCT 2026: Americas Stage 2",
+      "region": "Play-Ins\u2013Lower Round 3"
+    },
+    "match": {
+      "id": "729759",
+      "teams": [
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "730327",
+    "date": "August 25, 2026 12:30 AM",
+    "state": "unstarted",
+    "vlr_path": "/730327/kr-blaze-vs-looking-for-laburo-game-changers-2026-latam-main-event-gf",
+    "league": {
+      "name": "Game Changers 2026: LATAM Main Event",
+      "region": "South\u2013Grand Final"
+    },
+    "match": {
+      "id": "730327",
+      "teams": [
+        {
+          "name": "KR\u00dc BLAZE",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "Looking For Laburo",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "731778",
+    "date": "August 25, 2026 1:30 AM",
+    "state": "unstarted",
+    "vlr_path": "/731778/7ven-stars-vs-tbd-game-changers-2026-brazil-finals-lr2",
+    "league": {
+      "name": "Game Changers 2026: Brazil Finals",
+      "region": "Main Event\u2013Lower Round 2"
+    },
+    "match": {
+      "id": "731778",
+      "teams": [
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "7VEN STARS",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "731779",
+    "date": "August 25, 2026 4:30 AM",
+    "state": "unstarted",
+    "vlr_path": "/731779/arashi-gc-vs-tbd-game-changers-2026-brazil-finals-lr2",
+    "league": {
+      "name": "Game Changers 2026: Brazil Finals",
+      "region": "Main Event\u2013Lower Round 2"
+    },
+    "match": {
+      "id": "731779",
+      "teams": [
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "Arashi GC",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "730320",
+    "date": "August 26, 2026 3:30 AM",
+    "state": "unstarted",
+    "vlr_path": "/730320/akave-esports-gc-vs-tbd-game-changers-2026-latam-main-event-gf",
+    "league": {
+      "name": "Game Changers 2026: LATAM Main Event",
+      "region": "North\u2013Grand Final"
+    },
+    "match": {
+      "id": "730320",
+      "teams": [
+        {
+          "name": "Akave Esports GC",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "734302",
+    "date": "August 28, 2026 2:30 AM",
+    "state": "unstarted",
+    "vlr_path": "/734302/loud-vs-tbd-vct-2026-americas-stage-2-ur1",
+    "league": {
+      "name": "VCT 2026: Americas Stage 2",
+      "region": "Playoffs\u2013Upper Round 1"
+    },
+    "match": {
+      "id": "734302",
+      "teams": [
+        {
+          "name": "LOUD",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "734303",
+    "date": "August 28, 2026 5:30 AM",
+    "state": "unstarted",
+    "vlr_path": "/734303/leviat-n-vs-tbd-vct-2026-americas-stage-2-ur1",
+    "league": {
+      "name": "VCT 2026: Americas Stage 2",
+      "region": "Playoffs\u2013Upper Round 1"
+    },
+    "match": {
+      "id": "734303",
+      "teams": [
+        {
+          "name": "LEVIAT\u00c1N",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "731400",
+    "date": "August 28, 2026 8:30 PM",
+    "state": "unstarted",
+    "vlr_path": "/731400/tbd-vct-2026-emea-stage-2-ubf",
+    "league": {
+      "name": "VCT 2026: EMEA Stage 2",
+      "region": "Playoffs\u2013Upper Final"
+    },
+    "match": {
+      "id": "731400",
+      "teams": [
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        },
+        {
+          "name": "TBD",
+          "game_wins": 0,
+          "has_won": false
+        }
+      ]
+    },
+    "vod": null
+  },
+  {
+    "id": "731407",
+    "date": "August 28, 2026 11:30 PM",
+    "state": "unstarted",
+    "vlr_path": "/731407/tbd-vct-2026-emea-stage-2-lr3",
+    "league": {
+      "name": "VCT 2026: EMEA Stage 2",
+      "region": "Playoffs\u2013Lower Round 3"
+    },
+    "match": {
+      "id": "731407",
       "teams": [
         {
           "name": "TBD",

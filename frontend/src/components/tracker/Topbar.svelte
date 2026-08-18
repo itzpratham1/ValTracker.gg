@@ -8,6 +8,7 @@
 
   import { clearAllMatches } from '../../lib/indexeddb';
   import { getAgentIconUrl } from '../../lib/assets';
+  import { loadMyProfile } from '../../lib/session';
 
   export let currentAgentName = '';
   export let onFetchStats = () => {};
@@ -162,35 +163,80 @@
   }
 
   function switchTab(id) {
+    if (id === 'leaderboards') {
+      history.pushState({}, '', '/leaderboards');
+      $currentView = 'leaderboards';
+      return;
+    }
     if (id === 'coach') {
       history.pushState({}, '', '/comp');
       $currentView = 'coach';
       return;
     }
-    if (id === 'esports' || id === 'store' || id === 'overlay') {
-      const targetHash = id === 'esports' ? '#esports' : id === 'store' ? '#skins' : '#overlay';
+    if (id === 'store') {
+      history.pushState({}, '', '/store');
+      $currentView = 'store';
+      return;
+    }
+    if (id === 'esports') {
+      history.pushState({}, '', '/esports');
+      $currentView = 'esports';
+      return;
+    }
+    if (id === 'overlay') {
       if (window.location.pathname !== '/app') {
-        history.pushState({}, '', `/app${targetHash}`);
+        history.pushState({}, '', '/app#overlay');
       } else {
-        history.replaceState({}, '', `/app${targetHash}`);
+        history.replaceState({}, '', '/app#overlay');
       }
       $currentView = id;
       return;
     }
     if (id === 'tracker') {
-      if ($player.name && $player.tag) {
-        const p = new URLSearchParams();
-        p.set('name', $player.name);
-        p.set('tag', $player.tag);
-        p.set('region', $player.region || 'ap');
-        p.set('mode', $player.mode || 'competitive');
-        history.replaceState({}, '', `/app?${p.toString()}`);
-        $currentView = 'tracker';
-      } else {
-        setPlayer({ loaded: false, fetching: false });
-        history.replaceState({}, '', '/app');
-        $currentView = 'tracker';
+      let activeName = $player.name;
+      let activeTag = $player.tag;
+      let activeRegion = $player.region || 'ap';
+      let activeMode = $player.mode || 'competitive';
+
+      if (!activeName || !activeTag) {
+        const saved = loadMyProfile();
+        if (saved && saved.name && saved.tag) {
+          activeName = saved.name;
+          activeTag = saved.tag;
+          activeRegion = saved.region || activeRegion;
+          activeMode = saved.mode || activeMode;
+        } else {
+          try {
+            const raw = localStorage.getItem('valtracker_recent_searches');
+            const recent = raw ? JSON.parse(raw) : [];
+            if (recent.length > 0 && recent[0].name && recent[0].tag) {
+              activeName = recent[0].name;
+              activeTag = recent[0].tag;
+              activeRegion = recent[0].region || activeRegion;
+              activeMode = recent[0].mode || activeMode;
+            }
+          } catch {}
+        }
       }
+
+      if (activeName && activeTag) {
+        const p = new URLSearchParams();
+        p.set('name', activeName);
+        p.set('tag', activeTag);
+        p.set('region', activeRegion);
+        p.set('mode', activeMode);
+        history.pushState({}, '', `/app?${p.toString()}`);
+        if (!$player.loaded && !$player.fetching) {
+          setPlayer({ name: activeName, tag: activeTag, region: activeRegion, mode: activeMode, fetching: true, loaded: false });
+          onFetchStats();
+        } else {
+          setPlayer({ name: activeName, tag: activeTag, region: activeRegion, mode: activeMode });
+        }
+      } else {
+        history.pushState({}, '', '/app');
+        setPlayer({ loaded: false, fetching: false });
+      }
+      $currentView = 'tracker';
       document.body.classList.remove('scrolled-down', 'scrolled-up');
       return;
     }

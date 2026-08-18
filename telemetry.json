@@ -206,5 +206,93 @@
       "timestamp": "2026-08-15T07:32:56.296Z"
     },
     "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-08-18T13:55:32.997670",
+    "event": "player_search",
+    "payload": {
+      "name": "HARSH",
+      "region": "ap",
+      "mode": "competitive",
+      "timestamp": "2026-08-18T08:25:32.951Z"
+    },
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-08-18T13:55:33.335942",
+    "event": "player_search",
+    "payload": {
+      "name": "HARSH",
+      "region": "ap",
+      "mode": "competitive",
+      "timestamp": "2026-08-18T08:25:33.329Z"
+    },
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-08-18T14:41:40.478529",
+    "event": "player_search",
+    "payload": {
+      "name": "HARSH",
+      "region": "ap",
+      "mode": "competitive",
+      "timestamp": "2026-08-18T09:11:40.466Z"
+    },
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-08-18T14:43:45.337049",
+    "event": "player_search",
+    "payload": {
+      "name": "HARSH",
+      "region": "ap",
+      "mode": "competitive",
+      "timestamp": "2026-08-18T09:13:45.328Z"
+    },
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-08-18T14:46:02.878391",
+    "event": "player_search",
+    "payload": {
+      "name": "HARSH",
+      "region": "ap",
+      "mode": "competitive",
+      "timestamp": "2026-08-18T09:16:02.867Z"
+    },
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-08-18T14:48:08.253546",
+    "event": "player_search",
+    "payload": {
+      "name": "HARSH",
+      "region": "ap",
+      "mode": "competitive",
+      "timestamp": "2026-08-18T09:18:08.240Z"
+    },
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-08-18T14:49:47.725918",
+    "event": "player_search",
+    "payload": {
+      "name": "HARSH",
+      "region": "ap",
+      "mode": "competitive",
+      "timestamp": "2026-08-18T09:19:47.717Z"
+    },
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-08-18T14:49:58.280564",
+    "event": "player_search",
+    "payload": {
+      "name": "HARSH",
+      "region": "ap",
+      "mode": "competitive",
+      "timestamp": "2026-08-18T09:19:58.273Z"
+    },
+    "ip": "127.0.0.1"
   }
 ]

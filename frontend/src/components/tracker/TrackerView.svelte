@@ -42,6 +42,7 @@
   import SkinsStore from '../store/SkinsStore.svelte';
   import DraftCoach from '../coach/DraftCoach.svelte';
   import OverlayStudio from '../overlay/OverlayStudio.svelte';
+  import LeaderboardHub from '../leaderboard/LeaderboardHub.svelte';
   import { getPlayerList } from '../../lib/utils';
 
   export let stats = null;
@@ -647,6 +648,10 @@
       </div>
     </div>
   </main>
+  {/if}
+
+  {#if $currentView === 'leaderboards'}
+    <LeaderboardHub />
   {/if}
 
   {#if $currentView === 'esports'}

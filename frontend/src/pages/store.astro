@@ -1,0 +1,35 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AppShell from '../components/tracker/AppShell.svelte';
+
+const siteOrigin = Astro.site ? Astro.site.href.replace(/\/$/, '') : Astro.url.origin;
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "ValTracker — Valorant Skins Store & Cosmetics Explorer",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Web",
+  "url": `${siteOrigin}/store`,
+  "description": "Explore live featured Valorant bundles, complete weapon skins catalog, chroma variants, pricing in VP, and video finisher previews.",
+  "featureList": [
+    "Live featured store bundles",
+    "Valorant skins catalog explorer",
+    "Chroma color variants preview",
+    "Finisher and sound effects video previews",
+    "VP prices and edition rarity tiers"
+  ]
+};
+---
+
+<Layout
+  title="Valorant Skins Store & Cosmetics Explorer — ValTracker"
+  description="Explore live featured Valorant store bundles, weapon skins catalog, chroma variants, pricing in VP, and video finisher previews in real-time."
+  structuredData={structuredData}
+>
+  <div class="sr-only" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;">
+    <h1>Valorant Skins Store & Featured Bundles Explorer</h1>
+    <p>Browse active featured Valorant store bundles with live countdown timers, inspect weapon skins, chromas, sound effects, finishers, and rarity tier pricing in VP.</p>
+  </div>
+  <AppShell client:only="svelte" initialView="store" />
+</Layout>

@@ -1,0 +1,35 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AppShell from '../components/tracker/AppShell.svelte';
+
+const siteOrigin = Astro.site ? Astro.site.href.replace(/\/$/, '') : Astro.url.origin;
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "ValTracker — Valorant Global & Regional Leaderboards",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Web",
+  "url": `${siteOrigin}/leaderboards`,
+  "description": "Live Radiant & Immortal regional leaderboard rankings for AP, NA, EU, KR, BR, and LATAM with player stats, RR ratings, win counts, and match history.",
+  "featureList": [
+    "Live Radiant and Immortal leaderboard rankings",
+    "Complete Top 1,000 player list per region",
+    "Real-time RR and win count telemetry",
+    "Regional filters: AP, NA, EU, KR, BR, LATAM",
+    "Instant player search and profile inspect integration"
+  ]
+};
+---
+
+<Layout
+  title="Valorant Leaderboards — Top Radiant & Immortal Rankings | ValTracker"
+  description="Explore real-time Valorant regional leaderboards for AP, NA, EU, KR, BR, and LATAM. Track Top 1,000 Radiants, RR rankings, win counts, and inspect player profiles."
+  structuredData={structuredData}
+>
+  <div class="sr-only" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;">
+    <h1>Valorant Leaderboards & Top Regional Player Rankings</h1>
+    <p>Browse live Valorant Radiant and Immortal competitive leaderboards across Asia Pacific, North America, Europe, Korea, Brazil, and Latin America with rank rating (RR), win tallies, and player statistics.</p>
+  </div>
+  <AppShell client:only="svelte" initialView="leaderboards" />
+</Layout>

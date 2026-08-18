@@ -73,8 +73,8 @@
           "promo_item": false
         }
       ],
-      "seconds_remaining": 556686,
-      "expires_at": "2026-08-19T05:00:52.964Z"
+      "seconds_remaining": 71528,
+      "expires_at": "2026-08-19T05:00:39.884Z"
     },
     {
       "bundle_uuid": "8d29f5fe-402a-94ee-2d67-e29b97dda6f4",
@@ -181,9 +181,9 @@
           "promo_item": false
         }
       ],
-      "seconds_remaining": 556686,
-      "expires_at": "2026-08-19T05:00:52.964Z"
+      "seconds_remaining": 71528,
+      "expires_at": "2026-08-19T05:00:39.885Z"
     }
   ],
-  "fetched_at": 1786558967.13199
+  "fetched_at": 1787044111.2025776
 }

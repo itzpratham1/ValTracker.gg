@@ -1,5 +1,6 @@
 <script>
   import { createEventDispatcher, tick } from 'svelte';
+  import { currentView } from '../../lib/appStore';
 
   export let onScrollTo = (sectionId) => {};
   export let sessionActive = false;
@@ -102,8 +103,8 @@
         <button class="dropdown-item" on:click={() => { toolsOpen = false; dispatch('shareProfile'); }}>
           <span class="dropdown-item-icon">🔗</span> Share Profile
         </button>
-        <button class="dropdown-item" on:click={() => { toolsOpen = false; dispatch('openLeaderboard'); }}>
-          <span class="dropdown-item-icon">🏆</span> Top 500
+        <button class="dropdown-item" on:click={() => { toolsOpen = false; currentView.set('leaderboards'); history.pushState({}, '', '/leaderboards'); }}>
+          <span class="dropdown-item-icon">🏆</span> LEADERBOARD
         </button>
         <button class="dropdown-item" on:click={() => { toolsOpen = false; dispatch('openH2H'); }}>
           <span class="dropdown-item-icon">⚔️</span> Compare (Vs)

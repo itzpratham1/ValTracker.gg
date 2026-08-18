@@ -1,0 +1,24 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AppShell from '../components/tracker/AppShell.svelte';
+
+const siteOrigin = Astro.site ? Astro.site.href.replace(/\/$/, '') : Astro.url.origin;
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "ValTracker — Valorant Global & Regional Leaderboards",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Web",
+  "url": `${siteOrigin}/leaderboards`,
+  "description": "Live Radiant & Immortal regional leaderboard rankings for AP, NA, EU, KR, BR, and LATAM with player stats, RR ratings, win counts, and match history."
+};
+---
+
+<Layout
+  title="Valorant Leaderboards — Top Radiant & Immortal Rankings | ValTracker"
+  description="Explore real-time Valorant regional leaderboards for AP, NA, EU, KR, BR, and LATAM. Track Top 1,000 Radiants, RR rankings, win counts, and inspect player profiles."
+  structuredData={structuredData}
+>
+  <AppShell client:only="svelte" initialView="leaderboards" />
+</Layout>

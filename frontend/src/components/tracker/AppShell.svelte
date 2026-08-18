@@ -6,6 +6,7 @@
   import { saveMatches } from '../../lib/indexeddb';
   import { getRankImgUrl } from '../../lib/constants';
   import { initAssetCache } from '../../lib/assets';
+  import { loadMyProfile, saveMyProfile } from '../../lib/session';
   import LookupView from './LookupView.svelte';
   import TrackerView from './TrackerView.svelte';
   import LoadingCard from '../landing/LoadingCard.svelte';
@@ -87,11 +88,72 @@
     checkUrlParams();
   }
 
+  function applyPlayerData(targetName, targetTag, targetRegion, targetMode) {
+    const r = (targetRegion || 'ap').toLowerCase();
+    const m = (targetMode || 'competitive').toLowerCase();
+    const profileCacheKey = `valtracker_cached_profile_${targetName.toLowerCase()}_${targetTag.toLowerCase()}_${r}_${m}`;
+    let cachedProfile = null;
+    try {
+      const raw = sessionStorage.getItem(profileCacheKey);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && Date.now() - parsed.timestamp < 600000) {
+          cachedProfile = parsed;
+        }
+      }
+    } catch {}
+
+    if (cachedProfile) {
+      stats = cachedProfile.stats;
+      mmrData = cachedProfile.mmrData;
+      accountData = cachedProfile.accountData;
+      allMatches = cachedProfile.allMatches;
+      mmrHistory = cachedProfile.mmrHistory;
+      setPlayer({
+        name: targetName,
+        tag: targetTag,
+        region: r,
+        mode: m,
+        fetching: false,
+        loaded: true
+      });
+      currentView.set('tracker');
+    } else {
+      setPlayer({
+        name: targetName,
+        tag: targetTag,
+        region: r,
+        mode: m,
+        fetching: true,
+        loaded: false
+      });
+      currentView.set('tracker');
+    }
+  }
+
   function checkUrlParams() {
     const params = new URLSearchParams(window.location.search);
+    // /leaderboards page: always show leaderboard view (LeaderboardHub works standalone)
+    if (window.location.pathname === '/leaderboards' || window.location.pathname === '/leaderboard' || initialView === 'leaderboards') {
+      currentView.set('leaderboards');
+      setPlayer({ loaded: true, fetching: false });
+      return;
+    }
     // /comp page: always show coach view (DraftCoach works standalone even without player data)
     if (window.location.pathname === '/comp') {
       currentView.set('coach');
+      setPlayer({ loaded: true, fetching: false });
+      return;
+    }
+    // /store page: always show skins store view (SkinsStore works standalone)
+    if (window.location.pathname === '/store' || initialView === 'store') {
+      currentView.set('store');
+      setPlayer({ loaded: true, fetching: false });
+      return;
+    }
+    // /esports page: always show esports hub view (EsportsHub works standalone)
+    if (window.location.pathname === '/esports' || initialView === 'esports') {
+      currentView.set('esports');
       setPlayer({ loaded: true, fetching: false });
       return;
     }
@@ -101,11 +163,15 @@
     const rawMode = params.get('mode');
     const hash = window.location.hash;
 
-    if (hash === '#esports') {
+    if (hash === '#leaderboards' || hash === '#leaderboard') {
+      currentView.set('leaderboards');
+      setPlayer({ loaded: true, fetching: false });
+      return;
+    } else if (hash === '#esports') {
       currentView.set('esports');
       setPlayer({ loaded: true, fetching: false });
       return;
-    } else if (hash === '#skins') {
+    } else if (hash === '#skins' || hash === '#store') {
       currentView.set('store');
       setPlayer({ loaded: true, fetching: false });
       return;
@@ -134,15 +200,7 @@
     }
 
     if (name && tag) {
-      const playerData = {
-        name,
-        tag,
-        region: region || 'ap',
-        mode: mode || 'competitive',
-        fetching: true,
-        loaded: false
-      };
-      setPlayer(playerData);
+      applyPlayerData(name, tag, region, mode);
 
       // Clean up corrupted URL so future refreshes work
       const cleanParams = new URLSearchParams();
@@ -152,7 +210,38 @@
       cleanParams.set('mode', mode || 'competitive');
       window.history.replaceState({}, '', `/app?${cleanParams.toString()}`);
     } else {
-      // No name/tag in URL — render LookupView in-place smoothly
+      // No name/tag in URL — check if there is a saved or recently viewed profile
+      const saved = loadMyProfile();
+      let activeName = saved?.name;
+      let activeTag = saved?.tag;
+      let activeRegion = saved?.region || 'ap';
+      let activeMode = saved?.mode || 'competitive';
+
+      if (!activeName || !activeTag) {
+        try {
+          const raw = localStorage.getItem('valtracker_recent_searches');
+          const recent = raw ? JSON.parse(raw) : [];
+          if (recent.length > 0 && recent[0].name && recent[0].tag) {
+            activeName = recent[0].name;
+            activeTag = recent[0].tag;
+            activeRegion = recent[0].region || 'ap';
+            activeMode = recent[0].mode || 'competitive';
+          }
+        } catch {}
+      }
+
+      if (activeName && activeTag) {
+        const cleanParams = new URLSearchParams();
+        cleanParams.set('name', activeName);
+        cleanParams.set('tag', activeTag);
+        cleanParams.set('region', activeRegion);
+        cleanParams.set('mode', activeMode);
+        window.history.replaceState({}, '', `/app?${cleanParams.toString()}`);
+        applyPlayerData(activeName, activeTag, activeRegion, activeMode);
+        return;
+      }
+
+      // No profile found — render LookupView in-place smoothly
       setPlayer({ name: '', tag: '', fetching: false, loaded: false });
       redirecting = false;
       return;
@@ -335,6 +424,17 @@
           recent.unshift(entry);
           recent = recent.slice(0, 6);
           localStorage.setItem('valtracker_recent_searches', JSON.stringify(recent));
+          saveMyProfile(p.name, p.tag, p.region, p.mode);
+
+          const profileCacheKey = `valtracker_cached_profile_${p.name.toLowerCase()}_${p.tag.toLowerCase()}_${(p.region || 'ap').toLowerCase()}_${(p.mode || 'competitive').toLowerCase()}`;
+          sessionStorage.setItem(profileCacheKey, JSON.stringify({
+            stats: computedStats,
+            mmrData: resolvedMmrData,
+            accountData: resolvedAccountData,
+            allMatches: resolvedAllMatches,
+            mmrHistory: hist,
+            timestamp: Date.now()
+          }));
         } catch {}
 
       } catch (err) {

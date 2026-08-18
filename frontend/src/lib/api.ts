@@ -157,6 +157,10 @@ export async function fetchStoreFeatured() {
   return fetchCachedEsports('/store/featured', 120000);
 }
 
+export async function fetchLeaderboard(region: string = 'ap') {
+  return apiFetch(`/v1/leaderboard/${region}`);
+}
+
 export async function fetchMetaComps(map?: string, patch?: string) {
   const params = new URLSearchParams();
   if (map) params.set('map', map);

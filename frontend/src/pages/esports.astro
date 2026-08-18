@@ -1,0 +1,35 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AppShell from '../components/tracker/AppShell.svelte';
+
+const siteOrigin = Astro.site ? Astro.site.href.replace(/\/$/, '') : Astro.url.origin;
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "ValTracker — VCT Esports Hub & Live Match Schedules",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Web",
+  "url": `${siteOrigin}/esports`,
+  "description": "Live VCT match scores, tournament schedules, VCT 2026 circuit standings, franchised team rosters, and pro Valorant news.",
+  "featureList": [
+    "Live VCT match tracking",
+    "Upcoming tournament schedules",
+    "VCT 2026 regional stages and Masters brackets",
+    "Franchised pro team rosters and player stats",
+    "Latest pro Valorant news and patch updates"
+  ]
+};
+---
+
+<Layout
+  title="VCT Esports Hub — Live Scores, Schedules & Rosters | ValTracker"
+  description="Track live Valorant Champions Tour (VCT) matches, tournament schedules, regional league standings, franchised team rosters, and pro esports news in real-time."
+  structuredData={structuredData}
+>
+  <div class="sr-only" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;">
+    <h1>Valorant Esports Hub & VCT Live Tournament Tracker</h1>
+    <p>Follow live VCT match results, upcoming tournament schedules, Americas, EMEA, Pacific, and China regional standings, team rosters, and breaking pro Valorant news.</p>
+  </div>
+  <AppShell client:only="svelte" initialView="esports" />
+</Layout>
