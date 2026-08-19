@@ -1,32 +1,258 @@
 // ValTracker — Constants & Game Data
+import { writable } from 'svelte/store';
 
-export const ACTS_TIMELINE: Record<string, { name: string; start: number; end: number }> = {
+export interface ActMeta {
+  name: string;
+  start: number;
+  end: number;
+  uuid?: string;
+}
+
+export const ACTS_TIMELINE: Record<string, ActMeta> = {
+  'v26a6': { name: 'V26 Act 6', start: new Date('2026-10-14T00:00:00Z').getTime(), end: new Date('2027-01-06T00:00:00Z').getTime() },
+  'v26a5': { name: 'V26 Act 5', start: new Date('2026-08-19T00:00:00Z').getTime(), end: new Date('2026-10-14T00:00:00Z').getTime() },
   'v26a4': { name: 'V26 Act 4', start: new Date('2026-06-24T00:00:00Z').getTime(), end: new Date('2026-08-19T00:00:00Z').getTime() },
   'v26a3': { name: 'V26 Act 3', start: new Date('2026-04-29T00:00:00Z').getTime(), end: new Date('2026-06-24T00:00:00Z').getTime() },
-  'v26a2': { name: 'V26 Act 2', start: new Date('2026-03-17T00:00:00Z').getTime(), end: new Date('2026-04-29T00:00:00Z').getTime() },
-  'v26a1': { name: 'V26 Act 1', start: new Date('2026-01-07T00:00:00Z').getTime(), end: new Date('2026-03-17T00:00:00Z').getTime() },
+  'v26a2': { name: 'V26 Act 2', start: new Date('2026-03-18T00:00:00Z').getTime(), end: new Date('2026-04-29T00:00:00Z').getTime() },
+  'v26a1': { name: 'V26 Act 1', start: new Date('2026-01-07T00:00:00Z').getTime(), end: new Date('2026-03-18T00:00:00Z').getTime() },
   'v25a6': { name: 'V25 Act 6', start: new Date('2025-10-15T00:00:00Z').getTime(), end: new Date('2026-01-07T00:00:00Z').getTime() },
   'v25a5': { name: 'V25 Act 5', start: new Date('2025-08-20T00:00:00Z').getTime(), end: new Date('2025-10-15T00:00:00Z').getTime() },
-  'v25a4': { name: 'V25 Act 4', start: new Date('2025-06-24T00:00:00Z').getTime(), end: new Date('2025-08-20T00:00:00Z').getTime() },
-  'v25a3': { name: 'V25 Act 3', start: new Date('2025-04-30T00:00:00Z').getTime(), end: new Date('2025-06-24T00:00:00Z').getTime() },
+  'v25a4': { name: 'V25 Act 4', start: new Date('2025-06-25T00:00:00Z').getTime(), end: new Date('2025-08-20T00:00:00Z').getTime() },
+  'v25a3': { name: 'V25 Act 3', start: new Date('2025-04-30T00:00:00Z').getTime(), end: new Date('2025-06-25T00:00:00Z').getTime() },
   'v25a2': { name: 'V25 Act 2', start: new Date('2025-03-05T00:00:00Z').getTime(), end: new Date('2025-04-30T00:00:00Z').getTime() },
   'v25a1': { name: 'V25 Act 1', start: new Date('2025-01-08T00:00:00Z').getTime(), end: new Date('2025-03-05T00:00:00Z').getTime() }
 };
 
-export function getCurrentActId(timestamp = Date.now()): string {
-  for (const [id, meta] of Object.entries(ACTS_TIMELINE)) {
-    if (timestamp >= meta.start && timestamp <= meta.end) {
-      return id;
-    }
-  }
-  return 'v26a4';
-}
-
 export const SEASONS_MAP: Record<string, string> = {
-  'v26a4': 'e12a4', 'v26a3': 'e12a3', 'v26a2': 'e12a2', 'v26a1': 'e12a1',
+  'v26a6': 'e12a6', 'v26a5': 'e12a5', 'v26a4': 'e12a4', 'v26a3': 'e12a3', 'v26a2': 'e12a2', 'v26a1': 'e12a1',
   'v25a6': 'e11a3', 'v25a5': 'e11a2', 'v25a4': 'e11a1',
   'v25a3': 'e10a3', 'v25a2': 'e10a2', 'v25a1': 'e10a1'
 };
+
+export const ACTS_UUID_MAP: Record<string, string> = {
+  'd816f426-48ea-f052-117f-9697a155b319': 'v26a6',
+  '8102cd81-43a0-d0d7-bd59-47b8fe9bed1b': 'v26a5',
+  '4f0864e2-40af-28a4-de2c-0e9e64e75f23': 'v26a4',
+  'ce2783e8-44fc-dd48-3da3-33b5ba6c4a22': 'v26a3',
+  '9d85c932-4820-c060-09c3-668636d4df1b': 'v26a2',
+  '3ea2b318-423b-cf86-25da-7cbb0eefbe2d': 'v26a1',
+  '4c4b8cff-43eb-13d3-8f14-96b783c90cd2': 'v25a6',
+  '5adc33fa-4f30-2899-f131-6fba64c5dd3a': 'v25a5',
+  'ac12e9b3-47e6-9599-8fa1-0bb473e5efc7': 'v25a4',
+  'aef237a0-494d-3a14-a1c8-ec8de84e309c': 'v25a3',
+  '16118998-4705-5813-86dd-0292a2439d90': 'v25a2',
+  '476b0893-4c2e-abd6-c5fe-708facff0772': 'v25a1'
+};
+
+export const ACTS_KEY_TO_UUID: Record<string, string> = Object.fromEntries(
+  Object.entries(ACTS_UUID_MAP).map(([uuid, key]) => [key, uuid])
+);
+
+export function detectActFromMatches(matches: any[]): string | null {
+  if (!Array.isArray(matches) || matches.length === 0) return null;
+  for (const m of matches) {
+    const seasonId = m.metadata?.season_id || m.meta?.season?.id || m.metadata?.seasonId;
+    if (seasonId && ACTS_UUID_MAP[seasonId]) {
+      return ACTS_UUID_MAP[seasonId];
+    }
+    const seasonShort = m.meta?.season?.short;
+    if (seasonShort) {
+      const matchKey = Object.entries(SEASONS_MAP).find(([k, v]) => v === seasonShort || k === seasonShort);
+      if (matchKey) return matchKey[0];
+    }
+  }
+  return null;
+}
+
+export function getSortedActsList(): { value: string; label: string }[] {
+  const now = Date.now();
+  return Object.entries(ACTS_TIMELINE)
+    .filter(([key, val]) => val.start <= now)
+    .sort((a, b) => b[1].start - a[1].start)
+    .map(([key, val]) => ({
+      value: key,
+      label: val.name
+    }));
+}
+
+export const actsListStore = writable<{ value: string; label: string }[]>(getSortedActsList());
+
+function computeProjectedAct(timestamp: number): string {
+  const d = new Date(timestamp);
+  const year = d.getUTCFullYear();
+  const yearShort = String(year).slice(-2);
+  const month = d.getUTCMonth();
+  const day = d.getUTCDate();
+
+  let actNum = 1;
+  let startMonth = 0, startDay = 7, endMonth = 2, endDay = 18;
+
+  if (month < 2 || (month === 2 && day < 18)) {
+    actNum = 1;
+    startMonth = 0; startDay = 7; endMonth = 2; endDay = 18;
+  } else if (month < 3 || (month === 3 && day < 29)) {
+    actNum = 2;
+    startMonth = 2; startDay = 18; endMonth = 3; endDay = 29;
+  } else if (month < 5 || (month === 5 && day < 24)) {
+    actNum = 3;
+    startMonth = 3; startDay = 29; endMonth = 5; endDay = 24;
+  } else if (month < 7 || (month === 7 && day < 19)) {
+    actNum = 4;
+    startMonth = 5; startDay = 24; endMonth = 7; endDay = 19;
+  } else if (month < 9 || (month === 9 && day < 14)) {
+    actNum = 5;
+    startMonth = 7; startDay = 19; endMonth = 9; endDay = 14;
+  } else {
+    actNum = 6;
+    startMonth = 9; startDay = 14; endMonth = 0; endDay = 7;
+  }
+
+  const key = `v${yearShort}a${actNum}`;
+  if (!ACTS_TIMELINE[key]) {
+    const startMs = Date.UTC(year, startMonth, startDay);
+    const endYear = actNum === 6 ? year + 1 : year;
+    const endMs = Date.UTC(endYear, endMonth, endDay);
+    ACTS_TIMELINE[key] = {
+      name: `V${yearShort} Act ${actNum}`,
+      start: startMs,
+      end: endMs
+    };
+    if (!SEASONS_MAP[key]) {
+      const epOffset = (year - 2026) + 12;
+      SEASONS_MAP[key] = `e${epOffset}a${actNum}`;
+    }
+    actsListStore.set(getSortedActsList());
+  }
+  return key;
+}
+
+export function getCurrentActId(timestamp = Date.now()): string {
+  for (const [id, meta] of Object.entries(ACTS_TIMELINE)) {
+    if (timestamp >= meta.start && timestamp < meta.end) {
+      return id;
+    }
+  }
+  return computeProjectedAct(timestamp);
+}
+
+export function isCurrentAct(actKey?: string): boolean {
+  if (!actKey || actKey === 'all') return true;
+  return actKey === getCurrentActId();
+}
+
+const ROMAN_MAP: Record<string, number> = {
+  'I': 1, 'II': 2, 'III': 3, 'IV': 4, 'V': 5, 'VI': 6
+};
+
+export function parseAndMergeSeasons(seasonsData: any[]): void {
+  if (!Array.isArray(seasonsData) || seasonsData.length === 0) return;
+
+  const parentMap: Record<string, string> = {};
+  for (const s of seasonsData) {
+    if (s && !s.type && s.uuid && s.displayName) {
+      parentMap[s.uuid] = s.displayName;
+    }
+  }
+
+  let hasNew = false;
+  for (const s of seasonsData) {
+    if (s && s.type === 'EAresSeasonType::Act' && s.startTime && s.endTime) {
+      const parent = parentMap[s.parentUuid] || '';
+      const disp = s.displayName || '';
+      const roman = disp.replace('ACT', '').trim();
+      const actNum = ROMAN_MAP[roman] || 1;
+
+      let key = '';
+      let name = '';
+
+      if (parent.toUpperCase().startsWith('V')) {
+        const yearNum = parent.toUpperCase().replace('V', '').trim();
+        key = `v${yearNum}a${actNum}`;
+        name = `${parent} Act ${actNum}`;
+        if (!SEASONS_MAP[key]) {
+          if (yearNum === '25') {
+            SEASONS_MAP[key] = actNum <= 3 ? `e10a${actNum}` : `e11a${actNum - 3}`;
+          } else if (yearNum === '26') {
+            SEASONS_MAP[key] = `e12a${actNum}`;
+          } else {
+            const y = parseInt(yearNum, 10);
+            const ep = !isNaN(y) ? (y - 26) + 12 : 12;
+            SEASONS_MAP[key] = `e${ep}a${actNum}`;
+          }
+        }
+      } else if (parent.toUpperCase().includes('EPISODE')) {
+        const epNum = parent.toUpperCase().replace('EPISODE', '').trim();
+        key = `e${epNum}a${actNum}`;
+        name = `Episode ${epNum} Act ${actNum}`;
+        if (!SEASONS_MAP[key]) {
+          SEASONS_MAP[key] = key;
+        }
+      } else {
+        key = `act_${(s.uuid || '').slice(0, 8)}`;
+        name = disp;
+        if (!SEASONS_MAP[key]) {
+          SEASONS_MAP[key] = key;
+        }
+      }
+
+      if (s.uuid) {
+        ACTS_UUID_MAP[s.uuid] = key;
+        ACTS_KEY_TO_UUID[key] = s.uuid;
+      }
+
+      const startMs = new Date(s.startTime).getTime();
+      const endMs = new Date(s.endTime).getTime();
+
+      if (!isNaN(startMs) && !isNaN(endMs)) {
+        if (!ACTS_TIMELINE[key] || ACTS_TIMELINE[key].start !== startMs || ACTS_TIMELINE[key].end !== endMs) {
+          ACTS_TIMELINE[key] = {
+            name,
+            start: startMs,
+            end: endMs,
+            uuid: s.uuid
+          };
+          hasNew = true;
+        }
+      }
+    }
+  }
+
+  if (hasNew) {
+    actsListStore.set(getSortedActsList());
+  }
+}
+
+let hasSyncedSeasons = false;
+export async function syncSeasonsFromApi(): Promise<void> {
+  if (hasSyncedSeasons) return;
+  try {
+    let seasonsData: any = null;
+    try {
+      const res = await fetch('https://valorant-api.com/v1/seasons');
+      if (res.ok) {
+        const json = await res.json();
+        seasonsData = json.data;
+      }
+    } catch {}
+
+    if (!seasonsData) {
+      try {
+        const res = await fetch('/api/v1/seasons');
+        if (res.ok) {
+          const json = await res.json();
+          seasonsData = json.data;
+        }
+      } catch {}
+    }
+
+    if (Array.isArray(seasonsData) && seasonsData.length > 0) {
+      parseAndMergeSeasons(seasonsData);
+      hasSyncedSeasons = true;
+    }
+  } catch (e) {
+    console.warn('[Seasons Sync] Auto-sync skipped:', e);
+  }
+}
 
 export type AgentRole = 'duelist' | 'sentinel' | 'initiator' | 'controller';
 
@@ -90,11 +316,13 @@ export const RANKS: Rank[] = [
 ];
 
 export const RANK_COLORS: Record<string, string> = {
+  UNRANKED:'#8a8a8a',Unranked:'#8a8a8a',unranked:'#8a8a8a',
   Iron:'#8a8a8a',Bronze:'#cd7f32',Silver:'#c0c0c0',Gold:'#f5a623',
   Platinum:'#00d4e0',Diamond:'#a78bfa',Ascendant:'#3ecf8e',Immortal:'#ff5757',Radiant:'#ffd700'
 };
 
 const TIER_MAP: Record<string, number> = {
+  'UNRANKED':0,'Unranked':0,'unranked':0,
   'Iron 1':3,'Iron 2':4,'Iron 3':5,'Bronze 1':6,'Bronze 2':7,'Bronze 3':8,
   'Silver 1':9,'Silver 2':10,'Silver 3':11,'Gold 1':12,'Gold 2':13,'Gold 3':14,
   'Platinum 1':15,'Platinum 2':16,'Platinum 3':17,'Diamond 1':18,'Diamond 2':19,
@@ -103,13 +331,15 @@ const TIER_MAP: Record<string, number> = {
 };
 
 export function getRankImgUrl(rankName: string): string | null {
-  const tier = TIER_MAP[rankName];
-  return tier ? `https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/${tier}/smallicon.png` : null;
+  if (!rankName) return 'https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/0/smallicon.png';
+  const tier = TIER_MAP[rankName] ?? (rankName.toLowerCase().includes('unranked') ? 0 : null);
+  return tier !== null && tier !== undefined ? `https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/${tier}/smallicon.png` : 'https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/0/smallicon.png';
 }
 
 export function getLargeRankImgUrl(rankName: string): string | null {
-  const tier = TIER_MAP[rankName];
-  return tier ? `https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/${tier}/largeicon.png` : null;
+  if (!rankName) return 'https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/0/largeicon.png';
+  const tier = TIER_MAP[rankName] ?? (rankName.toLowerCase().includes('unranked') ? 0 : null);
+  return tier !== null && tier !== undefined ? `https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/${tier}/largeicon.png` : 'https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/0/largeicon.png';
 }
 
 export function getAgentIconUrl(name: string): string {

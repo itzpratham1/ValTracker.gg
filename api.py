@@ -2274,15 +2274,34 @@ def api_meta_comps():
     else:
         most_played_meta = {"agents": [], "picks": 0, "win_rate": 0}
         highest_winrate_meta = {"agents": [], "picks": 0, "win_rate": 0}
-    return jsonify({
-        "map": map_param,
-        "patch": selected_patch,
-        "total_comps_parsed": total_compositions,
-        "agent_stats": agent_stats,
-        "most_played_comp": most_played_meta,
-        "highest_winrate_comp": highest_winrate_meta,
-        "available_patches": available_patches
-    })
+
+_seasons_cache = {
+    "data": None,
+    "last_fetched": 0
+}
+_SEASONS_CACHE_TTL = 21600  # 6 hours
+
+@app.route("/api/v1/seasons", methods=["GET"])
+def get_seasons():
+    global _seasons_cache
+    now = time.time()
+    if _seasons_cache["data"] and (now - _seasons_cache["last_fetched"] < _SEASONS_CACHE_TTL):
+        return jsonify({"status": 200, "data": _seasons_cache["data"]})
+
+    try:
+        r = http_session.get("https://valorant-api.com/v1/seasons", timeout=6)
+        if r.status_code == 200:
+            raw_data = r.json().get("data", [])
+            if raw_data:
+                _seasons_cache["data"] = raw_data
+                _seasons_cache["last_fetched"] = now
+                return jsonify({"status": 200, "data": raw_data})
+    except Exception as e:
+        print(f"[API ERROR] Failed to fetch seasons from valorant-api: {e}")
+        if _seasons_cache["data"]:
+            return jsonify({"status": 200, "data": _seasons_cache["data"]})
+
+    return jsonify({"status": 500, "error": "Unable to fetch seasons"}), 500
 
 
 if __name__ == "__main__":

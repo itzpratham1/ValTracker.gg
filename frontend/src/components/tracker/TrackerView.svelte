@@ -35,7 +35,7 @@
   import BackToTop from '../shared/BackToTop.svelte';
   import { player, currentView, setPlayer, startFetch, endFetch } from '../../lib/appStore';
   import { processMatches } from '../../lib/processMatches';
-  import { ACTS_TIMELINE, RANKS, getRankFromRR, getRankImgUrl } from '../../lib/constants';
+  import { ACTS_TIMELINE, SEASONS_MAP, ACTS_KEY_TO_UUID, RANKS, getRankFromRR, getRankImgUrl } from '../../lib/constants';
   import { clearPlayerMatches } from '../../lib/indexeddb';
   import { normalizeMode } from '../../lib/utils';
   import EsportsHub from '../esports/EsportsHub.svelte';
@@ -99,6 +99,16 @@
   // Act-filtered matches for consistent data across all sections
   $: actData = ACTS_TIMELINE[playerState.act];
   $: actFilteredMatches = actData ? allMatches.filter(m => {
+    const actUuid = actData?.uuid || ACTS_KEY_TO_UUID[playerState.act];
+    const seasonKey = SEASONS_MAP[playerState.act];
+    const matchSeasonId = m.metadata?.season_id || m.meta?.season?.id || m.metadata?.seasonId;
+    if (actUuid && matchSeasonId && matchSeasonId.toLowerCase() === actUuid.toLowerCase()) {
+      return true;
+    }
+    const matchSeasonShort = m.meta?.season?.short;
+    if (seasonKey && matchSeasonShort && (matchSeasonShort === seasonKey || matchSeasonShort === playerState.act)) {
+      return true;
+    }
     const gameStart = m.metadata?.game_start || m.metadata?.gameStart || null;
     if (!gameStart) return false;
     const ts = gameStart * 1000;

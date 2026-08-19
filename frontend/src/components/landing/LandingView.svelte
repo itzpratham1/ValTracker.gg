@@ -5,6 +5,7 @@
   import RecentSearches from './RecentSearches.svelte';
   import LoadingCard from './LoadingCard.svelte';
   import { player, currentView } from '../../lib/appStore';
+  import { getCurrentActId } from '../../lib/constants';
 
   let matchesCached = 530;
 
@@ -30,7 +31,7 @@
       tag: '',
       region: 'ap',
       mode: 'competitive',
-      act: 'v26a4',
+      act: getCurrentActId(),
       loaded: true,
       fetching: false
     });

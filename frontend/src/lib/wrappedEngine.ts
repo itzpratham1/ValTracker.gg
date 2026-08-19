@@ -53,7 +53,7 @@ export interface WrappedSlideData {
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-import { ACTS_TIMELINE } from './constants';
+import { ACTS_TIMELINE, getCurrentActId } from './constants';
 
 /**
  * Checks if Wrapped recap season is active (visible only during the last week of the month OR last week of the act, or if dev force URL param is set)
@@ -74,7 +74,8 @@ export function isWrappedSeasonActive(matches: any[] = [], actKey?: string): boo
   
   // 2. Last week (7 days) of the Act (or past act end)
   let isLastWeekOfAct = false;
-  const actInfo = (actKey && ACTS_TIMELINE[actKey]) ? ACTS_TIMELINE[actKey] : ACTS_TIMELINE['v26a4'];
+  const currentAct = getCurrentActId();
+  const actInfo = (actKey && ACTS_TIMELINE[actKey]) ? ACTS_TIMELINE[actKey] : ACTS_TIMELINE[currentAct];
   if (actInfo && actInfo.end) {
     const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
     const nowMs = now.getTime();

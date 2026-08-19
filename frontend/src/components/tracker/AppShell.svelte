@@ -4,7 +4,7 @@
   import { player, currentView, setPlayer, startFetch, endFetch, purgeObsoleteCacheIfNeeded } from '../../lib/appStore';
   import { processMatches } from '../../lib/processMatches';
   import { saveMatches } from '../../lib/indexeddb';
-  import { getRankImgUrl } from '../../lib/constants';
+  import { getRankImgUrl, syncSeasonsFromApi, getCurrentActId, detectActFromMatches, isCurrentAct } from '../../lib/constants';
   import { initAssetCache } from '../../lib/assets';
   import { loadMyProfile, saveMyProfile } from '../../lib/session';
   import LookupView from './LookupView.svelte';
@@ -45,6 +45,9 @@
     purgeObsoleteCacheIfNeeded();
     console.log('[AppShell] mounted. API_BASE:', API_BASE || '(relative /api)');
     console.log('[AppShell] URL:', window.location.href);
+
+    // Dynamic Acts Sync: asynchronously sync latest seasons/acts in the background
+    syncSeasonsFromApi().catch(() => {});
 
     // Warm up Render backend immediately to minimize cold start latency
     fetch(`${API_BASE}/api/health`).catch(() => {});
@@ -88,9 +91,10 @@
     checkUrlParams();
   }
 
-  function applyPlayerData(targetName, targetTag, targetRegion, targetMode) {
+  function applyPlayerData(targetName, targetTag, targetRegion, targetMode, targetAct) {
     const r = (targetRegion || 'ap').toLowerCase();
     const m = (targetMode || 'competitive').toLowerCase();
+    const a = targetAct || getCurrentActId();
     const profileCacheKey = `valtracker_cached_profile_${targetName.toLowerCase()}_${targetTag.toLowerCase()}_${r}_${m}`;
     let cachedProfile = null;
     try {
@@ -114,6 +118,7 @@
         tag: targetTag,
         region: r,
         mode: m,
+        act: a,
         fetching: false,
         loaded: true
       });
@@ -124,6 +129,7 @@
         tag: targetTag,
         region: r,
         mode: m,
+        act: a,
         fetching: true,
         loaded: false
       });
@@ -167,6 +173,7 @@
     const rawTag = params.get('tag');
     const rawRegion = params.get('region');
     const rawMode = params.get('mode');
+    const rawAct = params.get('act');
     const hash = window.location.hash;
 
     if (hash === '#leaderboards' || hash === '#leaderboard') {
@@ -195,6 +202,7 @@
     const tag = sanitizeTag(rawTag);
     let region = rawRegion;
     let mode = rawMode;
+    let act = rawAct;
 
     // If region was swallowed into tag (e.g. tag=khel®ion=ap), try to recover it
     if (!region && rawTag) {
@@ -206,7 +214,7 @@
     }
 
     if (name && tag) {
-      applyPlayerData(name, tag, region, mode);
+      applyPlayerData(name, tag, region, mode, act);
 
       // Clean up corrupted URL so future refreshes work
       const cleanParams = new URLSearchParams();
@@ -214,6 +222,7 @@
       cleanParams.set('tag', tag);
       cleanParams.set('region', region || 'ap');
       cleanParams.set('mode', mode || 'competitive');
+      if (act) cleanParams.set('act', act);
       window.history.replaceState({}, '', `/app?${cleanParams.toString()}`);
     } else {
       // No name/tag in URL (e.g. clicked "Track Now" on landing page) — render LookupView
@@ -358,9 +367,20 @@
           });
         }
 
+        // Real-Time Act Detection: if matches contain a newly dropped Act, auto-promote it immediately
+        const detectedAct = detectActFromMatches(resolvedAllMatches);
+        let effectiveAct = p.act;
+        if (detectedAct && (isCurrentAct(p.act) || !p.act)) {
+          if (detectedAct !== p.act) {
+            console.log(`[Realtime Act Telemetry] Match telemetry indicates live Act: ${detectedAct}. Switching active act instantly.`);
+            effectiveAct = detectedAct;
+            setPlayer({ act: detectedAct });
+          }
+        }
+
         let computedStats = null;
         try {
-          computedStats = processMatches(resolvedAllMatches, p.name, p.tag, p.act);
+          computedStats = processMatches(resolvedAllMatches, p.name, p.tag, effectiveAct);
         } catch (e) {
           console.error('processMatches error:', e);
           computedStats = { matchesCount: 0, kd: 0, avgKills: 0, avgDeaths: 0, avgAssists: 0, avgACS: 0, hsRate: 0, winRate: 0, wins: 0, losses: 0, agentMap: {}, mapData: {}, rrHistory: [], recentMatches: [], precomputedWeapons: {} };
@@ -439,13 +459,18 @@
   }
 
 
+  $: effectiveStats = (allMatches && allMatches.length)
+    ? processMatches(allMatches, $player.name, $player.tag, $player.act)
+    : stats;
 </script>
 
-{#if $player.fetching && !$player.loaded}
+<svelte:window on:keydown={handleKeydown} />
+
+{#if $player.fetching}
   <div class="appshell-loading-container">
     <div class="loading-brand">
-      <img src="/logo.png" class="loading-logo" alt="ValTracker Logo">
-      <span class="loading-brand-name">ValTracker</span>
+      <img src="/logo.png" alt="ValTracker" class="loading-logo">
+      <span class="loading-brand-text">VALTRACKER</span>
     </div>
     <LoadingCard
       playerName={$player.name}
@@ -459,7 +484,7 @@
 {:else if !redirecting}
   {#if $player.loaded}
     <TrackerView
-      {stats}
+      stats={effectiveStats}
       {mmrData}
       {accountData}
       {allMatches}

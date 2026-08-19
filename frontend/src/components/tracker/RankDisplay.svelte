@@ -1,5 +1,5 @@
 <script>
-  import { getRankImgUrl, RANK_COLORS, ACTS_TIMELINE, SEASONS_MAP } from '../../lib/constants';
+  import { getRankImgUrl, RANK_COLORS, ACTS_TIMELINE, SEASONS_MAP, isCurrentAct, RANKS } from '../../lib/constants';
   import { player } from '../../lib/appStore';
   import { getRankPrediction } from '../../lib/processMatches';
 
@@ -8,13 +8,13 @@
   export let mmrHistory = {};
 
   $: selectedAct = $player.act;
-  $: isCurrentOrAll = selectedAct === 'all' || selectedAct === 'v26a4';
+  $: isCurrentOrAll = isCurrentAct(selectedAct);
 
-  $: displayRank = getDisplayRank(mmrData, selectedAct);
+  $: displayRank = getDisplayRank(mmrData, selectedAct, stats, $player.name, $player.tag);
   $: rankImg = getRankImgUrl(displayRank.name);
   $: rankColor = RANK_COLORS[displayRank.name?.split(' ')[0]] || '#fff';
-  $: currentRR = mmrData?.current?.rr ?? 0;
-  $: peakName = mmrData?.peak?.tier?.name || '—';
+  $: currentRR = displayRank.rr;
+  $: peakName = mmrData?.peak?.tier?.name || mmrData?.highest_rank?.patched_tier || '—';
   $: peakImg = getRankImgUrl(peakName);
   $: peakRR = mmrData?.peak?.rr ?? mmrData?.peak?.ranking_in_tier ?? mmrData?.highest_rank?.rr ?? null;
 
@@ -24,25 +24,52 @@
         $player.name,
         $player.tag,
         mmrHistory,
-        mmrData?.current?.rr ?? 0
+        currentRR
       )
     : null;
 
-  function getDisplayRank(mmr, act) {
-    if (!mmr) return { name: 'UNRANKED', rr: 0 };
-    if (act === 'all' || act === 'v26a4') {
-      return {
-        name: mmr.current?.tier?.name || 'UNRANKED',
-        rr: mmr.current?.rr ?? 0
-      };
+  function extractRankFromMmr(mmr) {
+    if (!mmr) return null;
+    const name = mmr.current?.tier?.name || 
+                 mmr.current_data?.currenttierpatched || 
+                 mmr.currenttierpatched || 
+                 mmr.data?.current?.tier?.name || 
+                 mmr.data?.current_data?.currenttierpatched || null;
+    const rr = mmr.current?.rr ?? 
+               mmr.current_data?.ranking_in_tier ?? 
+               mmr.ranking_in_tier ?? 
+               mmr.data?.current?.rr ?? 0;
+    if (name && name.toUpperCase() !== 'UNRANKED') {
+      return { name, rr };
     }
-    const apiSeason = SEASONS_MAP[act];
-    const seasonData = mmr.by_season?.[apiSeason];
-    if (seasonData && !seasonData.error) {
+    return null;
+  }
+
+  function getDisplayRank(mmr, act, currentStats, pName = '', pTag = '') {
+    const mmrRank = extractRankFromMmr(mmr);
+    const hasPlayed = (currentStats?.matchesCount > 0);
+
+    if (act === 'all') {
+      return mmrRank || { name: 'UNRANKED', rr: 0 };
+    }
+    if (isCurrentAct(act)) {
+      const hasPlayedCurrent = hasPlayed || 
+        (mmr?.by_season?.[SEASONS_MAP[act]] && mmr.by_season[SEASONS_MAP[act]].number_of_games > 0);
+      if (!hasPlayedCurrent) {
+        return { name: 'UNRANKED', rr: 0 };
+      }
+      return mmrRank || { name: 'UNRANKED', rr: 0 };
+    }
+    const apiSeason = SEASONS_MAP[act] || act;
+    const seasonData = mmr?.by_season?.[apiSeason];
+    if (seasonData && !seasonData.error && seasonData.final_rank_patched) {
       return {
-        name: seasonData.final_rank_patched || 'UNRANKED',
+        name: seasonData.final_rank_patched,
         rr: 0
       };
+    }
+    if (hasPlayed) {
+      return mmrRank || { name: 'UNRANKED', rr: 0 };
     }
     return { name: 'UNRANKED', rr: 0 };
   }

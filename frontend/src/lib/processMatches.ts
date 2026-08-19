@@ -1,7 +1,7 @@
 // ValTracker — Match Processing Engine
 // Pure computation: returns stats objects instead of writing to DOM.
 
-import { ACTS_TIMELINE, SEASONS_MAP, getRankImgUrl, getRankFromRR, AGENT_UUIDS, RANKS } from './constants';
+import { ACTS_TIMELINE, SEASONS_MAP, ACTS_KEY_TO_UUID, getRankImgUrl, getRankFromRR, AGENT_UUIDS, RANKS, getCurrentActId } from './constants';
 import { assetCache } from './assets';
 
 const TIER_RR_MAP: Record<string, number> = {
@@ -167,14 +167,28 @@ export function processMatches(
   matches: any[],
   playerName: string,
   playerTag: string,
-  selectedAct: string = 'v26a4'
+  selectedAct: string = getCurrentActId()
 ): ProcessedStats {
   let matchesToProcess = matches;
 
   if (selectedAct !== 'all') {
     const actData = ACTS_TIMELINE[selectedAct];
+    const actUuid = actData?.uuid || ACTS_KEY_TO_UUID[selectedAct];
+    const seasonKey = SEASONS_MAP[selectedAct];
+
     if (actData) {
       matchesToProcess = matches.filter(m => {
+        // 1. Direct authoritative Riot Season UUID match
+        const matchSeasonId = m.metadata?.season_id || m.meta?.season?.id || m.metadata?.seasonId;
+        if (actUuid && matchSeasonId && matchSeasonId.toLowerCase() === actUuid.toLowerCase()) {
+          return true;
+        }
+        // 2. HenrikDev season short code match (e.g. 'e12a5')
+        const matchSeasonShort = m.meta?.season?.short;
+        if (seasonKey && matchSeasonShort && (matchSeasonShort === seasonKey || matchSeasonShort === selectedAct)) {
+          return true;
+        }
+        // 3. Fallback to timestamp range if season metadata is missing
         const gameStart = m.metadata?.game_start || m.metadata?.gameStart || null;
         if (!gameStart) return false;
         const ts = gameStart * 1000;

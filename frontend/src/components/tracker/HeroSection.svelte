@@ -1,7 +1,7 @@
 <script>
   import { createEventDispatcher } from 'svelte';
   import { player } from '../../lib/appStore';
-  import { getRankImgUrl, getRankFromRR } from '../../lib/constants';
+  import { getRankImgUrl, getRankFromRR, SEASONS_MAP, isCurrentAct, RANKS } from '../../lib/constants';
   import { escapeHtml } from '../../lib/utils';
   import { isWrappedSeasonActive } from '../../lib/wrappedEngine';
 
@@ -15,15 +15,93 @@
 
   $: isWrappedActive = isWrappedSeasonActive(matches, $player.act);
 
-  $: rankName = mmrData?.current?.tier?.name || 'UNRANKED';
-  $: rankImg = getRankImgUrl(rankName);
-  $: currentRR = mmrData?.current?.rr ?? 0;
-  $: peakName = mmrData?.peak?.tier?.name || '—';
-  $: peakImg = getRankImgUrl(peakName);
-  $: peakRR = mmrData?.peak?.rr ?? mmrData?.peak?.ranking_in_tier ?? mmrData?.highest_rank?.rr ?? null;
   $: playerName = $player.name || '—';
   $: playerTag = $player.tag || '';
+  $: displayRank = computeActRank(mmrData, $player.act, matches, playerName, playerTag);
+  $: rankName = displayRank.name;
+  $: rankImg = getRankImgUrl(rankName);
+  $: currentRR = displayRank.rr;
+  $: peakName = mmrData?.peak?.tier?.name || mmrData?.highest_rank?.patched_tier || '—';
+  $: peakImg = getRankImgUrl(peakName);
+  $: peakRR = mmrData?.peak?.rr ?? mmrData?.peak?.ranking_in_tier ?? mmrData?.highest_rank?.rr ?? null;
   $: modeLabel = { competitive:'Competitive', unrated:'Unrated', deathmatch:'Deathmatch', teamdeathmatch:'Team Deathmatch', swiftplay:'Swiftplay', spikerush:'Spike Rush' }[$player.mode] || $player.mode;
+
+  function extractRankFromMmr(mmr) {
+    if (!mmr) return null;
+    const name = mmr.current?.tier?.name || 
+                 mmr.current_data?.currenttierpatched || 
+                 mmr.currenttierpatched || 
+                 mmr.data?.current?.tier?.name || 
+                 mmr.data?.current_data?.currenttierpatched || null;
+    const rr = mmr.current?.rr ?? 
+               mmr.current_data?.ranking_in_tier ?? 
+               mmr.ranking_in_tier ?? 
+               mmr.data?.current?.rr ?? 0;
+    if (name && name.toUpperCase() !== 'UNRANKED') {
+      return { name, rr };
+    }
+    return null;
+  }
+
+  function extractRankFromMatches(matchesList, pName, pTag) {
+    if (!matchesList || !matchesList.length) return null;
+    for (const m of matchesList) {
+      const players = m.players?.all_players || m.players || [];
+      const me = players.find(p => 
+        (!pName || (p.name && p.name.toLowerCase() === pName.toLowerCase())) &&
+        (!pTag || (p.tag && p.tag.toLowerCase() === pTag.toLowerCase()))
+      ) || (players.length === 1 ? players[0] : null);
+      
+      if (me) {
+        const patched = me.currenttier_patched || me.currenttierpatched;
+        if (patched && patched.toUpperCase() !== 'UNRANKED') {
+          return { name: patched, rr: 0 };
+        }
+        if (me.currenttier && me.currenttier > 2) {
+          const tierIdx = me.currenttier - 3;
+          if (RANKS[tierIdx]) return { name: RANKS[tierIdx].name, rr: 0 };
+        }
+      }
+    }
+    return null;
+  }
+
+  function computeActRank(mmr, act, actMatches = [], pName = '', pTag = '') {
+    const mmrRank = extractRankFromMmr(mmr);
+    const matchRank = extractRankFromMatches(actMatches, pName, pTag);
+    const hasMatches = actMatches && actMatches.length > 0;
+
+    if (act === 'all') {
+      return mmrRank || matchRank || { name: 'UNRANKED', rr: 0 };
+    }
+
+    if (isCurrentAct(act)) {
+      // In the newly started Act: 0 games played means UNRANKED
+      const hasPlayedCurrent = hasMatches || 
+        (mmr?.by_season?.[SEASONS_MAP[act]] && mmr.by_season[SEASONS_MAP[act]].number_of_games > 0);
+      
+      if (!hasPlayedCurrent) {
+        return { name: 'UNRANKED', rr: 0 };
+      }
+      return mmrRank || matchRank || { name: 'UNRANKED', rr: 0 };
+    }
+
+    // Past Act lookup
+    const seasonKey = SEASONS_MAP[act] || act;
+    const seasonData = mmr?.by_season?.[seasonKey];
+    if (seasonData && !seasonData.error && seasonData.final_rank_patched) {
+      return {
+        name: seasonData.final_rank_patched,
+        rr: 0
+      };
+    }
+
+    if (hasMatches) {
+      return mmrRank || matchRank || { name: 'UNRANKED', rr: 0 };
+    }
+
+    return { name: 'UNRANKED', rr: 0 };
+  }
 
   $: accountLevel = accountData?.account_level || '—';
   $: cardId = (typeof accountData?.card === 'string') ? accountData.card : (accountData?.card?.id || null);

@@ -117,6 +117,21 @@ valtracker/
 40. `MatchPanel.svelte` — **Fixed older matches only showing 1 player in Scorecard / missing scorecard data**:
    - **Root Cause**: The HenrikDev API only returns full 10-player data for the recent ~10 matches (`/v3/matches`). Older archived matches from the lifetime query (`/v1/lifetime/matches`) only contain summary stats for the queried player (`all_players.length === 1`). When expanding an older match, `MatchPanel` checked `if (!rawMatch)` before calling `loadFullDetail()`. Because `rawMatch` existed (with only 1 player), `loadFullDetail()` was never triggered, and `MatchScoreboard` was passed `rawMatch || detailData`, rendering only the player with 0 enemy players.
    - **Fix**: Updated `MatchPanel.svelte` to check `if (!rawMatch || getPlayerList(rawMatch).length <= 1)` on mount to automatically auto-fetch `/api/v2/match/{matchId}` for any match without full 10-player data. Added reactive `effectiveMatch = detailData || rawMatch`, a sleek loading spinner while fetching, and updated MVP / lobby rank calculations to use full player telemetry once fetched.
+41. `constants.ts` + `api.py` + `Topbar.svelte` + `RankDisplay.svelte` + `wrappedEngine.ts` + `processMatches.ts` — **Automated Real-Time Valorant Act & Season Management**:
+   - **Problem Addressed**: Exact act release times fluctuate regionally by maintenance windows or occasional release day delays. We cannot rely solely on estimated static calendar dates.
+   - **Solution (Multi-Signal Real-Time Architecture)**:
+     1. **Live Match Telemetry (Zero Lag)**: Built `detectActFromMatches()` which inspects incoming match telemetry for Riot's authoritative `metadata.season_id` UUID and HenrikDev `meta.season.short`. The second a player finishes their first match in a new act, the app auto-promotes that Act immediately in real-time.
+     2. **Authoritative Riot UUID Filtering**: Updated `processMatches.ts` so match filtering matches Riot's official Season UUIDs (`metadata.season_id === actUuid`) first before falling back to timestamp ranges, ensuring no early/delayed matches are ever dropped.
+     3. **Live CDN Sync**: `syncSeasonsFromApi()` queries `valorant-api.com/v1/seasons` on launch to absorb new seasons as soon as Riot updates their client manifest on CDN.
+     4. **Algorithmic Calendar Fallback**: `getCurrentActId()` projects standard ~2-month Riot seasonal cadences even when completely offline.
+     5. **Reactive UI Dropdowns**: `actsListStore` automatically populates the Topbar dropdown and keeps default selections in sync.
+42. `constants.ts` + `HeroSection.svelte` + `RankDisplay.svelte` + `AppShell.svelte` + `TrackerView.svelte` — **Dropdown Future Act Filtering, Unranked Emblem, & Reactive Act Switch**:
+   - **Future Act Filtering**: `getSortedActsList()` now filters by `val.start <= Date.now()`, ensuring unreleased future acts (like Act 6) never appear in the dropdown until their release date.
+   - **Unranked Emblem**: Added Tier 0 to `TIER_MAP`, `getRankImgUrl()`, and `getLargeRankImgUrl()`, serving Riot's official Unranked shield emblem (`/0/smallicon.png` and `/0/largeicon.png`) instead of an empty box.
+   - **Reactive Filter Switching**: Added `effectiveStats` in `AppShell.svelte` and updated `TrackerView.svelte` so switching between Acts (e.g. V26 Act 5 -> V26 Act 4 -> Lifetime) instantly recomputes stats and rank reactively without showing empty screens or missing historical stats.
+43. `HeroSection.svelte` + `RankDisplay.svelte` + `AppShell.svelte` — **Multi-Source Rank Resolution**:
+   - **Root Cause**: `computeActRank` relied strictly on `mmr.current?.tier?.name` which was failing if `mmrData` was cached in another format or returned an alternate payload structure from HenrikDev/Supabase.
+   - **Fix**: Built multi-source `extractRankFromMmr()` (covering all API payload variations) and `extractRankFromMatches()` (extracting `currenttier_patched` / `currenttier` directly from match telemetry). When viewing a past Act with matches played (like Act 4), it resolves the rank reliably.
 
 ## Inline Overrides Added to global.css (from old index.html `<style>` block)
 These rules existed ONLY in the old `index.html` inline `<style>` and were NEVER copied to `global.css`:

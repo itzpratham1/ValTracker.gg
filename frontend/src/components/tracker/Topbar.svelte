@@ -3,7 +3,7 @@
   import PlayerSearch from './PlayerSearch.svelte';
   import { player, currentView, setPlayer, endFetch, startFetch } from '../../lib/appStore';
   import { bookmarks } from '../../lib/stores';
-  import { getRankImgUrl, ACTS_TIMELINE } from '../../lib/constants';
+  import { getRankImgUrl, ACTS_TIMELINE, actsListStore, getCurrentActId } from '../../lib/constants';
   import { escapeHtml } from '../../lib/utils';
 
   import { clearAllMatches } from '../../lib/indexeddb';
@@ -70,11 +70,6 @@
     { value: 'spikerush', label: 'Spike Rush' }
   ];
 
-  const ACTS = Object.entries(ACTS_TIMELINE).map(([key, val]) => ({
-    value: key,
-    label: val.name
-  }));
-
   $: isBookmarked = $player.name && $player.tag && $bookmarks.some(
     b => b.name.toLowerCase() === $player.name.toLowerCase() &&
          b.tag.toLowerCase() === $player.tag.toLowerCase()
@@ -93,7 +88,7 @@
     else if (mRaw === 'swiftplay') m = 'Swift';
     else if (mRaw === 'spikerush') m = 'Spike';
     const actEntry = ACTS_TIMELINE[$player.act];
-    const a = actEntry ? actEntry.name : ($player.act || 'v26a4');
+    const a = actEntry ? actEntry.name : ($player.act || getCurrentActId());
     return `${r} \u00B7 ${m} \u00B7 ${a}`;
   })();
 
@@ -265,7 +260,7 @@
       tag: '',
       region: 'ap',
       mode: 'competitive',
-      act: 'v26a4',
+      act: getCurrentActId(),
       loaded: false,
       fetching: false
     });
@@ -409,7 +404,7 @@
               </svg>
             </span>
             <select class="region-select" value={$player.act} on:change={(e) => handleFilterChange('act', e.target.value)}>
-              {#each ACTS as a}
+              {#each $actsListStore as a}
                 <option value={a.value}>{a.label}</option>
               {/each}
               <option value="all">Lifetime</option>
