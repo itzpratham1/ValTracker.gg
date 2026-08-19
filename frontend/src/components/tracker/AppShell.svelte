@@ -462,6 +462,12 @@
   $: effectiveStats = (allMatches && allMatches.length)
     ? processMatches(allMatches, $player.name, $player.tag, $player.act)
     : stats;
+
+  function handleKeydown(e) {
+    if (e.key === 'Escape' && $player.fetching) {
+      handleCancelFetch();
+    }
+  }
 </script>
 
 <svelte:window on:keydown={handleKeydown} />

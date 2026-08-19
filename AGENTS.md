@@ -132,6 +132,9 @@ valtracker/
 43. `HeroSection.svelte` + `RankDisplay.svelte` + `AppShell.svelte` — **Multi-Source Rank Resolution**:
    - **Root Cause**: `computeActRank` relied strictly on `mmr.current?.tier?.name` which was failing if `mmrData` was cached in another format or returned an alternate payload structure from HenrikDev/Supabase.
    - **Fix**: Built multi-source `extractRankFromMmr()` (covering all API payload variations) and `extractRankFromMatches()` (extracting `currenttier_patched` / `currenttier` directly from match telemetry). When viewing a past Act with matches played (like Act 4), it resolves the rank reliably.
+44. `AppShell.svelte` — **Fixed Astro Island Hydration Error (`ReferenceError: handleKeydown is not defined`)**:
+   - **Root Cause**: `AppShell.svelte` included `<svelte:window on:keydown={handleKeydown} />` without declaring `handleKeydown` in the `<script>` block. When Astro hydrated the component island on page load, JavaScript threw an uncaught `ReferenceError: handleKeydown is not defined`.
+   - **Fix**: Added the `handleKeydown(e)` handler to `AppShell.svelte` which listens for the `Escape` key to abort in-flight queries via `handleCancelFetch()`.
 
 ## Inline Overrides Added to global.css (from old index.html `<style>` block)
 These rules existed ONLY in the old `index.html` inline `<style>` and were NEVER copied to `global.css`:
