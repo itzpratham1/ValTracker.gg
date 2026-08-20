@@ -6,7 +6,6 @@
   import { saveMatches } from '../../lib/indexeddb';
   import { getRankImgUrl, syncSeasonsFromApi, getCurrentActId, detectActFromMatches, isCurrentAct } from '../../lib/constants';
   import { initAssetCache } from '../../lib/assets';
-  import { loadMyProfile, saveMyProfile } from '../../lib/session';
   import LookupView from './LookupView.svelte';
   import TrackerView from './TrackerView.svelte';
   import LoadingCard from '../landing/LoadingCard.svelte';
@@ -420,7 +419,6 @@
           recent.unshift(entry);
           recent = recent.slice(0, 6);
           localStorage.setItem('valtracker_recent_searches', JSON.stringify(recent));
-          saveMyProfile(p.name, p.tag, p.region, p.mode);
 
           const profileCacheKey = `valtracker_cached_profile_${p.name.toLowerCase()}_${p.tag.toLowerCase()}_${(p.region || 'ap').toLowerCase()}_${(p.mode || 'competitive').toLowerCase()}`;
           sessionStorage.setItem(profileCacheKey, JSON.stringify({
@@ -474,10 +472,24 @@
 
 {#if $player.fetching}
   <div class="appshell-loading-container">
-    <div class="loading-brand">
-      <img src="/logo.png" alt="ValTracker" class="loading-logo">
-      <span class="loading-brand-text">VALTRACKER</span>
+    <div class="loading-hero">
+      <div class="loading-logo-row">
+        <div class="loading-logo-glow-wrap">
+          <img src="/logo.png" alt="ValTracker" class="loading-logo" />
+        </div>
+        <h1 class="loading-brand-name">VALTRACKER</h1>
+      </div>
+      <div class="loading-tagline-row">
+        <div class="loading-tagline-line"></div>
+        <div class="loading-tagline-center">
+          <span class="loading-tagline-dot"></span>
+          <span class="loading-tagline">Valorant Stats Tracker</span>
+          <span class="loading-tagline-dot"></span>
+        </div>
+        <div class="loading-tagline-line"></div>
+      </div>
     </div>
+
     <LoadingCard
       playerName={$player.name}
       playerTag={$player.tag}
@@ -516,50 +528,115 @@
     box-sizing: border-box;
     width: 100%;
     background: #030304;
+    gap: 20px;
   }
   .appshell-loading-container :global(.loading-card) {
     width: 100%;
     max-width: 420px;
   }
-  .loading-brand {
+
+  .loading-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+  }
+
+  .loading-logo-row {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
+    justify-content: center;
+    gap: 14px;
   }
+
+  .loading-logo-glow-wrap {
+    display: flex;
+    align-items: center;
+  }
+
   .loading-logo {
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
+    height: 46px;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 0 18px rgba(250, 68, 84, 0.7));
     flex-shrink: 0;
   }
+
   .loading-brand-name {
-    font-family: 'Barlow Condensed', 'Rajdhani', sans-serif;
+    font-family: 'Barlow Condensed', sans-serif;
     font-weight: 900;
-    font-size: 34px;
+    font-size: 48px;
     color: #ffffff;
     text-transform: uppercase;
-    letter-spacing: 3px;
+    letter-spacing: 4px;
     line-height: 1;
-    text-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    margin: 0;
+    text-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+  }
+
+  /* ── TAGLINE ── */
+  .loading-tagline-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .loading-tagline-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(250, 68, 84, 0.45), transparent);
+  }
+
+  .loading-tagline-center {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex-shrink: 0;
+  }
+
+  .loading-tagline-dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #fa4454;
+    box-shadow: 0 0 4px rgba(250, 68, 84, 0.7);
+    flex-shrink: 0;
+  }
+
+  .loading-tagline {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: #9090a4;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    white-space: nowrap;
   }
 
   @media (max-width: 480px) {
     .appshell-loading-container {
       padding: 16px 12px;
+      gap: 16px;
     }
-    .loading-brand {
-      gap: 8px;
-      margin-bottom: 14px;
+    .loading-logo-row {
+      gap: 10px;
     }
     .loading-logo {
-      width: 36px;
       height: 36px;
-      border-radius: 8px;
     }
     .loading-brand-name {
-      font-size: 24px;
-      letter-spacing: 1.5px;
+      font-size: 34px;
+      letter-spacing: 3px;
+    }
+    .loading-tagline-row {
+      max-width: 260px;
+    }
+    .loading-tagline {
+      font-size: 8px;
+      letter-spacing: 2px;
     }
   }
 </style>

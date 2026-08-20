@@ -8,7 +8,6 @@
 
   import { clearAllMatches } from '../../lib/indexeddb';
   import { getAgentIconUrl } from '../../lib/assets';
-  import { loadMyProfile } from '../../lib/session';
 
   export let currentAgentName = '';
   export let onFetchStats = () => {};

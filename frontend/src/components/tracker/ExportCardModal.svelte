@@ -6,7 +6,8 @@
     renderProfileCardToCanvas 
   } from '../../lib/exportCardRenderer';
   import { getAgentIconUrl, getAgentPortraitUrl, getMapImg } from '../../lib/assets';
-  import { getRankImgUrl } from '../../lib/constants';
+  import { getRankImgUrl, computeActRank } from '../../lib/constants';
+  import { player } from '../../lib/appStore';
   import { formatMatchDate, getPlayerList } from '../../lib/utils';
   import { createShareCard } from '../../lib/api';
 
@@ -171,14 +172,17 @@
         const totalWins = matchesList.filter(m => m.result === 'WIN').length || stats?.wins || 0;
         const totalLosses = totalMatches - totalWins;
 
+        const activeAct = $player?.act || 'all';
+        const displayRank = computeActRank(mmrData, activeAct, matchesList, playerName, playerTag);
+
         const profileData = {
           playerName: playerName || 'VALORANT PLAYER',
           playerTag: playerTag || '0000',
           region: region || 'ap',
           playerBannerUrl: accountData?.card?.wide || accountData?.card?.large || playerBannerUrl || '',
-          currentRank: mmrData?.current?.tier?.name || 'Unranked',
-          currentRankImgUrl: getRankImgUrl(mmrData?.current?.tier?.name),
-          currentRR: mmrData?.current?.rr ?? 0,
+          currentRank: displayRank.name,
+          currentRankImgUrl: getRankImgUrl(displayRank.name),
+          currentRR: displayRank.rr,
           peakRank: mmrData?.peak?.tier?.name || 'Unranked',
           peakRankImgUrl: getRankImgUrl(mmrData?.peak?.tier?.name),
           matchesPlayed: totalMatches,

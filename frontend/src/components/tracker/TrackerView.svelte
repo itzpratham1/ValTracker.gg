@@ -35,7 +35,7 @@
   import BackToTop from '../shared/BackToTop.svelte';
   import { player, currentView, setPlayer, startFetch, endFetch } from '../../lib/appStore';
   import { processMatches } from '../../lib/processMatches';
-  import { ACTS_TIMELINE, SEASONS_MAP, ACTS_KEY_TO_UUID, RANKS, getRankFromRR, getRankImgUrl } from '../../lib/constants';
+  import { ACTS_TIMELINE, SEASONS_MAP, ACTS_KEY_TO_UUID, RANKS, getRankFromRR, getRankImgUrl, computeActRank } from '../../lib/constants';
   import { clearPlayerMatches } from '../../lib/indexeddb';
   import { normalizeMode } from '../../lib/utils';
   import EsportsHub from '../esports/EsportsHub.svelte';
@@ -457,7 +457,11 @@
     </div>
     <RrGraph
       history={stats?.rrHistory || []}
-      currentRR={((Math.max(0, (mmrData?.current?.tier?.id || 0) - 3)) * 100) + (mmrData?.current?.rr ?? 0)}
+      currentRR={(() => {
+        const activeDisplayRank = computeActRank(mmrData, playerState.act, actFilteredMatches, playerState.name, playerState.tag);
+        const activeTierIdx = RANKS.findIndex(r => r.name.toLowerCase() === activeDisplayRank.name.toLowerCase());
+        return activeTierIdx >= 0 ? (activeTierIdx * 100) + activeDisplayRank.rr : (((Math.max(0, (mmrData?.current?.tier?.id || 0) - 3)) * 100) + (mmrData?.current?.rr ?? 0));
+      })()}
       {mmrHistory}
     />
 

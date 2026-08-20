@@ -400,6 +400,120 @@ export function getRankColor(name: string): string {
   return RANK_COLORS[tier] || '#fff';
 }
 
+export function extractRankFromMmr(mmr: any): { name: string; rr: number } | null {
+  if (!mmr) return null;
+  const name = mmr.current?.tier?.name || 
+               mmr.current_data?.currenttierpatched || 
+               mmr.currenttierpatched || 
+               mmr.data?.current?.tier?.name || 
+               mmr.data?.current_data?.currenttierpatched || null;
+  const rr = mmr.current?.rr ?? 
+             mmr.current_data?.ranking_in_tier ?? 
+             mmr.ranking_in_tier ?? 
+             mmr.data?.current?.rr ?? 0;
+  if (name && name.toUpperCase() !== 'UNRANKED' && name.toUpperCase() !== 'UNRATED') {
+    return { name, rr };
+  }
+  return null;
+}
+
+export function extractRankFromMatches(matchesList: any[], pName = '', pTag = ''): { name: string; rr: number } | null {
+  if (!matchesList || !matchesList.length) return null;
+  for (const m of matchesList) {
+    const rawPlayers = m.players?.all_players || m.players || [];
+    const players = Array.isArray(rawPlayers) ? rawPlayers : [];
+    const me = players.find((p: any) => 
+      (!pName || (p.name && p.name.toLowerCase() === pName.toLowerCase())) &&
+      (!pTag || (p.tag && p.tag.toLowerCase() === pTag.toLowerCase()))
+    ) || (players.length === 1 ? players[0] : null);
+    
+    if (me) {
+      const patched = me.currenttier_patched || me.currenttierpatched;
+      if (patched && patched.toUpperCase() !== 'UNRANKED' && patched.toUpperCase() !== 'UNRATED') {
+        return { name: patched, rr: 0 };
+      }
+      if (me.currenttier && me.currenttier > 2) {
+        const tierIdx = me.currenttier - 3;
+        if (RANKS[tierIdx]) return { name: RANKS[tierIdx].name, rr: 0 };
+      }
+    }
+  }
+  return null;
+}
+
+export function computeActRank(mmr: any, act: string, actMatches: any[] = [], pName = '', pTag = ''): { name: string; rr: number } {
+  const mmrRank = extractRankFromMmr(mmr);
+  const matchRank = extractRankFromMatches(actMatches, pName, pTag);
+  const hasMatches = actMatches && actMatches.length > 0;
+
+  if (act === 'all') {
+    return mmrRank || matchRank || { name: 'UNRANKED', rr: 0 };
+  }
+
+  if (isCurrentAct(act)) {
+    const hasPlayedCurrent = hasMatches || 
+      (mmr?.current && mmr.current.games_needed_for_rating === 0 && mmr.current.tier?.id > 0) ||
+      (Array.isArray(mmr?.seasonal) && mmr.seasonal.some((s: any) => {
+        const sid = s.season?.id?.toLowerCase();
+        const actUuid = ACTS_KEY_TO_UUID[act]?.toLowerCase();
+        return (sid === actUuid || ACTS_UUID_MAP[sid] === act) && (s.games > 0 || s.wins > 0);
+      })) ||
+      (mmr?.by_season?.[SEASONS_MAP[act]] && mmr.by_season[SEASONS_MAP[act]].number_of_games > 0);
+    
+    if (!hasPlayedCurrent) {
+      return { name: 'UNRANKED', rr: 0 };
+    }
+    return mmrRank || matchRank || { name: 'UNRANKED', rr: 0 };
+  }
+
+  // Past Act lookup
+  const actUuid = (ACTS_KEY_TO_UUID[act] || ACTS_TIMELINE[act]?.uuid || '').toLowerCase();
+  const seasonShort = (SEASONS_MAP[act] || '').toLowerCase();
+
+  // 1. Search HenrikDev v3 seasonal array
+  if (Array.isArray(mmr?.seasonal)) {
+    const entry = mmr.seasonal.find((s: any) => {
+      const sid = s.season?.id?.toLowerCase();
+      const sShort = s.season?.short?.toLowerCase();
+      if (actUuid && sid === actUuid) return true;
+      if (seasonShort && sShort === seasonShort) return true;
+      if (sShort === act.toLowerCase()) return true;
+      if (sid && ACTS_UUID_MAP[sid] === act) return true;
+      return false;
+    });
+
+    if (entry) {
+      const tierName = entry.end_tier?.name;
+      const endRR = entry.end_rr ?? 0;
+      const games = entry.games ?? entry.wins ?? 0;
+      if (!tierName || tierName.toUpperCase() === 'UNRATED' || tierName.toUpperCase() === 'UNRANKED' || (games === 0 && !endRR)) {
+        return { name: 'UNRANKED', rr: 0 };
+      }
+      return { name: tierName, rr: endRR };
+    }
+  }
+
+  // 2. Search HenrikDev v2 / database by_season object
+  if (mmr?.by_season) {
+    const seasonData = mmr.by_season[seasonShort] || mmr.by_season[act] || mmr.by_season[actUuid];
+    if (seasonData && !seasonData.error && seasonData.final_rank_patched) {
+      const name = seasonData.final_rank_patched;
+      const rr = seasonData.ranking_in_tier ?? seasonData.end_rr ?? 0;
+      if (!name || name.toUpperCase() === 'UNRATED' || name.toUpperCase() === 'UNRANKED') {
+        return { name: 'UNRANKED', rr: 0 };
+      }
+      return { name, rr };
+    }
+  }
+
+  // 3. Past act with match telemetry
+  if (matchRank) {
+    return matchRank;
+  }
+
+  return { name: 'UNRANKED', rr: 0 };
+}
+
 export const MAP_IMAGES_FALLBACK: Record<string, string> = {
   'Ascent':   'https://media.valorant-api.com/maps/7eaecc1b-4337-bbf6-6ab9-04b8f06b3319/splash.png',
   'Bind':     'https://media.valorant-api.com/maps/2c9d57ec-4431-9c5e-2939-8f9ef6dd5cba/splash.png',

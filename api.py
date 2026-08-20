@@ -367,26 +367,36 @@ if is_production:
     app.config["ENV"] = "production"
     app.debug = False
 
-allowed_origins = os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
-allowed_origins = [o.strip() for o in allowed_origins if o.strip()]
-if not allowed_origins:
-    allowed_origins = [
-        "https://valtracker-gg.onrender.com",
-        "https://valtracker.gg",
-        "https://valtracker.live",
-        "https://val-tracker-gg.vercel.app",
-        r"^https:\/\/.*\.vercel\.app$",
-        r"^https:\/\/.*\.onrender\.com$",
-        "http://localhost:4321",
-        "http://127.0.0.1:4321",
-        "http://localhost:5000",
-        "http://127.0.0.1:5000"
-    ]
-CORS(app, origins=allowed_origins, supports_credentials=True)
+# Universal CORS setup: allow all client origins (Vercel production/preview deployments, custom domains, localhost)
+allowed_origins_env = os.getenv("CORS_ALLOWED_ORIGINS", "").strip()
+if allowed_origins_env and allowed_origins_env != "*":
+    allowed_origins = [o.strip() for o in allowed_origins_env.split(",") if o.strip()]
+else:
+    allowed_origins = "*"
+
+CORS(app, resources={r"/api/*": {"origins": allowed_origins}}, supports_credentials=False)
+
+@app.before_request
+def handle_preflight():
+    if request.method == "OPTIONS" and request.path.startswith("/api/"):
+        response = Response(status=204)
+        origin = request.headers.get("Origin") or "*"
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, HEAD"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin, Cache-Control, Pragma"
+        response.headers["Access-Control-Max-Age"] = "86400"
+        return response
 
 @app.after_request
 def optimize_response(response):
     path = request.path.lower()
+    
+    # Guarantee CORS headers on all API responses (including error responses and rate limit 429s)
+    if path.startswith("/api/") or path == "/":
+        origin = request.headers.get("Origin") or "*"
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, HEAD"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With, Range, Accept, Origin, Cache-Control, Pragma"
     
     # Security headers
     response.headers['X-Content-Type-Options'] = 'nosniff'
@@ -394,7 +404,6 @@ def optimize_response(response):
     response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
     response.headers['Permissions-Policy'] = 'camera=(), microphone=(), geolocation=()'
     response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
-    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.henrikdev.xyz https://valtrackergg.supabase.co https://valtracker.live https://val-tracker-gg.vercel.app; frame-ancestors 'none';"
     
     # Cache API responses
     if path.startswith('/api/'):
@@ -1055,7 +1064,7 @@ def _warm_cache_background(data):
         print(f"[BACKGROUND CACHE ERROR] {e}")
 
 
-@app.route("/api/<path:subpath>", methods=["GET", "POST"])
+@app.route("/api/<path:subpath>", methods=["GET", "POST", "OPTIONS"])
 @rate_limit(requests_per_minute=60)
 def proxy_api(subpath):
     allowed = any(subpath.startswith(prefix) for prefix in ALLOWED_PROXY_PREFIXES)

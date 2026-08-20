@@ -135,6 +135,12 @@ valtracker/
 44. `AppShell.svelte` — **Fixed Astro Island Hydration Error (`ReferenceError: handleKeydown is not defined`)**:
    - **Root Cause**: `AppShell.svelte` included `<svelte:window on:keydown={handleKeydown} />` without declaring `handleKeydown` in the `<script>` block. When Astro hydrated the component island on page load, JavaScript threw an uncaught `ReferenceError: handleKeydown is not defined`.
    - **Fix**: Added the `handleKeydown(e)` handler to `AppShell.svelte` which listens for the `Escape` key to abort in-flight queries via `handleCancelFetch()`.
+45. `api.py` + `render.yaml` — **Universal CORS & Preflight Handling**:
+   - **Root Cause**: Requests from Vercel (`https://val-tracker-gg.vercel.app`) to Render API backend (`https://valtracker-api-7c4z.onrender.com/api/v3/matches/...`) were blocked because `CORS_ALLOWED_ORIGINS` in Render environment did not match or missed subpaths/errors, and `/api/<path:subpath>` lacked explicit `OPTIONS` support and guaranteed CORS header attachment on error/proxy responses.
+   - **Fix**: Configured universal CORS `CORS(app, resources={r"/api/*": {"origins": allowed_origins}}, supports_credentials=False)`, added a global `handle_preflight()` in `@app.before_request` for instant `204` responses on all `/api/*` `OPTIONS` requests, guaranteed CORS headers on all status codes (including errors and 429s) in `@app.after_request`, and added `OPTIONS` method to `/api/<path:subpath>`.
+46. `AppShell.svelte` — **Fixed Searched Profile Automatically Overwriting Saved "My Profile"**:
+    - **Root Cause**: `AppShell.svelte` invoked `saveMyProfile(p.name, p.tag, p.region, p.mode)` on every profile fetch (line 423), which updated the `valstats_my_profile` localStorage key on every searched player rather than only updating `valtracker_recent_searches`.
+    - **Fix**: Removed `saveMyProfile()` from the fetch handler in `AppShell.svelte`. "My Profile" is now strictly set when the user explicitly clicks "Set as My Profile" in `SearchForm.svelte`.
 
 ## Inline Overrides Added to global.css (from old index.html `<style>` block)
 These rules existed ONLY in the old `index.html` inline `<style>` and were NEVER copied to `global.css`:
